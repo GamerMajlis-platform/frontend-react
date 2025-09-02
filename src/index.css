@@ -1,0 +1,291 @@
+@import "tailwindcss";
+
+/* Reset default browser styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Ensure html and body take full height */
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #0b132b; /* palette base */
+}
+
+/* Ensure root element takes full height */
+#root {
+  height: 100%;
+  width: 100%;
+  min-height: 100vh;
+}
+
+@layer base {
+  button,
+  input,
+  select,
+  textarea {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    outline: none;
+  }
+}
+
+@layer components {
+  .all-\[unset\] {
+    all: unset;
+  }
+}
+
+:root {
+  --variable-collection-percentage: 720px;
+  --animate-spin: spin 1s linear infinite;
+
+  /* Common Colors */
+  --color-primary: #6fffe9;
+  --color-primary-hover: #5ee6d3;
+  --color-dark: #0f172a;
+  --color-dark-secondary: #1e293b;
+  --color-text: #ffffff;
+  --color-text-secondary: #94a3b8;
+
+  /* Common Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 32px;
+  --spacing-xl: 48px;
+
+  /* Common Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+
+  /* Common Borders */
+  --border-radius-sm: 6px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-full: 50%;
+}
+
+.animate-fade-in {
+  animation: fade-in 1s var(--animation-delay, 0s) ease forwards;
+}
+
+.animate-fade-up {
+  animation: fade-up 1s var(--animation-delay, 0s) ease forwards;
+}
+
+.animate-marquee {
+  animation: marquee var(--duration) infinite linear;
+}
+
+.animate-marquee-vertical {
+  animation: marquee-vertical var(--duration) linear infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 8s infinite;
+}
+
+.animate-spin {
+  animation: var(--animate-spin);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes image-glow {
+  0% {
+    opacity: 0;
+    animation-timing-function: cubic-bezier(0.74, 0.25, 0.76, 1);
+  }
+
+  10% {
+    opacity: 0.7;
+    animation-timing-function: cubic-bezier(0.12, 0.01, 0.08, 0.99);
+  }
+
+  to {
+    opacity: 0.4;
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes shimmer {
+  0%,
+  90%,
+  to {
+    background-position: calc(-100% - var(--shimmer-width)) 0;
+  }
+
+  30%,
+  60% {
+    background-position: calc(100% + var(--shimmer-width)) 0;
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translate(0);
+  }
+
+  to {
+    transform: translateX(calc(-100% - var(--gap)));
+  }
+}
+
+@keyframes marquee-vertical {
+  0% {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(calc(-100% - var(--gap)));
+  }
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 640px) {
+  /* Improve touch targets */
+  button {
+    min-height: 44px;
+  }
+
+  /* Prevent horizontal scroll */
+  body {
+    overflow-x: hidden;
+  }
+
+  /* Improve text readability on mobile */
+  p,
+  span {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Optimize for mobile taps */
+  a,
+  button {
+    -webkit-tap-highlight-color: rgba(111, 255, 233, 0.2);
+  }
+}
+
+/* Wishlist responsive grid */
+.wishlist-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  margin: 0 auto;
+  padding: 0 16px;
+  max-width: 1600px;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .wishlist-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .wishlist-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 48px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .wishlist-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Tablet optimizations */
+@media (min-width: 641px) and (max-width: 1024px) {
+  /* Ensure content doesn't feel cramped on tablets */
+  .container {
+    max-width: 90%;
+  }
+}
+
+/* High DPI displays optimization */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  /* Ensure crisp text rendering on retina displays */
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Prevent header controls from switching places in RTL */
+[dir="rtl"] header .absolute.left-4,
+html[lang="ar"] header .absolute.left-4 {
+  left: 1rem !important;
+  right: auto !important;
+}
+
+[dir="rtl"] header .absolute.right-4,
+html[lang="ar"] header .absolute.right-4 {
+  right: 1rem !important;
+  left: auto !important;
+}
+
+/* Keep message button, profile dropdown in original positions */
+[dir="rtl"] header .flex.items-center.gap-4,
+html[lang="ar"] header .flex.items-center.gap-4 {
+  flex-direction: row !important;
+}
+
+/* Ensure logo stays on the left */
+[dir="rtl"] header .absolute.left-4,
+html[lang="ar"] header .absolute.left-4 {
+  direction: ltr;
+}
+
+/* Ensure right controls stay on the right */
+[dir="rtl"] header .absolute.right-4,
+html[lang="ar"] header .absolute.right-4 {
+  direction: ltr;
+}

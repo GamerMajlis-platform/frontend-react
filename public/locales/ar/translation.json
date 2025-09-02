@@ -1,0 +1,100 @@
+{
+  "nav": {
+    "home": "الرئيسية",
+    "tournaments": "البطولات",
+    "marketplace": "السوق",
+    "events": "الفعاليات",
+    "messages": "الرسائل",
+    "profile": "الملف الشخصي"
+  },
+  "home": {
+    "title": "قيمر مجلس",
+    "subtitle": "انضم إلى مجتمع الألعاب الأكبر. شارك في البطولات، تواصل مع اللاعبين، واكتشف عروضاً مذهلة في متجرنا.",
+    "signupFree": "اشترك مجاناً",
+    "viewTournaments": "عرض البطولات"
+  },
+  "auth": {
+    "signup": "إنشاء حساب",
+    "login": "تسجيل الدخول",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "username": "اسم المستخدم",
+    "rememberMe": "تذكرني",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "alreadyHaveAccount": "لديك حساب بالفعل؟",
+    "dontHaveAccount": "ليس لديك حساب؟",
+    "joinCommunity": "انضم إلى مجتمع الألعاب",
+    "welcomeBack": "أهلاً بعودتك إلى المجتمع"
+  },
+  "pages": {
+    "profile": "الملف الشخصي",
+    "tournaments": "البطولات",
+    "events": "الفعاليات",
+    "messages": "الرسائل",
+    "marketplace": "المتجر",
+    "comingSoon": "محتوى صفحة {{page}} قريباً..."
+  },
+  "footer": {
+    "quickLinks": "روابط سريعة",
+    "community": "المجتمع",
+    "discord": "ديسكورد",
+    "forums": "المنتديات",
+    "support": "الدعم",
+    "contact": "اتصل بنا",
+    "allRightsReserved": "© 2025 قيمر مجلس. جميع الحقوق محفوظة."
+  },
+  "common": {
+    "loading": "جاري التحميل...",
+    "error": "خطأ",
+    "success": "نجح",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "search": "بحث"
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "subtitle": "خصص تجربتك في مجتمع الألعاب.",
+    "save": "حفظ التغييرات",
+    "sections": {
+      "notifications": {
+        "title": "الإشعارات",
+        "description": "اختر كيفية تلقي الإشعارات.",
+        "email": "إشعارات البريد الإلكتروني",
+        "email_desc": "استلم التحديثات والإعلانات عبر البريد.",
+        "push": "إشعارات فورية",
+        "push_desc": "احصل على تنبيهات لحظية أثناء تواجدك.",
+        "marketplace": "تنبيهات المتجر",
+        "marketplace_desc": "العروض وانخفاض الأسعار لقائمة الرغبات.",
+        "tournaments": "تحديثات البطولات",
+        "tournaments_desc": "تذكير المباريات وتغييرات الجداول."
+      },
+      "privacy": {
+        "title": "الخصوصية",
+        "description": "إدارة ما يمكن للآخرين رؤيته عنك.",
+        "profileVisibility": "رؤية الملف الشخصي",
+        "profileVisibility_desc": "تحكم بمن يمكنه عرض ملفك.",
+        "visibility": {
+          "public": "عام",
+          "friends": "الأصدقاء فقط",
+          "private": "خاص"
+        },
+        "showOnlineStatus": "إظهار حالة الاتصال",
+        "showOnlineStatus_desc": "دع الآخرين يعرفون أنك متصل.",
+        "showGameActivity": "مشاركة نشاط اللعب",
+        "showGameActivity_desc": "عرض ألعابك وأنجازاتك الأخيرة."
+      },
+      "preferences": {
+        "title": "التفضيلات",
+        "description": "خصص التطبيق كما تحب.",
+        "language": "اللغة",
+        "language_options": { "en": "الإنجليزية", "ar": "العربية" },
+        "theme": "السمة",
+        "theme_options": { "dark": "داكن", "light": "فاتح", "auto": "تلقائي" },
+        "currency": "العملة"
+      }
+    }
+  }
+}

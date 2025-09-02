@@ -1,0 +1,100 @@
+{
+  "nav": {
+    "home": "Home",
+    "tournaments": "Tournaments",
+    "marketplace": "Marketplace",
+    "events": "Events",
+    "messages": "Messages",
+    "profile": "Profile"
+  },
+  "home": {
+    "title": "GAMERMAJLIS",
+    "subtitle": "Join the ultimate gaming community. Compete in tournaments, connect with players, and discover amazing deals in our marketplace.",
+    "signupFree": "Sign up Free",
+    "viewTournaments": "View Tournaments"
+  },
+  "auth": {
+    "signup": "Sign Up",
+    "login": "Log In",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "username": "Username",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account?",
+    "joinCommunity": "Join the gaming community",
+    "welcomeBack": "Welcome back to the community"
+  },
+  "pages": {
+    "profile": "Profile",
+    "tournaments": "Tournaments",
+    "events": "Events",
+    "messages": "Messages",
+    "marketplace": "Marketplace",
+    "comingSoon": "{{page}} page content coming soon..."
+  },
+  "footer": {
+    "quickLinks": "Quick Links",
+    "community": "Community",
+    "discord": "Discord",
+    "forums": "Forums",
+    "support": "Support",
+    "contact": "Contact",
+    "allRightsReserved": "© 2025 GamerMajlis. All rights reserved."
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "search": "Search"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Customize your gaming experience.",
+    "save": "Save Changes",
+    "sections": {
+      "notifications": {
+        "title": "Notifications",
+        "description": "Choose how you want to be notified.",
+        "email": "Email Notifications",
+        "email_desc": "Receive updates and announcements by email.",
+        "push": "Push Notifications",
+        "push_desc": "Get real-time alerts while online.",
+        "marketplace": "Marketplace Alerts",
+        "marketplace_desc": "Deals and price drops for your wishlist.",
+        "tournaments": "Tournaments Updates",
+        "tournaments_desc": "Match reminders and bracket changes."
+      },
+      "privacy": {
+        "title": "Privacy",
+        "description": "Manage what others can see about you.",
+        "profileVisibility": "Profile Visibility",
+        "profileVisibility_desc": "Control who can view your profile.",
+        "visibility": {
+          "public": "Public",
+          "friends": "Friends Only",
+          "private": "Private"
+        },
+        "showOnlineStatus": "Show Online Status",
+        "showOnlineStatus_desc": "Let others know when you're online.",
+        "showGameActivity": "Share Game Activity",
+        "showGameActivity_desc": "Display your recent games and achievements."
+      },
+      "preferences": {
+        "title": "Preferences",
+        "description": "Personalize the app to your liking.",
+        "language": "Language",
+        "language_options": { "en": "English", "ar": "Arabic" },
+        "theme": "Theme",
+        "theme_options": { "dark": "Dark", "light": "Light", "auto": "Auto" },
+        "currency": "Currency"
+      }
+    }
+  }
+}
