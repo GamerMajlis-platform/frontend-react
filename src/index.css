@@ -301,6 +301,7 @@ select:-webkit-autofill {
 
 /* Ensure autofill placeholder/labels are visible and not overlapped */
 input:-webkit-autofill::first-line {
-  font-family: Alice, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  font-family: Alice, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial;
   font-size: 18px;
 }

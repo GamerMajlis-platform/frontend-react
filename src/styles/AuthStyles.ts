@@ -14,14 +14,14 @@ export const authContainer: CSSProperties = {
 
 export const authCard: CSSProperties = {
   position: "relative",
-  width: "802px",
+  width: "802px", // Reverted back to original width
   maxWidth: "92%",
-  minHeight: "520px",
+  minHeight: "480px", // Kept the reduced height
   margin: "40px auto",
   background: "rgba(11, 19, 43, 0.95)", // Slightly transparent for depth
   boxShadow: "0 8px 30px rgba(2,8,23,0.6)", // Softer, darker shadow for contrast
   borderRadius: "12px",
-  padding: "48px 64px 96px", // extra bottom padding to make room for footer/button
+  padding: "48px 64px 72px", // Kept the reduced bottom padding
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
@@ -170,7 +170,7 @@ export const orText: CSSProperties = {
   lineHeight: "23px",
   textAlign: "center",
   color: "#FFFFFF",
-  margin: "20px 0",
+  margin: "12px 0 8px", // Reduced from "20px 0" to "12px 0 8px"
   width: "100%",
 };
 
@@ -189,7 +189,7 @@ export const discordButton: CSSProperties = {
   cursor: "pointer",
   transition: "opacity 0.2s ease",
   display: "block",
-  margin: "12px auto 0",
+  margin: "6px auto 0", // Reduced from "12px auto 0" to "6px auto 0"
   textAlign: "center",
   padding: "12px 18px",
 };

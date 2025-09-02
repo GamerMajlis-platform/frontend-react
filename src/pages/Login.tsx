@@ -146,7 +146,7 @@ export default function Login() {
               width: "100%",
               display: "flex",
               justifyContent: "center",
-              marginTop: "18px",
+              marginTop: "12px", // Reduced from "18px"
             }}
           >
             <Button
@@ -167,7 +167,6 @@ export default function Login() {
               width: "100%",
               display: "flex",
               justifyContent: "center",
-              marginTop: "10px",
             }}
           >
             <button style={S.discordButton} onClick={() => (window.location.href = "/auth/discord")}> 

@@ -1,314 +1,265 @@
-# 🎮 GamerMajlis Frontend
+# GamerMajlis Frontend Architecture
 
-A modern React gaming community platform with comprehensive internationalization support, built with TypeScript, Vite, and Tailwind CSS. Features bilingual support (Arabic/English) with automatic RTL detection and a clean, optimized architecture.
+React 18/19 gaming platform with TypeScript, Vite, and hybrid CSS-in-JS/Tailwind architecture. Implements RTL/LTR support, hash-based SPA navigation, and modular component system.
 
-## 📋 Table of Contents
+## Architecture Overview
 
-- [Project Structure](#-project-structure)
-- [Core Features](#-core-features)
-- [Styling Architecture](#-styling-architecture)
-- [RTL & Internationalization](#-rtl--internationalization)
-- [Component System](#-component-system)
-- [State Management](#-state-management)
-- [Development Guide](#-development-guide)
-- [Build & Deployment](#-build--deployment)
+**Stack**: React 19+ • TypeScript • Vite • CSS-in-JS + Tailwind 4 • react-i18next  
+**Patterns**: Component composition, CSS-in-JS styling, centralized state via Context API  
+**Navigation**: Hash-based SPA routing (`window.location.hash`) with manual page state management  
+**Build**: Vite with TypeScript compilation and asset optimization
 
 ---
 
-## 🏗 Project Structure
+## Project Structure & Implementation
 
 ```
 src/
-├── components/           # Reusable UI components
-│   ├── Button.tsx       # Customizable button component
-│   ├── Header.tsx       # Main navigation header
-│   ├── Footer.tsx       # Application footer
-│   ├── Logo.tsx         # Brand logo component
-│   ├── ProductCard.tsx  # Product display card
-│   ├── ProfileDropdown.tsx # User profile menu
-│   ├── LanguageSwitcher.tsx # Language selection
-│   ├── ChatBot.tsx      # AI chat integration
-│   ├── PreferencesBootstrap.tsx # Theme initialization
-│   └── index.ts         # Component exports
-├── pages/               # Application pages/views
-│   ├── Home.tsx         # Landing page (fully internationalized)
-│   ├── Marketplace.tsx  # Product marketplace
-│   ├── Wishlist.tsx     # User wishlist
-│   ├── Settings.tsx     # User preferences (React 19 optimized)
-│   ├── Profile.tsx      # User profile management
-│   ├── Tournaments.tsx  # Tournament system
-│   ├── Events.tsx       # Gaming events
-│   ├── Messages.tsx     # Messaging system
-│   ├── Login.tsx        # Authentication
-│   ├── Signup.tsx       # User registration
-│   └── index.ts         # Page exports
-├── styles/              # Optimized styling system
-│   ├── BaseStyles.ts    # Design tokens & core utilities
-│   ├── OptimizedStyles.ts # Consolidated component styles
-│   ├── MarketplaceStyles.ts # Marketplace-specific styles
-│   └── ProductCardStyles.ts # Product card styles
-├── context/             # React Context providers
-│   └── AppContext.tsx   # Global application state
-├── hooks/               # Custom React hooks
-│   └── usePreferences.ts # Theme & language preferences
-├── i18n/                # Internationalization
-│   └── config.ts        # i18next configuration
-├── data/                # Static data & configuration
-│   ├── products.ts      # Product data
-│   ├── navigation.ts    # Navigation items
-│   ├── languages.ts     # Language options
-│   ├── index.ts         # Data exports
-│   └── README.md        # Data documentation
-├── services/            # External service integrations
-│   └── Context7Service.ts # Context7 documentation service
-├── types/               # TypeScript type definitions
-│   └── context7-mcp.d.ts # Context7 MCP types
-└── assets/              # Static assets (images, etc.)
+├── components/
+│   ├── Button.tsx          # Variant-based button (primary/secondary/link/outline)
+│   ├── Header.tsx          # Main nav with hash navigation
+│   ├── Footer.tsx          # Static footer
+│   ├── Logo.tsx            # SVG logo with showText prop
+│   ├── ProductCard.tsx     # RTL-aware product display
+│   ├── ProfileDropdown.tsx # Dropdown with useEffect click-outside
+│   ├── LanguageSwitcher.tsx # i18n language toggle
+│   ├── ChatBot.tsx         # Context7 integration
+│   └── index.ts            # Component exports
+├── pages/
+│   ├── Home.tsx            # Landing with i18n strings
+│   ├── Login.tsx           # CSS-in-JS auth form with autofill detection
+│   ├── Signup.tsx          # CSS-in-JS auth form with floating labels
+│   ├── Settings.tsx        # React 19 patterns with consolidated useState
+│   ├── Marketplace.tsx     # Product grid with filtering
+│   ├── Wishlist.tsx        # LocalStorage-backed wishlist
+│   └── [Others].tsx        # Placeholder pages ("Coming soon...")
+├── styles/                 # CSS-in-JS modules
+│   ├── AuthStyles.ts       # Auth page styles (card, inputs, labels)
+│   ├── BaseStyles.ts       # Design tokens and utilities
+│   ├── OptimizedStyles.ts  # General component styles
+│   └── [Feature]Styles.ts  # Feature-specific styling
+├── context/
+│   └── AppContext.tsx      # Global state (user, settings, wishlist)
+├── i18n/
+│   └── config.ts           # react-i18next setup
+├── data/                   # Static data
+│   ├── products.ts         # Product catalog
+│   ├── navigation.ts       # Nav items
+│   └── languages.ts        # Language options
+└── services/
+    └── Context7Service.ts  # External doc service
 ```
 
-### 🗂 Key Directories Explained:
+**Key Implementation Details:**
 
-**`/components`**: Reusable UI components with enhanced hover effects and RTL support  
-**`/pages`**: Full page components with complete internationalization  
-**`/styles`**: Optimized CSS-in-JS system reduced from 8 files to 4 core files  
-**`/context`**: Global state management using React Context API  
-**`/data`**: Centralized static data management with TypeScript types  
-**`/i18n`**: Complete bilingual support with Arabic RTL and English LTR
+- **Navigation**: No router - uses hash-based navigation with `App.tsx` listening to `hashchange`
+- **Auth**: `Login.tsx` and `Signup.tsx` use `AuthStyles.ts` CSS-in-JS for unified styling
+- **Forms**: Controlled inputs with `useId()` for unique IDs, floating labels, autofill detection
+- **Styling**: Hybrid approach - Tailwind for layout, CSS-in-JS for component-specific styles
+- **i18n**: Translation files at `/public/locales/[lang]/translation.json`
 
 ---
 
-## ⭐ Core Features
+## Styling System
 
-### 🎯 Main Functionality:
+**Architecture**: CSS-in-JS (TypeScript `CSSProperties`) + Tailwind utilities  
+**Pattern**: Feature-specific style modules with shared design tokens
 
-- **Gaming Marketplace**: Browse and purchase gaming products with advanced filtering
-- **Wishlist System**: Save favorite items with persistent local storage
-- **User Profiles**: Customizable user accounts with comprehensive preferences
-- **Tournament System**: Gaming event management and participation
-- **Messaging**: In-app communication system with notification badges
-- **Real-time Chat**: AI-powered chat assistant integration
-- **Settings Management**: Complete user preferences with toggle switches and dropdowns
-
-### 🌐 Platform Features:
-
-- **Responsive Design**: Mobile-first approach with breakpoints at sm(640px), lg(1024px), xl(1280px)
-- **Bilingual Support**: Complete English & Arabic with automatic RTL detection
-- **Theme System**: Dark theme with customizable user preferences
-- **Accessibility**: ARIA labels, keyboard navigation, screen reader support
-- **Modern React**: React 19 patterns with optimized hooks and state management
-- **Performance**: Optimized bundle size with code splitting and lazy loading
-
-### 🚀 Recent Optimizations:
-
-- **Code Reduction**: Settings.tsx optimized from 684 to 421 lines (38% reduction)
-- **Style Consolidation**: Reduced from 8+ style files to 4 core files
-- **Clean Architecture**: Removed 7 unused files (~600+ lines of dead code)
-- **Enhanced UX**: Improved hover effects, RTL toggle fixes, simplified message buttons
-
----
-
-## 🎨 Styling Architecture
-
-### Current System: **CSS-in-JS with TypeScript**
+### Style Module Structure
 
 ```typescript
-// Example component styling
-const buttonStyle: CSSProperties = {
-  backgroundColor: "#6fffe9",
-  color: "#0f172a",
-  padding: "8px 16px",
-  borderRadius: "8px",
-  transition: "0.2s ease",
-};
-```
-
-### 📁 Style File Organization:
-
-**`BaseStyles.ts`** - Core design system:
-
-```typescript
-export const colors = {
-  primary: "#6fffe9", // Teal accent
-  dark: "#0f172a", // Primary background
-  darkSecondary: "#1e293b", // Secondary background
-  text: "#ffffff", // Primary text
-  textSecondary: "#94a3b8", // Muted text
-};
-```
-
-**`CommonStyles.ts`** - Reusable utilities:
-
-```typescript
-export const flexCenter: CSSProperties = {
+// src/styles/AuthStyles.ts - Authentication pages
+export const authContainer: CSSProperties = {
+  width: "100%",
+  minHeight: "100vh",
+  backgroundColor: "#0B132B",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
 };
-```
 
-**Component-specific styles** - Individual `*Styles.ts` files:
-
-- `BaseStyles.ts` - Core styling utilities and common patterns
-- `OptimizedStyles.ts` - Performance-optimized component styles
-- `ProductCardStyles.ts` - Product card components
-- `MarketplaceStyles.ts` - Marketplace filtering & search
-
-### 🎛 Responsive Breakpoints:
-
-```css
-Mobile: up to 640px
-Tablet: 640px - 1024px
-Desktop: 1024px - 1280px
-Large: 1280px+
-```
-
----
-
-## 🌍 RTL & Internationalization
-
-### Language Support: **Arabic (RTL) + English (LTR)**
-
-### 🔍 RTL Detection System:
-
-```typescript
-// Automatic RTL detection in ProductCardStyles.ts
-export const isRTLText = (text: string): boolean => {
-  return /[\u0600-\u06FF\u0750-\u077F]/.test(text);
+export const authCard: CSSProperties = {
+  width: "802px",
+  minHeight: "520px",
+  margin: "40px auto",
+  background: "rgba(11, 19, 43, 0.95)",
+  borderRadius: "12px",
+  padding: "48px 64px 96px",
+  backdropFilter: "blur(6px)",
 };
 ```
 
-### 📝 How RTL Works:
-
-1. **Unicode Detection**: Scans text for Arabic Unicode ranges
-2. **Dynamic Styling**: Adjusts text alignment, direction, and positioning
-3. **Font Selection**: Uses Arabic fonts (Tahoma) for RTL content
-4. **Layout Mirroring**: Flips positioning for buttons, badges, and layouts
-
-### 🌐 i18n Configuration (i18n/config.ts):
+### Design Tokens (BaseStyles.ts)
 
 ```typescript
+export const colors = {
+  primary: "#6fffe9", // Teal accent
+  dark: "#0B132B", // Primary background
+  darkCard: "rgba(11, 19, 43, 0.95)", // Card backgrounds
+  text: "#ffffff", // Primary text
+  textMuted: "rgba(255,255,255,0.6)", // Secondary text
+};
+```
+
+**Key Patterns:**
+
+- **Floating Labels**: Position `absolute` with transform animations on focus/autofill
+- **RTL Awareness**: Dynamic text alignment and layout direction
+- **Autofill Handling**: CSS overrides for webkit autofill styling
+- **Component Isolation**: Each major feature has dedicated style module
+
+---
+
+## Internationalization (i18n)
+
+**Languages**: English (default) + Arabic (RTL)  
+**Library**: react-i18next with JSON translation files  
+**RTL Detection**: Automatic based on Unicode character ranges
+
+### Implementation
+
+```typescript
+// i18n/config.ts - Configuration
 i18n.use(initReactI18next).init({
   resources: {
     en: { translation: require("../public/locales/en/translation.json") },
     ar: { translation: require("../public/locales/ar/translation.json") },
   },
-  lng: "en", // default language
+  lng: "en",
   fallbackLng: "en",
 });
 ```
 
-### 🔧 RTL-Specific Features:
+### Translation Structure
 
-- **Toggle Switches**: Proper RTL positioning using CSS direction instead of transforms
-- **Profile Dropdown**: Enhanced hover effects with teal brand colors
-- **Message Buttons**: Simplified styling with consistent roundness and icons
-- **Settings Panel**: React 19 optimized with consolidated state management
-- **Text Direction**: Automatic dir attribute switching based on language
+```json
+// public/locales/en/translation.json
+{
+  "nav": { "home": "Home", "tournaments": "Tournaments" },
+  "auth": {
+    "login": "Log In",
+    "signup": "Sign Up",
+    "email": "Email",
+    "or": "or",
+    "loginWithDiscord": "Login with Discord"
+  },
+  "home": { "title": "GAMERMAJLIS", "subtitle": "Join the ultimate..." }
+}
+```
 
-- **Header Controls**: Fixed LTR positioning to prevent element flipping
-- **Toggle Switches**: Direction-aware transforms in Settings
-- **Product Cards**: Dynamic badge and button positioning
-- **Text Rendering**: Font-family switching based on content language
+### RTL Handling
+
+```typescript
+// Automatic RTL detection
+const isRTLText = (text: string): boolean => {
+  return /[\u0600-\u06FF\u0750-\u077F]/.test(text);
+};
+
+// Dynamic text alignment
+textAlign: isRTLText(text) ? "right" : "left";
+```
+
+**Key Features:**
+
+- Unicode-based RTL detection for mixed content
+- CSS `direction: rtl` applied automatically
+- Font switching (Arabic content uses Tahoma)
+- Layout mirroring for buttons, badges, positioning
 
 ---
 
-## 🧩 Component System
+## Component Architecture
 
-### 🎨 Design Pattern: **Composition over Configuration**
+**Pattern**: Composition over inheritance with TypeScript interfaces  
+**State Management**: React hooks with Context API for global state
 
-### Key Components:
-
-**`Header.tsx`** - Enhanced navigation:
-
-```typescript
-interface HeaderProps {
-  activeSection?: string;
-  onSectionChange?: (section: string) => void;
-}
-```
-
-- Dynamic navigation with section switching
-- Message button with simplified styling and notification badge
-- Profile dropdown with enhanced hover effects (teal backgrounds)
-- Language switcher integration
-
-**`ProductCard.tsx`** - Optimized product display:
+### Authentication Components
 
 ```typescript
-interface ProductCardProps {
-  id: number;
-  category: string;
-  productName: string;
-  seller: string;
-  price: string;
-  rate: number;
-  reviews: number;
-  imageUrl?: string;
-}
+// Login.tsx / Signup.tsx - CSS-in-JS auth forms
+const Login = () => {
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [focus, setFocus] = useState({ email: false, password: false });
+
+  // Autofill detection with useEffect + setTimeout
+  useEffect(() => {
+    setTimeout(() => {
+      const elEmail = document.getElementById(
+        `${id}-email`
+      ) as HTMLInputElement;
+      if (elEmail?.value) setFormData((p) => ({ ...p, email: elEmail.value }));
+    }, 150);
+  }, [id]);
+
+  return (
+    <div style={S.authContainer}>
+      <div style={S.authCard}>
+        {/* Floating label inputs with focus tracking */}
+      </div>
+    </div>
+  );
+};
 ```
 
-- RTL-aware content rendering
-- Wishlist toggle functionality
-- Removed white shadow hover effect for cleaner design
-- Responsive image handling
-
-**`Button.tsx`** - Enhanced button component:
+### Button Component
 
 ```typescript
 interface ButtonProps {
-  variant?: "primary" | "secondary" | "outline";
+  variant?: "primary" | "secondary" | "link" | "outline";
   size?: "small" | "medium" | "large";
-  // Custom styling props
   width?: number;
   height?: number;
   borderRadius?: number;
 }
+
+// Usage: <Button variant="link" width={345} height={57} borderRadius={20} />
 ```
 
-- Multiple variants and sizes
-- Custom dimensions and border radius
-- Consistent brand styling with teal accents
+### Navigation Pattern
 
-### 🔄 Modern State Management Patterns:
+```typescript
+// Hash-based SPA navigation (no router)
+// App.tsx listens to hashchange events
+const handleNavigation = (page: string) => {
+  window.location.hash = `#${page}`;
+};
 
-- **React 19 Optimized**: Consolidated useState patterns in Settings.tsx
-- **Global State**: Context API for app-wide user settings and wishlist
-- **Form State**: Controlled components with proper validation
-- **Hover States**: CSS-based transitions with smooth animations
-- **Component Composition**: Reusable SettingRow, ToggleButton, Dropdown components
+// App.tsx resolves page from hash
+const resolvePageFromHash = (): string => {
+  const hash = window.location.hash.slice(1);
+  return hash || "home";
+};
+```
 
 ---
 
-## 📊 State Management
+## State Management
 
-### 🏪 AppContext.tsx - Global State:
+**Architecture**: React Context API + localStorage persistence  
+**Pattern**: Single global context with feature-specific state slicing
+
+### AppContext Implementation
 
 ```typescript
+// context/AppContext.tsx
 interface AppContextType {
-  // User & Settings
+  // User state
   user: User | null;
   settings: UserSettings;
   updateSetting: (key: string, value: any) => void;
 
-  // Wishlist Management
+  // Wishlist (localStorage backed)
   wishlist: WishlistItem[];
   toggleWishlist: (item: WishlistItem) => void;
   isInWishlist: (id: number) => boolean;
 
-  // UI State
+  // Navigation
   activeSection: string;
   setActiveSection: (section: string) => void;
 }
 ```
 
-### 🔧 State Features:
-
-- **Persistent Storage**: Settings saved to localStorage
-- **Wishlist Management**: Add/remove items with date tracking
-- **User Preferences**: Language, theme, notification settings
-- **Navigation State**: Current active section tracking
-
-### 📱 Settings Management:
+### Settings Structure
 
 ```typescript
 interface UserSettings {
@@ -331,129 +282,132 @@ interface UserSettings {
 }
 ```
 
+### Form State Pattern
+
+```typescript
+// Controlled inputs with consolidated state
+const [formData, setFormData] = useState({
+  email: "",
+  password: "",
+  username: "",
+  confirmPassword: "",
+});
+
+const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const { name, value } = e.target;
+  setFormData((prev) => ({ ...prev, [name]: value }));
+};
+```
+
 ---
 
-## 🛠 Development Guide
+## Technical Implementation Notes
 
-### 🚀 Getting Started:
+### Authentication UI
+
+- **Floating Labels**: Labels float above inputs on focus/value using CSS transforms and absolute positioning
+- **Autofill Detection**: `useEffect` with 150ms timeout checks DOM for browser-filled values and syncs with React state
+- **Form Validation**: Controlled inputs with real-time validation and accessibility (useId for unique IDs)
+- **Navigation**: Auth footer links use hash navigation (`window.location.hash = "#page"`)
+
+### RTL Text Handling
+
+- **Detection**: Unicode regex `/[\u0600-\u06FF\u0750-\u077F]/` identifies Arabic characters
+- **Layout**: Dynamic CSS `direction`, `textAlign`, and font-family switching
+- **Components**: ProductCard, Header, Settings all implement RTL-aware styling
+
+### Performance Considerations
+
+- **Lazy Loading**: Images use `loading="lazy"` attribute
+- **Bundle Size**: CSS-in-JS modules prevent unused CSS; Vite tree-shaking
+- **State Updates**: Functional state updates prevent unnecessary re-renders
+- **Event Handling**: Event delegation and cleanup in useEffect hooks
+
+### Browser Compatibility
+
+- **CSS**: Modern properties with fallbacks (backdrop-filter, CSS grid)
+- **JavaScript**: ES2020+ features, Vite transpilation for older browsers
+- **Input Styling**: Webkit autofill overrides for consistent appearance across browsers
+
+---
+
+## Development Workflow
 
 ```bash
 # Install dependencies
-npm install
-# or
-bun install
+npm install  # or bun install
 
-# Start development server
-npm run dev
-# or
-bun dev
+# Development server
+npm run dev  # or bun dev
 
-# Build for production
-npm run build
-# or
-bun build
+# Type checking
+npm run build  # Runs tsc -b && vite build
+
+# Project structure validation
+npm run lint  # ESLint + Prettier
 ```
 
-### 📦 Key Dependencies:
+### File Creation Patterns
 
-**Core Framework:**
+- **Components**: TypeScript interface + CSS-in-JS styling + export from index.ts
+- **Pages**: Full page component with i18n keys, Context API integration
+- **Styles**: Feature-based CSS modules with TypeScript CSSProperties
+- **Types**: Interface definitions in /types or inline with components
+
+### Key Dependencies
 
 - `react` + `react-dom` - UI framework
-- `typescript` - Type safety
-- `vite` - Build tool & dev server
-
-**Styling:**
-
-- `tailwindcss` - Utility-first CSS
-- CSS-in-JS with TypeScript CSSProperties
-
-**Internationalization:**
-
-- `react-i18next` - i18n framework
-- `i18next` - Translation management
-
-### 🔧 Optimized Development Workflow:
-
-1. **Component Development**: Start with TypeScript interfaces and React 19 patterns
-2. **Modern Styling**: Use consolidated CSS-in-JS system with RTL considerations
-3. **Testing**: Validate functionality across English and Arabic content
-4. **Responsive Design**: Verify across mobile, tablet, desktop breakpoints
-5. **Accessibility**: Implement ARIA labels, keyboard navigation, screen reader support
-
-### 📝 Code Quality Standards:
-
-- **TypeScript**: Strict mode with comprehensive type safety
-- **ESLint + Prettier**: Automated code formatting and linting
-- **Component Architecture**: Props interfaces required, composition patterns
-- **Modern React**: React 19 optimized hooks and state management
-- **Performance**: Optimized bundle size and code splitting
+- `typescript` - Type system
+- `vite` - Build tool
+- `react-i18next` - Internationalization
+- `tailwindcss` - Utility CSS (layout only)
 
 ---
 
-## 🏗 Build & Deployment
+## Critical Implementation Details
 
-### 📦 Build Configuration (vite.config.ts):
+### Hash Navigation
 
 ```typescript
-export default defineConfig({
-  plugins: [react()],
-  build: {
-    target: "esnext",
-    outDir: "dist",
-    sourcemap: true,
-  },
-});
+// App.tsx - Page resolution
+const [currentPage, setCurrentPage] = useState(resolvePageFromHash());
+
+useEffect(() => {
+  const handleHashChange = () => setCurrentPage(resolvePageFromHash());
+  window.addEventListener("hashchange", handleHashChange);
+  return () => window.removeEventListener("hashchange", handleHashChange);
+}, []);
 ```
 
-### 🚀 Build Process:
+### Autofill Handling
 
-1. **TypeScript Compilation**: Type checking and compilation
-2. **Asset Optimization**: Image compression and bundling
-3. **Code Splitting**: Dynamic imports for route-based splitting
-4. **CSS Optimization**: Tailwind purging and minification
+```typescript
+// Login.tsx - Browser autofill detection
+useEffect(() => {
+  setTimeout(() => {
+    const elEmail = document.getElementById(`${id}-email`) as HTMLInputElement;
+    if (elEmail?.value) {
+      setFocus((p) => ({ ...p, email: true }));
+      setFormData((p) => ({ ...p, email: elEmail.value }));
+    }
+  }, 150);
+}, [id]);
+```
 
-### 📊 Performance Features:
+### CSS-in-JS Pattern
 
-- **Lazy Loading**: Images with `loading="lazy"`
-- **Code Splitting**: Route-based component loading
-- **Asset Optimization**: Vite's built-in optimizations
-- **Bundle Analysis**: Built-in bundle size analysis
+```typescript
+// AuthStyles.ts - Consistent styling approach
+export const inputLabel: CSSProperties = {
+  position: "absolute",
+  left: "20px",
+  top: "50%",
+  transform: "translateY(-50%)",
+  color: "rgba(255,255,255,0.6)",
+  transition: "all 0.2s ease",
+  backgroundColor: "rgba(11, 19, 43, 0.95)", // Matches card background
+  padding: "0 8px",
+};
+```
 
----
-
-## 🎉 Recent Achievements
-
-### ✅ Code Optimization Success:
-
-- **Total Lines Reduced**: 1742 → 1329 lines (~400 lines saved)
-- **Settings.tsx Optimization**: 684 → 421 lines (38% reduction using React 19 patterns)
-- **Style Files Consolidated**: 8+ files → 4 core style files
-- **Unused Code Cleanup**: Removed 7 unused files (~600+ lines of dead code)
-
-### 🚀 Enhanced Features:
-
-- **RTL Support Fixed**: Toggle switches now work correctly with Arabic
-- **Profile UX Enhanced**: Improved dropdown hover effects with brand teal colors
-- **Message Buttons Simplified**: Clean, consistent styling with proper roundness
-- **Home Page Internationalized**: Complete translation mapping (t("home.title"), etc.)
-- **Modern React Patterns**: React 19 optimized components with consolidated state
-
-### 🎯 Architecture Improvements:
-
-- **Clean File Structure**: Only essential files remain after comprehensive cleanup
-- **Type Safety Enhanced**: Full TypeScript integration with proper interfaces
-- **Performance Optimized**: Bundle size reduced through code consolidation
-- **Maintainability Improved**: Consistent patterns and reusable components
-
----
-
-## 📚 Additional Resources
-
-- **Translation Files**: `/public/locales/` for English and Arabic content
-- **Type Definitions**: `/src/types/` for TypeScript interfaces
-- **Static Assets**: `/public/brand/` for logos and branding
-- **Style System**: `/src/styles/` with 4 optimized styling files
-
----
-
-**Built with ❤️ for the gaming community - Now optimized for performance and maintainability**
+This architecture prioritizes maintainability, type safety, and consistent UX patterns across the application.
