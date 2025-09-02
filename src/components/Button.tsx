@@ -2,7 +2,7 @@ import type { CSSProperties, ReactNode } from "react";
 
 interface ButtonProps {
   children: ReactNode;
-  variant?: "primary" | "secondary" | "outline";
+  variant?: "primary" | "secondary" | "outline" | "link";
   size?: "small" | "medium" | "large";
   onClick?: () => void;
   disabled?: boolean;
@@ -44,6 +44,8 @@ export default function Button({
       "bg-[#1C2541] text-white hover:bg-[#3A506B] focus:ring-[#3A506B]",
     outline:
       "border-2 border-[#5BC0BE] text-[#5BC0BE] hover:bg-[#5BC0BE] hover:text-[#0B132B] focus:ring-[#6FFFE9]",
+    // link variant uses the same color as the auth link (login href)
+    link: "bg-[#C4FFF9] text-[#0B132B] hover:bg-[#CFFFEF] focus:ring-[#CFFFEF]",
   };
 
   const sizeClasses = {

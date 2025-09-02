@@ -13,16 +13,18 @@ export const authContainer: CSSProperties = {
 };
 
 export const authCard: CSSProperties = {
+  position: "absolute",
   width: "802px",
-  height: "552px",
-  background: "#000000", // Swapped: now using page color
+  height: "558px",
+  left: "calc(50% - 802px/2 - 5px)",
+  top: "calc(50% - 558px/2 + 26px)",
+  background: "#0B132B",
   boxShadow: "2px 2px 10px #FFFFFF",
   borderRadius: "10px",
+  padding: "48px 64px",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  position: "relative",
-  padding: "20px",
   boxSizing: "border-box",
 };
 
@@ -31,7 +33,7 @@ export const authHeader: CSSProperties = {
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  marginBottom: "60px",
+  marginBottom: "40px",
 };
 
 export const authTitle: CSSProperties = {
@@ -43,7 +45,6 @@ export const authTitle: CSSProperties = {
   textAlign: "center",
   color: "#EEEEEE",
   margin: 0,
-  marginTop: "0px", // Positioned from top
 };
 
 export const authSubtitle: CSSProperties = {
@@ -55,13 +56,13 @@ export const authForm: CSSProperties = {
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  gap: "40px", // Space between email and password
+  gap: "22px",
 };
 
 export const inputGroup: CSSProperties = {
   position: "relative",
   width: "720px",
-  height: "57px",
+  height: "48px",
 };
 
 export const emailInputGroup: CSSProperties = {
@@ -73,23 +74,24 @@ export const passwordInputGroup: CSSProperties = {
 };
 
 export const inputField: CSSProperties = {
-  width: "100%",
-  height: "57px",
-  border: "1px solid #FFFFFF",
-  borderRadius: "20px",
-  backgroundColor: "#000000",
+  width: "720px",
+  height: "48px",
+  border: "1px solid rgba(255,255,255,0.28)",
+  borderRadius: "24px",
+  backgroundColor: "transparent",
   color: "#FFFFFF",
-  fontSize: "20px",
+  fontSize: "18px",
   fontFamily: "Alice",
-  padding: "16px 20px",
+  padding: "0 20px",
   outline: "none",
   boxSizing: "border-box",
-  transition: "border-color 0.2s ease",
+  transition: "border-color 0.2s ease, box-shadow 0.15s ease",
 };
 
 export const inputFieldFocus: CSSProperties = {
   ...inputField,
-  border: "2px solid #6fffe9",
+  border: "1px solid #6fffe9",
+  boxShadow: "0 0 0 4px rgba(111,255,233,0.06)",
 };
 
 export const inputLabel: CSSProperties = {
@@ -100,13 +102,30 @@ export const inputLabel: CSSProperties = {
   fontFamily: "Alice",
   fontStyle: "normal",
   fontWeight: "400",
-  fontSize: "20px",
-  lineHeight: "23px",
-  color: "#FFFFFF",
+  fontSize: "16px",
+  lineHeight: "18px",
+  color: "rgba(255,255,255,0.6)",
   pointerEvents: "none",
   transition: "all 0.2s ease",
-  backgroundColor: "#000000", // Updated to match new card background
+  backgroundColor: "#0B132B",
   padding: "0 8px",
+};
+
+export const inputLabelActive: CSSProperties = {
+  position: "absolute",
+  left: "14px",
+  top: "-10px",
+  transform: "none",
+  fontFamily: "Alice",
+  fontStyle: "normal",
+  fontWeight: "400",
+  fontSize: "14px",
+  lineHeight: "16px",
+  color: "#C4FFF9",
+  pointerEvents: "none",
+  transition: "all 0.18s ease",
+  backgroundColor: "#0B132B",
+  padding: "0 6px",
 };
 
 export const emailLabel: CSSProperties = {
@@ -118,12 +137,14 @@ export const passwordLabel: CSSProperties = {
 };
 
 export const authButton: CSSProperties = {
+  position: "absolute",
   width: "345px",
   height: "57px",
+  left: "calc(50% - 345px/2 - 1.5px)",
+  top: "430px",
   background: "#C4FFF9",
-  border: "1px solid #000000",
   borderRadius: "20px",
-  color: "#000000", // Updated to match new card background
+  color: "#0B132B",
   fontFamily: "Alice",
   fontStyle: "normal",
   fontWeight: "400",
@@ -131,7 +152,6 @@ export const authButton: CSSProperties = {
   lineHeight: "23px",
   cursor: "pointer",
   transition: "opacity 0.2s ease",
-  marginTop: "20px",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
@@ -177,6 +197,11 @@ export const discordButtonHover: CSSProperties = {
 };
 
 export const authFooter: CSSProperties = {
+  position: "absolute",
+  width: "347px",
+  height: "23px",
+  left: "calc(50% - 347px/2 - 0.5px)",
+  bottom: "9px",
   fontFamily: "Alice",
   fontStyle: "normal",
   fontWeight: "400",
@@ -185,8 +210,6 @@ export const authFooter: CSSProperties = {
   textAlign: "center",
   color: "#EEEEEE",
   margin: 0,
-  marginTop: "auto", // Push to bottom
-  paddingBottom: "10px",
 };
 
 export const authLink: CSSProperties = {

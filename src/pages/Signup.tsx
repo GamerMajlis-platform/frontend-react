@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useId } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Logo } from "../components";
+import { Button } from "../components";
+import * as S from "../styles/AuthStyles";
 
 export default function Signup() {
   const { t } = useTranslation();
@@ -11,112 +12,138 @@ export default function Signup() {
     confirmPassword: "",
   });
 
+  const [focus, setFocus] = useState({
+    username: false,
+    email: false,
+    password: false,
+    confirmPassword: false,
+  });
+
+  const id = useId();
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleFocus = (name: keyof typeof focus) => {
+    setFocus((prev) => ({ ...prev, [name]: true }));
+  };
+
+  const handleBlur = (name: keyof typeof focus) => {
+    setFocus((prev) => ({ ...prev, [name]: false }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle signup logic here
     console.log("Signup:", formData);
   };
 
   return (
-    <div className="w-full min-h-screen bg-slate-900 flex items-center justify-center px-6">
-      <div className="max-w-md w-full bg-slate-800 rounded-lg p-8">
-        <div className="text-center mb-8">
-          <Logo className="justify-center mb-4" />
-          <h1 className="text-2xl font-bold text-white">{t("auth.signup")}</h1>
-          <p className="text-gray-400 mt-2">{t("auth.joinCommunity")}</p>
+    <div style={S.authContainer}>
+      <div style={S.authCard}>
+        <div style={S.authHeader}>
+          <h1 style={S.authTitle}>{t("auth.signup")}</h1>
+          <p style={{ color: "#9CA3AF", marginTop: "8px" }}>
+            {t("auth.joinCommunity")}
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
+        <form onSubmit={handleSubmit} style={S.authForm}>
+          <div style={S.emailInputGroup}>
             <label
-              htmlFor="username"
-              className="block text-sm font-medium text-gray-300 mb-1"
+              htmlFor={`${id}-username`}
+              style={formData.username || focus.username ? S.inputLabelActive : S.emailLabel}
             >
               {t("auth.username")}
             </label>
             <input
               type="text"
-              id="username"
+              id={`${id}-username`}
               name="username"
               value={formData.username}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-hidden focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
+              onFocus={() => handleFocus("username")}
+              onBlur={() => handleBlur("username")}
+              style={formData.username || focus.username ? S.inputFieldFocus : S.inputField}
+              aria-label={t("auth.username")}
               required
             />
           </div>
 
-          <div>
+          <div style={S.emailInputGroup}>
             <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-300 mb-1"
+              htmlFor={`${id}-email`}
+              style={formData.email || focus.email ? S.inputLabelActive : S.emailLabel}
             >
               {t("auth.email")}
             </label>
             <input
               type="email"
-              id="email"
+              id={`${id}-email`}
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-hidden focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
+              onFocus={() => handleFocus("email")}
+              onBlur={() => handleBlur("email")}
+              style={formData.email || focus.email ? S.inputFieldFocus : S.inputField}
+              aria-label={t("auth.email")}
               required
             />
           </div>
 
-          <div>
+          <div style={S.passwordInputGroup}>
             <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-300 mb-1"
+              htmlFor={`${id}-password`}
+              style={formData.password || focus.password ? S.inputLabelActive : S.passwordLabel}
             >
               {t("auth.password")}
             </label>
             <input
               type="password"
-              id="password"
+              id={`${id}-password`}
               name="password"
               value={formData.password}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-hidden focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
+              onFocus={() => handleFocus("password")}
+              onBlur={() => handleBlur("password")}
+              style={formData.password || focus.password ? S.inputFieldFocus : S.inputField}
+              aria-label={t("auth.password")}
               required
             />
           </div>
 
-          <div>
+          <div style={S.passwordInputGroup}>
             <label
-              htmlFor="confirmPassword"
-              className="block text-sm font-medium text-gray-300 mb-1"
+              htmlFor={`${id}-confirmPassword`}
+              style={formData.confirmPassword || focus.confirmPassword ? S.inputLabelActive : S.passwordLabel}
             >
               {t("auth.confirmPassword")}
             </label>
             <input
               type="password"
-              id="confirmPassword"
+              id={`${id}-confirmPassword`}
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-hidden focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
+              onFocus={() => handleFocus("confirmPassword")}
+              onBlur={() => handleBlur("confirmPassword")}
+              style={formData.confirmPassword || focus.confirmPassword ? S.inputFieldFocus : S.inputField}
+              aria-label={t("auth.confirmPassword")}
               required
             />
           </div>
 
-          <Button
-            type="submit"
-            variant="primary"
-            size="medium"
-            className="w-full mt-6"
-          >
-            {t("auth.signup")}
-          </Button>
+          <div style={{ width: "100%", display: "flex", justifyContent: "center", marginTop: "18px" }}>
+            <Button type="submit" variant="link" width={345} height={57} borderRadius={20}>
+              {t("auth.signup")}
+            </Button>
+          </div>
         </form>
 
-        <p className="text-center text-gray-400 mt-6">
-          {t("auth.alreadyHaveAccount")}{" "}
-          <a href="#" className="text-cyan-400 hover:text-cyan-300">
+        <p style={S.authFooter}>
+          {t("auth.alreadyHaveAccount")} {" "}
+          <a style={S.authLink} href="#">
             {t("auth.login")}
           </a>
         </p>
