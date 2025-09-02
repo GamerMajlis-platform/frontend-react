@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useAppContext } from "../context/AppContext";
+import { useAppContext } from "../context/useAppContext";
 import * as styles from "../styles/ProductCardStyles";
 
 interface ProductCardProps {

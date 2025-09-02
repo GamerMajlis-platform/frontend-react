@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useAppContext } from "../context/AppContext";
+import { useAppContext } from "../context/useAppContext";
 
 interface ProfileDropdownProps {
   onSectionChange?: (section: string) => void;
@@ -11,14 +11,35 @@ interface ProfileDropdownProps {
 
 export default function ProfileDropdown({
   onSectionChange,
-  userInfo = {
-    name: "John Gamer",
-    email: "john.gamer@example.com",
-  },
+  userInfo,
 }: ProfileDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { wishlist } = useAppContext();
+  const { wishlist, logout, user } = useAppContext();
+
+  // Use authenticated user info if available, fallback to prop
+  const displayUser = user
+    ? {
+        name: user.displayName,
+        email: user.email,
+      }
+    : userInfo || {
+        name: "Guest User",
+        email: "guest@example.com",
+      };
+
+  const handleLogout = async () => {
+    try {
+      setIsOpen(false);
+      await logout();
+      // Redirect to home page after logout
+      window.location.hash = "#home";
+    } catch (error) {
+      console.error("Logout failed:", error);
+      // Still redirect even if logout fails
+      window.location.hash = "#home";
+    }
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -120,10 +141,10 @@ export default function ProfileDropdown({
                 </div>
                 <div>
                   <div className="[font-family:'Alice-Regular',Helvetica] font-semibold text-[#1C2541] text-lg">
-                    {userInfo.name}
+                    {displayUser.name}
                   </div>
                   <div className="[font-family:'Alice-Regular',Helvetica] font-normal text-gray-600 text-sm">
-                    {userInfo.email}
+                    {displayUser.email}
                   </div>
                 </div>
               </div>
@@ -200,8 +221,7 @@ export default function ProfileDropdown({
               <button
                 onClick={() => {
                   setIsOpen(false);
-                  // Add logout logic here (clear user state, redirect, etc.)
-                  console.log("Logout clicked");
+                  handleLogout();
                 }}
                 className="w-full px-4 py-3 text-left [font-family:'Alice-Regular',Helvetica] font-normal text-red-600 hover:bg-red-50 hover:text-red-700 focus:bg-red-100 focus:outline-none transition-all duration-200 flex items-center gap-3 group"
                 role="menuitem"

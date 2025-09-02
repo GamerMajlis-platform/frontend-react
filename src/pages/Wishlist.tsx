@@ -1,5 +1,6 @@
 import { ProductCard } from "../components";
-import { useAppContext } from "../context/AppContext";
+import { useAppContext } from "../context/useAppContext";
+import type { WishlistItem } from "../context/AppContext";
 import { wishlistPage, wishlistTitle, button } from "../styles/OptimizedStyles";
 
 export default function Wishlist() {
@@ -30,7 +31,7 @@ export default function Wishlist() {
         <section style={{ width: "100%" }} role="main">
           {wishlist.length > 0 ? (
             <div className="wishlist-grid">
-              {wishlist.map((item) => (
+              {wishlist.map((item: WishlistItem) => (
                 <div
                   key={item.id}
                   style={{ display: "flex", flexDirection: "column" }}

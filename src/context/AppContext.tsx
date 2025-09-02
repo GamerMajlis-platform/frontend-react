@@ -1,11 +1,11 @@
 import {
   createContext,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useState,
 } from "react";
+import { AuthService, type User } from "../services/AuthService";
 
 export interface Product {
   id: number;
@@ -42,20 +42,36 @@ export interface UserSettings {
 }
 
 interface AppContextShape {
+  // Wishlist
   wishlist: WishlistItem[];
   isInWishlist: (id: number) => boolean;
   addToWishlist: (item: Product) => void;
   removeFromWishlist: (id: number) => void;
   toggleWishlist: (item: Product) => void;
+
+  // Settings
   settings: UserSettings;
   updateSetting: (
     category: keyof UserSettings,
     key: string,
     value: string | boolean
   ) => void;
+
+  // Authentication
+  user: User | null;
+  isAuthenticated: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  register: (
+    displayName: string,
+    email: string,
+    password: string
+  ) => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const AppContext = createContext<AppContextShape | undefined>(undefined);
+
+export { AppContext };
 
 const LS_WISHLIST = "gm_wishlist";
 const LS_SETTINGS = "gm_settings";
@@ -79,6 +95,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
   const [settings, setSettings] = useState<UserSettings>(defaultSettings);
 
+  // Authentication state
+  const [user, setUser] = useState<User | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   // Load from localStorage
   useEffect(() => {
     try {
@@ -92,6 +112,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (s) setSettings(JSON.parse(s));
     } catch {
       // ignore localStorage errors
+    }
+
+    // Initialize authentication state from localStorage
+    try {
+      const storedUser = AuthService.getStoredUser();
+      const storedToken = AuthService.getStoredToken();
+      if (storedUser && storedToken) {
+        setUser(storedUser);
+        setIsAuthenticated(true);
+      }
+    } catch {
+      // ignore auth initialization errors
     }
   }, []);
 
@@ -112,6 +144,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, [settings]);
 
+  // Wishlist functions
   const isInWishlist = useCallback(
     (id: number) => wishlist.some((w) => w.id === id),
     [wishlist]
@@ -150,32 +183,74 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     []
   );
 
+  // Authentication functions
+  const login = useCallback(async (email: string, password: string) => {
+    const { user: authUser } = await AuthService.login(email, password);
+    setUser(authUser);
+    setIsAuthenticated(true);
+  }, []);
+
+  const register = useCallback(
+    async (displayName: string, email: string, password: string) => {
+      const { user: authUser } = await AuthService.register(
+        displayName,
+        email,
+        password
+      );
+      setUser(authUser);
+      setIsAuthenticated(true);
+    },
+    []
+  );
+
+  const logout = useCallback(async () => {
+    try {
+      await AuthService.logout();
+    } catch (error) {
+      // Even if logout fails on server, we should clear local state
+      console.warn("Logout API call failed, but clearing local state:", error);
+    } finally {
+      // Always clear local state regardless of API call success
+      setUser(null);
+      setIsAuthenticated(false);
+    }
+  }, []);
+
   const value = useMemo(
     () => ({
+      // Wishlist
       wishlist,
       isInWishlist,
       addToWishlist,
       removeFromWishlist,
       toggleWishlist,
+
+      // Settings
       settings,
       updateSetting,
+
+      // Authentication
+      user,
+      isAuthenticated,
+      login,
+      register,
+      logout,
     }),
     [
       wishlist,
       settings,
+      user,
+      isAuthenticated,
       isInWishlist,
       addToWishlist,
       removeFromWishlist,
       toggleWishlist,
       updateSetting,
+      login,
+      register,
+      logout,
     ]
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
-}
-
-export function useAppContext() {
-  const ctx = useContext(AppContext);
-  if (!ctx) throw new Error("useAppContext must be used within AppProvider");
-  return ctx;
 }

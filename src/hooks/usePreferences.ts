@@ -1,5 +1,5 @@
 import { useEffect, useCallback } from "react";
-import { useAppContext } from "../context/AppContext";
+import { useAppContext } from "../context/useAppContext";
 import i18n from "../i18n/config";
 
 /**
