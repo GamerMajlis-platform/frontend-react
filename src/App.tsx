@@ -33,7 +33,42 @@ type PageType =
   | "settings";
 
 function App() {
-  const [currentPage, setCurrentPage] = useState<PageType>("home");
+  const resolvePageFromHash = (): PageType => {
+    const hash = (window.location.hash || "").replace(/^#/, "").toLowerCase();
+    switch (hash) {
+      case "signup":
+        return "signup";
+      case "login":
+        return "login";
+      case "profile":
+        return "profile";
+      case "tournaments":
+        return "tournaments";
+      case "events":
+        return "events";
+      case "messages":
+        return "messages";
+      case "marketplace":
+        return "marketplace";
+      case "wishlist":
+        return "wishlist";
+      case "settings":
+        return "settings";
+      default:
+        return "home";
+    }
+  };
+
+  const [currentPage, setCurrentPage] = useState<PageType>(
+    resolvePageFromHash()
+  );
+
+  // Keep the app responsive to hash changes so simple SPA navigation works
+  useState(() => {
+    const handler = () => setCurrentPage(resolvePageFromHash());
+    window.addEventListener("hashchange", handler);
+    return () => window.removeEventListener("hashchange", handler);
+  });
 
   const renderPage = () => {
     switch (currentPage) {

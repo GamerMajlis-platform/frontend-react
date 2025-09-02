@@ -289,3 +289,18 @@ html[lang="ar"] header .absolute.left-4 {
 html[lang="ar"] header .absolute.right-4 {
   direction: ltr;
 }
+
+/* Normalize browser autofill styles (prevents yellow/white backgrounds and garish text) */
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+  box-shadow: 0 0 0px 1000px transparent inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Ensure autofill placeholder/labels are visible and not overlapped */
+input:-webkit-autofill::first-line {
+  font-family: Alice, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  font-size: 18px;
+}

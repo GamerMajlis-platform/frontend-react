@@ -19,6 +19,8 @@
     "email": "البريد الإلكتروني",
     "password": "كلمة المرور",
     "confirmPassword": "تأكيد كلمة المرور",
+    "or": "أو",
+    "loginWithDiscord": "تسجيل بالديزكورد",
     "username": "اسم المستخدم",
     "rememberMe": "تذكرني",
     "forgotPassword": "نسيت كلمة المرور؟",

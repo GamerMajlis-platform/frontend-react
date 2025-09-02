@@ -13,19 +13,20 @@ export const authContainer: CSSProperties = {
 };
 
 export const authCard: CSSProperties = {
-  position: "absolute",
+  position: "relative",
   width: "802px",
-  height: "558px",
-  left: "calc(50% - 802px/2 - 5px)",
-  top: "calc(50% - 558px/2 + 26px)",
-  background: "#0B132B",
-  boxShadow: "2px 2px 10px #FFFFFF",
-  borderRadius: "10px",
-  padding: "48px 64px",
+  maxWidth: "92%",
+  minHeight: "520px",
+  margin: "40px auto",
+  background: "rgba(11, 19, 43, 0.95)", // Slightly transparent for depth
+  boxShadow: "0 8px 30px rgba(2,8,23,0.6)", // Softer, darker shadow for contrast
+  borderRadius: "12px",
+  padding: "48px 64px 96px", // extra bottom padding to make room for footer/button
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
   boxSizing: "border-box",
+  backdropFilter: "blur(6px)", // Add backdrop blur for better depth
 };
 
 export const authHeader: CSSProperties = {
@@ -107,7 +108,7 @@ export const inputLabel: CSSProperties = {
   color: "rgba(255,255,255,0.6)",
   pointerEvents: "none",
   transition: "all 0.2s ease",
-  backgroundColor: "#0B132B",
+  backgroundColor: "rgba(11, 19, 43, 0.95)",
   padding: "0 8px",
 };
 
@@ -124,7 +125,7 @@ export const inputLabelActive: CSSProperties = {
   color: "#C4FFF9",
   pointerEvents: "none",
   transition: "all 0.18s ease",
-  backgroundColor: "#0B132B",
+  backgroundColor: "rgba(11, 19, 43, 0.95)",
   padding: "0 6px",
 };
 
@@ -179,7 +180,7 @@ export const discordButton: CSSProperties = {
   background: "#C4FFF9",
   borderRadius: "20px",
   border: "none",
-  color: "#000000", // Updated to match new card background
+  color: "#000000",
   fontFamily: "Alice",
   fontStyle: "normal",
   fontWeight: "400",
@@ -187,9 +188,10 @@ export const discordButton: CSSProperties = {
   lineHeight: "23px",
   cursor: "pointer",
   transition: "opacity 0.2s ease",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
+  display: "block",
+  margin: "12px auto 0",
+  textAlign: "center",
+  padding: "12px 18px",
 };
 
 export const discordButtonHover: CSSProperties = {
@@ -197,19 +199,15 @@ export const discordButtonHover: CSSProperties = {
 };
 
 export const authFooter: CSSProperties = {
-  position: "absolute",
-  width: "347px",
-  height: "23px",
-  left: "calc(50% - 347px/2 - 0.5px)",
-  bottom: "9px",
+  width: "100%",
   fontFamily: "Alice",
   fontStyle: "normal",
   fontWeight: "400",
-  fontSize: "20px",
-  lineHeight: "23px",
+  fontSize: "16px",
+  lineHeight: "20px",
   textAlign: "center",
   color: "#EEEEEE",
-  margin: 0,
+  marginTop: "18px",
 };
 
 export const authLink: CSSProperties = {
