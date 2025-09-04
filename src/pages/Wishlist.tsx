@@ -1,4 +1,4 @@
-import { ProductCard } from "../components";
+import { ProductCard, BackgroundDecor } from "../components";
 import { useAppContext } from "../context/useAppContext";
 import type { WishlistItem } from "../context/AppContext";
 import { wishlistPage, wishlistTitle, button } from "../styles/OptimizedStyles";
@@ -7,8 +7,12 @@ export default function Wishlist() {
   const { wishlist } = useAppContext();
 
   return (
-    <main style={wishlistPage}>
-      <div style={{ width: "100%", maxWidth: "1280px", margin: "0 auto" }}>
+    <main style={wishlistPage} className="relative">
+      <BackgroundDecor />
+      <div
+        style={{ width: "100%", maxWidth: "1280px", margin: "0 auto" }}
+        className="relative z-10"
+      >
         {/* Header Section */}
         <header
           style={{ textAlign: "center", marginBottom: "var(--spacing-xl)" }}

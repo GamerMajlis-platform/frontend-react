@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Logo } from "../components";
+import { BackgroundDecor } from "../components";
 
 interface HomeProps {
   onNavigate?: (page: string) => void;
@@ -10,15 +10,9 @@ export default function Home({ onNavigate }: HomeProps) {
 
   return (
     <main className="relative w-full flex-1 flex items-center justify-center min-h-[calc(100vh-88px)] py-8 sm:py-16 md:py-20 lg:py-24 xl:py-28">
-      {/* Background decorative elements - hide on mobile for cleaner look */}
-      <div className="hidden md:block absolute top-24 left-16 w-16 h-16 lg:w-20 lg:h-20 border-2 lg:border-4 border-[#5BC0BE] rotate-45 opacity-60"></div>
-      <div className="hidden md:block absolute top-40 right-24 w-20 h-20 lg:w-24 lg:h-24 border-2 lg:border-4 border-[#5BC0BE] rounded-full opacity-60"></div>
-      <div className="hidden md:block absolute bottom-32 right-16 w-12 h-12 lg:w-16 lg:h-16 border-2 lg:border-4 border-[#5BC0BE] rotate-45 opacity-60"></div>
-      <div className="hidden lg:block absolute bottom-48 left-20 w-6 h-6 bg-[#6FFFE9] rounded-full opacity-40"></div>
-      <div className="hidden lg:block absolute top-1/3 left-1/4 w-2 h-2 bg-[#6FFFE9] rounded-full opacity-60"></div>
-      <div className="hidden lg:block absolute top-2/3 right-1/3 w-3 h-3 bg-[#6FFFE9] rounded-full opacity-50"></div>
+      <BackgroundDecor />
 
-      <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-8 sm:py-16 md:py-20 lg:py-24 xl:py-28 text-center max-w-6xl">
+      <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-8 sm:py-16 md:py-20 lg:py-24 xl:py-28 text-center max-w-6xl relative z-10">
         {/* Main Content from Figma Design */}
         <div className="w-full flex flex-col items-center">
           <h1
@@ -64,10 +58,7 @@ export default function Home({ onNavigate }: HomeProps) {
         </div>
       </div>
 
-      {/* Bottom logo - responsive positioning */}
-      <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 md:bottom-8 md:left-8 lg:bottom-12 lg:left-12">
-        <Logo size="large" showText={false} />
-      </div>
+      {/* BackgroundDecor includes floating controller logo */}
     </main>
   );
 }

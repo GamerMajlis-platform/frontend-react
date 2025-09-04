@@ -1,13 +1,13 @@
 # GamerMajlis Frontend Architecture
 
-React 18/19 gaming platform with TypeScript, Vite, and hybrid CSS-in-JS/Tailwind architecture. Implements RTL/LTR support, hash-based SPA navigation, and modular component system.
+React 19 gaming platform with TypeScript, Vite, and a hybrid CSS-in-JS/Tailwind architecture. Implements RTL/LTR support, hash-based SPA navigation, modular component system, and a reusable decorative background.
 
 ## Architecture Overview
 
-**Stack**: React 19+ • TypeScript • Vite • CSS-in-JS + Tailwind 4 • react-i18next  
-**Patterns**: Component composition, CSS-in-JS styling, centralized state via Context API  
-**Navigation**: Hash-based SPA routing (`window.location.hash`) with manual page state management  
-**Build**: Vite with TypeScript compilation and asset optimization
+**Stack**: React 19 • TypeScript • Vite • CSS-in-JS + Tailwind v4 • react-i18next \
+**Patterns**: Component composition, CSS-in-JS styling, centralized state via Context API \
+**Navigation**: Hash-based SPA concept (`window.location.hash`) with manual page state in `App.tsx` \
+**Build**: Vite with TypeScript (tsc -b) and asset optimization
 
 ---
 
@@ -17,22 +17,25 @@ React 18/19 gaming platform with TypeScript, Vite, and hybrid CSS-in-JS/Tailwind
 src/
 ├── components/
 │   ├── Button.tsx          # Variant-based button (primary/secondary/link/outline)
-│   ├── Header.tsx          # Main nav with hash navigation
+│   ├── Header.tsx          # Main header with nav and profile menu
 │   ├── Footer.tsx          # Static footer
-│   ├── Logo.tsx            # SVG logo with showText prop
+│   ├── Logo.tsx            # Brand logo with banner/icon modes
+│   ├── BackgroundDecor.tsx # Reusable page background (shapes + controller)
 │   ├── ProductCard.tsx     # RTL-aware product display
 │   ├── ProfileDropdown.tsx # Dropdown with useEffect click-outside
 │   ├── LanguageSwitcher.tsx # i18n language toggle
 │   ├── ChatBot.tsx         # Context7 integration
 │   └── index.ts            # Component exports
 ├── pages/
-│   ├── Home.tsx            # Landing with i18n strings
+│   ├── Home.tsx            # Landing with i18n strings + BackgroundDecor
 │   ├── Login.tsx           # CSS-in-JS auth form with autofill detection
 │   ├── Signup.tsx          # CSS-in-JS auth form with floating labels
 │   ├── Settings.tsx        # React 19 patterns with consolidated useState
-│   ├── Marketplace.tsx     # Product grid with filtering
-│   ├── Wishlist.tsx        # LocalStorage-backed wishlist
-│   └── [Others].tsx        # Placeholder pages ("Coming soon...")
+│   ├── Marketplace.tsx     # Product grid + filtering; BackgroundDecor applied
+│   ├── Wishlist.tsx        # LocalStorage-backed wishlist; BackgroundDecor applied
+│   ├── Tournaments.tsx     # BackgroundDecor only (content TBD)
+│   ├── Events.tsx          # BackgroundDecor only (content TBD)
+│   └── Messages.tsx        # BackgroundDecor only (content TBD)
 ├── styles/                 # CSS-in-JS modules
 │   ├── AuthStyles.ts       # Auth page styles (card, inputs, labels)
 │   ├── BaseStyles.ts       # Design tokens and utilities
@@ -56,7 +59,8 @@ src/
 - **Auth**: `Login.tsx` and `Signup.tsx` use `AuthStyles.ts` CSS-in-JS for unified styling
 - **Forms**: Controlled inputs with `useId()` for unique IDs, floating labels, autofill detection
 - **Styling**: Hybrid approach - Tailwind for layout, CSS-in-JS for component-specific styles
-- **i18n**: Translation files at `/public/locales/[lang]/translation.json`
+- **i18n**: Translation files at `public/locales/[lang]/translation.json` (lazy-loaded via i18next HTTP backend)
+- **Background system**: `BackgroundDecor` provides reusable geometric shapes + floating controller background for pages.
 
 ---
 
@@ -116,19 +120,9 @@ export const colors = {
 **Library**: react-i18next with JSON translation files  
 **RTL Detection**: Automatic based on Unicode character ranges
 
-### Implementation
+### Implementation overview
 
-```typescript
-// i18n/config.ts - Configuration
-i18n.use(initReactI18next).init({
-  resources: {
-    en: { translation: require("../public/locales/en/translation.json") },
-    ar: { translation: require("../public/locales/ar/translation.json") },
-  },
-  lng: "en",
-  fallbackLng: "en",
-});
-```
+Translations are fetched at runtime using `i18next-http-backend` and language is detected using `i18next-browser-languagedetector`. The app updates `<html lang>` and `<html dir>` on language change to switch between LTR and RTL.
 
 ### Translation Structure
 
@@ -165,6 +159,23 @@ textAlign: isRTLText(text) ? "right" : "left";
 - CSS `direction: rtl` applied automatically
 - Font switching (Arabic content uses Tahoma)
 - Layout mirroring for buttons, badges, positioning
+
+---
+
+## Reusable Background + z-index layering
+
+The Home background has been refactored into `src/components/BackgroundDecor.tsx` and reused on Marketplace, Wishlist, and the placeholder pages (Tournaments, Events, Messages).
+
+Layering conventions (Tailwind z-utilities):
+
+- BackgroundDecor: `absolute inset-0 z-0 pointer-events-none`
+- Page containers/content: `relative z-10`
+- Product cards and key content blocks: `relative z-20`
+- Header: `relative z-50`
+- Profile dropdown backdrop: `z-[900]`
+- Profile dropdown menu: `z-[1000]`
+
+These ensure the background is visible but non-interactive, content sits above it, and overlays (dropdowns/modals) always appear on top.
 
 ---
 
@@ -217,19 +228,7 @@ interface ButtonProps {
 
 ### Navigation Pattern
 
-```typescript
-// Hash-based SPA navigation (no router)
-// App.tsx listens to hashchange events
-const handleNavigation = (page: string) => {
-  window.location.hash = `#${page}`;
-};
-
-// App.tsx resolves page from hash
-const resolvePageFromHash = (): string => {
-  const hash = window.location.hash.slice(1);
-  return hash || "home";
-};
-```
+The app uses a hash-based concept with manual page state inside `App.tsx`. `Header` triggers page changes via the `onSectionChange` prop, and some flows (like login) may set `window.location.hash` for deep-linking.
 
 ---
 
@@ -340,7 +339,7 @@ npm install  # or bun install
 # Development server
 npm run dev  # or bun dev
 
-# Type checking
+# Build (type check + bundle)
 npm run build  # Runs tsc -b && vite build
 
 # Project structure validation
@@ -356,28 +355,19 @@ npm run lint  # ESLint + Prettier
 
 ### Key Dependencies
 
-- `react` + `react-dom` - UI framework
-- `typescript` - Type system
-- `vite` - Build tool
-- `react-i18next` - Internationalization
-- `tailwindcss` - Utility CSS (layout only)
+- react, react-dom
+- typescript
+- vite
+- react-i18next, i18next, i18next-browser-languagedetector, i18next-http-backend
+- tailwindcss (utility CSS for layout)
 
 ---
 
 ## Critical Implementation Details
 
-### Hash Navigation
+### Background layering quick reference
 
-```typescript
-// App.tsx - Page resolution
-const [currentPage, setCurrentPage] = useState(resolvePageFromHash());
-
-useEffect(() => {
-  const handleHashChange = () => setCurrentPage(resolvePageFromHash());
-  window.addEventListener("hashchange", handleHashChange);
-  return () => window.removeEventListener("hashchange", handleHashChange);
-}, []);
-```
+Use the z-index conventions listed above to ensure overlays (e.g., dropdowns/modals) render above content and backgrounds across pages.
 
 ### Autofill Handling
 

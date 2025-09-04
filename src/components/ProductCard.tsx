@@ -115,7 +115,7 @@ export default function ProductCard({
   return (
     <div
       style={styles.cardStyle}
-      className="product-card"
+      className="product-card relative z-20"
       onMouseEnter={handleCardHover}
       onMouseLeave={handleCardLeave}
     >

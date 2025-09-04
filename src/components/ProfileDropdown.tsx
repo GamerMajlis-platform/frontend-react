@@ -114,14 +114,14 @@ export default function ProfileDropdown({
         <>
           {/* Backdrop for mobile */}
           <div
-            className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm md:hidden"
+            className="fixed inset-0 z-[900] bg-black/20 backdrop-blur-sm md:hidden"
             onClick={close}
           />
 
           <div
             role="menu"
             aria-label="Profile menu"
-            className="absolute right-0 top-12 w-64 bg-white rounded-xl shadow-2xl border border-gray-100/50 py-2 z-50 animate-in slide-in-from-top-2 duration-200 backdrop-blur-sm"
+            className="absolute right-0 top-12 w-64 bg-white rounded-xl shadow-2xl border border-gray-100/50 py-2 z-[1000] animate-in slide-in-from-top-2 duration-200 backdrop-blur-sm"
           >
             {/* User Info Section */}
             <div className="px-4 py-3 border-b border-gray-100">

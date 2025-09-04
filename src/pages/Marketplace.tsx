@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { ProductCard } from "../components";
+import { ProductCard, BackgroundDecor } from "../components";
 import * as styles from "../styles/MarketplaceStyles";
 import { productData, sortOptions, type SortOption } from "../data";
 
@@ -99,8 +99,12 @@ export default function Marketplace() {
   };
 
   return (
-    <main style={styles.containerStyle} className="marketplace-container">
-      <div style={styles.maxWidthContainerStyle}>
+    <main
+      style={styles.containerStyle}
+      className="marketplace-container relative z-10"
+    >
+      <BackgroundDecor />
+      <div style={styles.maxWidthContainerStyle} className="relative z-10">
         {/* Header Section */}
         <header style={styles.headerStyle} className="marketplace-header">
           <h1

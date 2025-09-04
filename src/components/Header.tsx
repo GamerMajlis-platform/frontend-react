@@ -18,7 +18,7 @@ export default function Header({
   const [isMessageHovered, setIsMessageHovered] = useState(false);
 
   return (
-    <header className="bg-[#5BC0BE]/80 backdrop-blur supports-[backdrop-filter]:bg-[#5BC0BE]/70 border-b border-[#6FFFE9]/60">
+    <header className="bg-[#9CEAEF] backdrop-blur border-b border-[#6FFFE9]/60 relative z-50">
       <div className="relative w-full h-[72px] md:h-[88px] px-6">
         {/* Left: Logo */}
         <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
