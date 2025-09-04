@@ -99,9 +99,12 @@ export default function Marketplace() {
   };
 
   return (
-    <main style={styles.containerStyle} className="marketplace-container relative z-10">
+    <main
+      style={styles.containerStyle}
+      className="marketplace-container relative z-10"
+    >
       <BackgroundDecor />
-  <div style={styles.maxWidthContainerStyle} className="relative z-10">
+      <div style={styles.maxWidthContainerStyle} className="relative z-10">
         {/* Header Section */}
         <header style={styles.headerStyle} className="marketplace-header">
           <h1

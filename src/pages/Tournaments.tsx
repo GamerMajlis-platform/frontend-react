@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { BackgroundDecor } from "../components";
+import { BackgroundDecor, TournamentCard } from "../components";
 import * as styles from "../styles/MarketplaceStyles";
-import { type SortOption, sortOptions } from "../data";
+import { type SortOption, sortOptions, tournaments } from "../data";
 
 export default function Tournaments() {
   const { t } = useTranslation();
@@ -113,8 +113,7 @@ export default function Tournaments() {
             Past
           </button>
         </div>
-
-        {/* Search and Sort controls (copied from Marketplace) */}
+  {/* Search and Sort controls (copied from Marketplace) */}
         <section style={styles.searchSectionStyle} className="search-section">
           <div style={styles.searchControlsStyle} className="search-controls">
             <input
@@ -194,9 +193,31 @@ export default function Tournaments() {
           </div>
         </section>
 
-        {/* Placeholder for future tournament cards filtered by category/search/sort */}
-        <section style={{ paddingTop: "8px", paddingBottom: "24px" }}>
-          {/* TODO: Render tournament cards here based on `category`, `searchTerm`, and `sortBy` */}
+        {/* Cards grid (filtered by selected category) */}
+        <section
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(397px, 1fr))",
+            gap: "24px",
+            justifyItems: "center",
+            paddingTop: "8px",
+            paddingBottom: "24px",
+          }}
+        >
+          {tournaments
+            .filter((t) => t.category === category)
+            .map((t) => (
+              <TournamentCard
+                key={t.id}
+                variant={t.category}
+                imageUrl={t.imageUrl}
+                game={t.game}
+                organizer={t.organizer}
+                startDate={new Date(t.startDate).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
+                prizePool={t.prizePool}
+                playersJoined={t.playersJoined}
+              />
+            ))}
         </section>
       </div>
     </main>
