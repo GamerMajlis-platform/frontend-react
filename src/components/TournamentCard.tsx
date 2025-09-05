@@ -1,9 +1,7 @@
-import type { CSSProperties } from "react";
-
-export type TournamentVariant = "upcoming" | "ongoing" | "past";
+type TournamentVariant = "upcoming" | "ongoing" | "past";
 
 interface TournamentCardProps {
-  variant?: TournamentVariant; // styling only; actual filtering is external
+  variant?: TournamentVariant;
   imageUrl?: string;
   game: string;
   organizer: string;
@@ -11,138 +9,6 @@ interface TournamentCardProps {
   prizePool: string;
   playersJoined: number;
   className?: string;
-}
-
-const cardBase: CSSProperties = {
-  width: "397px",
-  height: "612px",
-  position: "relative",
-  background: "#3A506B",
-  border: "1px solid #FFFFFF",
-  borderRadius: "33px",
-  overflow: "hidden",
-  display: "flex",
-  alignItems: "stretch",
-  justifyContent: "center",
-};
-
-const contentWrap: CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "14px",
-  width: "356px",
-  height: "551px",
-  paddingTop: "16px",
-};
-
-const imageStyle: CSSProperties = {
-  width: "356px",
-  height: "224px",
-  borderRadius: "20px",
-  backgroundColor: "#1C2541",
-  backgroundSize: "cover",
-  backgroundPosition: "center",
-};
-
-const titleBlock: CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  gap: "6px",
-  width: "356px",
-};
-
-const gameTitle: CSSProperties = {
-  width: "100%",
-  fontFamily: "Alice, Helvetica, sans-serif",
-  fontWeight: 400,
-  fontSize: "28px",
-  lineHeight: "34px",
-  textAlign: "center" as const,
-  color: "#FFFFFF",
-  margin: 0,
-};
-
-const byText: CSSProperties = {
-  fontFamily: "system-ui, -apple-system, sans-serif",
-  fontWeight: 400,
-  fontSize: "16px",
-  lineHeight: "22px",
-  color: "#e2e8f0",
-  margin: 0,
-};
-
-const infoList: CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "10px",
-};
-
-const row: CSSProperties = {
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "center",
-  gap: "10px",
-  minHeight: "32px",
-};
-
-const rowLabel: CSSProperties = {
-  fontFamily: "'Scheherazade New', Georgia, serif",
-  fontWeight: 700,
-  fontSize: "22px",
-  lineHeight: "28px",
-  color: "#FFFFFF",
-};
-
-const bottomBar: CSSProperties = {
-  width: "356px",
-  height: "43px",
-  background: "#1C2541",
-  borderRadius: "10px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  marginTop: "8px",
-};
-
-const bottomText: CSSProperties = {
-  fontFamily: "Inter, system-ui, sans-serif",
-  fontWeight: 700,
-  fontSize: "20px",
-  lineHeight: "24px",
-  color: "#FFFFFF",
-};
-
-function getVariantStyles(variant: TournamentVariant) {
-  switch (variant) {
-    case "ongoing":
-      return {
-        card: { border: "1px solid #6FFFE9" } as CSSProperties,
-        button: {
-          ...bottomBar,
-          background: "#6FFFE9",
-          color: "#000",
-        } as CSSProperties,
-        buttonText: "Watch",
-      };
-    case "past":
-      return {
-        card: { opacity: 0.95 } as CSSProperties,
-        button: {
-          ...bottomBar,
-          background: "#1C2541",
-          opacity: 0.8,
-        } as CSSProperties,
-        buttonText: "View Results",
-      };
-    case "upcoming":
-    default:
-      return {
-        card: {} as CSSProperties,
-        button: bottomBar,
-        buttonText: "Join",
-      };
-  }
 }
 
 // Simple inline SVG icons to avoid extra deps
@@ -153,6 +19,7 @@ const IconCalendar = ({ size = 20 }: { size?: number }) => (
     viewBox="0 0 24 24"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    className="flex-shrink-0"
   >
     <rect
       x="3"
@@ -174,6 +41,7 @@ const IconTrophy = ({ size = 20 }: { size?: number }) => (
     viewBox="0 0 24 24"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    className="flex-shrink-0"
   >
     <path d="M8 21h8M12 17v4" stroke="#fff" strokeWidth="2" />
     <path d="M17 4H7v4a5 5 0 1 0 10 0V4Z" stroke="#fff" strokeWidth="2" />
@@ -197,6 +65,7 @@ const IconUsers = ({ size = 20 }: { size?: number }) => (
     viewBox="0 0 24 24"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    className="flex-shrink-0"
   >
     <circle cx="12" cy="7" r="4" stroke="#fff" strokeWidth="2" />
     <path d="M4 21a8 8 0 0 1 16 0" stroke="#fff" strokeWidth="2" />
@@ -213,44 +82,92 @@ export default function TournamentCard({
   playersJoined,
   className = "",
 }: TournamentCardProps) {
-  const v = getVariantStyles(variant);
+  // Determine variant-specific styling
+  const variantStyles = {
+    upcoming: {
+      card: "",
+      button: "bg-dark-secondary",
+      buttonText: "Join",
+    },
+    ongoing: {
+      card: "border-primary",
+      button: "bg-primary text-black",
+      buttonText: "Watch",
+    },
+    past: {
+      card: "opacity-95",
+      button: "bg-dark-secondary opacity-80",
+      buttonText: "View Results",
+    },
+  };
+
+  const currentVariant =
+    variantStyles[variant as keyof typeof variantStyles] ||
+    variantStyles.upcoming;
 
   return (
-    <div style={{ ...cardBase, ...v.card }} className={className}>
-      <div style={contentWrap}>
+    <div
+      className={`
+        w-full max-w-[397px] h-auto min-h-[500px] sm:min-h-[550px] lg:min-h-[612px] 
+        relative bg-slate-600 border border-white rounded-[20px] sm:rounded-[25px] lg:rounded-[33px] 
+        overflow-hidden flex items-stretch justify-center mx-auto
+        ${currentVariant.card} ${className}
+      `}
+    >
+      <div className="flex flex-col gap-3 sm:gap-[14px] w-full max-w-[356px] h-full p-3 sm:p-4 lg:pt-4">
         {/* Image */}
         <div
-          style={{
-            ...imageStyle,
-            backgroundImage: imageUrl ? `url(${imageUrl})` : undefined,
-          }}
+          className={`
+            w-full h-[180px] sm:h-[200px] lg:h-[224px] rounded-[15px] sm:rounded-[18px] lg:rounded-[20px] 
+            bg-dark-secondary bg-cover bg-center
+            ${!imageUrl && "bg-dark-secondary"}
+          `}
+          style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : {}}
         />
 
         {/* Title + Organizer */}
-        <div style={titleBlock}>
-          <h3 style={gameTitle}>{game}</h3>
-          <p style={byText}>By {organizer}</p>
+        <div className="flex flex-col items-center gap-1 sm:gap-1.5 w-full">
+          <h3 className="w-full font-alice font-normal text-[20px] sm:text-[24px] lg:text-[28px] leading-tight text-center text-white m-0">
+            {game}
+          </h3>
+          <p className="font-sans font-normal text-sm sm:text-base leading-[22px] text-slate-200 m-0">
+            By {organizer}
+          </p>
         </div>
 
         {/* Info */}
-        <div style={infoList}>
-          <div style={row}>
-            <IconCalendar />
-            <span style={rowLabel}>Start Date: {startDate}</span>
+        <div className="flex flex-col gap-2 sm:gap-2.5 flex-1">
+          <div className="flex flex-row items-center gap-2 sm:gap-2.5 min-h-6 sm:min-h-8">
+            <IconCalendar size={16} />
+            <span className="font-scheherazade font-bold text-[16px] sm:text-[18px] lg:text-[22px] leading-tight text-white">
+              Start Date: {startDate}
+            </span>
           </div>
-          <div style={row}>
-            <IconTrophy />
-            <span style={rowLabel}>Prize Pool: {prizePool}</span>
+          <div className="flex flex-row items-center gap-2 sm:gap-2.5 min-h-6 sm:min-h-8">
+            <IconTrophy size={16} />
+            <span className="font-scheherazade font-bold text-[16px] sm:text-[18px] lg:text-[22px] leading-tight text-white">
+              Prize Pool: {prizePool}
+            </span>
           </div>
-          <div style={{ ...row, justifyContent: "flex-start" }}>
-            <IconUsers />
-            <span style={rowLabel}>Players Joined: {playersJoined}</span>
+          <div className="flex flex-row items-center gap-2 sm:gap-2.5 min-h-6 sm:min-h-8">
+            <IconUsers size={16} />
+            <span className="font-scheherazade font-bold text-[16px] sm:text-[18px] lg:text-[22px] leading-tight text-white">
+              Players Joined: {playersJoined}
+            </span>
           </div>
         </div>
 
-        {/* Action */}
-        <div style={v.button}>
-          <span style={bottomText}>{v.buttonText}</span>
+        {/* Action Button */}
+        <div
+          className={`
+            w-full h-[36px] sm:h-[40px] lg:h-[43px] rounded-[8px] sm:rounded-[10px] 
+            flex items-center justify-center mt-2 sm:mt-2
+            ${currentVariant.button}
+          `}
+        >
+          <span className="font-inter font-bold text-[16px] sm:text-[18px] lg:text-[20px] leading-6 text-white">
+            {currentVariant.buttonText}
+          </span>
         </div>
       </div>
     </div>

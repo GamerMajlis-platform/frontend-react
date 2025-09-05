@@ -1,463 +1,209 @@
-# GamerMajlis Frontend Architecture
+# GamerMajlis Frontend
 
-React 19 gaming platform with TypeScript, Vite, and a hybrid CSS-in-JS/Tailwind architecture. Implements RT## Recent changes (performance + styling)
+A modern React 19 gaming platform with TypeScript, Vite, and Tailwind CSS. Features responsive design, RTL support, internationalization, and a component-driven architecture.
 
-- **Vite v7.1.4**: Updated to latest Vite for better performance and build times.
-- **Tailwind CSS v3.4.14**: Using stable Tailwind v3 for compatibility with Vite 7. Theme colors defined in CSS variables.
-- **Code-splitting**: Pages and ChatBot are now loaded with `React.lazy` + `Suspense`, reducing the main bundle size. Vendor libraries are split via `vite.config.ts` (`react-vendor`, `i18n-vendor`).
-- **Tailwind-first footer**: `Footer.tsx` migrated to Tailwind utilities with CSS variable integration.
-- **Header polish**: Desktop Messages button uses black text, increased padding/min-width on md+ to prevent text touching edges, and modern focus/ring utilities.
+## Tech Stack
 
-### Tailwind Configuration
+- **React 19** with TypeScript for modern component development
+- **Vite 7.1.4** for fast development and optimized builds
+- **Tailwind CSS 3.4.14** for utility-first styling
+- **react-i18next** for internationalization with English/Arabic support
+- **Bun** for fast package management and builds
 
-```javascript
-// tailwind.config.js
-export default {
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
-  theme: {
-    extend: {
-      fontFamily: {
-        alice: ["Alice-Regular", "Helvetica", "sans-serif"],
-      },
-      colors: {
-        dark: "#0b132b",
-        "dark-secondary": "#1e293b",
-        primary: "#6fffe9",
-        "primary-hover": "#5ee6d3",
-        text: "#ffffff",
-        "text-secondary": "#94a3b8",
-      },
-    },
-  },
-  plugins: [],
-};
-```
-
-Uses standard PostCSS setup with autoprefixer. CSS variables in `:root` for theme colors accessible across components. support, hash-based SPA navigation, modular component system, and a reusable decorative background.
-
-## Architecture Overview
-
-**Stack**: React 19 • TypeScript • Vite • CSS-in-JS + Tailwind v4 • react-i18next \
-**Patterns**: Component composition, CSS-in-JS styling, centralized state via Context API \
-**Navigation**: Hash-based SPA concept (`window.location.hash`) with manual page state in `App.tsx` \
-**Build**: Vite with TypeScript (tsc -b) and asset optimization
-
----
-
-## Project Structure & Implementation
+## Project Structure
 
 ```
 src/
 ├── components/
-│   ├── Button.tsx          # Variant-based button (primary/secondary/link/outline)
-│   ├── Header.tsx          # Main header with nav and profile menu
-│   ├── Footer.tsx          # Static footer
-│   ├── Logo.tsx            # Brand logo with banner/icon modes
-│   ├── BackgroundDecor.tsx # Reusable page background (shapes + controller)
-│   ├── ProductCard.tsx     # RTL-aware product display
-│   ├── ProfileDropdown.tsx # Dropdown with useEffect click-outside
-│   ├── LanguageSwitcher.tsx # i18n language toggle
-│   ├── ChatBot.tsx         # Context7 integration
-│   └── index.ts            # Component exports
+│   ├── BackgroundDecor.tsx      # Reusable decorative background
+│   ├── Button.tsx               # Variant-based button component
+│   ├── ChatBot.tsx              # Context7 integration
+│   ├── Footer.tsx               # Site footer with responsive layout
+│   ├── Header.tsx               # Main navigation with mobile/desktop variants
+│   ├── LanguageSwitcher.tsx     # Language toggle (EN/AR)
+│   ├── Logo.tsx                 # Brand logo component
+│   ├── PreferencesBootstrap.tsx # User preferences initialization
+│   ├── ProductCard.tsx          # RTL-aware product display
+│   ├── ProfileDropdown.tsx      # User profile dropdown menu
+│   ├── TournamentCard.tsx       # Tournament display component
+│   └── index.ts                 # Component exports
 ├── pages/
-│   ├── Home.tsx            # Landing with i18n strings + BackgroundDecor
-│   ├── Login.tsx           # CSS-in-JS auth form with autofill detection
-│   ├── Signup.tsx          # CSS-in-JS auth form with floating labels
-│   ├── Settings.tsx        # React 19 patterns with consolidated useState
-│   ├── Marketplace.tsx     # Product grid + filtering; BackgroundDecor applied
-│   ├── Wishlist.tsx        # LocalStorage-backed wishlist; BackgroundDecor applied
-│   ├── Tournaments.tsx     # BackgroundDecor only (content TBD)
-│   ├── Events.tsx          # BackgroundDecor only (content TBD)
-│   └── Messages.tsx        # BackgroundDecor only (content TBD)
-├── styles/                 # CSS-in-JS modules
-│   ├── AuthStyles.ts       # Auth page styles (card, inputs, labels)
-│   ├── BaseStyles.ts       # Design tokens and utilities
-│   ├── OptimizedStyles.ts  # General component styles
-│   └── [Feature]Styles.ts  # Feature-specific styling
+│   ├── Events.tsx               # Events page
+│   ├── Home.tsx                 # Landing page with hero section
+│   ├── Login.tsx                # Authentication form
+│   ├── Marketplace.tsx          # Product marketplace with search/filter
+│   ├── Messages.tsx             # Messages page
+│   ├── Profile.tsx              # User profile page
+│   ├── Settings.tsx             # User settings and preferences
+│   ├── Signup.tsx               # User registration form
+│   ├── Tournaments.tsx          # Tournaments listing
+│   ├── Wishlist.tsx             # User wishlist with localStorage
+│   └── index.ts                 # Page exports
 ├── context/
-│   └── AppContext.tsx      # Global state (user, settings, wishlist)
+│   ├── AppContext.tsx           # Global application state
+│   └── useAppContext.ts         # Context hook
+├── styles/
+│   ├── BaseStyles.ts            # Design tokens and utilities
+│   └── options/
+│       ├── sort-by-colors.md    # Color documentation for dropdowns
+│       └── header-colors.md     # Header color specifications
+├── data/
+│   ├── languages.ts             # Language options
+│   ├── navigation.ts            # Navigation items
+│   ├── products.ts              # Product catalog
+│   ├── tournaments.ts           # Tournament data
+│   └── index.ts                 # Data exports
+├── hooks/
+│   └── usePreferences.ts        # User preferences hook
 ├── i18n/
-│   └── config.ts           # react-i18next setup
-├── data/                   # Static data
-│   ├── products.ts         # Product catalog
-│   ├── navigation.ts       # Nav items
-│   └── languages.ts        # Language options
-└── services/
-    └── Context7Service.ts  # External doc service
+│   └── config.ts                # Internationalization setup
+├── services/
+│   ├── AuthService.ts           # Authentication service
+│   └── Context7Service.ts       # External documentation service
+└── types/
+    └── context7-mcp.d.ts        # TypeScript definitions
 ```
 
-**Key Implementation Details:**
+## Key Features
 
-- **Navigation**: No router - uses hash-based navigation with `App.tsx` listening to `hashchange`
-- **Auth**: `Login.tsx` and `Signup.tsx` use `AuthStyles.ts` CSS-in-JS for unified styling
-- **Forms**: Controlled inputs with `useId()` for unique IDs, floating labels, autofill detection
-- **Styling**: Hybrid approach - Tailwind for layout, CSS-in-JS for component-specific styles
-- **i18n**: Translation files at `public/locales/[lang]/translation.json` (lazy-loaded via i18next HTTP backend)
-- **Background system**: `BackgroundDecor` provides reusable geometric shapes + floating controller background for pages.
+### Responsive Design
+- **Mobile-first approach** with breakpoints: sm (640px), md (768px), lg (1024px), xl (1280px)
+- **Adaptive header** with different layouts for mobile/desktop
+- **Mobile navigation** with full-screen overlay dropdown
+- **Responsive components** optimized for all screen sizes
 
----
+### Internationalization (i18n)
+- **Bilingual support**: English (default) and Arabic with RTL layout
+- **Automatic RTL detection** based on Unicode character ranges
+- **Dynamic font switching** (Alice for English, Scheherazade for Arabic)
+- **Layout mirroring** for proper RTL experience
+
+### Component Architecture
+- **Tailwind-first styling** with utility classes
+- **TypeScript interfaces** for type safety
+- **Composition patterns** for reusable components
+- **Responsive utilities** built into all components
+
+### State Management
+- **React Context API** for global state
+- **localStorage persistence** for user preferences and wishlist
+- **Controlled components** with proper form handling
 
 ## Styling System
 
-**Architecture**: CSS-in-JS (TypeScript `CSSProperties`) + Tailwind utilities  
-**Pattern**: Feature-specific style modules with shared design tokens
+### Tailwind Configuration
 
-### Style Module Structure
+The project uses Tailwind CSS 3.4.14 with custom theme extensions:
 
-```typescript
-// src/styles/AuthStyles.ts - Authentication pages
-export const authContainer: CSSProperties = {
-  width: "100%",
-  minHeight: "100vh",
-  backgroundColor: "#0B132B",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-};
-
-export const authCard: CSSProperties = {
-  width: "802px",
-  minHeight: "520px",
-  margin: "40px auto",
-  background: "rgba(11, 19, 43, 0.95)",
-  borderRadius: "12px",
-  padding: "48px 64px 96px",
-  backdropFilter: "blur(6px)",
-};
-```
-
-### Design Tokens (BaseStyles.ts)
-
-```typescript
-export const colors = {
-  primary: "#6fffe9", // Teal accent
-  dark: "#0B132B", // Primary background
-  darkCard: "rgba(11, 19, 43, 0.95)", // Card backgrounds
-  text: "#ffffff", // Primary text
-  textMuted: "rgba(255,255,255,0.6)", // Secondary text
-};
-```
-
-**Key Patterns:**
-
-- **Floating Labels**: Position `absolute` with transform animations on focus/autofill
-- **RTL Awareness**: Dynamic text alignment and layout direction
-- **Autofill Handling**: CSS overrides for webkit autofill styling
-- **Component Isolation**: Each major feature has dedicated style module
-
----
-
-## Internationalization (i18n)
-
-**Languages**: English (default) + Arabic (RTL)  
-**Library**: react-i18next with JSON translation files  
-**RTL Detection**: Automatic based on Unicode character ranges
-
-### Implementation overview
-
-Translations are fetched at runtime using `i18next-http-backend` and language is detected using `i18next-browser-languagedetector`. The app updates `<html lang>` and `<html dir>` on language change to switch between LTR and RTL.
-
-### Translation Structure
-
-```json
-// public/locales/en/translation.json
-{
-  "nav": { "home": "Home", "tournaments": "Tournaments" },
-  "auth": {
-    "login": "Log In",
-    "signup": "Sign Up",
-    "email": "Email",
-    "or": "or",
-    "loginWithDiscord": "Login with Discord"
+```javascript
+// tailwind.config.js
+theme: {
+  extend: {
+    fontFamily: {
+      alice: ["Alice-Regular", "Helvetica", "sans-serif"],
+      scheherazade: ["Scheherazade New", "serif"],
+      inter: ["Inter", "system-ui", "sans-serif"],
+    },
+    colors: {
+      dark: "#0b132b",
+      "dark-secondary": "#1e293b", 
+      primary: "#6fffe9",
+      "primary-hover": "#5ee6d3",
+      text: "#ffffff",
+      "text-secondary": "#94a3b8",
+    },
   },
-  "home": { "title": "GAMERMAJLIS", "subtitle": "Join the ultimate..." }
-}
-
-  ---
-
-  ## Recent changes (performance + styling)
-
-  - Code-splitting: Pages and ChatBot are now loaded with `React.lazy` + `Suspense` in `App.tsx`, reducing the main bundle size. Vendor libraries are split via `vite.config.ts` (`react-vendor`, `i18n-vendor`).
-  - Tailwind-first footer: `Footer.tsx` migrated to Tailwind utilities (removed `FooterStyles.ts`).
-  - Header polish: Desktop Messages button uses black text, increased padding/min-width on md+ to prevent text touching edges, and v4 focus/ring utilities.
-```
-
-### RTL Handling
-
-```typescript
-// Automatic RTL detection
-const isRTLText = (text: string): boolean => {
-  return /[\u0600-\u06FF\u0750-\u077F]/.test(text);
-};
-
-// Dynamic text alignment
-textAlign: isRTLText(text) ? "right" : "left";
-```
-
-**Key Features:**
-
-- Unicode-based RTL detection for mixed content
-- CSS `direction: rtl` applied automatically
-- Font switching (Arabic content uses Tahoma)
-- Layout mirroring for buttons, badges, positioning
-
----
-
-## Reusable Background + z-index layering
-
-The Home background has been refactored into `src/components/BackgroundDecor.tsx` and reused on Marketplace, Wishlist, and the placeholder pages (Tournaments, Events, Messages).
-
-Layering conventions (Tailwind z-utilities):
-
-- BackgroundDecor: `absolute inset-0 z-0 pointer-events-none`
-- Page containers/content: `relative z-10`
-- Product cards and key content blocks: `relative z-20`
-- Header: `relative z-50`
-- Profile dropdown backdrop: `z-[900]`
-- Profile dropdown menu: `z-[1000]`
-
-These ensure the background is visible but non-interactive, content sits above it, and overlays (dropdowns/modals) always appear on top.
-
----
-
-## Component Architecture
-
-**Pattern**: Composition over inheritance with TypeScript interfaces  
-**State Management**: React hooks with Context API for global state
-
-### Authentication Components
-
-```typescript
-// Login.tsx / Signup.tsx - CSS-in-JS auth forms
-const Login = () => {
-  const [formData, setFormData] = useState({ email: "", password: "" });
-  const [focus, setFocus] = useState({ email: false, password: false });
-
-  // Autofill detection with useEffect + setTimeout
-  useEffect(() => {
-    setTimeout(() => {
-      const elEmail = document.getElementById(
-        `${id}-email`
-      ) as HTMLInputElement;
-      if (elEmail?.value) setFormData((p) => ({ ...p, email: elEmail.value }));
-    }, 150);
-  }, [id]);
-
-  return (
-    <div style={S.authContainer}>
-      <div style={S.authCard}>
-        {/* Floating label inputs with focus tracking */}
-      </div>
-    </div>
-  );
-};
-```
-
-### Button Component
-
-```typescript
-interface ButtonProps {
-  variant?: "primary" | "secondary" | "link" | "outline";
-  size?: "small" | "medium" | "large";
-  width?: number;
-  height?: number;
-  borderRadius?: number;
-}
-
-// Usage: <Button variant="link" width={345} height={57} borderRadius={20} />
-```
-
-### Navigation Pattern
-
-The app uses a hash-based concept with manual page state inside `App.tsx`. `Header` triggers page changes via the `onSectionChange` prop, and some flows (like login) may set `window.location.hash` for deep-linking.
-
----
-
-## State Management
-
-**Architecture**: React Context API + localStorage persistence  
-**Pattern**: Single global context with feature-specific state slicing
-
-### AppContext Implementation
-
-```typescript
-// context/AppContext.tsx
-interface AppContextType {
-  // User state
-  user: User | null;
-  settings: UserSettings;
-  updateSetting: (key: string, value: any) => void;
-
-  // Wishlist (localStorage backed)
-  wishlist: WishlistItem[];
-  toggleWishlist: (item: WishlistItem) => void;
-  isInWishlist: (id: number) => boolean;
-
-  // Navigation
-  activeSection: string;
-  setActiveSection: (section: string) => void;
 }
 ```
 
-### Settings Structure
+### Design Tokens
 
-```typescript
-interface UserSettings {
-  notifications: {
-    email: boolean;
-    push: boolean;
-    marketplace: boolean;
-    tournaments: boolean;
-  };
-  privacy: {
-    profileVisibility: "public" | "friends" | "private";
-    showOnlineStatus: boolean;
-    showGameActivity: boolean;
-  };
-  preferences: {
-    language: string;
-    theme: "dark" | "light" | "auto";
-    currency: string;
-  };
+CSS variables are used for consistent theming across components:
+
+```css
+:root {
+  --color-primary: #6fffe9;
+  --color-primary-hover: #5ee6d3;
+  --color-dark: #0b132b;
+  --color-dark-secondary: #1c2541;
+  --color-text: #ffffff;
+  --color-text-secondary: #94a3b8;
 }
 ```
 
-### Form State Pattern
+### Z-Index Layering
 
-```typescript
-// Controlled inputs with consolidated state
-const [formData, setFormData] = useState({
-  email: "",
-  password: "",
-  username: "",
-  confirmPassword: "",
-});
+Consistent layering system for proper element stacking:
 
-const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const { name, value } = e.target;
-  setFormData((prev) => ({ ...prev, [name]: value }));
-};
-```
+- **Background**: `z-0` (BackgroundDecor)
+- **Content**: `z-10` (Page containers)
+- **Interactive elements**: `z-20` (Cards, buttons)
+- **Navigation**: `z-50` (Header)
+- **Overlays**: `z-[900+]` (Dropdowns, modals)
 
----
+## Development
 
-## Technical Implementation Notes
-
-### Authentication UI
-
-- **Floating Labels**: Labels float above inputs on focus/value using CSS transforms and absolute positioning
-- **Autofill Detection**: `useEffect` with 150ms timeout checks DOM for browser-filled values and syncs with React state
-- **Form Validation**: Controlled inputs with real-time validation and accessibility (useId for unique IDs)
-- **Navigation**: Auth footer links use hash navigation (`window.location.hash = "#page"`)
-
-### RTL Text Handling
-
-- **Detection**: Unicode regex `/[\u0600-\u06FF\u0750-\u077F]/` identifies Arabic characters
-- **Layout**: Dynamic CSS `direction`, `textAlign`, and font-family switching
-- **Components**: ProductCard, Header, Settings all implement RTL-aware styling
-
-### Performance Considerations
-
-- **Lazy Loading**: Images use `loading="lazy"` attribute
-- **Bundle Size**: CSS-in-JS modules prevent unused CSS; Vite tree-shaking
-- **State Updates**: Functional state updates prevent unnecessary re-renders
-- **Event Handling**: Event delegation and cleanup in useEffect hooks
-
-### Browser Compatibility
-
-- **CSS**: Modern properties with fallbacks (backdrop-filter, CSS grid)
-- **JavaScript**: ES2020+ features, Vite transpilation for older browsers
-- **Input Styling**: Webkit autofill overrides for consistent appearance across browsers
-
----
-
-## Development Workflow
+### Getting Started
 
 ```bash
 # Install dependencies
-npm install  # or bun install
+bun install
 
-# Development server
-npm run dev  # or bun dev
+# Start development server
+bun run dev
 
-# Build (type check + bundle)
-npm run build  # Runs tsc -b && vite build
+# Build for production
+bun run build
 
-# Project structure validation
-npm run lint  # ESLint + Prettier
+# Lint code
+bun run lint
 ```
 
-### File Creation Patterns
+### Key Development Patterns
 
-- **Components**: TypeScript interface + CSS-in-JS styling + export from index.ts
-- **Pages**: Full page component with i18n keys, Context API integration
-- **Styles**: Feature-based CSS modules with TypeScript CSSProperties
-- **Types**: Interface definitions in /types or inline with components
+#### Component Creation
+- Use TypeScript interfaces for props
+- Implement responsive design with Tailwind utilities
+- Include RTL support for text-heavy components
+- Export from appropriate index.ts files
 
-### Key Dependencies
+#### Styling Approach
+- **Tailwind utilities** for layout, spacing, and responsive design
+- **CSS variables** for theme colors and consistent styling
+- **Inline styles** only for dynamic or computed values
+- **Component-specific styles** in BaseStyles.ts when needed
 
-- react, react-dom
-- typescript
-- vite
-- react-i18next, i18next, i18next-browser-languagedetector, i18next-http-backend
-- tailwindcss (utility CSS for layout)
+#### State Management
+- Use React Context for global state
+- Implement controlled components for forms
+- Persist important data in localStorage
+- Use proper TypeScript interfaces for state shape
 
----
+### Browser Support
 
-## Critical Implementation Details
+- **Modern browsers** with ES2020+ support
+- **CSS Grid and Flexbox** for layouts
+- **CSS custom properties** for theming
+- **Responsive design** across all viewport sizes
 
-### Background layering quick reference
+### Performance Optimizations
 
-Use the z-index conventions listed above to ensure overlays (e.g., dropdowns/modals) render above content and backgrounds across pages.
+- **Code splitting** with React.lazy for pages
+- **Optimized builds** with Vite
+- **Tree shaking** for unused code elimination
+- **Lazy loading** for images and components
 
-### Autofill Handling
+## Architecture Decisions
 
-```typescript
-// Login.tsx - Browser autofill detection
-useEffect(() => {
-  setTimeout(() => {
-    const elEmail = document.getElementById(`${id}-email`) as HTMLInputElement;
-    if (elEmail?.value) {
-      setFocus((p) => ({ ...p, email: true }));
-      setFormData((p) => ({ ...p, email: elEmail.value }));
-    }
-  }, 150);
-}, [id]);
-```
+### Navigation
+Hash-based SPA navigation with manual page state management in App.tsx, avoiding the complexity of a full router for this application size.
 
-### CSS-in-JS Pattern
+### Styling Strategy
+Moved from CSS-in-JS to Tailwind-first approach for better performance, smaller bundle sizes, and improved developer experience.
 
-```typescript
-// AuthStyles.ts - Consistent styling approach
-export const inputLabel: CSSProperties = {
-  position: "absolute",
-  left: "20px",
-  top: "50%",
-  transform: "translateY(-50%)",
-  color: "rgba(255,255,255,0.6)",
-  transition: "all 0.2s ease",
-  backgroundColor: "rgba(11, 19, 43, 0.95)", // Matches card background
-  padding: "0 8px",
-};
-```
+### Component Design
+Composition over inheritance with TypeScript interfaces, focusing on reusable, responsive components that work across the entire application.
 
-This architecture prioritizes maintainability, type safety, and consistent UX patterns across the application.
+### Internationalization
+Runtime translation loading with automatic RTL detection, providing seamless bilingual experience without additional build complexity.
 
-## Tailwind-first (v4) styling notes
-
-We are migrating to Tailwind v4 utilities for layout and most component styling while keeping CSS-in-JS for special cases. Key v4 differences and conventions used:
-
-- Import: `@import "tailwindcss";` in `src/index.css` (replaces multiple `@tailwind` layers).
-- Focus utilities: use `focus:outline-hidden` and `focus-visible:ring-3` for accessible focus styles. In v4, the ring default is 1px; specify `ring-3` to match older 3px look.
-- Shadows: the bare `shadow` became `shadow-sm`. Use `shadow-xs`, `shadow-sm`, `shadow-md`, etc.
-- Size utility: `size-*` sets both width and height. We use `size-4 md:size-5` for icon buttons, etc.
-- Borders/Ring color: defaults are `currentColor`. Specify colors explicitly where needed (e.g., `border-gray-200`, `ring-[#0B132B]/30`).
-- Custom utilities: prefer native utilities; if needed, use `@utility` in CSS for project-specific classes.
-- Spacing: prefer `gap-*` in flex/grid over `space-x/y-*` for better performance.
-
-Project conventions:
-
-- Tailwind for layout, spacing, and states; CSS-in-JS only for complex visuals or computed styles.
-- Z-index: Background `z-0`, content `z-10/20`, header `z-50`, overlays `z-[900+]`.
-- Responsive first: mobile defaults with `md:` and higher breakpoints layered on.
-- RTL: rely on logical utilities where possible and global RTL adjustments in `index.css`.

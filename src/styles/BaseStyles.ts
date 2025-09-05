@@ -13,6 +13,16 @@ export const colors = {
   textMuted: "#64748b",
   accent: "#5BC0BE",
   accentSecondary: "#1C2541",
+  // Sort by dropdown colors
+  sortButtonBg: "#6fffe9", // Current sort by color (cyan-300)
+  sortButtonHover: "#5ee6d3", // Sort button hover color
+  sortButtonText: "#0f172a", // Sort button text color (slate-900)
+  // Product card buy button colors
+  buyButtonBg: "#6fffe9", // Product card buy button color
+  buyButtonHover: "#5ee6d3", // Product card buy button hover
+  buyButtonText: "#0f172a", // Product card buy button text
+  // Header background color
+  headerBg: "#9ceaef", // Header background color
 } as const;
 
 // ===== COMMON FONTS =====

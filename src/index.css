@@ -50,6 +50,8 @@ body {
 
   /* Theme colors - accessible via CSS variables */
   --font-alice: "Alice-Regular", Helvetica, sans-serif;
+  --font-scheherazade: "Scheherazade New", serif;
+  --font-inter: "Inter", system-ui, sans-serif;
   --color-dark: #0b132b;
   --color-dark-secondary: #1e293b;
   --color-primary: #6fffe9;

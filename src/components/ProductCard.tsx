@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useAppContext } from "../context/useAppContext";
-import * as styles from "../styles/ProductCardStyles";
 
 interface ProductCardProps {
   id: number;
@@ -12,6 +11,11 @@ interface ProductCardProps {
   reviews: string;
   imageUrl?: string;
 }
+
+// Utility function to detect RTL text
+const isRTLText = (text: string): boolean => {
+  return /[\u0600-\u06FF\u0750-\u077F]/.test(text);
+};
 
 export default function ProductCard({
   id,
@@ -25,40 +29,12 @@ export default function ProductCard({
 }: ProductCardProps) {
   const { toggleWishlist, isInWishlist } = useAppContext();
   const [isFavorite, setIsFavorite] = useState(false);
-
-  // Inject responsive CSS
-  useEffect(() => {
-    const styleId = "product-card-responsive-styles";
-    let styleElement = document.getElementById(styleId) as HTMLStyleElement;
-
-    if (!styleElement) {
-      styleElement = document.createElement("style");
-      styleElement.id = styleId;
-      document.head.appendChild(styleElement);
-    }
-
-    styleElement.textContent = styles.responsiveCSS;
-
-    return () => {
-      const element = document.getElementById(styleId);
-      if (element) {
-        element.remove();
-      }
-    };
-  }, []);
+  const [isDetailsHovered, setIsDetailsHovered] = useState(false);
+  const [isBuyHovered, setIsBuyHovered] = useState(false);
+  const [isWishlistHovered, setIsWishlistHovered] = useState(false);
 
   // Detect if text contains Arabic characters
-  const hasArabicContent =
-    styles.isRTLText(productName) || styles.isRTLText(seller);
-
-  // Dynamic styles based on content language
-  const dynamicTitleStyle = styles.getDynamicStyle(
-    productName,
-    styles.titleStyle
-  );
-  const dynamicSellerStyle = styles.getDynamicStyle(seller, styles.sellerStyle);
-  const dynamicCategoryStyle = styles.getDynamicBadgeStyle(hasArabicContent);
-  const dynamicWishlistStyle = styles.getDynamicWishlistStyle(hasArabicContent);
+  const hasArabicContent = isRTLText(productName) || isRTLText(seller);
 
   useEffect(() => {
     setIsFavorite(isInWishlist(id));
@@ -78,122 +54,166 @@ export default function ProductCard({
     setIsFavorite((prev) => !prev);
   };
 
-  const handleCardHover = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.currentTarget.style.borderColor = "#64748b";
-  };
-
-  const handleCardLeave = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.currentTarget.style.borderColor = "#475569";
-  };
-
-  const handleDetailsHover = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.currentTarget.style.backgroundColor = "#6fffe9";
-    e.currentTarget.style.color = "#0f172a";
-  };
-
-  const handleDetailsLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.currentTarget.style.backgroundColor = "transparent";
-    e.currentTarget.style.color = "#6fffe9";
-  };
-
-  const handleBuyHover = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.currentTarget.style.backgroundColor = "#5ee6d3";
-  };
-
-  const handleBuyLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.currentTarget.style.backgroundColor = "#6fffe9";
-  };
-
-  const handleWishlistHover = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.5)";
-  };
-
-  const handleWishlistLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.3)";
-  };
-
   return (
     <div
-      style={styles.cardStyle}
-      className="product-card relative z-20"
-      onMouseEnter={handleCardHover}
-      onMouseLeave={handleCardLeave}
+      className={`
+        group relative z-20 flex h-[520px] sm:h-[480px] md:h-[500px] lg:h-[560px]
+        w-full max-w-[420px] min-w-[280px] 
+        flex-col overflow-hidden rounded-2xl border border-slate-600 
+        bg-slate-800 shadow-lg transition-all duration-300 ease-in-out 
+        hover:border-slate-500 hover:shadow-xl product-card
+      `}
     >
       {/* Image Container */}
-      <div style={styles.imageContainerStyle} className="product-card-image">
+      <div className="relative h-[180px] sm:h-[200px] md:h-[220px] lg:h-[240px] shrink-0 bg-slate-700 product-card-image">
         {imageUrl ? (
           <img
             src={imageUrl}
             alt={productName}
-            style={styles.imageStyle}
+            className="h-full w-full object-cover"
             loading="lazy"
           />
         ) : (
-          <div style={styles.noImageStyle}>
-            <div style={{ fontSize: "48px", marginBottom: "8px" }}>📷</div>
-            <span>No Image</span>
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
+            <div className="mb-2 text-3xl sm:text-4xl">📷</div>
+            <span className="text-xs sm:text-sm">No Image</span>
           </div>
         )}
 
         {/* Category Badge */}
-        <div style={dynamicCategoryStyle}>{category}</div>
+        <div
+          className={`
+            absolute top-2 sm:top-3 max-w-[100px] sm:max-w-[120px] overflow-hidden text-ellipsis 
+            whitespace-nowrap rounded-md bg-primary px-2 py-1 text-xs 
+            font-semibold text-black
+            ${
+              hasArabicContent
+                ? "right-2 sm:right-3 left-auto"
+                : "left-2 sm:left-3 right-auto"
+            }
+          `}
+        >
+          {category}
+        </div>
 
         {/* Wishlist Button */}
         <button
           onClick={toggleFavorite}
-          style={{
-            ...dynamicWishlistStyle,
-            backgroundColor: "rgba(0,0,0,0.3)",
-          }}
-          onMouseEnter={handleWishlistHover}
-          onMouseLeave={handleWishlistLeave}
+          className={`
+            absolute top-2 sm:top-3 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center 
+            rounded-full border border-white/20 text-sm sm:text-base text-white 
+            transition-all duration-200 ease-in-out
+            ${
+              hasArabicContent
+                ? "left-2 sm:left-3 right-auto"
+                : "right-2 sm:right-3 left-auto"
+            }
+            ${isWishlistHovered ? "bg-black/50" : "bg-black/30"}
+          `}
+          onMouseEnter={() => setIsWishlistHovered(true)}
+          onMouseLeave={() => setIsWishlistHovered(false)}
         >
           {isFavorite ? "❤️" : "🤍"}
         </button>
       </div>
 
       {/* Content Container */}
-      <div style={styles.contentStyle} className="product-card-content">
+      <div className="flex min-h-0 flex-1 flex-col p-3 sm:p-4 lg:p-5 product-card-content">
         {/* Product Title */}
-        <h3 style={dynamicTitleStyle} className="product-card-title">
+        <h3
+          className={`
+            mb-2 sm:mb-2.5 line-clamp-3 min-h-[54px] sm:min-h-[60px] md:min-h-[64px] lg:min-h-[72px] 
+            text-sm sm:text-base lg:text-[17px] font-semibold 
+            leading-relaxed text-white product-card-title
+            ${
+              hasArabicContent
+                ? "text-right font-scheherazade"
+                : "text-left font-sans"
+            }
+          `}
+        >
           {productName}
         </h3>
 
         {/* Seller */}
-        <p style={dynamicSellerStyle} className="product-card-seller">
-          by <span style={styles.sellerNameStyle}>{seller}</span>
+        <p
+          className={`
+            mb-3 sm:mb-3.5 line-clamp-2 min-h-[28px] sm:min-h-[32px] md:min-h-[36px] lg:min-h-[40px] 
+            text-xs sm:text-sm leading-relaxed 
+            text-slate-400 product-card-seller
+            ${
+              hasArabicContent
+                ? "text-right font-scheherazade"
+                : "text-left font-sans"
+            }
+          `}
+        >
+          by <span className="font-medium text-primary">{seller}</span>
         </p>
 
         {/* Rating & Reviews */}
-        <div style={styles.ratingContainerStyle}>
-          <div style={styles.ratingBadgeStyle}>★ {rate}</div>
-          <span style={styles.reviewsStyle}>({reviews})</span>
+        <div
+          className={`
+            mb-3 sm:mb-3.5 flex items-center gap-2
+            ${hasArabicContent ? "flex-row-reverse" : "flex-row"}
+          `}
+        >
+          <div className="flex items-center gap-1 rounded-md bg-amber-500/20 px-2 py-1 text-xs font-medium text-amber-500">
+            ★ {rate}
+          </div>
+          <span className="text-xs text-slate-400">({reviews})</span>
         </div>
 
         {/* Price and Buttons */}
-        <div style={styles.priceContainerStyle}>
-          <div style={styles.priceStyle} className="product-card-price">
+        <div className="mt-auto pt-2 sm:pt-3 lg:pt-3.5 pb-1">
+          <div
+            className={`
+              mb-1 text-base sm:text-lg font-bold text-white product-card-price
+              ${hasArabicContent ? "text-right" : "text-left"}
+            `}
+          >
             {price}
           </div>
-          <div style={styles.freeShippingStyle}>Free shipping</div>
+          <div
+            className={`
+              mb-2 sm:mb-3 text-xs text-slate-500
+              ${hasArabicContent ? "text-right" : "text-left"}
+            `}
+          >
+            Free shipping
+          </div>
 
           <div
-            style={styles.buttonsContainerStyle}
-            className="product-card-buttons"
+            className={`
+              mt-2 flex gap-2 sm:gap-2.5 product-card-buttons
+              ${hasArabicContent ? "flex-row-reverse" : "flex-row"}
+            `}
           >
             <button
-              style={styles.detailsButtonStyle}
-              className="product-card-button"
-              onMouseEnter={handleDetailsHover}
-              onMouseLeave={handleDetailsLeave}
+              className={`
+                flex-1 rounded-md border border-primary bg-transparent 
+                px-3 sm:px-4 py-2 sm:py-2.5 text-xs font-medium transition-colors duration-200 
+                ease-in-out product-card-button
+                ${
+                  isDetailsHovered
+                    ? "bg-[#5ee6d3] text-black border-[#5ee6d3]"
+                    : "text-primary"
+                }
+              `}
+              onMouseEnter={() => setIsDetailsHovered(true)}
+              onMouseLeave={() => setIsDetailsHovered(false)}
             >
               Details
             </button>
             <button
-              style={styles.buyButtonStyle}
-              className="product-card-button"
-              onMouseEnter={handleBuyHover}
-              onMouseLeave={handleBuyLeave}
+              className={`
+                flex-1 rounded-md border-none bg-primary px-3 sm:px-4 py-2 sm:py-2.5 
+                text-xs font-semibold text-black transition-colors 
+                duration-200 ease-in-out product-card-button
+                ${isBuyHovered ? "bg-[#5ee6d3]" : ""}
+              `}
+              onMouseEnter={() => setIsBuyHovered(true)}
+              onMouseLeave={() => setIsBuyHovered(false)}
             >
               Buy Now
             </button>

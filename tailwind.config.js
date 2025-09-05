@@ -5,6 +5,8 @@ export default {
     extend: {
       fontFamily: {
         alice: ["Alice-Regular", "Helvetica", "sans-serif"],
+        scheherazade: ["Scheherazade New", "serif"],
+        inter: ["Inter", "system-ui", "sans-serif"],
       },
       colors: {
         dark: "#0b132b",

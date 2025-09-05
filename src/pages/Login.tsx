@@ -82,33 +82,35 @@ export default function Login() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#0B132B] flex items-center justify-center relative">
-      <div className="relative w-[802px] max-w-[92%] min-h-[480px] my-10 mx-auto bg-[rgba(11,19,43,0.95)] shadow-[0_8px_30px_rgba(2,8,23,0.6)] rounded-xl px-16 pt-12 pb-[72px] flex flex-col items-center box-border backdrop-blur-[6px]">
-        <div className="w-full flex flex-col items-center mb-10">
-          <h1 className="font-[Alice] font-normal text-[32px] leading-[37px] text-center text-[#EEEEEE] m-0">
+    <div className="w-full min-h-screen bg-[#0B132B] flex items-center justify-center relative px-4 sm:px-6">
+      <div className="relative w-full max-w-[500px] sm:max-w-[600px] lg:max-w-[802px] min-h-[400px] sm:min-h-[480px] my-6 sm:my-10 bg-[rgba(11,19,43,0.95)] shadow-[0_8px_30px_rgba(2,8,23,0.6)] rounded-xl px-6 sm:px-12 lg:px-16 pt-8 sm:pt-12 pb-12 sm:pb-[72px] flex flex-col items-center box-border backdrop-blur-[6px]">
+        <div className="w-full flex flex-col items-center mb-6 sm:mb-10">
+          <h1 className="font-[Alice] font-normal text-[24px] sm:text-[28px] lg:text-[32px] leading-tight text-center text-[#EEEEEE] m-0">
             {t("auth.login")}
           </h1>
-          <p className="text-[#9CA3AF] mt-2">{t("auth.welcomeBack")}</p>
+          <p className="text-[#9CA3AF] mt-2 text-sm sm:text-base text-center">
+            {t("auth.welcomeBack")}
+          </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="w-full flex flex-col items-center gap-[22px]"
+          className="w-full flex flex-col items-center gap-4 sm:gap-[22px]"
         >
           {/* Error Display */}
           {error && (
-            <div className="w-full px-4 py-3 bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)] rounded-lg text-[#ef4444] text-sm text-center mb-4 font-[Alice]">
+            <div className="w-full px-3 sm:px-4 py-3 bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)] rounded-lg text-[#ef4444] text-sm text-center mb-4 font-[Alice]">
               {error}
             </div>
           )}
 
-          <div className="relative w-[720px] h-12">
+          <div className="relative w-full max-w-[720px] h-12">
             <label
               htmlFor={`${id}-email`}
               className={`absolute ${
                 formData.email || focus.email
                   ? "left-[14px] -top-[10px] transform-none text-sm leading-4 text-[#C4FFF9] px-[6px]"
-                  : "left-5 top-1/2 -translate-y-1/2 text-base leading-[18px] text-[rgba(255,255,255,0.6)] px-2"
+                  : "left-4 sm:left-5 top-1/2 -translate-y-1/2 text-sm sm:text-base leading-[18px] text-[rgba(255,255,255,0.6)] px-2"
               } font-[Alice] font-normal pointer-events-none transition-all duration-200 bg-[rgba(11,19,43,0.95)]`}
             >
               {t("auth.email")}
@@ -121,22 +123,22 @@ export default function Login() {
               onChange={handleInputChange}
               onFocus={() => handleFocus("email")}
               onBlur={() => handleBlur("email")}
-              className={`w-[720px] h-12 ${
+              className={`w-full h-12 ${
                 formData.email || focus.email
                   ? "border-[#6fffe9] shadow-[0_0_0_4px_rgba(111,255,233,0.06)]"
                   : "border-[rgba(255,255,255,0.28)]"
-              } border rounded-3xl bg-transparent text-white text-lg font-[Alice] px-5 outline-none box-border transition-all duration-200`}
+              } border rounded-3xl bg-transparent text-white text-base sm:text-lg font-[Alice] px-4 sm:px-5 outline-none box-border transition-all duration-200`}
               required
             />
           </div>
 
-          <div className="relative w-[720px] h-12">
+          <div className="relative w-full max-w-[720px] h-12">
             <label
               htmlFor={`${id}-password`}
               className={`absolute ${
                 formData.password || focus.password
                   ? "left-[14px] -top-[10px] transform-none text-sm leading-4 text-[#C4FFF9] px-[6px]"
-                  : "left-5 top-1/2 -translate-y-1/2 text-base leading-[18px] text-[rgba(255,255,255,0.6)] px-2"
+                  : "left-4 sm:left-5 top-1/2 -translate-y-1/2 text-sm sm:text-base leading-[18px] text-[rgba(255,255,255,0.6)] px-2"
               } font-[Alice] font-normal pointer-events-none transition-all duration-[180ms] bg-[rgba(11,19,43,0.95)]`}
             >
               {t("auth.password")}
@@ -150,17 +152,17 @@ export default function Login() {
                 onChange={handleInputChange}
                 onFocus={() => handleFocus("password")}
                 onBlur={() => handleBlur("password")}
-                className={`w-[720px] h-12 ${
+                className={`w-full h-12 ${
                   formData.password || focus.password
                     ? "border-[#6fffe9] shadow-[0_0_0_4px_rgba(111,255,233,0.06)]"
                     : "border-[rgba(255,255,255,0.28)]"
-                } border rounded-3xl bg-transparent text-white text-lg font-[Alice] px-5 outline-none box-border transition-all duration-200`}
+                } border rounded-3xl bg-transparent text-white text-base sm:text-lg font-[Alice] px-4 sm:px-5 outline-none box-border transition-all duration-200 pr-12`}
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 bg-none border-none cursor-pointer p-1 text-[#9CA3AF] flex items-center justify-center"
+                className="absolute right-3 top-1/2 -translate-y-1/2 bg-none border-none cursor-pointer p-1 text-[#9CA3AF] flex items-center justify-center hover:text-white transition-colors"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? (
@@ -186,13 +188,13 @@ export default function Login() {
             </div>
           </div>
 
-          <div className="w-[720px] flex justify-between items-center">
-            <label className="text-[rgba(255,255,255,0.7)] flex items-center gap-2">
-              <input type="checkbox" />
+          <div className="w-full max-w-[720px] flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4 text-sm sm:text-base">
+            <label className="text-[rgba(255,255,255,0.7)] flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" className="w-4 h-4" />
               <span>{t("auth.rememberMe")}</span>
             </label>
             <a
-              className="text-[#C4FFF9] underline cursor-pointer transition-opacity duration-200 hover:opacity-80"
+              className="text-[#C4FFF9] underline cursor-pointer transition-opacity duration-200 hover:opacity-80 text-center sm:text-left"
               href="#"
             >
               {t("auth.forgotPassword")}

@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BackgroundDecor, TournamentCard } from "../components";
-import * as styles from "../styles/MarketplaceStyles";
 import {
   tournaments,
   tournamentSortOptions,
@@ -45,86 +44,62 @@ export default function Tournaments() {
     e.currentTarget.style.boxShadow = "none";
   };
 
-  // Styles specific to the tournaments category filter
-  const filterBarStyle: React.CSSProperties = {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: "100px", // from Figma
-    width: "100%",
-    margin: "0 auto 28px auto",
-    flexWrap: "wrap",
-  };
-
-  const optionBase: React.CSSProperties = {
-    height: "45px",
-    padding: "0 24px",
-    borderRadius: "20px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontWeight: 500,
-    fontSize: "22px", // slightly smaller than figma 26 for better responsiveness
-    lineHeight: "31px",
-    cursor: "pointer",
-    border: "none",
-    background: "transparent",
-  };
-
-  const getOptionStyle = (key: Category): React.CSSProperties => {
-    const active = category === key;
-    return {
-      ...optionBase,
-      background: active ? "#6FFFE9" : "transparent",
-      color: active ? "#000000" : "#FFFFFF",
-    };
-  };
-
   return (
-    <main
-      style={styles.containerStyle}
-      className="tournaments-container relative z-10"
-    >
+    <main className="relative z-10 min-h-screen bg-gradient-to-b from-[#0F172A] to-[#1C2541] py-4 sm:py-6 lg:py-8 tournaments-container">
       <BackgroundDecor />
 
-      <div style={styles.maxWidthContainerStyle} className="relative z-10">
+      <div className="relative z-10 mx-auto max-w-[1440px] px-4 sm:px-6 max-width-container">
         {/* Page Label */}
-        <header style={styles.headerStyle} className="tournaments-header">
-          <h1 style={styles.titleStyle} className="tournaments-title">
+        <header className="mb-6 sm:mb-8 flex w-full items-center justify-center py-4 sm:py-6 tournaments-header">
+          <h1 className="font-alice text-[32px] sm:text-[40px] lg:text-[56px] leading-tight text-white tournaments-title text-center">
             {t("nav.tournaments")}
           </h1>
         </header>
 
         {/* Category Filter (between label and search) */}
-        <div style={filterBarStyle} aria-label="Tournament category filter">
+        <div
+          className="mb-6 sm:mb-7 flex w-full flex-row flex-wrap items-center justify-center gap-4 sm:gap-8 lg:gap-[100px]"
+          aria-label="Tournament category filter"
+        >
           <button
-            style={getOptionStyle("upcoming")}
+            className={`h-[36px] sm:h-[40px] lg:h-[45px] rounded-[15px] sm:rounded-[18px] lg:rounded-[20px] border-none px-4 sm:px-5 lg:px-6 text-center font-medium text-[16px] sm:text-[18px] lg:text-[22px] leading-tight transition-colors ${
+              category === "upcoming"
+                ? "bg-[#6FFFE9] text-black"
+                : "bg-transparent text-white hover:bg-white/10"
+            }`}
             onClick={() => setCategory("upcoming")}
           >
             Upcoming
           </button>
           <button
-            style={getOptionStyle("ongoing")}
+            className={`h-[36px] sm:h-[40px] lg:h-[45px] rounded-[15px] sm:rounded-[18px] lg:rounded-[20px] border-none px-4 sm:px-5 lg:px-6 text-center font-medium text-[16px] sm:text-[18px] lg:text-[22px] leading-tight transition-colors ${
+              category === "ongoing"
+                ? "bg-[#6FFFE9] text-black"
+                : "bg-transparent text-white hover:bg-white/10"
+            }`}
             onClick={() => setCategory("ongoing")}
           >
             Ongoing
           </button>
           <button
-            style={getOptionStyle("past")}
+            className={`h-[36px] sm:h-[40px] lg:h-[45px] rounded-[15px] sm:rounded-[18px] lg:rounded-[20px] border-none px-4 sm:px-5 lg:px-6 text-center font-medium text-[16px] sm:text-[18px] lg:text-[22px] leading-tight transition-colors ${
+              category === "past"
+                ? "bg-[#6FFFE9] text-black"
+                : "bg-transparent text-white hover:bg-white/10"
+            }`}
             onClick={() => setCategory("past")}
           >
             Past
           </button>
         </div>
-        {/* Search and Sort controls (copied from Marketplace) */}
-        <section style={styles.searchSectionStyle} className="search-section">
-          <div style={styles.searchControlsStyle} className="search-controls">
+
+        {/* Search and Sort controls */}
+        <section className="mb-6 sm:mb-8 w-full search-section">
+          <div className="flex w-full flex-col items-center justify-between gap-4 lg:flex-row search-controls">
             <input
               type="text"
               placeholder="Search tournaments, organizers..."
-              style={styles.searchInputStyle}
-              className="search-input"
+              className="h-[40px] sm:h-[45px] lg:h-[50px] w-full max-w-[500px] lg:max-w-[600px] rounded-[8px] sm:rounded-[10px] border border-solid border-slate-600 bg-[#1C2541] px-3 sm:px-4 py-2 text-sm sm:text-base text-white placeholder-slate-400 focus:border-[#6fffe9] focus:shadow-[0_0_0_3px_rgba(111,255,233,0.1)] focus:outline-none search-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onFocus={handleSearchFocus}
@@ -132,60 +107,39 @@ export default function Tournaments() {
             />
 
             <div
-              style={styles.sortContainerStyle}
-              className="sort-container"
+              className="relative w-full max-w-[180px] sm:max-w-[200px] sort-container"
               ref={dropdownRef}
             >
               <button
-                style={styles.sortButtonStyle}
-                className="sort-button"
+                className="flex h-[40px] sm:h-[45px] lg:h-[50px] w-full items-center justify-between rounded-[8px] sm:rounded-[10px] border-none bg-[#6fffe9] px-3 sm:px-4 py-2 text-sm sm:text-base text-black hover:bg-[#5ee6d3] transition-colors sort-button"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#5ee6d3";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "#6fffe9";
-                }}
               >
-                <span>
+                <span className="truncate">
                   {tournamentSortOptions.find((o) => o.value === sortBy)
                     ?.label || "Sort By"}
                 </span>
                 <span
-                  style={{
-                    transform: isDropdownOpen
-                      ? "rotate(180deg)"
-                      : "rotate(0deg)",
-                    transition: "transform 0.3s ease",
-                  }}
+                  className={`transform transition-transform duration-300 ease-in-out ml-2 ${
+                    isDropdownOpen ? "rotate-180" : "rotate-0"
+                  }`}
                 >
                   ▼
                 </span>
               </button>
 
               {isDropdownOpen && (
-                <div style={styles.sortDropdownStyle}>
+                <div className="absolute top-full z-20 mt-1 w-full rounded-[8px] sm:rounded-[10px] border border-slate-600 bg-[#1C2541] p-2 shadow-lg sort-dropdown">
                   {tournamentSortOptions.map((option) => (
                     <button
                       key={option.value}
-                      style={{
-                        ...styles.sortOptionStyle,
-                        backgroundColor:
-                          sortBy === option.value ? "#334155" : "transparent",
-                      }}
+                      className={`block w-full rounded-[5px] border-none px-3 py-2 text-left text-sm sm:text-base text-white hover:bg-slate-700 transition-colors ${
+                        sortBy === option.value
+                          ? "bg-slate-700"
+                          : "bg-transparent"
+                      }`}
                       onClick={() => {
                         setSortBy(option.value);
                         setIsDropdownOpen(false);
-                      }}
-                      onMouseEnter={(e) => {
-                        if (sortBy !== option.value) {
-                          e.currentTarget.style.backgroundColor = "#334155";
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (sortBy !== option.value) {
-                          e.currentTarget.style.backgroundColor = "transparent";
-                        }
                       }}
                     >
                       {option.label}
@@ -198,16 +152,7 @@ export default function Tournaments() {
         </section>
 
         {/* Cards grid (filtered + sorted + searched) */}
-        <section
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(397px, 1fr))",
-            gap: "24px",
-            justifyItems: "center",
-            paddingTop: "8px",
-            paddingBottom: "24px",
-          }}
-        >
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center gap-4 sm:gap-6 pb-6 pt-2 max-w-full">
           {tournaments
             .filter((t) => t.category === category)
             .filter((t) =>

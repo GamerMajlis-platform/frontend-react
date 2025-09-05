@@ -1,45 +1,42 @@
 import { ProductCard, BackgroundDecor } from "../components";
 import { useAppContext } from "../context/useAppContext";
 import type { WishlistItem } from "../context/AppContext";
-import { wishlistPage, wishlistTitle, button } from "../styles/OptimizedStyles";
 
 export default function Wishlist() {
   const { wishlist } = useAppContext();
 
   return (
-    <main style={wishlistPage} className="relative">
+    <main
+      dir="auto"
+      className="relative min-h-[calc(100vh-88px)] bg-gradient-to-br from-[var(--color-dark)] to-[var(--color-dark-secondary)] px-4 py-12 font-[Alice-Regular,serif]"
+    >
       <BackgroundDecor />
-      <div
-        style={{ width: "100%", maxWidth: "1280px", margin: "0 auto" }}
-        className="relative z-10"
-      >
+
+      <div className="relative z-10 w-full max-w-7xl mx-auto">
         {/* Header Section */}
-        <header
-          style={{ textAlign: "center", marginBottom: "var(--spacing-xl)" }}
-        >
-          <h1 style={wishlistTitle}>My Wishlist</h1>
-          <p
-            style={{
-              fontSize: "1.125rem",
-              color: "var(--color-text-secondary)",
-              textAlign: "center",
-              marginBottom: "var(--spacing-xl)",
-              fontFamily: "Alice-Regular, serif",
-            }}
-          >
+        <header className="text-center mb-12">
+          <h1 className="text-[3rem] font-light text-[var(--color-text)] mb-4">
+            My Wishlist
+          </h1>
+          <p className="text-lg text-[var(--color-text-secondary)] font-[Alice-Regular,serif] mb-12">
             Your favorite gaming gear saved for later
           </p>
         </header>
 
         {/* Wishlist Content */}
-        <section style={{ width: "100%" }} role="main">
+        <section role="main" className="w-full">
           {wishlist.length > 0 ? (
-            <div className="wishlist-grid">
+            <div
+              className="
+                grid gap-6 
+                grid-cols-1 
+                sm:grid-cols-2 
+                lg:grid-cols-3 
+                xl:grid-cols-4
+              "
+            >
               {wishlist.map((item: WishlistItem) => (
-                <div
-                  key={item.id}
-                  style={{ display: "flex", flexDirection: "column" }}
-                >
+                <div key={item.id} className="flex flex-col">
                   <ProductCard
                     id={item.id}
                     category={item.category}
@@ -50,16 +47,7 @@ export default function Wishlist() {
                     reviews={item.reviews}
                     imageUrl={item.imageUrl}
                   />
-                  {/* Date added - below the product card */}
-                  <div
-                    style={{
-                      color: "var(--color-text)",
-                      fontSize: "0.875rem",
-                      textAlign: "center",
-                      marginTop: "var(--spacing-md)",
-                      fontWeight: "500",
-                    }}
-                  >
+                  <div className="text-[var(--color-text)] text-sm text-center mt-4 font-medium">
                     Added {new Date(item.dateAdded).toLocaleDateString()}
                   </div>
                 </div>
@@ -67,31 +55,10 @@ export default function Wishlist() {
             </div>
           ) : (
             /* Empty State */
-            <div
-              style={{
-                textAlign: "center",
-                padding: "var(--spacing-xl)",
-                color: "var(--color-text-secondary)",
-              }}
-            >
-              <div
-                style={{
-                  width: "80px",
-                  height: "80px",
-                  margin: "0 auto var(--spacing-lg)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  backgroundColor: "var(--color-dark-secondary)",
-                  borderRadius: "var(--border-radius-full)",
-                }}
-              >
+            <div className="text-center py-12 text-[var(--color-text-secondary)]">
+              <div className="w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-full bg-[var(--color-dark-secondary)]">
                 <svg
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    color: "var(--color-text-secondary)",
-                  }}
+                  className="w-10 h-10 text-[var(--color-text-secondary)]"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -102,26 +69,20 @@ export default function Wishlist() {
                   />
                 </svg>
               </div>
-              <h3
-                style={{
-                  fontSize: "1.5rem",
-                  fontWeight: "600",
-                  color: "var(--color-text)",
-                  marginBottom: "var(--spacing-sm)",
-                }}
-              >
+              <h3 className="text-2xl font-semibold text-[var(--color-text)] mb-2">
                 Your Wishlist is Empty
               </h3>
-              <p
-                style={{
-                  fontSize: "1rem",
-                  marginBottom: "var(--spacing-lg)",
-                  color: "var(--color-text-secondary)",
-                }}
-              >
+              <p className="text-base mb-6 text-[var(--color-text-secondary)]">
                 Start adding items from the marketplace to see them here
               </p>
-              <button style={button("primary", "lg")}>
+              <button
+                className="
+                  inline-flex items-center justify-center gap-2
+                  px-8 py-3 text-lg font-medium rounded-md 
+                  bg-[var(--color-primary)] text-[var(--color-dark)] 
+                  transition duration-200 hover:bg-[var(--color-primary-hover)]
+                "
+              >
                 Browse Marketplace
               </button>
             </div>

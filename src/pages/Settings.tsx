@@ -2,13 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { useAppContext } from "../context/useAppContext";
 import usePreferences from "../hooks/usePreferences";
-import {
-  colors,
-  fonts,
-  transitions,
-  baseContainer,
-} from "../styles/BaseStyles";
-import type { CSSProperties } from "react";
+import { colors, fonts, transitions } from "../styles/BaseStyles";
 
 interface UserSettings {
   notifications: {
@@ -41,131 +35,14 @@ export default function Settings() {
     document.documentElement.lang === "ar" ||
     /[\u0600-\u06FF\u0750-\u077F]/.test(document.body.innerText || "");
 
-  // Unified styles object - reduces repetition
-  const styles = {
-    main: {
-      ...baseContainer,
-      minHeight: "calc(100vh - 88px)",
-      paddingTop: "24px",
-      paddingBottom: "24px",
-    } as CSSProperties,
-
-    header: { marginBottom: "32px" } as CSSProperties,
-
-    title: {
-      fontFamily: fonts.alice,
-      fontWeight: "600",
-      color: colors.text,
-      fontSize: "24px",
-      marginBottom: "8px",
-    } as CSSProperties,
-
-    subtitle: {
-      color: colors.textSecondary,
-      fontSize: "16px",
-      marginBottom: "32px",
-    } as CSSProperties,
-
-    section: {
-      backgroundColor: colors.darkSecondary,
-      borderRadius: "12px",
-      padding: "24px",
-      marginBottom: "24px",
-    } as CSSProperties,
-
-    sectionTitle: {
-      fontFamily: fonts.alice,
-      fontSize: "20px",
-      fontWeight: "600",
-      color: colors.text,
-      marginBottom: "8px",
-    } as CSSProperties,
-
-    description: {
-      color: colors.textSecondary,
-      fontSize: "14px",
-      marginBottom: "16px",
-    } as CSSProperties,
-
-    settingItem: {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      padding: "16px 0",
-      borderBottom: `1px solid ${colors.textMuted}`,
-    } as CSSProperties,
-
-    label: {
-      color: colors.text,
-      fontWeight: "500",
-      marginBottom: "4px",
-    } as CSSProperties,
-
-    dropdown: {
-      container: { position: "relative" } as CSSProperties,
-      button: {
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "8px 12px",
-        backgroundColor: colors.darkSecondary,
-        border: `1px solid ${colors.textMuted}`,
-        borderRadius: "6px",
-        color: colors.text,
-        cursor: "pointer",
-        minWidth: "120px",
-        fontSize: "14px",
-        transition: transitions.fast,
-      } as CSSProperties,
-      menu: {
-        position: "absolute",
-        top: "calc(100% + 4px)",
-        right: "0",
-        backgroundColor: colors.darkSecondary,
-        border: `1px solid ${colors.textMuted}`,
-        borderRadius: "6px",
-        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-        zIndex: 10,
-        minWidth: "120px",
-      } as CSSProperties,
-      item: {
-        display: "block",
-        width: "100%",
-        padding: "8px 12px",
-        backgroundColor: "transparent",
-        border: "none",
-        color: colors.text,
-        textAlign: "left",
-        cursor: "pointer",
-        fontSize: "14px",
-        transition: transitions.fast,
-      } as CSSProperties,
-    },
-  };
-
   const getToggleStyles = (isActive: boolean) => ({
     button: {
-      width: "48px",
-      height: "24px",
       backgroundColor: isActive ? colors.primary : colors.textMuted,
-      borderRadius: "12px",
-      border: "none",
-      cursor: "pointer",
-      position: "relative",
-      transition: transitions.normal,
       direction: isRTL ? "rtl" : "ltr",
-    } as CSSProperties,
-
+    },
     switch: {
-      width: "20px",
-      height: "20px",
-      backgroundColor: "white",
-      borderRadius: "50%",
-      position: "absolute",
-      top: "2px",
       left: isRTL ? (isActive ? "2px" : "26px") : isActive ? "26px" : "2px",
-      transition: transitions.normal,
-    } as CSSProperties,
+    },
   });
 
   // Consolidated handlers
@@ -272,8 +149,22 @@ export default function Settings() {
   }) => {
     const toggleStyles = getToggleStyles(value);
     return (
-      <button style={toggleStyles.button} onClick={onClick}>
-        <div style={toggleStyles.switch} />
+      <button
+        className="w-12 h-6 rounded-xl border-none cursor-pointer relative"
+        style={{
+          backgroundColor: toggleStyles.button.backgroundColor,
+          direction: toggleStyles.button.direction as "ltr" | "rtl",
+          transition: transitions.normal,
+        }}
+        onClick={onClick}
+      >
+        <div
+          className="w-5 h-5 bg-white rounded-full absolute top-0.5"
+          style={{
+            left: toggleStyles.switch.left,
+            transition: transitions.normal,
+          }}
+        />
       </button>
     );
   };
@@ -289,16 +180,21 @@ export default function Settings() {
     options: Array<{ value: string; label: string }>;
     onSelect: (value: string) => void;
   }) => (
-    <div style={styles.dropdown.container}>
+    <div className="relative">
       <button
-        style={styles.dropdown.button}
+        className="flex items-center justify-between py-2 px-3 rounded-md cursor-pointer min-w-[120px] text-sm"
+        style={{
+          backgroundColor: colors.darkSecondary,
+          border: `1px solid ${colors.textMuted}`,
+          color: colors.text,
+          transition: transitions.fast,
+        }}
         onClick={() => toggleDropdown(type)}
       >
         {options.find((opt) => opt.value === value)?.label || value}
         <svg
+          className="w-4 h-4"
           style={{
-            width: "16px",
-            height: "16px",
             transition: transitions.fast,
             transform:
               openDropdown === type ? "rotate(180deg)" : "rotate(0deg)",
@@ -310,11 +206,21 @@ export default function Settings() {
         </svg>
       </button>
       {openDropdown === type && (
-        <div style={styles.dropdown.menu}>
+        <div
+          className="absolute top-full right-0 mt-1 rounded-md shadow-lg z-10 min-w-[120px]"
+          style={{
+            backgroundColor: colors.darkSecondary,
+            border: `1px solid ${colors.textMuted}`,
+          }}
+        >
           {options.map((option) => (
             <button
               key={option.value}
-              style={styles.dropdown.item}
+              className="block w-full py-2 px-3 bg-transparent border-none text-left cursor-pointer text-sm hover:bg-opacity-80"
+              style={{
+                color: colors.text,
+                transition: transitions.fast,
+              }}
               onClick={() => {
                 onSelect(option.value);
                 toggleDropdown(type);
@@ -340,34 +246,74 @@ export default function Settings() {
     isLast?: boolean;
   }) => (
     <div
+      className={`flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4 py-3 sm:py-4 ${
+        !isLast ? "border-b" : ""
+      }`}
       style={{
-        ...styles.settingItem,
-        borderBottom: isLast ? "none" : styles.settingItem.borderBottom,
+        borderBottomColor: !isLast ? colors.textMuted : "transparent",
       }}
     >
-      <div>
-        <div style={styles.label}>{label}</div>
-        <div style={styles.description}>{description}</div>
+      <div className="flex-1">
+        <div
+          className="font-medium mb-1 text-sm sm:text-base"
+          style={{ color: colors.text }}
+        >
+          {label}
+        </div>
+        <div
+          className="text-xs sm:text-sm"
+          style={{ color: colors.textSecondary }}
+        >
+          {description}
+        </div>
       </div>
-      {children}
+      <div className="flex-shrink-0">{children}</div>
     </div>
   );
 
   return (
-    <main style={styles.main}>
-      <div style={{ width: "100%" }}>
+    <main
+      className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-6 pb-6"
+      style={{ minHeight: "calc(100vh - 88px)" }}
+    >
+      <div className="w-full">
         {/* Header */}
-        <header style={styles.header}>
-          <h1 style={styles.title}>{t("settings.title")}</h1>
-          <p style={styles.subtitle}>{t("settings.subtitle")}</p>
+        <header className="mb-6 sm:mb-8">
+          <h1
+            className="text-xl sm:text-2xl font-semibold mb-2"
+            style={{
+              fontFamily: fonts.alice,
+              color: colors.text,
+            }}
+          >
+            {t("settings.title")}
+          </h1>
+          <p
+            className="text-sm sm:text-base mb-6 sm:mb-8"
+            style={{ color: colors.textSecondary }}
+          >
+            {t("settings.subtitle")}
+          </p>
         </header>
 
         {/* Notifications Section */}
-        <section style={styles.section}>
-          <h2 style={styles.sectionTitle}>
+        <section
+          className="rounded-xl p-4 sm:p-6 mb-4 sm:mb-6"
+          style={{ backgroundColor: colors.darkSecondary }}
+        >
+          <h2
+            className="text-lg sm:text-xl font-semibold mb-2"
+            style={{
+              fontFamily: fonts.alice,
+              color: colors.text,
+            }}
+          >
             {t("settings.sections.notifications.title")}
           </h2>
-          <p style={styles.description}>
+          <p
+            className="text-xs sm:text-sm mb-4"
+            style={{ color: colors.textSecondary }}
+          >
             {t("settings.sections.notifications.description")}
           </p>
 
@@ -395,11 +341,20 @@ export default function Settings() {
         </section>
 
         {/* Privacy Section */}
-        <section style={styles.section}>
-          <h2 style={styles.sectionTitle}>
+        <section
+          className="rounded-xl p-6 mb-6"
+          style={{ backgroundColor: colors.darkSecondary }}
+        >
+          <h2
+            className="text-xl font-semibold mb-2"
+            style={{
+              fontFamily: fonts.alice,
+              color: colors.text,
+            }}
+          >
             {t("settings.sections.privacy.title")}
           </h2>
-          <p style={styles.description}>
+          <p className="text-sm mb-4" style={{ color: colors.textSecondary }}>
             {t("settings.sections.privacy.description")}
           </p>
 
@@ -442,11 +397,20 @@ export default function Settings() {
         </section>
 
         {/* Preferences Section */}
-        <section style={styles.section}>
-          <h2 style={styles.sectionTitle}>
+        <section
+          className="rounded-xl p-6 mb-6"
+          style={{ backgroundColor: colors.darkSecondary }}
+        >
+          <h2
+            className="text-xl font-semibold mb-2"
+            style={{
+              fontFamily: fonts.alice,
+              color: colors.text,
+            }}
+          >
             {t("settings.sections.preferences.title")}
           </h2>
-          <p style={styles.description}>
+          <p className="text-sm mb-4" style={{ color: colors.textSecondary }}>
             {t("settings.sections.preferences.description")}
           </p>
 
