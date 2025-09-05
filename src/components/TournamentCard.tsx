@@ -118,13 +118,21 @@ function getVariantStyles(variant: TournamentVariant) {
     case "ongoing":
       return {
         card: { border: "1px solid #6FFFE9" } as CSSProperties,
-        button: { ...bottomBar, background: "#6FFFE9", color: "#000" } as CSSProperties,
+        button: {
+          ...bottomBar,
+          background: "#6FFFE9",
+          color: "#000",
+        } as CSSProperties,
         buttonText: "Watch",
       };
     case "past":
       return {
         card: { opacity: 0.95 } as CSSProperties,
-        button: { ...bottomBar, background: "#1C2541", opacity: 0.8 } as CSSProperties,
+        button: {
+          ...bottomBar,
+          background: "#1C2541",
+          opacity: 0.8,
+        } as CSSProperties,
         buttonText: "View Results",
       };
     case "upcoming":
@@ -139,23 +147,57 @@ function getVariantStyles(variant: TournamentVariant) {
 
 // Simple inline SVG icons to avoid extra deps
 const IconCalendar = ({ size = 20 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect x="3" y="5" width="18" height="16" rx="2" stroke="#fff" strokeWidth="2" />
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <rect
+      x="3"
+      y="5"
+      width="18"
+      height="16"
+      rx="2"
+      stroke="#fff"
+      strokeWidth="2"
+    />
     <path d="M8 3v4M16 3v4M3 11h18" stroke="#fff" strokeWidth="2" />
   </svg>
 );
 
 const IconTrophy = ({ size = 20 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
     <path d="M8 21h8M12 17v4" stroke="#fff" strokeWidth="2" />
     <path d="M17 4H7v4a5 5 0 1 0 10 0V4Z" stroke="#fff" strokeWidth="2" />
-    <path d="M7 6H5a2 2 0 0 0-2 2v1a4 4 0 0 0 4 4" stroke="#fff" strokeWidth="2" />
-    <path d="M17 6h2a2 2 0 0 1 2 2v1a4 4 0 0 1-4 4" stroke="#fff" strokeWidth="2" />
+    <path
+      d="M7 6H5a2 2 0 0 0-2 2v1a4 4 0 0 0 4 4"
+      stroke="#fff"
+      strokeWidth="2"
+    />
+    <path
+      d="M17 6h2a2 2 0 0 1 2 2v1a4 4 0 0 1-4 4"
+      stroke="#fff"
+      strokeWidth="2"
+    />
   </svg>
 );
 
 const IconUsers = ({ size = 20 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
     <circle cx="12" cy="7" r="4" stroke="#fff" strokeWidth="2" />
     <path d="M4 21a8 8 0 0 1 16 0" stroke="#fff" strokeWidth="2" />
   </svg>

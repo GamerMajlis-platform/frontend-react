@@ -2,14 +2,18 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BackgroundDecor, TournamentCard } from "../components";
 import * as styles from "../styles/MarketplaceStyles";
-import { type SortOption, sortOptions, tournaments } from "../data";
+import {
+  tournaments,
+  tournamentSortOptions,
+  type TournamentSortOption,
+} from "../data";
 
 export default function Tournaments() {
   const { t } = useTranslation();
 
-  // Search / Sort state (copied from Marketplace)
+  // Search / Sort state
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState<SortOption>("name");
+  const [sortBy, setSortBy] = useState<TournamentSortOption>("date-soonest");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -113,7 +117,7 @@ export default function Tournaments() {
             Past
           </button>
         </div>
-  {/* Search and Sort controls (copied from Marketplace) */}
+        {/* Search and Sort controls (copied from Marketplace) */}
         <section style={styles.searchSectionStyle} className="search-section">
           <div style={styles.searchControlsStyle} className="search-controls">
             <input
@@ -144,7 +148,7 @@ export default function Tournaments() {
                 }}
               >
                 <span>
-                  {sortOptions.find((option) => option.value === sortBy)
+                  {tournamentSortOptions.find((o) => o.value === sortBy)
                     ?.label || "Sort By"}
                 </span>
                 <span
@@ -161,7 +165,7 @@ export default function Tournaments() {
 
               {isDropdownOpen && (
                 <div style={styles.sortDropdownStyle}>
-                  {sortOptions.map((option) => (
+                  {tournamentSortOptions.map((option) => (
                     <button
                       key={option.value}
                       style={{
@@ -193,7 +197,7 @@ export default function Tournaments() {
           </div>
         </section>
 
-        {/* Cards grid (filtered by selected category) */}
+        {/* Cards grid (filtered + sorted + searched) */}
         <section
           style={{
             display: "grid",
@@ -206,6 +210,36 @@ export default function Tournaments() {
         >
           {tournaments
             .filter((t) => t.category === category)
+            .filter((t) =>
+              [t.game, t.organizer]
+                .join(" ")
+                .toLowerCase()
+                .includes(searchTerm.toLowerCase())
+            )
+            .sort((a, b) => {
+              const parsePrize = (s: string) =>
+                parseFloat(s.replace(/[^\d.]/g, "")) || 0;
+              const aDate = new Date(a.startDate).getTime();
+              const bDate = new Date(b.startDate).getTime();
+              switch (sortBy) {
+                case "date-soonest":
+                  return aDate - bDate;
+                case "date-latest":
+                  return bDate - aDate;
+                case "prize-high":
+                  return parsePrize(b.prizePool) - parsePrize(a.prizePool);
+                case "prize-low":
+                  return parsePrize(a.prizePool) - parsePrize(b.prizePool);
+                case "players-high":
+                  return b.playersJoined - a.playersJoined;
+                case "players-low":
+                  return a.playersJoined - b.playersJoined;
+                case "game":
+                  return a.game.localeCompare(b.game);
+                default:
+                  return 0;
+              }
+            })
             .map((t) => (
               <TournamentCard
                 key={t.id}
@@ -213,7 +247,11 @@ export default function Tournaments() {
                 imageUrl={t.imageUrl}
                 game={t.game}
                 organizer={t.organizer}
-                startDate={new Date(t.startDate).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
+                startDate={new Date(t.startDate).toLocaleDateString(undefined, {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })}
                 prizePool={t.prizePool}
                 playersJoined={t.playersJoined}
               />
