@@ -1,23 +1,22 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { AppProvider } from "./context/AppContext";
 import "./App.css";
 
 // Components
-import { Header, Footer, ChatBot } from "./components";
+import { Header, Footer } from "./components";
+const ChatBot = lazy(() => import("./components/ChatBot"));
 
 // Pages
-import {
-  Home,
-  Profile,
-  Tournaments,
-  Events,
-  Messages,
-  Marketplace,
-  Signup,
-  Login,
-  Wishlist,
-  Settings,
-} from "./pages";
+const Home = lazy(() => import("./pages/Home"));
+const Profile = lazy(() => import("./pages/Profile"));
+const Tournaments = lazy(() => import("./pages/Tournaments"));
+const Events = lazy(() => import("./pages/Events"));
+const Messages = lazy(() => import("./pages/Messages"));
+const Marketplace = lazy(() => import("./pages/Marketplace"));
+const Signup = lazy(() => import("./pages/Signup"));
+const Login = lazy(() => import("./pages/Login"));
+const Wishlist = lazy(() => import("./pages/Wishlist"));
+const Settings = lazy(() => import("./pages/Settings"));
 import { PreferencesBootstrap } from "./components";
 
 type PageType =
@@ -110,12 +109,24 @@ function App() {
           />
         )}
 
-        <div className="flex-1">{renderPage()}</div>
+        <div className="flex-1">
+          <Suspense
+            fallback={
+              <div className="w-full h-full flex items-center justify-center text-white/70">
+                Loading...
+              </div>
+            }
+          >
+            {renderPage()}
+          </Suspense>
+        </div>
 
         {!isAuthPage && <Footer />}
 
         {/* Global ChatBot - appears on all pages */}
-        <ChatBot />
+        <Suspense fallback={null}>
+          <ChatBot />
+        </Suspense>
       </div>
     </AppProvider>
   );

@@ -1,7 +1,6 @@
 import { useState, useId, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../components";
-import * as S from "../styles/AuthStyles";
 import { useAppContext } from "../context/useAppContext";
 
 export default function Login() {
@@ -83,44 +82,34 @@ export default function Login() {
   };
 
   return (
-    <div style={S.authContainer}>
-      <div style={S.authCard}>
-        <div style={S.authHeader}>
-          <h1 style={S.authTitle}>{t("auth.login")}</h1>
-          <p style={{ color: "#9CA3AF", marginTop: "8px" }}>
-            {t("auth.welcomeBack")}
-          </p>
+    <div className="w-full min-h-screen bg-[#0B132B] flex items-center justify-center relative">
+      <div className="relative w-[802px] max-w-[92%] min-h-[480px] my-10 mx-auto bg-[rgba(11,19,43,0.95)] shadow-[0_8px_30px_rgba(2,8,23,0.6)] rounded-xl px-16 pt-12 pb-[72px] flex flex-col items-center box-border backdrop-blur-[6px]">
+        <div className="w-full flex flex-col items-center mb-10">
+          <h1 className="font-[Alice] font-normal text-[32px] leading-[37px] text-center text-[#EEEEEE] m-0">
+            {t("auth.login")}
+          </h1>
+          <p className="text-[#9CA3AF] mt-2">{t("auth.welcomeBack")}</p>
         </div>
 
-        <form onSubmit={handleSubmit} style={S.authForm}>
+        <form
+          onSubmit={handleSubmit}
+          className="w-full flex flex-col items-center gap-[22px]"
+        >
           {/* Error Display */}
           {error && (
-            <div
-              style={{
-                width: "100%",
-                padding: "12px 16px",
-                backgroundColor: "rgba(239, 68, 68, 0.1)",
-                border: "1px solid rgba(239, 68, 68, 0.3)",
-                borderRadius: "8px",
-                color: "#ef4444",
-                fontSize: "14px",
-                textAlign: "center",
-                marginBottom: "16px",
-                fontFamily: "Alice",
-              }}
-            >
+            <div className="w-full px-4 py-3 bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)] rounded-lg text-[#ef4444] text-sm text-center mb-4 font-[Alice]">
               {error}
             </div>
           )}
 
-          <div style={S.emailInputGroup}>
+          <div className="relative w-[720px] h-12">
             <label
               htmlFor={`${id}-email`}
-              style={
+              className={`absolute ${
                 formData.email || focus.email
-                  ? S.inputLabelActive
-                  : S.emailLabel
-              }
+                  ? "left-[14px] -top-[10px] transform-none text-sm leading-4 text-[#C4FFF9] px-[6px]"
+                  : "left-5 top-1/2 -translate-y-1/2 text-base leading-[18px] text-[rgba(255,255,255,0.6)] px-2"
+              } font-[Alice] font-normal pointer-events-none transition-all duration-200 bg-[rgba(11,19,43,0.95)]`}
             >
               {t("auth.email")}
             </label>
@@ -132,25 +121,27 @@ export default function Login() {
               onChange={handleInputChange}
               onFocus={() => handleFocus("email")}
               onBlur={() => handleBlur("email")}
-              style={
-                formData.email || focus.email ? S.inputFieldFocus : S.inputField
-              }
+              className={`w-[720px] h-12 ${
+                formData.email || focus.email
+                  ? "border-[#6fffe9] shadow-[0_0_0_4px_rgba(111,255,233,0.06)]"
+                  : "border-[rgba(255,255,255,0.28)]"
+              } border rounded-3xl bg-transparent text-white text-lg font-[Alice] px-5 outline-none box-border transition-all duration-200`}
               required
             />
           </div>
 
-          <div style={S.passwordInputGroup}>
+          <div className="relative w-[720px] h-12">
             <label
               htmlFor={`${id}-password`}
-              style={
+              className={`absolute ${
                 formData.password || focus.password
-                  ? S.inputLabelActive
-                  : S.passwordLabel
-              }
+                  ? "left-[14px] -top-[10px] transform-none text-sm leading-4 text-[#C4FFF9] px-[6px]"
+                  : "left-5 top-1/2 -translate-y-1/2 text-base leading-[18px] text-[rgba(255,255,255,0.6)] px-2"
+              } font-[Alice] font-normal pointer-events-none transition-all duration-[180ms] bg-[rgba(11,19,43,0.95)]`}
             >
               {t("auth.password")}
             </label>
-            <div style={{ position: "relative", width: "100%" }}>
+            <div className="relative w-full">
               <input
                 id={`${id}-password`}
                 name="password"
@@ -159,30 +150,17 @@ export default function Login() {
                 onChange={handleInputChange}
                 onFocus={() => handleFocus("password")}
                 onBlur={() => handleBlur("password")}
-                style={
+                className={`w-[720px] h-12 ${
                   formData.password || focus.password
-                    ? S.inputFieldFocus
-                    : S.inputField
-                }
+                    ? "border-[#6fffe9] shadow-[0_0_0_4px_rgba(111,255,233,0.06)]"
+                    : "border-[rgba(255,255,255,0.28)]"
+                } border rounded-3xl bg-transparent text-white text-lg font-[Alice] px-5 outline-none box-border transition-all duration-200`}
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                style={{
-                  position: "absolute",
-                  right: "12px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  padding: "4px",
-                  color: "#9CA3AF",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 bg-none border-none cursor-pointer p-1 text-[#9CA3AF] flex items-center justify-center"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? (
@@ -208,38 +186,20 @@ export default function Login() {
             </div>
           </div>
 
-          <div
-            style={{
-              width: "720px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <label
-              style={{
-                color: "rgba(255,255,255,0.7)",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-              }}
-            >
+          <div className="w-[720px] flex justify-between items-center">
+            <label className="text-[rgba(255,255,255,0.7)] flex items-center gap-2">
               <input type="checkbox" />
               <span>{t("auth.rememberMe")}</span>
             </label>
-            <a style={S.authLink as React.CSSProperties} href="#">
+            <a
+              className="text-[#C4FFF9] underline cursor-pointer transition-opacity duration-200 hover:opacity-80"
+              href="#"
+            >
               {t("auth.forgotPassword")}
             </a>
           </div>
 
-          <div
-            style={{
-              width: "100%",
-              display: "flex",
-              justifyContent: "center",
-              marginTop: "12px", // Reduced from "18px"
-            }}
-          >
+          <div className="w-full flex justify-center mt-3">
             <Button
               type="submit"
               variant="link"
@@ -254,32 +214,26 @@ export default function Login() {
             </Button>
           </div>
 
-          <div style={S.orText}>{t("auth.or")}</div>
+          <div className="font-[Alice] font-normal text-xl leading-[23px] text-center text-white my-3 w-full">
+            {t("auth.or")}
+          </div>
 
-          <div
-            style={{
-              width: "100%",
-              display: "flex",
-              justifyContent: "center",
-            }}
-          >
+          <div className="w-full flex justify-center">
             <button
-              style={S.discordButton}
+              className="w-[345px] h-[57px] bg-[#C4FFF9] rounded-[20px] border-none text-black font-[Alice] font-normal text-xl leading-[23px] cursor-pointer transition-opacity duration-200 block mx-auto mt-[6px] text-center py-3 px-[18px] hover:opacity-90"
               onClick={() => (window.location.href = "/auth/discord")}
             >
-              <span
-                style={{ color: "#0B132B", fontFamily: "Alice", fontSize: 20 }}
-              >
+              <span className="text-[#0B132B] font-[Alice] text-xl">
                 {t("auth.loginWithDiscord")}
               </span>
             </button>
           </div>
         </form>
 
-        <p style={S.authFooter}>
+        <p className="w-full font-[Alice] font-normal text-base leading-5 text-center text-[#EEEEEE] mt-[18px]">
           {t("auth.dontHaveAccount")}{" "}
           <a
-            style={S.authLink as React.CSSProperties}
+            className="text-[#C4FFF9] underline cursor-pointer transition-opacity duration-200 hover:opacity-80"
             href="#"
             onClick={(e) => {
               e.preventDefault();

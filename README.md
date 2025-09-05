@@ -1,6 +1,39 @@
 # GamerMajlis Frontend Architecture
 
-React 19 gaming platform with TypeScript, Vite, and a hybrid CSS-in-JS/Tailwind architecture. Implements RTL/LTR support, hash-based SPA navigation, modular component system, and a reusable decorative background.
+React 19 gaming platform with TypeScript, Vite, and a hybrid CSS-in-JS/Tailwind architecture. Implements RT## Recent changes (performance + styling)
+
+- **Vite v7.1.4**: Updated to latest Vite for better performance and build times.
+- **Tailwind CSS v3.4.14**: Using stable Tailwind v3 for compatibility with Vite 7. Theme colors defined in CSS variables.
+- **Code-splitting**: Pages and ChatBot are now loaded with `React.lazy` + `Suspense`, reducing the main bundle size. Vendor libraries are split via `vite.config.ts` (`react-vendor`, `i18n-vendor`).
+- **Tailwind-first footer**: `Footer.tsx` migrated to Tailwind utilities with CSS variable integration.
+- **Header polish**: Desktop Messages button uses black text, increased padding/min-width on md+ to prevent text touching edges, and modern focus/ring utilities.
+
+### Tailwind Configuration
+
+```javascript
+// tailwind.config.js
+export default {
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  theme: {
+    extend: {
+      fontFamily: {
+        alice: ["Alice-Regular", "Helvetica", "sans-serif"],
+      },
+      colors: {
+        dark: "#0b132b",
+        "dark-secondary": "#1e293b",
+        primary: "#6fffe9",
+        "primary-hover": "#5ee6d3",
+        text: "#ffffff",
+        "text-secondary": "#94a3b8",
+      },
+    },
+  },
+  plugins: [],
+};
+```
+
+Uses standard PostCSS setup with autoprefixer. CSS variables in `:root` for theme colors accessible across components. support, hash-based SPA navigation, modular component system, and a reusable decorative background.
 
 ## Architecture Overview
 
@@ -139,6 +172,14 @@ Translations are fetched at runtime using `i18next-http-backend` and language is
   },
   "home": { "title": "GAMERMAJLIS", "subtitle": "Join the ultimate..." }
 }
+
+  ---
+
+  ## Recent changes (performance + styling)
+
+  - Code-splitting: Pages and ChatBot are now loaded with `React.lazy` + `Suspense` in `App.tsx`, reducing the main bundle size. Vendor libraries are split via `vite.config.ts` (`react-vendor`, `i18n-vendor`).
+  - Tailwind-first footer: `Footer.tsx` migrated to Tailwind utilities (removed `FooterStyles.ts`).
+  - Header polish: Desktop Messages button uses black text, increased padding/min-width on md+ to prevent text touching edges, and v4 focus/ring utilities.
 ```
 
 ### RTL Handling
@@ -401,3 +442,22 @@ export const inputLabel: CSSProperties = {
 ```
 
 This architecture prioritizes maintainability, type safety, and consistent UX patterns across the application.
+
+## Tailwind-first (v4) styling notes
+
+We are migrating to Tailwind v4 utilities for layout and most component styling while keeping CSS-in-JS for special cases. Key v4 differences and conventions used:
+
+- Import: `@import "tailwindcss";` in `src/index.css` (replaces multiple `@tailwind` layers).
+- Focus utilities: use `focus:outline-hidden` and `focus-visible:ring-3` for accessible focus styles. In v4, the ring default is 1px; specify `ring-3` to match older 3px look.
+- Shadows: the bare `shadow` became `shadow-sm`. Use `shadow-xs`, `shadow-sm`, `shadow-md`, etc.
+- Size utility: `size-*` sets both width and height. We use `size-4 md:size-5` for icon buttons, etc.
+- Borders/Ring color: defaults are `currentColor`. Specify colors explicitly where needed (e.g., `border-gray-200`, `ring-[#0B132B]/30`).
+- Custom utilities: prefer native utilities; if needed, use `@utility` in CSS for project-specific classes.
+- Spacing: prefer `gap-*` in flex/grid over `space-x/y-*` for better performance.
+
+Project conventions:
+
+- Tailwind for layout, spacing, and states; CSS-in-JS only for complex visuals or computed styles.
+- Z-index: Background `z-0`, content `z-10/20`, header `z-50`, overlays `z-[900+]`.
+- Responsive first: mobile defaults with `md:` and higher breakpoints layered on.
+- RTL: rely on logical utilities where possible and global RTL adjustments in `index.css`.

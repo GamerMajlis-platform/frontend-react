@@ -1,7 +1,6 @@
 import { useState, useId, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../components";
-import * as S from "../styles/AuthStyles";
 import { useAppContext } from "../context/useAppContext";
 
 export default function Signup() {
@@ -117,44 +116,34 @@ export default function Signup() {
   };
 
   return (
-    <div style={S.authContainer}>
-      <div style={S.authCard}>
-        <div style={S.authHeader}>
-          <h1 style={S.authTitle}>{t("auth.signup")}</h1>
-          <p style={{ color: "#9CA3AF", marginTop: "8px" }}>
-            {t("auth.joinCommunity")}
-          </p>
+    <div className="w-full min-h-screen bg-[#0B132B] flex items-center justify-center relative">
+      <div className="relative w-[802px] max-w-[92%] min-h-[480px] my-10 mx-auto bg-[rgba(11,19,43,0.95)] shadow-[0_8px_30px_rgba(2,8,23,0.6)] rounded-xl px-16 pt-12 pb-[72px] flex flex-col items-center box-border backdrop-blur-[6px]">
+        <div className="w-full flex flex-col items-center mb-10">
+          <h1 className="font-[Alice] font-normal text-[32px] leading-[37px] text-center text-[#EEEEEE] m-0">
+            {t("auth.signup")}
+          </h1>
+          <p className="text-[#9CA3AF] mt-2">{t("auth.joinCommunity")}</p>
         </div>
 
-        <form onSubmit={handleSubmit} style={S.authForm}>
+        <form
+          onSubmit={handleSubmit}
+          className="w-full flex flex-col items-center gap-[22px]"
+        >
           {/* Error Display */}
           {error && (
-            <div
-              style={{
-                width: "100%",
-                padding: "12px 16px",
-                backgroundColor: "rgba(239, 68, 68, 0.1)",
-                border: "1px solid rgba(239, 68, 68, 0.3)",
-                borderRadius: "8px",
-                color: "#ef4444",
-                fontSize: "14px",
-                textAlign: "center",
-                marginBottom: "16px",
-                fontFamily: "Alice",
-              }}
-            >
+            <div className="w-full px-4 py-3 bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)] rounded-lg text-[#ef4444] text-sm text-center mb-4 font-[Alice]">
               {error}
             </div>
           )}
 
-          <div style={S.emailInputGroup}>
+          <div className="relative w-[720px] h-12">
             <label
               htmlFor={`${id}-username`}
-              style={
+              className={`absolute ${
                 formData.username || focus.username
-                  ? S.inputLabelActive
-                  : S.emailLabel
-              }
+                  ? "left-[14px] -top-[10px] transform-none text-sm leading-4 text-[#C4FFF9] px-[6px]"
+                  : "left-5 top-1/2 -translate-y-1/2 text-base leading-[18px] text-[rgba(255,255,255,0.6)] px-2"
+              } font-[Alice] font-normal pointer-events-none transition-all duration-200 bg-[rgba(11,19,43,0.95)]`}
             >
               {t("auth.username")}
             </label>
@@ -166,24 +155,24 @@ export default function Signup() {
               onChange={handleInputChange}
               onFocus={() => handleFocus("username")}
               onBlur={() => handleBlur("username")}
-              style={
+              className={`w-[720px] h-12 ${
                 formData.username || focus.username
-                  ? S.inputFieldFocus
-                  : S.inputField
-              }
+                  ? "border-[#6fffe9] shadow-[0_0_0_4px_rgba(111,255,233,0.06)]"
+                  : "border-[rgba(255,255,255,0.28)]"
+              } border rounded-3xl bg-transparent text-white text-lg font-[Alice] px-5 outline-none box-border transition-all duration-200`}
               aria-label={t("auth.username")}
               required
             />
           </div>
 
-          <div style={S.emailInputGroup}>
+          <div className="relative w-[720px] h-12">
             <label
               htmlFor={`${id}-email`}
-              style={
+              className={`absolute ${
                 formData.email || focus.email
-                  ? S.inputLabelActive
-                  : S.emailLabel
-              }
+                  ? "left-[14px] -top-[10px] transform-none text-sm leading-4 text-[#C4FFF9] px-[6px]"
+                  : "left-5 top-1/2 -translate-y-1/2 text-base leading-[18px] text-[rgba(255,255,255,0.6)] px-2"
+              } font-[Alice] font-normal pointer-events-none transition-all duration-200 bg-[rgba(11,19,43,0.95)]`}
             >
               {t("auth.email")}
             </label>
@@ -195,26 +184,28 @@ export default function Signup() {
               onChange={handleInputChange}
               onFocus={() => handleFocus("email")}
               onBlur={() => handleBlur("email")}
-              style={
-                formData.email || focus.email ? S.inputFieldFocus : S.inputField
-              }
+              className={`w-[720px] h-12 ${
+                formData.email || focus.email
+                  ? "border-[#6fffe9] shadow-[0_0_0_4px_rgba(111,255,233,0.06)]"
+                  : "border-[rgba(255,255,255,0.28)]"
+              } border rounded-3xl bg-transparent text-white text-lg font-[Alice] px-5 outline-none box-border transition-all duration-200`}
               aria-label={t("auth.email")}
               required
             />
           </div>
 
-          <div style={S.passwordInputGroup}>
+          <div className="relative w-[720px] h-12">
             <label
               htmlFor={`${id}-password`}
-              style={
+              className={`absolute ${
                 formData.password || focus.password
-                  ? S.inputLabelActive
-                  : S.passwordLabel
-              }
+                  ? "left-[14px] -top-[10px] transform-none text-sm leading-4 text-[#C4FFF9] px-[6px]"
+                  : "left-5 top-1/2 -translate-y-1/2 text-base leading-[18px] text-[rgba(255,255,255,0.6)] px-2"
+              } font-[Alice] font-normal pointer-events-none transition-all duration-[180ms] bg-[rgba(11,19,43,0.95)]`}
             >
               {t("auth.password")}
             </label>
-            <div style={{ position: "relative", width: "100%" }}>
+            <div className="relative w-full">
               <input
                 type={showPassword ? "text" : "password"}
                 id={`${id}-password`}
@@ -223,31 +214,18 @@ export default function Signup() {
                 onChange={handleInputChange}
                 onFocus={() => handleFocus("password")}
                 onBlur={() => handleBlur("password")}
-                style={
+                className={`w-[720px] h-12 ${
                   formData.password || focus.password
-                    ? S.inputFieldFocus
-                    : S.inputField
-                }
+                    ? "border-[#6fffe9] shadow-[0_0_0_4px_rgba(111,255,233,0.06)]"
+                    : "border-[rgba(255,255,255,0.28)]"
+                } border rounded-3xl bg-transparent text-white text-lg font-[Alice] px-5 outline-none box-border transition-all duration-200`}
                 aria-label={t("auth.password")}
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                style={{
-                  position: "absolute",
-                  right: "12px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  padding: "4px",
-                  color: "#9CA3AF",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 bg-none border-none cursor-pointer p-1 text-[#9CA3AF] flex items-center justify-center"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? (
@@ -273,18 +251,18 @@ export default function Signup() {
             </div>
           </div>
 
-          <div style={S.passwordInputGroup}>
+          <div className="relative w-[720px] h-12">
             <label
               htmlFor={`${id}-confirmPassword`}
-              style={
+              className={`absolute ${
                 formData.confirmPassword || focus.confirmPassword
-                  ? S.inputLabelActive
-                  : S.passwordLabel
-              }
+                  ? "left-[14px] -top-[10px] transform-none text-sm leading-4 text-[#C4FFF9] px-[6px]"
+                  : "left-5 top-1/2 -translate-y-1/2 text-base leading-[18px] text-[rgba(255,255,255,0.6)] px-2"
+              } font-[Alice] font-normal pointer-events-none transition-all duration-[180ms] bg-[rgba(11,19,43,0.95)]`}
             >
               {t("auth.confirmPassword")}
             </label>
-            <div style={{ position: "relative", width: "100%" }}>
+            <div className="relative w-full">
               <input
                 type={showConfirmPassword ? "text" : "password"}
                 id={`${id}-confirmPassword`}
@@ -293,31 +271,18 @@ export default function Signup() {
                 onChange={handleInputChange}
                 onFocus={() => handleFocus("confirmPassword")}
                 onBlur={() => handleBlur("confirmPassword")}
-                style={
+                className={`w-[720px] h-12 ${
                   formData.confirmPassword || focus.confirmPassword
-                    ? S.inputFieldFocus
-                    : S.inputField
-                }
+                    ? "border-[#6fffe9] shadow-[0_0_0_4px_rgba(111,255,233,0.06)]"
+                    : "border-[rgba(255,255,255,0.28)]"
+                } border rounded-3xl bg-transparent text-white text-lg font-[Alice] px-5 outline-none box-border transition-all duration-200`}
                 aria-label={t("auth.confirmPassword")}
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                style={{
-                  position: "absolute",
-                  right: "12px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  padding: "4px",
-                  color: "#9CA3AF",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 bg-none border-none cursor-pointer p-1 text-[#9CA3AF] flex items-center justify-center"
                 aria-label={
                   showConfirmPassword ? "Hide password" : "Show password"
                 }
@@ -345,14 +310,7 @@ export default function Signup() {
             </div>
           </div>
 
-          <div
-            style={{
-              width: "100%",
-              display: "flex",
-              justifyContent: "center",
-              marginTop: "18px",
-            }}
-          >
+          <div className="w-full flex justify-center mt-[18px]">
             <Button
               type="submit"
               variant="link"
@@ -368,10 +326,10 @@ export default function Signup() {
           </div>
         </form>
 
-        <p style={S.authFooter}>
+        <p className="w-full font-[Alice] font-normal text-base leading-5 text-center text-[#EEEEEE] mt-[18px]">
           {t("auth.alreadyHaveAccount")}{" "}
           <a
-            style={S.authLink}
+            className="text-[#C4FFF9] underline cursor-pointer transition-opacity duration-200 hover:opacity-80"
             href="#"
             onClick={(e) => {
               e.preventDefault();

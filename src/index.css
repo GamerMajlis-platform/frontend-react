@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Reset default browser styles */
 * {
@@ -46,11 +48,12 @@ body {
   --variable-collection-percentage: 720px;
   --animate-spin: spin 1s linear infinite;
 
-  /* Common Colors */
+  /* Theme colors - accessible via CSS variables */
+  --font-alice: "Alice-Regular", Helvetica, sans-serif;
+  --color-dark: #0b132b;
+  --color-dark-secondary: #1e293b;
   --color-primary: #6fffe9;
   --color-primary-hover: #5ee6d3;
-  --color-dark: #0f172a;
-  --color-dark-secondary: #1e293b;
   --color-text: #ffffff;
   --color-text-secondary: #94a3b8;
 
