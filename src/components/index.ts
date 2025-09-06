@@ -11,3 +11,7 @@ export { default as PreferencesBootstrap } from "./PreferencesBootstrap";
 export { default as BackgroundDecor } from "./BackgroundDecor";
 export { default as TournamentCard } from "./TournamentCard";
 export { default as EventCard } from "./EventCard";
+export { default as ConversationList } from "./ConversationList";
+export { default as MessageBubble } from "./MessageBubble";
+export { default as Composer } from "./Composer";
+export { default as MessageThread } from "./MessageThread";

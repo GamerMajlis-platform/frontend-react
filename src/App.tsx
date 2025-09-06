@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { AppProvider } from "./context/AppContext";
 import "./App.css";
 
@@ -61,6 +61,13 @@ function App() {
   const [currentPage, setCurrentPage] = useState<PageType>(
     resolvePageFromHash()
   );
+
+  // If the app is opened without a hash, show the Messages page by default
+  useEffect(() => {
+    if (!window.location.hash) {
+      setCurrentPage("messages");
+    }
+  }, []);
 
   // Keep the app responsive to hash changes so simple SPA navigation works
   useState(() => {
