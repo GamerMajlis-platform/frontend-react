@@ -150,7 +150,7 @@ export default function Settings() {
     const toggleStyles = getToggleStyles(value);
     return (
       <button
-        className="w-12 h-6 rounded-xl border-none cursor-pointer relative"
+        className="w-12 h-6 min-h-0 rounded-xl border-none cursor-pointer relative"
         style={{
           backgroundColor: toggleStyles.button.backgroundColor,
           direction: toggleStyles.button.direction as "ltr" | "rtl",
@@ -246,41 +246,41 @@ export default function Settings() {
     isLast?: boolean;
   }) => (
     <div
-      className={`flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4 py-3 sm:py-4 ${
+      className={`grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 md:gap-6 py-3 md:py-4 items-start md:items-center ${
         !isLast ? "border-b" : ""
       }`}
       style={{
         borderBottomColor: !isLast ? colors.textMuted : "transparent",
       }}
     >
-      <div className="flex-1">
+      <div className="grid gap-1">
         <div
-          className="font-medium mb-1 text-sm sm:text-base"
+          className="font-medium text-sm md:text-base"
           style={{ color: colors.text }}
         >
           {label}
         </div>
         <div
-          className="text-xs sm:text-sm"
+          className="text-xs md:text-sm leading-relaxed"
           style={{ color: colors.textSecondary }}
         >
           {description}
         </div>
       </div>
-      <div className="flex-shrink-0">{children}</div>
+      <div className="justify-self-start md:justify-self-end">{children}</div>
     </div>
   );
 
   return (
     <main
-      className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-6 pb-6"
+      className="w-full max-w-6xl mx-auto px-4 sm:px-6 pt-6 pb-6"
       style={{ minHeight: "calc(100vh - 88px)" }}
     >
-      <div className="w-full">
+      <div className="grid gap-6 lg:gap-8">
         {/* Header */}
-        <header className="mb-6 sm:mb-8">
+        <header className="grid gap-3">
           <h1
-            className="text-xl sm:text-2xl font-semibold mb-2"
+            className="text-xl sm:text-2xl lg:text-3xl font-semibold"
             style={{
               fontFamily: fonts.alice,
               color: colors.text,
@@ -289,178 +289,203 @@ export default function Settings() {
             {t("settings.title")}
           </h1>
           <p
-            className="text-sm sm:text-base mb-6 sm:mb-8"
+            className="text-sm sm:text-base lg:text-lg max-w-3xl"
             style={{ color: colors.textSecondary }}
           >
             {t("settings.subtitle")}
           </p>
         </header>
 
-        {/* Notifications Section */}
-        <section
-          className="rounded-xl p-4 sm:p-6 mb-4 sm:mb-6"
-          style={{ backgroundColor: colors.darkSecondary }}
-        >
-          <h2
-            className="text-lg sm:text-xl font-semibold mb-2"
-            style={{
-              fontFamily: fonts.alice,
-              color: colors.text,
-            }}
+        {/* Settings Grid - Single column on mobile, can expand to 2 columns on larger screens if needed */}
+        <div className="grid gap-4 sm:gap-6">
+          {/* Notifications Section */}
+          <section
+            className="rounded-xl p-4 sm:p-6"
+            style={{ backgroundColor: colors.darkSecondary }}
           >
-            {t("settings.sections.notifications.title")}
-          </h2>
-          <p
-            className="text-xs sm:text-sm mb-4"
-            style={{ color: colors.textSecondary }}
-          >
-            {t("settings.sections.notifications.description")}
-          </p>
-
-          <div>
-            {settingsConfig.notifications.map((setting, index) => {
-              const value =
-                settings.notifications[
-                  setting.key as keyof typeof settings.notifications
-                ];
-              return (
-                <SettingRow
-                  key={setting.key}
-                  label={setting.label}
-                  description={setting.description}
-                  isLast={index === settingsConfig.notifications.length - 1}
+            <div className="grid gap-4">
+              <div className="grid gap-2">
+                <h2
+                  className="text-lg sm:text-xl lg:text-2xl font-semibold"
+                  style={{
+                    fontFamily: fonts.alice,
+                    color: colors.text,
+                  }}
                 >
-                  <ToggleButton
-                    value={Boolean(value)}
-                    onClick={() => handleToggle("notifications", setting.key)}
+                  {t("settings.sections.notifications.title")}
+                </h2>
+                <p
+                  className="text-xs sm:text-sm lg:text-base"
+                  style={{ color: colors.textSecondary }}
+                >
+                  {t("settings.sections.notifications.description")}
+                </p>
+              </div>
+
+              <div className="grid gap-0">
+                {settingsConfig.notifications.map((setting, index) => {
+                  const value =
+                    settings.notifications[
+                      setting.key as keyof typeof settings.notifications
+                    ];
+                  return (
+                    <SettingRow
+                      key={setting.key}
+                      label={setting.label}
+                      description={setting.description}
+                      isLast={index === settingsConfig.notifications.length - 1}
+                    >
+                      <ToggleButton
+                        value={Boolean(value)}
+                        onClick={() =>
+                          handleToggle("notifications", setting.key)
+                        }
+                      />
+                    </SettingRow>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+
+          {/* Privacy Section */}
+          <section
+            className="rounded-xl p-4 sm:p-6"
+            style={{ backgroundColor: colors.darkSecondary }}
+          >
+            <div className="grid gap-4">
+              <div className="grid gap-2">
+                <h2
+                  className="text-lg sm:text-xl lg:text-2xl font-semibold"
+                  style={{
+                    fontFamily: fonts.alice,
+                    color: colors.text,
+                  }}
+                >
+                  {t("settings.sections.privacy.title")}
+                </h2>
+                <p
+                  className="text-xs sm:text-sm lg:text-base"
+                  style={{ color: colors.textSecondary }}
+                >
+                  {t("settings.sections.privacy.description")}
+                </p>
+              </div>
+
+              <div className="grid gap-0">
+                {/* Profile Visibility */}
+                <SettingRow
+                  label={t("settings.sections.privacy.profileVisibility")}
+                  description={t(
+                    "settings.sections.privacy.profileVisibility_desc"
+                  )}
+                >
+                  <Dropdown
+                    type="profileVisibility"
+                    value={settings.privacy.profileVisibility}
+                    options={dropdownOptions.profileVisibility}
+                    onSelect={(value) =>
+                      updateSetting("privacy", "profileVisibility", value)
+                    }
                   />
                 </SettingRow>
-              );
-            })}
-          </div>
-        </section>
 
-        {/* Privacy Section */}
-        <section
-          className="rounded-xl p-6 mb-6"
-          style={{ backgroundColor: colors.darkSecondary }}
-        >
-          <h2
-            className="text-xl font-semibold mb-2"
-            style={{
-              fontFamily: fonts.alice,
-              color: colors.text,
-            }}
+                {settingsConfig.privacy.map((setting, index) => {
+                  const value =
+                    settings.privacy[
+                      setting.key as keyof typeof settings.privacy
+                    ];
+                  return (
+                    <SettingRow
+                      key={setting.key}
+                      label={setting.label}
+                      description={setting.description}
+                      isLast={index === settingsConfig.privacy.length - 1}
+                    >
+                      <ToggleButton
+                        value={Boolean(value)}
+                        onClick={() => handleToggle("privacy", setting.key)}
+                      />
+                    </SettingRow>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+
+          {/* Preferences Section */}
+          <section
+            className="rounded-xl p-4 sm:p-6"
+            style={{ backgroundColor: colors.darkSecondary }}
           >
-            {t("settings.sections.privacy.title")}
-          </h2>
-          <p className="text-sm mb-4" style={{ color: colors.textSecondary }}>
-            {t("settings.sections.privacy.description")}
-          </p>
-
-          <div>
-            {/* Profile Visibility */}
-            <SettingRow
-              label={t("settings.sections.privacy.profileVisibility")}
-              description={t(
-                "settings.sections.privacy.profileVisibility_desc"
-              )}
-            >
-              <Dropdown
-                type="profileVisibility"
-                value={settings.privacy.profileVisibility}
-                options={dropdownOptions.profileVisibility}
-                onSelect={(value) =>
-                  updateSetting("privacy", "profileVisibility", value)
-                }
-              />
-            </SettingRow>
-
-            {settingsConfig.privacy.map((setting, index) => {
-              const value =
-                settings.privacy[setting.key as keyof typeof settings.privacy];
-              return (
-                <SettingRow
-                  key={setting.key}
-                  label={setting.label}
-                  description={setting.description}
-                  isLast={index === settingsConfig.privacy.length - 1}
+            <div className="grid gap-4">
+              <div className="grid gap-2">
+                <h2
+                  className="text-lg sm:text-xl lg:text-2xl font-semibold"
+                  style={{
+                    fontFamily: fonts.alice,
+                    color: colors.text,
+                  }}
                 >
-                  <ToggleButton
-                    value={Boolean(value)}
-                    onClick={() => handleToggle("privacy", setting.key)}
+                  {t("settings.sections.preferences.title")}
+                </h2>
+                <p
+                  className="text-xs sm:text-sm lg:text-base"
+                  style={{ color: colors.textSecondary }}
+                >
+                  {t("settings.sections.preferences.description")}
+                </p>
+              </div>
+
+              <div className="grid gap-0">
+                <SettingRow
+                  label={t("settings.sections.preferences.language")}
+                  description="Choose your preferred language"
+                >
+                  <Dropdown
+                    type="language"
+                    value={settings.preferences.language}
+                    options={dropdownOptions.language}
+                    onSelect={(value) => {
+                      updateSetting("preferences", "language", value);
+                      setLanguage(value);
+                    }}
                   />
                 </SettingRow>
-              );
-            })}
-          </div>
-        </section>
 
-        {/* Preferences Section */}
-        <section
-          className="rounded-xl p-6 mb-6"
-          style={{ backgroundColor: colors.darkSecondary }}
-        >
-          <h2
-            className="text-xl font-semibold mb-2"
-            style={{
-              fontFamily: fonts.alice,
-              color: colors.text,
-            }}
-          >
-            {t("settings.sections.preferences.title")}
-          </h2>
-          <p className="text-sm mb-4" style={{ color: colors.textSecondary }}>
-            {t("settings.sections.preferences.description")}
-          </p>
+                <SettingRow
+                  label={t("settings.sections.preferences.theme")}
+                  description="Choose your preferred theme"
+                >
+                  <Dropdown
+                    type="theme"
+                    value={settings.preferences.theme}
+                    options={dropdownOptions.theme}
+                    onSelect={(value) => {
+                      updateSetting("preferences", "theme", value);
+                      setTheme(value as "dark" | "light" | "auto");
+                    }}
+                  />
+                </SettingRow>
 
-          <div>
-            <SettingRow
-              label={t("settings.sections.preferences.language")}
-              description="Choose your preferred language"
-            >
-              <Dropdown
-                type="language"
-                value={settings.preferences.language}
-                options={dropdownOptions.language}
-                onSelect={(value) => {
-                  updateSetting("preferences", "language", value);
-                  setLanguage(value);
-                }}
-              />
-            </SettingRow>
-
-            <SettingRow
-              label={t("settings.sections.preferences.theme")}
-              description="Choose your preferred theme"
-            >
-              <Dropdown
-                type="theme"
-                value={settings.preferences.theme}
-                options={dropdownOptions.theme}
-                onSelect={(value) => {
-                  updateSetting("preferences", "theme", value);
-                  setTheme(value as "dark" | "light" | "auto");
-                }}
-              />
-            </SettingRow>
-
-            <SettingRow
-              label={t("settings.sections.preferences.currency")}
-              description="Choose your preferred currency"
-              isLast={true}
-            >
-              <Dropdown
-                type="currency"
-                value={settings.preferences.currency}
-                options={dropdownOptions.currency}
-                onSelect={(value) =>
-                  updateSetting("preferences", "currency", value)
-                }
-              />
-            </SettingRow>
-          </div>
-        </section>
+                <SettingRow
+                  label={t("settings.sections.preferences.currency")}
+                  description="Choose your preferred currency"
+                  isLast={true}
+                >
+                  <Dropdown
+                    type="currency"
+                    value={settings.preferences.currency}
+                    options={dropdownOptions.currency}
+                    onSelect={(value) =>
+                      updateSetting("preferences", "currency", value)
+                    }
+                  />
+                </SettingRow>
+              </div>
+            </div>
+          </section>
+        </div>
       </div>
     </main>
   );

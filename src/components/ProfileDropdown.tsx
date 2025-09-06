@@ -3,10 +3,7 @@ import { useAppContext } from "../context/useAppContext";
 
 interface ProfileDropdownProps {
   onSectionChange?: (section: string) => void;
-  userInfo?: {
-    name: string;
-    email: string;
-  };
+  userInfo?: { name: string; email: string };
 }
 
 export default function ProfileDropdown({
@@ -17,226 +14,134 @@ export default function ProfileDropdown({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { wishlist, logout, user } = useAppContext();
 
-  // Use authenticated user info if available, fallback to prop
   const displayUser = user
-    ? {
-        name: user.displayName,
-        email: user.email,
-      }
-    : userInfo || {
-        name: "Guest User",
-        email: "guest@example.com",
-      };
+    ? { name: user.displayName, email: user.email }
+    : userInfo || { name: "Guest User", email: "guest@example.com" };
 
   const handleLogout = async () => {
+    setIsOpen(false);
     try {
-      setIsOpen(false);
       await logout();
-      // Redirect to home page after logout
-      window.location.hash = "#home";
-    } catch (error) {
-      console.error("Logout failed:", error);
-      // Still redirect even if logout fails
-      window.location.hash = "#home";
+    } catch (e) {
+      console.error("Logout failed:", e);
     }
+    window.location.hash = "#home";
   };
 
-  // Close dropdown when clicking outside
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    const handler = (e: MouseEvent) => {
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+        !dropdownRef.current.contains(e.target as Node)
+      )
         setIsOpen(false);
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const handleMenuClick = (section: string) => {
-    setIsOpen(false);
-    onSectionChange?.(section);
-  };
-
-  const toggle = () => setIsOpen((v) => !v);
-  const close = () => setIsOpen(false);
+  const menuItems = [
+    { key: "profile", label: "Profile", icon: "👤" },
+    { key: "wishlist", label: "Wishlist", icon: "❤️", badge: wishlist.length },
+    { key: "settings", label: "Settings", icon: "⚙️" },
+  ];
 
   return (
     <div className="relative" ref={dropdownRef}>
-      {/* Profile Button */}
-      <div className="flex items-center gap-2">
-        {/* Avatar button (click toggles) */}
-        <button
-          className="w-10 h-10 bg-[#1C2541] text-white rounded-full hover:bg-[#3A506B] transition-colors flex items-center justify-center shadow-sm focus:outline-none focus:ring-2 focus:ring-[#6fffe9]"
-          onClick={toggle}
-          aria-expanded={isOpen}
-          aria-haspopup="menu"
-          aria-label="Profile Menu"
-        >
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              fillRule="evenodd"
-              d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </button>
+      {/* Toggle Button (desktop avatar, mobile hamburger) */}
+      <button
+        onClick={() => setIsOpen((v) => !v)}
+        className="flex md:hidden flex-col justify-center items-center w-10 h-10 
+                   rounded-md bg-[#1C2541] text-white hover:bg-[#3A506B] transition"
+        aria-label="Toggle menu"
+      >
+        {/* Hamburger / X animation */}
+        <span
+          className={`block h-0.5 w-6 bg-white transition-transform duration-300 ${
+            isOpen ? "rotate-45 translate-y-1.5" : ""
+          }`}
+        />
+        <span
+          className={`block h-0.5 w-6 bg-white my-1 transition-opacity duration-300 ${
+            isOpen ? "opacity-0" : "opacity-100"
+          }`}
+        />
+        <span
+          className={`block h-0.5 w-6 bg-white transition-transform duration-300 ${
+            isOpen ? "-rotate-45 -translate-y-1.5" : ""
+          }`}
+        />
+      </button>
 
-        {/* Dropdown indicator button */}
-        <button
-          className="w-8 h-8 bg-[#1C2541] text-white rounded-md hover:bg-[#3A506B] transition-colors flex items-center justify-center shadow-sm focus:outline-none focus:ring-2 focus:ring-[#6fffe9]"
-          onClick={toggle}
-          aria-expanded={isOpen}
-          aria-haspopup="menu"
-          aria-label="Open profile dropdown"
-        >
-          <svg
-            className={`w-4 h-4 transition-transform ${
-              isOpen ? "rotate-180" : "rotate-0"
-            }`}
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path
-              fillRule="evenodd"
-              d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </button>
-      </div>
+      {/* Desktop Avatar Button */}
+      <button
+        onClick={() => setIsOpen((v) => !v)}
+        className="hidden md:flex items-center justify-center w-9 h-9 
+                   bg-[#1C2541] text-white rounded-full hover:bg-[#3A506B] shadow-md"
+        aria-label="Profile Menu"
+      >
+        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            fillRule="evenodd"
+            d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+            clipRule="evenodd"
+          />
+        </svg>
+      </button>
 
-      {/* Dropdown Menu */}
+      {/* Dropdown */}
       {isOpen && (
         <>
-          {/* Backdrop for mobile */}
+          {/* Backdrop (mobile only) */}
           <div
-            className="fixed inset-0 z-[900] bg-black/20 backdrop-blur-sm md:hidden"
-            onClick={close}
+            className="fixed inset-0 bg-black/30 md:hidden"
+            onClick={() => setIsOpen(false)}
           />
 
           <div
             role="menu"
-            aria-label="Profile menu"
-            className="absolute right-0 top-12 w-64 bg-white rounded-xl shadow-2xl border border-gray-100/50 py-2 z-[1000] animate-in slide-in-from-top-2 duration-200 backdrop-blur-sm"
+            aria-expanded={isOpen}
+            aria-hidden={!isOpen}
+            className="fixed md:absolute right-4 md:right-0 top-16 md:top-12 
+                  w-[calc(100%-2rem)] md:w-56 bg-white rounded-lg shadow-lg 
+                  border border-gray-100 py-3 z-[1000] grid gap-2 animate-in fade-in-10 max-h-[60vh] overflow-auto"
           >
-            {/* User Info Section */}
-            <div className="px-4 py-3 border-b border-gray-100">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#1C2541] text-white rounded-full flex items-center justify-center">
-                  <svg
-                    className="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <div className="[font-family:'Alice-Regular',Helvetica] font-semibold text-[#1C2541] text-lg">
-                    {displayUser.name}
-                  </div>
-                  <div className="[font-family:'Alice-Regular',Helvetica] font-normal text-gray-600 text-sm">
-                    {displayUser.email}
-                  </div>
-                </div>
-              </div>
+            {/* User Info */}
+            <div className="px-4 pb-2 border-b text-sm text-gray-700">
+              <p className="font-semibold text-[#1C2541]">{displayUser.name}</p>
+              <p className="text-gray-500">{displayUser.email}</p>
             </div>
 
             {/* Menu Items */}
-            <div className="py-2">
-              <button
-                onClick={() => handleMenuClick("profile")}
-                className="w-full px-4 py-3 text-left [font-family:'Alice-Regular',Helvetica] font-normal text-[#1C2541] hover:bg-[#5BC0BE]/10 hover:text-[#1C2541] focus:bg-[#5BC0BE]/20 focus:outline-none transition-all duration-200 flex items-center gap-3 group"
-                role="menuitem"
-              >
-                <svg
-                  className="w-5 h-5 text-gray-600 group-hover:text-[#5BC0BE] transition-colors duration-200"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
+            <div className="grid gap-1 px-2">
+              {menuItems.map((item) => (
+                <button
+                  key={item.key}
+                  onClick={() => {
+                    setIsOpen(false);
+                    onSectionChange?.(item.key);
+                  }}
+                  className="flex items-center justify-between px-3 py-2 text-sm 
+                    rounded-md hover:bg-[#5BC0BE]/10 transition"
                 >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <span>Profile</span>
-              </button>
-
-              <button
-                onClick={() => handleMenuClick("wishlist")}
-                className="w-full px-4 py-3 text-left [font-family:'Alice-Regular',Helvetica] font-normal text-[#1C2541] hover:bg-[#5BC0BE]/10 hover:text-[#1C2541] focus:bg-[#5BC0BE]/20 focus:outline-none transition-all duration-200 flex items-center gap-3 group"
-                role="menuitem"
-              >
-                <svg
-                  className="w-5 h-5 text-gray-600 group-hover:text-red-500 transition-colors duration-200"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <span className="flex-1">Wishlist</span>
-                {wishlist.length > 0 && (
-                  <span className="text-xs bg-[#6fffe9] text-black px-2 py-0.5 rounded-full group-hover:bg-[#5BC0BE] group-hover:text-white transition-colors duration-200">
-                    {wishlist.length}
+                  <span className="flex items-center gap-2">
+                    <span>{item.icon}</span>
+                    {item.label}
                   </span>
-                )}
-              </button>
-
-              <button
-                onClick={() => handleMenuClick("settings")}
-                className="w-full px-4 py-3 text-left [font-family:'Alice-Regular',Helvetica] font-normal text-[#1C2541] hover:bg-[#5BC0BE]/10 hover:text-[#1C2541] focus:bg-[#5BC0BE]/20 focus:outline-none transition-all duration-200 flex items-center gap-3 group"
-                role="menuitem"
-              >
-                <svg
-                  className="w-5 h-5 text-gray-600 group-hover:text-[#5BC0BE] transition-colors duration-200"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <span>Settings</span>
-              </button>
-
-              {/* Separator */}
-              <div className="border-t border-gray-200 my-2"></div>
+                  {item.badge ? (
+                    <span className="text-xs bg-[#6fffe9] px-2 py-0.5 rounded-full">
+                      {item.badge}
+                    </span>
+                  ) : null}
+                </button>
+              ))}
 
               {/* Logout */}
               <button
-                onClick={() => {
-                  setIsOpen(false);
-                  handleLogout();
-                }}
-                className="w-full px-4 py-3 text-left [font-family:'Alice-Regular',Helvetica] font-normal text-red-600 hover:bg-red-50 hover:text-red-700 focus:bg-red-100 focus:outline-none transition-all duration-200 flex items-center gap-3 group"
-                role="menuitem"
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-100 rounded-md transition"
               >
-                <svg
-                  className="w-5 h-5 text-red-500 group-hover:text-red-600 transition-colors duration-200"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                <span aria-hidden>🚪</span>
                 <span>Logout</span>
               </button>
             </div>

@@ -10,3 +10,4 @@ export { default as ProfileDropdown } from "./ProfileDropdown";
 export { default as PreferencesBootstrap } from "./PreferencesBootstrap";
 export { default as BackgroundDecor } from "./BackgroundDecor";
 export { default as TournamentCard } from "./TournamentCard";
+export { default as EventCard } from "./EventCard";

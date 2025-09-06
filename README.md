@@ -67,24 +67,28 @@ src/
 ## Key Features
 
 ### Responsive Design
+
 - **Mobile-first approach** with breakpoints: sm (640px), md (768px), lg (1024px), xl (1280px)
 - **Adaptive header** with different layouts for mobile/desktop
 - **Mobile navigation** with full-screen overlay dropdown
 - **Responsive components** optimized for all screen sizes
 
 ### Internationalization (i18n)
+
 - **Bilingual support**: English (default) and Arabic with RTL layout
 - **Automatic RTL detection** based on Unicode character ranges
 - **Dynamic font switching** (Alice for English, Scheherazade for Arabic)
 - **Layout mirroring** for proper RTL experience
 
 ### Component Architecture
+
 - **Tailwind-first styling** with utility classes
 - **TypeScript interfaces** for type safety
 - **Composition patterns** for reusable components
 - **Responsive utilities** built into all components
 
 ### State Management
+
 - **React Context API** for global state
 - **localStorage persistence** for user preferences and wishlist
 - **Controlled components** with proper form handling
@@ -106,7 +110,7 @@ theme: {
     },
     colors: {
       dark: "#0b132b",
-      "dark-secondary": "#1e293b", 
+      "dark-secondary": "#1e293b",
       primary: "#6fffe9",
       "primary-hover": "#5ee6d3",
       text: "#ffffff",
@@ -130,6 +134,79 @@ CSS variables are used for consistent theming across components:
   --color-text-secondary: #94a3b8;
 }
 ```
+
+### Layout Implementation Strategy
+
+The project uses a strategic combination of CSS Grid and Flexbox based on layout complexity and requirements:
+
+#### CSS Grid Implementation
+
+Used for complex layouts requiring precise control over both rows and columns:
+
+**Components using CSS Grid:**
+
+- **Header.tsx (Mobile Layout)**:
+
+  - `grid-cols-[auto_1fr_auto]` for logo, spacer, and hamburger menu
+  - Provides consistent alignment across different logo sizes
+  - Better control for mobile navigation overlay positioning
+
+- **Settings.tsx**:
+
+  - Main container: `grid grid-cols-1 gap-8` for section organization
+  - SettingRow component: `grid-cols-[1fr_auto]` for label/control alignment
+  - Responsive breakpoints: `md:grid-cols-2` for larger screens
+  - Eliminates flexbox alignment issues with varying content heights
+
+- **Profile.tsx**:
+  - Header section: `grid-cols-[auto_1fr_1fr]` for avatar, info, and actions
+  - Content sections: `grid gap-6` for consistent spacing
+  - Replaces complex absolute positioning with semantic layout structure
+  - Better responsive behavior with explicit column definitions
+
+**Grid Usage Criteria:**
+
+- Complex two-dimensional layouts (rows AND columns)
+- Need for precise alignment control
+- Responsive layouts with changing column structures
+- Eliminating absolute positioning complexity
+
+#### Flexbox Implementation
+
+Used for simple linear layouts and component-level organization:
+
+**Components using Flexbox:**
+
+- **Button.tsx**: Simple horizontal icon/text alignment
+- **ProductCard.tsx**: Vertical content stacking with `flex-col`
+- **Footer.tsx**: Simple grid-like layout using `flex-wrap`
+- **Navigation items**: Horizontal menu layouts
+- **Card components**: Basic content organization
+
+**Flexbox Usage Criteria:**
+
+- Single-direction layouts (either row or column)
+- Simple content alignment and distribution
+- Component-internal layouts
+- When CSS Grid would be overkill
+
+#### Decision Framework
+
+**Choose CSS Grid when:**
+
+- Layout involves both rows and columns
+- Need precise control over element positioning
+- Complex responsive requirements with changing structures
+- Replacing absolute positioning solutions
+
+**Choose Flexbox when:**
+
+- Simple linear layouts (single direction)
+- Basic alignment and space distribution
+- Component-level content organization
+- Quick and straightforward layout needs
+
+This hybrid approach leverages the strengths of both layout systems while maintaining clean, maintainable code.
 
 ### Z-Index Layering
 
@@ -162,18 +239,21 @@ bun run lint
 ### Key Development Patterns
 
 #### Component Creation
+
 - Use TypeScript interfaces for props
 - Implement responsive design with Tailwind utilities
 - Include RTL support for text-heavy components
 - Export from appropriate index.ts files
 
 #### Styling Approach
+
 - **Tailwind utilities** for layout, spacing, and responsive design
 - **CSS variables** for theme colors and consistent styling
 - **Inline styles** only for dynamic or computed values
 - **Component-specific styles** in BaseStyles.ts when needed
 
 #### State Management
+
 - Use React Context for global state
 - Implement controlled components for forms
 - Persist important data in localStorage
@@ -196,14 +276,17 @@ bun run lint
 ## Architecture Decisions
 
 ### Navigation
+
 Hash-based SPA navigation with manual page state management in App.tsx, avoiding the complexity of a full router for this application size.
 
 ### Styling Strategy
+
 Moved from CSS-in-JS to Tailwind-first approach for better performance, smaller bundle sizes, and improved developer experience.
 
 ### Component Design
+
 Composition over inheritance with TypeScript interfaces, focusing on reusable, responsive components that work across the entire application.
 
 ### Internationalization
-Runtime translation loading with automatic RTL detection, providing seamless bilingual experience without additional build complexity.
 
+Runtime translation loading with automatic RTL detection, providing seamless bilingual experience without additional build complexity.

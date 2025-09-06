@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Logo, LanguageSwitcher, ProfileDropdown } from "./index";
+import { useAppContext } from "../context/useAppContext";
 import { navigationItems } from "../data";
 
 interface HeaderProps {
@@ -13,48 +14,105 @@ export default function Header({
   onSectionChange,
 }: HeaderProps) {
   const { t } = useTranslation();
+  const { logout } = useAppContext();
   const SHOW_LANG = import.meta.env.VITE_SHOW_LANG_SWITCHER === "true";
   const [isMessageHovered, setIsMessageHovered] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // Close on Escape and lock background scroll when mobile menu is open
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setIsMobileMenuOpen(false);
+    }
+
+    if (isMobileMenuOpen) {
+      document.body.classList.add("overflow-hidden");
+      document.addEventListener("keydown", onKey);
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+
+    return () => {
+      document.body.classList.remove("overflow-hidden");
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [isMobileMenuOpen]);
+
   return (
     <header className="bg-[#9CEAEF] backdrop-blur border-b border-[#6FFFE9]/60 relative z-50">
       {/* Mobile Header */}
-      <div className="md:hidden flex justify-between items-center px-5 py-5 h-[120px]">
+      <div className="md:hidden flex justify-between items-center pl-0 pr-15 py-5 h-[80px]">
         {/* Logo */}
         <div className="flex-none">
-          <Logo size="large" className="w-[220px] h-[37px]" />
+          <Logo size="large" className="w-[220px] h-[70px]" />
         </div>
 
-        {/* Mobile Menu Button */}
+        {/* Mobile Controls - Option 1: Profile + Hamburger side by side */}
+        <div className="flex items-center gap-3">
+          {/* Profile Image/Avatar - Option 1: Show small profile pic */}
+          <div className="w-8 h-8 rounded-full bg-slate-600 border-2 border-white overflow-hidden">
+            {/* Replace with actual profile image */}
+            <div className="w-full h-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-white text-xs font-bold">
+              U
+            </div>
+          </div>
+
+          {/* Hamburger Menu - improved visual: rounded, subtle bg, accessible */}
+          <button
+            className={`flex-none p-2 rounded-md focus:outline-none transition-colors z-50 pointer-events-auto ${
+              isMobileMenuOpen ? "bg-white/20" : "bg-white/10"
+            }`}
+            onClick={() => setIsMobileMenuOpen((v) => !v)}
+            aria-label="Toggle mobile menu"
+            aria-expanded={isMobileMenuOpen}
+          >
+            <div className="w-6 h-5 flex flex-col justify-between items-center">
+              <div
+                className={`w-5 h-0.5 bg-black transform origin-center transition-transform duration-200 ${
+                  isMobileMenuOpen
+                    ? "translate-y-1 rotate-45"
+                    : "translate-y-0 rotate-0"
+                }`}
+              />
+              <div
+                className={`w-5 h-0.5 bg-black transform origin-center transition-opacity duration-200 ${
+                  isMobileMenuOpen ? "opacity-0" : "opacity-100"
+                }`}
+              />
+              <div
+                className={`w-5 h-0.5 bg-black transform origin-center transition-transform duration-200 ${
+                  isMobileMenuOpen
+                    ? "-translate-y-1 -rotate-45"
+                    : "translate-y-0 rotate-0"
+                }`}
+              />
+            </div>
+          </button>
+        </div>
+
+        {/* 
+        Alternative Option 2: Only Hamburger, Profile in dropdown
         <button
-          className="flex-none w-10 h-6 bg-black"
+          className="flex-none p-2"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-label="Toggle mobile menu"
         >
-          <svg
-            className="w-full h-full text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <div className="w-6 h-5 flex flex-col justify-between">
             {isMobileMenuOpen ? (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
+              <div className="relative w-6 h-5">
+                <div className="absolute top-1/2 left-0 w-full h-0.5 bg-black transform -translate-y-1/2 rotate-45"></div>
+                <div className="absolute top-1/2 left-0 w-full h-0.5 bg-black transform -translate-y-1/2 -rotate-45"></div>
+              </div>
             ) : (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
+              <>
+                <div className="w-full h-0.5 bg-black"></div>
+                <div className="w-full h-0.5 bg-black"></div>
+                <div className="w-full h-0.5 bg-black"></div>
+              </>
             )}
-          </svg>
+          </div>
         </button>
+        */}
       </div>
 
       {/* Desktop Header */}
@@ -124,8 +182,13 @@ export default function Header({
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div className="md:hidden fixed inset-0 top-0 z-40">
-          <div className="absolute inset-0 w-full h-[267px] bg-[#9CEAEF]/50 backdrop-blur-[5px]">
-            <nav className="flex flex-col justify-center items-start px-5 h-full">
+          {/* Backdrop - click to close */}
+          <div
+            className="absolute inset-0 bg-black/20"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          <div className="absolute inset-x-0 top-0 w-full min-h-[50vh] bg-[#9CEAEF]/60 backdrop-blur-[5px]">
+            <nav className="flex flex-col justify-center items-start px-5 py-6">
               <div className="space-y-4">
                 {navigationItems.map((item) => (
                   <a
@@ -156,6 +219,53 @@ export default function Header({
                 >
                   {t("nav.messages")}
                 </button>
+
+                {/* Mobile Profile Options - Option A: Include in main dropdown */}
+                <div className="border-t border-white/20 pt-4 mt-4">
+                  <button
+                    onClick={() => {
+                      onSectionChange?.("profile");
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="block font-alice text-2xl leading-7 text-white transition-colors hover:text-white/80 mb-2"
+                  >
+                    Profile
+                  </button>
+                  <button
+                    onClick={() => {
+                      onSectionChange?.("settings");
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="block font-alice text-2xl leading-7 text-white transition-colors hover:text-white/80 mb-2"
+                  >
+                    Settings
+                  </button>
+                  <button
+                    onClick={async () => {
+                      try {
+                        setIsMobileMenuOpen(false);
+                        await logout();
+                        window.location.hash = "#home";
+                      } catch (e) {
+                        console.error(e);
+                        setIsMobileMenuOpen(false);
+                        window.location.hash = "#home";
+                      }
+                    }}
+                    className="block font-alice text-2xl leading-7 text-red-600 transition-colors hover:text-red-700"
+                  >
+                    Logout
+                  </button>
+                </div>
+
+                {/* 
+                Alternative Option B: Language switcher in mobile
+                {SHOW_LANG && (
+                  <div className="border-t border-white/20 pt-4 mt-4">
+                    <LanguageSwitcher variant="light" />
+                  </div>
+                )}
+                */}
               </div>
             </nav>
           </div>

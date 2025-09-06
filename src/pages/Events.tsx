@@ -1,9 +1,207 @@
-import { BackgroundDecor } from "../components";
+import { useEffect, useRef, useState } from "react";
+import { BackgroundDecor, EventCard } from "../components";
+import { events, eventSortOptions, type EventSortOption } from "../data";
 
 export default function Events() {
+  // Search / Sort state
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState<EventSortOption>("date-soonest");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Category filter state
+  type Category = "upcoming" | "ongoing" | "past";
+  const [category, setCategory] = useState<Category>("upcoming");
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleSearchFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.currentTarget.style.borderColor = "#6fffe9";
+    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(111, 255, 233, 0.1)";
+  };
+
+  const handleSearchBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.currentTarget.style.borderColor = "#475569";
+    e.currentTarget.style.boxShadow = "none";
+  };
+
   return (
-    <main className="relative w-full flex-1 min-h-[calc(100vh-88px)] py-8 sm:py-16 md:py-20 lg:py-24 xl:py-28">
+    <main className="relative z-10 min-h-screen bg-gradient-to-b from-[#0F172A] to-[#1C2541] py-4 sm:py-6 lg:py-8 tournaments-container">
       <BackgroundDecor />
+
+      <div className="relative z-10 mx-auto max-w-[1440px] px-4 sm:px-6 max-width-container">
+        {/* Page Label */}
+        <header className="mb-6 sm:mb-8 flex w-full items-center justify-center py-4 sm:py-6 tournaments-header">
+          <h1 className="font-alice text-[32px] sm:text-[40px] lg:text-[56px] leading-tight text-white tournaments-title text-center">
+            Events
+          </h1>
+        </header>
+
+        {/* Category Filter (between label and search) */}
+        <div
+          className="mb-6 sm:mb-7 flex w-full flex-row flex-wrap items-center justify-center gap-4 sm:gap-8 lg:gap-[100px]"
+          aria-label="Event category filter"
+        >
+          <button
+            className={`h-[36px] sm:h-[40px] lg:h-[45px] rounded-[15px] sm:rounded-[18px] lg:rounded-[20px] border-none px-4 sm:px-5 lg:px-6 text-center font-medium text-[16px] sm:text-[18px] lg:text-[22px] leading-tight transition-colors ${
+              category === "upcoming"
+                ? "bg-[#6FFFE9] text-black"
+                : "bg-transparent text-white hover:bg-white/10"
+            }`}
+            onClick={() => setCategory("upcoming")}
+          >
+            Upcoming
+          </button>
+          <button
+            className={`h-[36px] sm:h-[40px] lg:h-[45px] rounded-[15px] sm:rounded-[18px] lg:rounded-[20px] border-none px-4 sm:px-5 lg:px-6 text-center font-medium text-[16px] sm:text-[18px] lg:text-[22px] leading-tight transition-colors ${
+              category === "ongoing"
+                ? "bg-[#6FFFE9] text-black"
+                : "bg-transparent text-white hover:bg-white/10"
+            }`}
+            onClick={() => setCategory("ongoing")}
+          >
+            Ongoing
+          </button>
+          <button
+            className={`h-[36px] sm:h-[40px] lg:h-[45px] rounded-[15px] sm:rounded-[18px] lg:rounded-[20px] border-none px-4 sm:px-5 lg:px-6 text-center font-medium text-[16px] sm:text-[18px] lg:text-[22px] leading-tight transition-colors ${
+              category === "past"
+                ? "bg-[#6FFFE9] text-black"
+                : "bg-transparent text-white hover:bg-white/10"
+            }`}
+            onClick={() => setCategory("past")}
+          >
+            Past
+          </button>
+        </div>
+
+        {/* Search and Sort controls (marketplace-style) */}
+        <section className="mb-12 search-section md:mb-8 relative z-10">
+          <div className="mb-6 flex w-full max-w-[800px] mx-auto items-center gap-3 search-controls">
+            <input
+              type="text"
+              placeholder="Search events, organizers..."
+              className={`
+                h-12 w-full flex-1 rounded-xl border border-slate-600
+                bg-[#1C2541] px-4 py-3 text-white placeholder-slate-400
+                transition-all duration-300 focus:border-cyan-300
+                focus:shadow-[0_0_0_3px_rgba(111,255,233,0.1)] focus:outline-none search-input
+              `}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onFocus={handleSearchFocus}
+              onBlur={handleSearchBlur}
+            />
+
+            <div
+              className="relative w-[140px] sort-container"
+              ref={dropdownRef}
+            >
+              <button
+                className={`
+                  flex h-12 w-full items-center justify-between
+                  rounded-xl border-none bg-cyan-300 px-3 py-3 text-slate-900
+                  transition-colors duration-200 hover:bg-cyan-200 sort-button
+                  text-sm font-medium
+                `}
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              >
+                <span className="truncate">Sort by</span>
+                <span
+                  className={`ml-1 transform transition-transform duration-300 ease-in-out ${
+                    isDropdownOpen ? "rotate-180" : "rotate-0"
+                  }`}
+                >
+                  ▼
+                </span>
+              </button>
+
+              {isDropdownOpen && (
+                <div
+                  className={`absolute top-full right-0 z-50 mt-2 w-56 rounded-xl border border-slate-600 bg-slate-800 p-2 shadow-2xl sort-dropdown backdrop-blur-sm`}
+                >
+                  {eventSortOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      className={`block w-full rounded-md border-none px-3 py-2 text-left text-white transition-colors duration-200 text-sm hover:bg-slate-700 ${
+                        sortBy === option.value
+                          ? "bg-slate-700"
+                          : "bg-transparent"
+                      }`}
+                      onClick={() => {
+                        setSortBy(option.value);
+                        setIsDropdownOpen(false);
+                      }}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* Placeholder grid for event cards (cards to be added later) */}
+        <section
+          className={`grid grid-cols-1 justify-items-center gap-8 products-grid min-[900px]:grid-cols-2 xl:grid-cols-3 md:gap-6 sm:gap-4 mt-8 md:mt-6 relative z-0`}
+        >
+          {events
+            .filter((e) => e.category === category)
+            .filter((e) =>
+              [e.name, e.organizer, e.location]
+                .join(" ")
+                .toLowerCase()
+                .includes(searchTerm.toLowerCase())
+            )
+            .sort((a, b) => {
+              switch (sortBy) {
+                case "date-soonest":
+                  return (
+                    new Date(a.scheduledOn).getTime() -
+                    new Date(b.scheduledOn).getTime()
+                  );
+                case "date-latest":
+                  return (
+                    new Date(b.scheduledOn).getTime() -
+                    new Date(a.scheduledOn).getTime()
+                  );
+                case "name":
+                  return a.name.localeCompare(b.name);
+                case "organizer":
+                  return a.organizer.localeCompare(b.organizer);
+                case "location":
+                  return a.location.localeCompare(b.location);
+                default:
+                  return 0;
+              }
+            })
+            .map((ev) => (
+              <EventCard
+                key={ev.id}
+                variant={ev.category}
+                name={ev.name}
+                organizer={ev.organizer}
+                scheduledOn={new Date(ev.scheduledOn).toLocaleDateString(
+                  undefined,
+                  { month: "short", day: "numeric", year: "numeric" }
+                )}
+                location={ev.location}
+              />
+            ))}
+        </section>
+      </div>
     </main>
   );
 }

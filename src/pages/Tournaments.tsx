@@ -93,13 +93,18 @@ export default function Tournaments() {
           </button>
         </div>
 
-        {/* Search and Sort controls */}
-        <section className="mb-6 sm:mb-8 w-full search-section">
-          <div className="flex w-full flex-col items-center justify-between gap-4 lg:flex-row search-controls">
+        {/* Search and Sort controls (marketplace-style) */}
+        <section className="mb-12 search-section md:mb-8 relative z-10">
+          <div className="mb-6 flex w-full max-w-[800px] mx-auto items-center gap-3 search-controls">
             <input
               type="text"
               placeholder="Search tournaments, organizers..."
-              className="h-[40px] sm:h-[45px] lg:h-[50px] w-full max-w-[500px] lg:max-w-[600px] rounded-[8px] sm:rounded-[10px] border border-solid border-slate-600 bg-[#1C2541] px-3 sm:px-4 py-2 text-sm sm:text-base text-white placeholder-slate-400 focus:border-[#6fffe9] focus:shadow-[0_0_0_3px_rgba(111,255,233,0.1)] focus:outline-none search-input"
+              className={`
+                h-12 w-full flex-1 rounded-xl border border-slate-600
+                bg-[#1C2541] px-4 py-3 text-white placeholder-slate-400
+                transition-all duration-300 focus:border-cyan-300
+                focus:shadow-[0_0_0_3px_rgba(111,255,233,0.1)] focus:outline-none search-input
+              `}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onFocus={handleSearchFocus}
@@ -107,19 +112,21 @@ export default function Tournaments() {
             />
 
             <div
-              className="relative w-full max-w-[180px] sm:max-w-[200px] sort-container"
+              className="relative w-[140px] sort-container"
               ref={dropdownRef}
             >
               <button
-                className="flex h-[40px] sm:h-[45px] lg:h-[50px] w-full items-center justify-between rounded-[8px] sm:rounded-[10px] border-none bg-[#6fffe9] px-3 sm:px-4 py-2 text-sm sm:text-base text-black hover:bg-[#5ee6d3] transition-colors sort-button"
+                className={`
+                  flex h-12 w-full items-center justify-between
+                  rounded-xl border-none bg-cyan-300 px-3 py-3 text-slate-900
+                  transition-colors duration-200 hover:bg-cyan-200 sort-button
+                  text-sm font-medium
+                `}
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
-                <span className="truncate">
-                  {tournamentSortOptions.find((o) => o.value === sortBy)
-                    ?.label || "Sort By"}
-                </span>
+                <span className="truncate">Sort by</span>
                 <span
-                  className={`transform transition-transform duration-300 ease-in-out ml-2 ${
+                  className={`ml-1 transform transition-transform duration-300 ease-in-out ${
                     isDropdownOpen ? "rotate-180" : "rotate-0"
                   }`}
                 >
@@ -128,15 +135,26 @@ export default function Tournaments() {
               </button>
 
               {isDropdownOpen && (
-                <div className="absolute top-full z-20 mt-1 w-full rounded-[8px] sm:rounded-[10px] border border-slate-600 bg-[#1C2541] p-2 shadow-lg sort-dropdown">
+                <div
+                  className={`
+                    absolute top-full right-0 z-50 mt-2 w-56 rounded-xl
+                    border border-slate-600 bg-slate-800 p-2 shadow-2xl sort-dropdown
+                    backdrop-blur-sm
+                  `}
+                >
                   {tournamentSortOptions.map((option) => (
                     <button
                       key={option.value}
-                      className={`block w-full rounded-[5px] border-none px-3 py-2 text-left text-sm sm:text-base text-white hover:bg-slate-700 transition-colors ${
-                        sortBy === option.value
-                          ? "bg-slate-700"
-                          : "bg-transparent"
-                      }`}
+                      className={`
+                        block w-full rounded-md border-none px-3 py-2 text-left
+                        text-white transition-colors duration-200 text-sm
+                        hover:bg-slate-700
+                        ${
+                          sortBy === option.value
+                            ? "bg-slate-700"
+                            : "bg-transparent"
+                        }
+                      `}
                       onClick={() => {
                         setSortBy(option.value);
                         setIsDropdownOpen(false);
@@ -149,10 +167,21 @@ export default function Tournaments() {
               )}
             </div>
           </div>
+
+          {/* duplicate category row removed to avoid repeating the filters (top filter remains) */}
         </section>
 
         {/* Cards grid (filtered + sorted + searched) */}
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center gap-4 sm:gap-6 pb-6 pt-2 max-w-full">
+        <section
+          className={`
+            grid grid-cols-1 justify-items-center gap-8 products-grid
+            min-[900px]:grid-cols-2
+            xl:grid-cols-3
+            md:gap-6
+            sm:gap-4
+            mt-8 md:mt-6 relative z-0
+          `}
+        >
           {tournaments
             .filter((t) => t.category === category)
             .filter((t) =>
