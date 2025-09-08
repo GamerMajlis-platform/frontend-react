@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { BackgroundDecor, EventCard } from "../components";
+import { BackgroundDecor, Card } from "../components";
 import { events, eventSortOptions, type EventSortOption } from "../data";
 
 export default function Events() {
@@ -188,14 +188,19 @@ export default function Events() {
               }
             })
             .map((ev) => (
-              <EventCard
+              <Card
                 key={ev.id}
+                preset="event"
                 variant={ev.category}
                 name={ev.name}
                 organizer={ev.organizer}
                 scheduledOn={new Date(ev.scheduledOn).toLocaleDateString(
                   undefined,
-                  { month: "short", day: "numeric", year: "numeric" }
+                  {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  }
                 )}
                 location={ev.location}
               />

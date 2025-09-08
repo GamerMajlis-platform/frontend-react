@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { ProductCard, BackgroundDecor } from "../components";
+import { Card, BackgroundDecor } from "../components";
 import { productData, sortOptions, type SortOption } from "../data";
 
 // Utility function to detect RTL text
@@ -220,8 +220,9 @@ export default function Marketplace() {
         "
         >
           {sortedAndFilteredProducts.map((product) => (
-            <ProductCard
+            <Card
               key={product.id}
+              preset="product"
               id={product.id}
               category={product.category}
               productName={product.productName}

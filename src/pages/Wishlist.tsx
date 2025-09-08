@@ -1,4 +1,4 @@
-import { ProductCard, BackgroundDecor } from "../components";
+import { Card, BackgroundDecor } from "../components";
 import { useAppContext } from "../context/useAppContext";
 import type { WishlistItem } from "../context/AppContext";
 
@@ -37,7 +37,8 @@ export default function Wishlist() {
             >
               {wishlist.map((item: WishlistItem) => (
                 <div key={item.id} className="flex flex-col">
-                  <ProductCard
+                  <Card
+                    preset="product"
                     id={item.id}
                     category={item.category}
                     productName={item.productName}

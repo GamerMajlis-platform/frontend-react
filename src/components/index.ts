@@ -5,12 +5,10 @@ export { default as Logo } from "./Logo";
 export { default as Button } from "./Button";
 export { default as LanguageSwitcher } from "./LanguageSwitcher";
 export { default as ChatBot } from "./ChatBot";
-export { default as ProductCard } from "./ProductCard";
+export { default as Card } from "./Card"; // Unified multi-preset card
 export { default as ProfileDropdown } from "./ProfileDropdown";
 export { default as PreferencesBootstrap } from "./PreferencesBootstrap";
 export { default as BackgroundDecor } from "./BackgroundDecor";
-export { default as TournamentCard } from "./TournamentCard";
-export { default as EventCard } from "./EventCard";
 export { default as ConversationList } from "./ConversationList";
 export { default as MessageBubble } from "./MessageBubble";
 export { default as Composer } from "./Composer";

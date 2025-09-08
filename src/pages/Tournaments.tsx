@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { BackgroundDecor, TournamentCard } from "../components";
+import { BackgroundDecor, Card } from "../components";
 import {
   tournaments,
   tournamentSortOptions,
@@ -215,8 +215,9 @@ export default function Tournaments() {
               }
             })
             .map((t) => (
-              <TournamentCard
+              <Card
                 key={t.id}
+                preset="tournament"
                 variant={t.category}
                 imageUrl={t.imageUrl}
                 game={t.game}
