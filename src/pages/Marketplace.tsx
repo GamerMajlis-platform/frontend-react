@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, BackgroundDecor } from "../components";
 import { productData, sortOptions, type SortOption } from "../data";
 
@@ -8,19 +9,20 @@ const isRTLText = (text: string): boolean => {
 };
 
 export default function Marketplace() {
+  const { i18n, t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("name");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("All Items");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Filter categories
+  // Filter categories: keep canonical values for filtering and translation keys for display
   const categories = [
-    "All Items",
-    "Gaming Gear",
-    "Console",
-    "PC Parts",
-    "Audio",
+    { value: "All Items", labelKey: "categories.allItems" },
+    { value: "Gaming Gear", labelKey: "categories.gamingGear" },
+    { value: "Console", labelKey: "categories.console" },
+    { value: "PC Parts", labelKey: "categories.pcParts" },
+    { value: "Audio", labelKey: "categories.audio" },
   ];
 
   // Close dropdown when clicking outside
@@ -61,9 +63,12 @@ export default function Marketplace() {
         .includes(selectedCategory.toLowerCase());
     })
     .sort((a, b) => {
+      const collator = new Intl.Collator(i18n.language === "ar" ? "ar" : "en", {
+        sensitivity: "base",
+      });
       switch (sortBy) {
         case "name":
-          return a.productName.localeCompare(b.productName);
+          return collator.compare(a.productName, b.productName);
         case "price-low":
           return parsePrice(a.price) - parsePrice(b.price);
         case "price-high":
@@ -89,10 +94,10 @@ export default function Marketplace() {
               mb-4 text-5xl font-bold text-white drop-shadow-md marketplace-title
               md:text-4xl
               sm:text-3xl
-              ${isRTLText("Gaming Marketplace") ? "font-tahoma" : "font-sans"}
+              ${isRTLText(t("marketplace.title")) ? "font-tahoma" : "font-sans"}
             `}
           >
-            Gaming Marketplace
+            {t("marketplace.title")}
           </h1>
           <p
             className={`
@@ -107,7 +112,7 @@ export default function Marketplace() {
               }
             `}
           >
-            Discover premium gaming gear from trusted sellers worldwide
+            {t("marketplace.subtitle")}
           </p>
         </header>
 
@@ -117,7 +122,7 @@ export default function Marketplace() {
           <div className="mb-6 flex w-full max-w-[800px] mx-auto items-center gap-3 search-controls">
             <input
               type="text"
-              placeholder="Search for gaming gear, accessories..."
+              placeholder={t("marketplace.searchPlaceholder")}
               className="
                 h-12 w-full flex-1 rounded-xl border border-slate-600 
                 bg-slate-800 px-4 py-3 text-white placeholder-slate-400 
@@ -142,7 +147,7 @@ export default function Marketplace() {
                 "
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
-                <span className="truncate">Sort by</span>
+                <span className="truncate">{t("tournaments.sort.placeholder") /* generic 'Sort by' key used */}</span>
                 <span
                   className={`ml-1 transform transition-transform duration-300 ease-in-out ${
                     isDropdownOpen ? "rotate-180" : "rotate-0"
@@ -164,21 +169,24 @@ export default function Marketplace() {
                     <button
                       key={option.value}
                       className={`
-                        block w-full rounded-md border-none px-3 py-2 text-left 
+                        block w-full rounded-md border-none px-3 py-2
                         text-white transition-colors duration-200 text-sm
                         hover:bg-slate-700
                         ${
                           sortBy === option.value
                             ? "bg-slate-700"
                             : "bg-transparent"
-                        }
+                        } ${i18n.language && i18n.language.startsWith("ar") ? "text-right pr-3" : "text-left pl-3"}
                       `}
                       onClick={() => {
                         setSortBy(option.value);
                         setIsDropdownOpen(false);
                       }}
                     >
-                      {option.label}
+                      {option.labelKey ? t(option.labelKey) : (
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        (option as any).label
+                      )}
                     </button>
                   ))}
                 </div>
@@ -188,21 +196,21 @@ export default function Marketplace() {
 
           {/* Filter Buttons Row */}
           <div className="flex flex-wrap justify-center gap-2 sm:gap-3 filter-buttons mb-8">
-            {categories.map((category) => (
+            {categories.map((cat) => (
               <button
-                key={category}
+                key={cat.value}
                 className={`
                   rounded-2xl border px-4 py-2 text-sm font-medium transition-all duration-200 
                   filter-button
                   ${
-                    selectedCategory === category
+                    selectedCategory === cat.value
                       ? "border-cyan-300 bg-cyan-300 text-slate-900"
                       : "border-cyan-300 bg-transparent text-cyan-300 hover:bg-cyan-300 hover:text-slate-900"
                   }
                 `}
-                onClick={() => setSelectedCategory(category)}
+                onClick={() => setSelectedCategory(cat.value)}
               >
-                {category}
+                {t(cat.labelKey)}
               </button>
             ))}
           </div>

@@ -10,8 +10,17 @@
  *  - Product wishlist + RTL logic retained exactly from original ProductCard.
  *  - Minimal abstraction to avoid layout regressions; only safely shared utilities.
  */
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
+import { useTranslation } from "react-i18next";
 import { useAppContext } from "../context/useAppContext";
+import {
+  IconCalendar,
+  IconLocation,
+  IconOrganizer,
+  IconTrophy,
+  IconUsers,
+} from "./icons.tsx";
+
 
 // Common variant type for event & tournament presets
 export type ActivityVariant = "upcoming" | "ongoing" | "past";
@@ -67,33 +76,30 @@ const isRTLText = (text: string): boolean =>
   /[\u0600-\u06FF\u0750-\u077F]/.test(text);
 
 // Shared variant style maps
-const eventVariantStyles: Record<
-  ActivityVariant,
-  { button: string; buttonText: string }
-> = {
-  upcoming: { button: "bg-dark-secondary", buttonText: "Join" },
-  ongoing: { button: "bg-primary text-black", buttonText: "Watch" },
-  past: { button: "bg-dark-secondary opacity-80", buttonText: "View" },
+const eventVariantStyles: Record<ActivityVariant, { button: string }> = {
+  upcoming: { button: "bg-dark-secondary" },
+  ongoing: { button: "bg-primary text-black" },
+  past: { button: "bg-dark-secondary opacity-80" },
 };
 
 const tournamentVariantStyles: Record<
   ActivityVariant,
-  { card: string; button: string; buttonText: string }
+  { card: string; button: string }
 > = {
-  upcoming: { card: "", button: "bg-dark-secondary", buttonText: "Join" },
+  upcoming: { card: "", button: "bg-dark-secondary" },
   ongoing: {
     card: "border-primary",
     button: "bg-primary text-black",
-    buttonText: "Watch",
   },
   past: {
     card: "opacity-95",
     button: "bg-dark-secondary opacity-80",
-    buttonText: "View Results",
   },
 };
 
-export default function Card(props: CardProps) {
+function CardComponent(props: CardProps) {
+
+  // debug logs removed; centralized debug in src/i18n/config.ts handles translation checks
   switch (props.preset) {
     case "product":
       return <ProductPreset {...props} />;
@@ -105,6 +111,81 @@ export default function Card(props: CardProps) {
       return null;
   }
 }
+
+// Custom comparison tailored per preset to minimize re-renders
+function areCardPropsEqual(prev: CardProps, next: CardProps) {
+  // Different preset: must re-render
+  if (prev.preset !== next.preset) return false;
+
+  if (prev.preset === "product" && next.preset === "product") {
+    return (
+      prev.id === next.id &&
+      prev.category === next.category &&
+      prev.productName === next.productName &&
+      prev.seller === next.seller &&
+      prev.price === next.price &&
+      prev.rate === next.rate &&
+      prev.reviews === next.reviews &&
+      prev.imageUrl === next.imageUrl &&
+      prev.hideWishlistButton === next.hideWishlistButton &&
+      prev.className === next.className
+    );
+  }
+
+  if (prev.preset === "event" && next.preset === "event") {
+    return (
+      prev.variant === next.variant &&
+      prev.name === next.name &&
+      prev.organizer === next.organizer &&
+      prev.scheduledOn === next.scheduledOn &&
+      prev.location === next.location &&
+      prev.imageUrl === next.imageUrl &&
+      prev.className === next.className
+    );
+  }
+
+  if (prev.preset === "tournament" && next.preset === "tournament") {
+    return (
+      prev.variant === next.variant &&
+      prev.game === next.game &&
+      prev.organizer === next.organizer &&
+      prev.startDate === next.startDate &&
+      prev.prizePool === next.prizePool &&
+      prev.playersJoined === next.playersJoined &&
+      prev.imageUrl === next.imageUrl &&
+      prev.className === next.className
+    );
+  }
+
+  return false;
+}
+
+// Centralized style token map (kept 1:1 with original classes for fidelity)
+const presetStyles = {
+  product: {
+    container:
+      "group relative z-20 flex h-[520px] sm:h-[480px] md:h-[500px] lg:h-[560px] w-full max-w-[420px] min-w-[280px] flex-col overflow-hidden rounded-2xl border border-slate-600 bg-slate-800 shadow-lg transition-all duration-300 ease-in-out hover:border-slate-500 hover:shadow-xl product-card",
+    image:
+      "relative h-[180px] sm:h-[200px] md:h-[220px] lg:h-[240px] shrink-0 bg-slate-700 product-card-image",
+    content:
+      "flex min-h-0 flex-1 flex-col p-3 sm:p-4 lg:p-5 product-card-content",
+  },
+  event: {
+    container:
+      "w-full max-w-[397px] rounded-[20px] bg-slate-600 border border-white overflow-hidden",
+    bodyWrap: "flex flex-col gap-3 w-full p-3 sm:p-4",
+    image:
+      "w-full h-[180px] sm:h-[200px] lg:h-[224px] rounded-[15px] bg-dark-secondary bg-cover bg-center",
+  },
+  tournament: {
+    container:
+      "w-full max-w-[397px] h-auto min-h-[500px] sm:min-h-[550px] lg:min-h-[612px] relative bg-slate-600 border border-white rounded-[20px] sm:rounded-[25px] lg:rounded-[33px] overflow-hidden flex items-stretch justify-center mx-auto",
+    inner:
+      "flex flex-col gap-3 sm:gap-[14px] w-full max-w-[356px] h-full p-3 sm:p-4 lg:pt-4",
+    image:
+      "w-full h-[180px] sm:h-[200px] lg:h-[224px] rounded-[15px] sm:rounded-[18px] lg:rounded-[20px] bg-dark-secondary bg-cover bg-center",
+  },
+} as const;
 
 /* ----------------------------- PRODUCT PRESET ----------------------------- */
 function ProductPreset({
@@ -121,11 +202,9 @@ function ProductPreset({
 }: ProductPresetProps) {
   const { toggleWishlist, isInWishlist } = useAppContext();
   const [isFavorite, setIsFavorite] = useState(false);
-  const [isDetailsHovered, setIsDetailsHovered] = useState(false);
-  const [isBuyHovered, setIsBuyHovered] = useState(false);
-  const [isWishlistHovered, setIsWishlistHovered] = useState(false);
-
-  const hasArabicContent = isRTLText(productName) || isRTLText(seller);
+  const { i18n, t } = useTranslation();
+  const isRTL = i18n.language && i18n.language.startsWith("ar");
+  const hasArabicContent = isRTL || isRTLText(productName) || isRTLText(seller);
 
   useEffect(() => {
     setIsFavorite(isInWishlist(id));
@@ -146,11 +225,10 @@ function ProductPreset({
   };
 
   return (
-    <div
-      className={`group relative z-20 flex h-[520px] sm:h-[480px] md:h-[500px] lg:h-[560px] w-full max-w-[420px] min-w-[280px] flex-col overflow-hidden rounded-2xl border border-slate-600 bg-slate-800 shadow-lg transition-all duration-300 ease-in-out hover:border-slate-500 hover:shadow-xl product-card ${className}`}
-    >
+    
+    <div className={`${presetStyles.product.container} ${className}`}>
       {/* Image Container */}
-      <div className="relative h-[180px] sm:h-[200px] md:h-[220px] lg:h-[240px] shrink-0 bg-slate-700 product-card-image">
+      <div className={presetStyles.product.image}>
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -161,32 +239,19 @@ function ProductPreset({
         ) : (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
             <div className="mb-2 text-3xl sm:text-4xl">📷</div>
-            <span className="text-xs sm:text-sm">No Image</span>
+            <span className="text-xs sm:text-sm">{t("product.noImage")}</span>
           </div>
         )}
-
-        {/* Category Badge */}
-        <div
-          className={`absolute top-2 sm:top-3 max-w-[100px] sm:max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap rounded-md bg-primary px-2 py-1 text-xs font-semibold text-black ${
-            hasArabicContent
-              ? "right-2 sm:right-3 left-auto"
-              : "left-2 sm:left-3 right-auto"
-          }`}
-        >
-          {category}
-        </div>
 
         {/* Wishlist Button */}
         {!hideWishlistButton && (
           <button
             onClick={toggleFavorite}
-            className={`absolute top-2 sm:top-3 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full border border-white/20 text-sm sm:text-base text-white transition-all duration-200 ease-in-out ${
+            className={`absolute top-2 sm:top-3 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full border border-white/20 text-sm sm:text-base text-white transition-colors duration-200 ease-in-out ${
               hasArabicContent
                 ? "left-2 sm:left-3 right-auto"
                 : "right-2 sm:right-3 left-auto"
-            } ${isWishlistHovered ? "bg-black/50" : "bg-black/30"}`}
-            onMouseEnter={() => setIsWishlistHovered(true)}
-            onMouseLeave={() => setIsWishlistHovered(false)}
+            } bg-black/30 hover:bg-black/50`}
           >
             {isFavorite ? "❤️" : "🤍"}
           </button>
@@ -194,7 +259,7 @@ function ProductPreset({
       </div>
 
       {/* Content */}
-      <div className="flex min-h-0 flex-1 flex-col p-3 sm:p-4 lg:p-5 product-card-content">
+      <div className={presetStyles.product.content}>
         <h3
           className={`mb-2 sm:mb-2.5 line-clamp-3 min-h-[54px] sm:min-h-[60px] md:min-h-[64px] lg:min-h-[72px] text-sm sm:text-base lg:text-[17px] font-semibold leading-relaxed text-white product-card-title ${
             hasArabicContent
@@ -211,7 +276,7 @@ function ProductPreset({
               : "text-left font-sans"
           }`}
         >
-          by <span className="font-medium text-primary">{seller}</span>
+          {t("product.by")} <span className="font-medium text-primary">{seller}</span>
         </p>
         <div
           className={`mb-3 sm:mb-3.5 flex items-center gap-2 ${
@@ -221,7 +286,18 @@ function ProductPreset({
           <div className="flex items-center gap-1 rounded-md bg-amber-500/20 px-2 py-1 text-xs font-medium text-amber-500">
             ★ {rate}
           </div>
-          <span className="text-xs text-slate-400">({reviews})</span>
+          <span className="text-xs text-slate-400">
+            {(() => {
+              const m = reviews.match(/(\d+(?:[,\d]*)?)/);
+              if (m) {
+                const count = parseInt(m[1].replace(/,/g, ""), 10);
+                if (i18n.exists("product.reviews")) {
+                  return `(${t("product.reviews", { count })})`;
+                }
+              }
+              return `(${reviews})`;
+            })()}
+          </span>
         </div>
         <div className="mt-auto pt-2 sm:pt-3 lg:pt-3.5 pb-1">
           <div
@@ -236,32 +312,18 @@ function ProductPreset({
               hasArabicContent ? "text-right" : "text-left"
             }`}
           >
-            Free shipping
+            {t("product.freeShipping")}
           </div>
           <div
             className={`mt-2 flex gap-2 sm:gap-2.5 product-card-buttons ${
               hasArabicContent ? "flex-row-reverse" : "flex-row"
             }`}
           >
-            <button
-              className={`flex-1 rounded-md border border-primary bg-transparent px-3 sm:px-4 py-2 sm:py-2.5 text-xs font-medium transition-colors duration-200 ease-in-out product-card-button ${
-                isDetailsHovered
-                  ? "bg-[#5ee6d3] text-black border-[#5ee6d3]"
-                  : "text-primary"
-              }`}
-              onMouseEnter={() => setIsDetailsHovered(true)}
-              onMouseLeave={() => setIsDetailsHovered(false)}
-            >
-              Details
+            <button className="flex-1 rounded-md border border-primary bg-transparent px-3 sm:px-4 py-2 sm:py-2.5 text-xs font-medium transition-colors duration-200 ease-in-out product-card-button text-primary hover:bg-[#5ee6d3] hover:text-black hover:border-[#5ee6d3]">
+              {t("product.details")}
             </button>
-            <button
-              className={`flex-1 rounded-md border-none bg-primary px-3 sm:px-4 py-2 sm:py-2.5 text-xs font-semibold text-black transition-colors duration-200 ease-in-out product-card-button ${
-                isBuyHovered ? "bg-[#5ee6d3]" : ""
-              }`}
-              onMouseEnter={() => setIsBuyHovered(true)}
-              onMouseLeave={() => setIsBuyHovered(false)}
-            >
-              Buy Now
+            <button className="flex-1 rounded-md border-none bg-primary px-3 sm:px-4 py-2 sm:py-2.5 text-xs font-semibold text-black transition-colors duration-200 ease-in-out product-card-button hover:bg-[#5ee6d3]">
+              {t("product.buyNow")}
             </button>
           </div>
         </div>
@@ -281,14 +343,13 @@ function EventPreset({
   className = "",
 }: EventPresetProps) {
   const current = eventVariantStyles[variant] || eventVariantStyles.upcoming;
+  const { t } = useTranslation();
 
   return (
-    <div
-      className={`w-full max-w-[397px] rounded-[20px] bg-slate-600 border border-white overflow-hidden ${className}`}
-    >
-      <div className="flex flex-col gap-3 w-full p-3 sm:p-4">
+    <div className={`${presetStyles.event.container} ${className}`}>
+      <div className={presetStyles.event.bodyWrap}>
         <div
-          className={`w-full h-[180px] sm:h-[200px] lg:h-[224px] rounded-[15px] bg-dark-secondary bg-cover bg-center ${
+          className={`${presetStyles.event.image} ${
             !imageUrl && "bg-dark-secondary"
           }`}
           style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : {}}
@@ -299,7 +360,9 @@ function EventPreset({
           </h3>
           <div className="flex items-center gap-2 text-sm text-slate-200">
             <IconOrganizer />
-            <span>By {organizer}</span>
+            <span>
+              {t("labels.organizer")}: {organizer}
+            </span>
           </div>
         </div>
         <div className="flex flex-col gap-2 mt-2">
@@ -320,7 +383,11 @@ function EventPreset({
           className={`w-full h-[36px] sm:h-[40px] lg:h-[43px] rounded-[8px] sm:rounded-[10px] flex items-center justify-center mt-3 ${current.button}`}
         >
           <span className="font-inter font-bold text-[16px] sm:text-[18px] lg:text-[20px] leading-6 text-white">
-            {current.buttonText}
+            {variant === "upcoming"
+              ? t("activity.join")
+              : variant === "ongoing"
+              ? t("activity.watch")
+              : t("activity.view")}
           </span>
         </div>
       </div>
@@ -341,14 +408,15 @@ function TournamentPreset({
 }: TournamentPresetProps) {
   const currentVariant =
     tournamentVariantStyles[variant] || tournamentVariantStyles.upcoming;
+  const { t } = useTranslation();
 
   return (
     <div
-      className={`w-full max-w-[397px] h-auto min-h-[500px] sm:min-h-[550px] lg:min-h-[612px] relative bg-slate-600 border border-white rounded-[20px] sm:rounded-[25px] lg:rounded-[33px] overflow-hidden flex items-stretch justify-center mx-auto ${currentVariant.card} ${className}`}
+      className={`${presetStyles.tournament.container} ${currentVariant.card} ${className}`}
     >
-      <div className="flex flex-col gap-3 sm:gap-[14px] w-full max-w-[356px] h-full p-3 sm:p-4 lg:pt-4">
+      <div className={presetStyles.tournament.inner}>
         <div
-          className={`w-full h-[180px] sm:h-[200px] lg:h-[224px] rounded-[15px] sm:rounded-[18px] lg:rounded-[20px] bg-dark-secondary bg-cover bg-center ${
+          className={`${presetStyles.tournament.image} ${
             !imageUrl && "bg-dark-secondary"
           }`}
           style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : {}}
@@ -358,26 +426,26 @@ function TournamentPreset({
             {game}
           </h3>
           <p className="font-sans font-normal text-sm sm:text-base leading-[22px] text-slate-200 m-0">
-            By {organizer}
+            {t("labels.organizer")}: {organizer}
           </p>
         </div>
         <div className="flex flex-col gap-2 sm:gap-2.5 flex-1">
           <div className="flex flex-row items-center gap-2 sm:gap-2.5 min-h-6 sm:min-h-8">
             <IconCalendar size={16} />
             <span className="font-scheherazade font-bold text-[16px] sm:text-[18px] lg:text-[22px] leading-tight text-white">
-              Start Date: {startDate}
+              {t("labels.startDate")}: {startDate}
             </span>
           </div>
           <div className="flex flex-row items-center gap-2 sm:gap-2.5 min-h-6 sm:min-h-8">
             <IconTrophy size={16} />
             <span className="font-scheherazade font-bold text-[16px] sm:text-[18px] lg:text-[22px] leading-tight text-white">
-              Prize Pool: {prizePool}
+              {t("labels.prizePool")}: {prizePool}
             </span>
           </div>
           <div className="flex flex-row items-center gap-2 sm:gap-2.5 min-h-6 sm:min-h-8">
             <IconUsers size={16} />
             <span className="font-scheherazade font-bold text-[16px] sm:text-[18px] lg:text-[22px] leading-tight text-white">
-              Players Joined: {playersJoined}
+              {t("labels.playersJoined")}: {playersJoined}
             </span>
           </div>
         </div>
@@ -385,7 +453,11 @@ function TournamentPreset({
           className={`w-full h-[36px] sm:h-[40px] lg:h-[43px] rounded-[8px] sm:rounded-[10px] flex items-center justify-center mt-2 sm:mt-2 ${currentVariant.button}`}
         >
           <span className="font-inter font-bold text-[16px] sm:text-[18px] lg:text-[20px] leading-6 text-white">
-            {currentVariant.buttonText}
+            {variant === "upcoming"
+              ? t("activity.join")
+              : variant === "ongoing"
+              ? t("activity.watch")
+              : t("activity.viewResults")}
           </span>
         </div>
       </div>
@@ -393,98 +465,10 @@ function TournamentPreset({
   );
 }
 
-/* ------------------------------- INLINE ICONS ------------------------------ */
-const IconCalendar = ({ size = 16 }: { size?: number }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    className="flex-shrink-0"
-  >
-    <rect
-      x="3"
-      y="4"
-      width="18"
-      height="16"
-      rx="2"
-      stroke="#fff"
-      strokeWidth="1.5"
-    />
-    <path d="M8 2v4M16 2v4M3 10h18" stroke="#fff" strokeWidth="1.5" />
-  </svg>
-);
-
-const IconLocation = ({ size = 16 }: { size?: number }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    className="flex-shrink-0"
-  >
-    <path
-      d="M21 10c0 6-9 12-9 12S3 16 3 10a9 9 0 1118 0z"
-      stroke="#fff"
-      strokeWidth="1.5"
-    />
-    <circle cx="12" cy="10" r="2.5" stroke="#fff" strokeWidth="1.5" />
-  </svg>
-);
-
-const IconOrganizer = ({ size = 16 }: { size?: number }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    className="flex-shrink-0"
-  >
-    <circle cx="12" cy="8" r="3" stroke="#fff" strokeWidth="1.5" />
-    <path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke="#fff" strokeWidth="1.5" />
-  </svg>
-);
-
-// Tournament-specific icons with thicker strokes (kept separate for fidelity)
-const IconTrophy = ({ size = 20 }: { size?: number }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    className="flex-shrink-0"
-  >
-    <path d="M8 21h8M12 17v4" stroke="#fff" strokeWidth="2" />
-    <path d="M17 4H7v4a5 5 0 1 0 10 0V4Z" stroke="#fff" strokeWidth="2" />
-    <path
-      d="M7 6H5a2 2 0 0 0-2 2v1a4 4 0 0 0 4 4"
-      stroke="#fff"
-      strokeWidth="2"
-    />
-    <path
-      d="M17 6h2a2 2 0 0 1 2 2v1a4 4 0 0 1-4 4"
-      stroke="#fff"
-      strokeWidth="2"
-    />
-  </svg>
-);
-
-const IconUsers = ({ size = 20 }: { size?: number }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    className="flex-shrink-0"
-  >
-    <circle cx="12" cy="7" r="4" stroke="#fff" strokeWidth="2" />
-    <path d="M4 21a8 8 0 0 1 16 0" stroke="#fff" strokeWidth="2" />
-  </svg>
-);
+/* Inline icon components removed; using shared icons from icons.tsx */
 // Named export of types (optional usage elsewhere)
 export type { ProductPresetProps, EventPresetProps, TournamentPresetProps };
+
+// Memoize main component to avoid unnecessary re-renders when parent lists update
+const Card = memo(CardComponent, areCardPropsEqual);
+export default Card;

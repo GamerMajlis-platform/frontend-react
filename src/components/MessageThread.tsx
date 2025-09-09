@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import MessageBubble from "./MessageBubble";
 import Composer from "./Composer";
 
@@ -15,11 +16,22 @@ interface Props {
 
 export default function MessageThread({ conversationId }: Props) {
   const [messages, setMessages] = useState<Message[]>([
-    { id: "1", fromMe: false, text: "Hey! Are you joining tonight?", createdAt: "09:00" },
-    { id: "2", fromMe: true, text: "Yes, I'll be there around 8.", createdAt: "09:02" },
+    {
+      id: "1",
+      fromMe: false,
+      text: "Hey! Are you joining tonight?",
+      createdAt: "09:00",
+    },
+    {
+      id: "2",
+      fromMe: true,
+      text: "Yes, I'll be there around 8.",
+      createdAt: "09:02",
+    },
   ]);
 
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     // scroll to bottom on mount / new message
@@ -29,13 +41,20 @@ export default function MessageThread({ conversationId }: Props) {
   }, [messages, conversationId]);
 
   const handleSend = (text: string) => {
-    const newMsg: Message = { id: String(Date.now()), fromMe: true, text, createdAt: new Date().toLocaleTimeString() };
+    const newMsg: Message = {
+      id: String(Date.now()),
+      fromMe: true,
+      text,
+      createdAt: new Date().toLocaleTimeString(),
+    };
     setMessages((m) => [...m, newMsg]);
   };
 
   if (!conversationId) {
     return (
-      <div className="flex-1 flex items-center justify-center text-slate-400">Select a conversation to start chatting</div>
+      <div className="flex-1 flex items-center justify-center text-slate-400">
+        {t("conversations.selectPrompt")}
+      </div>
     );
   }
 
@@ -43,7 +62,12 @@ export default function MessageThread({ conversationId }: Props) {
     <div className="flex-1 flex flex-col h-full">
       <div ref={containerRef} className="flex-1 overflow-auto p-4 space-y-4">
         {messages.map((m) => (
-          <MessageBubble key={m.id} text={m.text} timestamp={m.createdAt} fromMe={m.fromMe} />
+          <MessageBubble
+            key={m.id}
+            text={m.text}
+            timestamp={m.createdAt}
+            fromMe={m.fromMe}
+          />
         ))}
       </div>
 

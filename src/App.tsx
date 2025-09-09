@@ -1,4 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from "react";
+import { useTranslation } from "react-i18next";
 import { AppProvider } from "./context/AppContext";
 import "./App.css";
 
@@ -32,6 +33,7 @@ type PageType =
   | "settings";
 
 function App() {
+  const { i18n } = useTranslation();
   const resolvePageFromHash = (): PageType => {
     const hash = (window.location.hash || "").replace(/^#/, "").toLowerCase();
     switch (hash) {
@@ -75,6 +77,18 @@ function App() {
     window.addEventListener("hashchange", handler);
     return () => window.removeEventListener("hashchange", handler);
   });
+
+  // i18n readiness: load default namespace once, but keep hooks order stable
+  const [i18nReady, setI18nReady] = useState(false);
+  useEffect(() => {
+    const ns = Array.isArray(i18n.options.defaultNS)
+      ? i18n.options.defaultNS[0]
+      : (i18n.options.defaultNS as string) || "translation";
+    i18n
+      .loadNamespaces(ns)
+      .then(() => setI18nReady(true))
+      .catch(() => setI18nReady(true));
+  }, [i18n]);
 
   const renderPage = () => {
     switch (currentPage) {
@@ -124,7 +138,11 @@ function App() {
               </div>
             }
           >
-            {renderPage()}
+            {!i18nReady ? (
+              <div className="w-full h-full flex items-center justify-center text-white/70">Loading translations...</div>
+            ) : (
+              renderPage()
+            )}
           </Suspense>
         </div>
 

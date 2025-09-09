@@ -5,6 +5,7 @@ interface LogoProps {
 }
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function Logo({
   size = "medium",
@@ -26,6 +27,7 @@ export default function Logo({
 
   const [bannerError, setBannerError] = useState(false);
   const [iconError, setIconError] = useState(false);
+  const { t } = useTranslation();
 
   // When showText is true, render the full banner; otherwise render just the controller icon
   if (showText) {
@@ -41,7 +43,7 @@ export default function Logo({
                 : "text-xl"
             }`}
           >
-            GamerMajlis
+            {t("home.title")}
           </span>
         </div>
       );
@@ -49,7 +51,7 @@ export default function Logo({
     return (
       <img
         src="/brand/logo-banner.png"
-        alt="GamerMajlis logo"
+        alt={t("home.title")}
         className={`w-auto ${bannerHeights[size]} select-none ${className}`}
         draggable={false}
         onError={() => setBannerError(true)}
@@ -70,14 +72,14 @@ export default function Logo({
         } ${className}`}
         aria-hidden
       >
-        <span className="sr-only">GamerMajlis</span>
+        <span className="sr-only">{t("home.title")}</span>
       </div>
     );
   }
   return (
     <img
       src="/brand/icon-controller.png"
-      alt="GamerMajlis controller icon"
+      alt={t("home.title")}
       className={`w-auto ${iconHeights[size]} select-none ${className}`}
       draggable={false}
       onError={() => setIconError(true)}

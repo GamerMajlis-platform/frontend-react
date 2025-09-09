@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { BackgroundDecor, Card } from "../components";
 import { events, eventSortOptions, type EventSortOption } from "../data";
 
 export default function Events() {
+  const { i18n, t } = useTranslation();
   // Search / Sort state
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<EventSortOption>("date-soonest");
@@ -45,7 +47,7 @@ export default function Events() {
         {/* Page Label */}
         <header className="mb-6 sm:mb-8 flex w-full items-center justify-center py-4 sm:py-6 tournaments-header">
           <h1 className="font-alice text-[32px] sm:text-[40px] lg:text-[56px] leading-tight text-white tournaments-title text-center">
-            Events
+            {t("pages.events")}
           </h1>
         </header>
 
@@ -62,7 +64,7 @@ export default function Events() {
             }`}
             onClick={() => setCategory("upcoming")}
           >
-            Upcoming
+            {t("events.categories.upcoming")}
           </button>
           <button
             className={`h-[36px] sm:h-[40px] lg:h-[45px] rounded-[15px] sm:rounded-[18px] lg:rounded-[20px] border-none px-4 sm:px-5 lg:px-6 text-center font-medium text-[16px] sm:text-[18px] lg:text-[22px] leading-tight transition-colors ${
@@ -72,7 +74,7 @@ export default function Events() {
             }`}
             onClick={() => setCategory("ongoing")}
           >
-            Ongoing
+            {t("events.categories.ongoing")}
           </button>
           <button
             className={`h-[36px] sm:h-[40px] lg:h-[45px] rounded-[15px] sm:rounded-[18px] lg:rounded-[20px] border-none px-4 sm:px-5 lg:px-6 text-center font-medium text-[16px] sm:text-[18px] lg:text-[22px] leading-tight transition-colors ${
@@ -82,7 +84,7 @@ export default function Events() {
             }`}
             onClick={() => setCategory("past")}
           >
-            Past
+            {t("events.categories.past")}
           </button>
         </div>
 
@@ -131,22 +133,25 @@ export default function Events() {
                 <div
                   className={`absolute top-full right-0 z-50 mt-2 w-56 rounded-xl border border-slate-600 bg-slate-800 p-2 shadow-2xl sort-dropdown backdrop-blur-sm`}
                 >
-                  {eventSortOptions.map((option) => (
-                    <button
-                      key={option.value}
-                      className={`block w-full rounded-md border-none px-3 py-2 text-left text-white transition-colors duration-200 text-sm hover:bg-slate-700 ${
-                        sortBy === option.value
-                          ? "bg-slate-700"
-                          : "bg-transparent"
-                      }`}
-                      onClick={() => {
-                        setSortBy(option.value);
-                        setIsDropdownOpen(false);
-                      }}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
+                      {eventSortOptions.map((option) => (
+                        <button
+                          key={option.value}
+                          className={`block w-full rounded-md border-none px-3 py-2 text-left text-white transition-colors duration-200 text-sm hover:bg-slate-700 ${
+                            sortBy === option.value
+                              ? "bg-slate-700"
+                              : "bg-transparent"
+                          } ${i18n.language && i18n.language.startsWith("ar") ? "text-right pr-3" : "text-left pl-3"}`}
+                          onClick={() => {
+                            setSortBy(option.value);
+                            setIsDropdownOpen(false);
+                          }}
+                        >
+                          {option.labelKey ? t(option.labelKey) : (
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            (option as any).label
+                          )}
+                        </button>
+                      ))}
                 </div>
               )}
             </div>
@@ -166,6 +171,10 @@ export default function Events() {
                 .includes(searchTerm.toLowerCase())
             )
             .sort((a, b) => {
+              const collator = new Intl.Collator(
+                i18n.language === "ar" ? "ar" : "en",
+                { sensitivity: "base" }
+              );
               switch (sortBy) {
                 case "date-soonest":
                   return (
@@ -178,11 +187,11 @@ export default function Events() {
                     new Date(a.scheduledOn).getTime()
                   );
                 case "name":
-                  return a.name.localeCompare(b.name);
+                  return collator.compare(a.name, b.name);
                 case "organizer":
-                  return a.organizer.localeCompare(b.organizer);
+                  return collator.compare(a.organizer, b.organizer);
                 case "location":
-                  return a.location.localeCompare(b.location);
+                  return collator.compare(a.location, b.location);
                 default:
                   return 0;
               }

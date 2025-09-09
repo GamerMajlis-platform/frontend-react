@@ -8,7 +8,19 @@ import {
 } from "../data";
 
 export default function Tournaments() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const [nsReady, setNsReady] = useState(false);
+
+  // Ensure translation namespace is loaded before rendering so UI shows
+  // translated strings immediately without requiring a manual reload.
+  useEffect(() => {
+    const ns = Array.isArray(i18n.options.defaultNS)
+      ? i18n.options.defaultNS[0]
+      : (i18n.options.defaultNS as string) || "translation";
+    i18n.loadNamespaces(ns).then(() => setNsReady(true)).catch(() => setNsReady(true));
+  }, [i18n]);
+
+  const isRTL = i18n.language && i18n.language.startsWith("ar");
 
   // Search / Sort state
   const [searchTerm, setSearchTerm] = useState("");
@@ -44,6 +56,8 @@ export default function Tournaments() {
     e.currentTarget.style.boxShadow = "none";
   };
 
+  if (!nsReady) return null; // minimal guard while translations load
+
   return (
     <main className="relative z-10 min-h-screen bg-gradient-to-b from-[#0F172A] to-[#1C2541] py-4 sm:py-6 lg:py-8 tournaments-container">
       <BackgroundDecor />
@@ -69,7 +83,7 @@ export default function Tournaments() {
             }`}
             onClick={() => setCategory("upcoming")}
           >
-            Upcoming
+            {t("tournaments.categories.upcoming")}
           </button>
           <button
             className={`h-[36px] sm:h-[40px] lg:h-[45px] rounded-[15px] sm:rounded-[18px] lg:rounded-[20px] border-none px-4 sm:px-5 lg:px-6 text-center font-medium text-[16px] sm:text-[18px] lg:text-[22px] leading-tight transition-colors ${
@@ -79,7 +93,7 @@ export default function Tournaments() {
             }`}
             onClick={() => setCategory("ongoing")}
           >
-            Ongoing
+            {t("tournaments.categories.ongoing")}
           </button>
           <button
             className={`h-[36px] sm:h-[40px] lg:h-[45px] rounded-[15px] sm:rounded-[18px] lg:rounded-[20px] border-none px-4 sm:px-5 lg:px-6 text-center font-medium text-[16px] sm:text-[18px] lg:text-[22px] leading-tight transition-colors ${
@@ -89,7 +103,7 @@ export default function Tournaments() {
             }`}
             onClick={() => setCategory("past")}
           >
-            Past
+            {t("tournaments.categories.past")}
           </button>
         </div>
 
@@ -98,7 +112,7 @@ export default function Tournaments() {
           <div className="mb-6 flex w-full max-w-[800px] mx-auto items-center gap-3 search-controls">
             <input
               type="text"
-              placeholder="Search tournaments, organizers..."
+              placeholder={t("tournaments.searchPlaceholder")}
               className={`
                 h-12 w-full flex-1 rounded-xl border border-slate-600
                 bg-[#1C2541] px-4 py-3 text-white placeholder-slate-400
@@ -124,7 +138,7 @@ export default function Tournaments() {
                 `}
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
-                <span className="truncate">Sort by</span>
+                <span className="truncate">{t("tournaments.sort.placeholder")}</span>
                 <span
                   className={`ml-1 transform transition-transform duration-300 ease-in-out ${
                     isDropdownOpen ? "rotate-180" : "rotate-0"
@@ -145,22 +159,19 @@ export default function Tournaments() {
                   {tournamentSortOptions.map((option) => (
                     <button
                       key={option.value}
-                      className={`
-                        block w-full rounded-md border-none px-3 py-2 text-left
+                      className={
+                        `block w-full rounded-md border-none px-3 py-2
                         text-white transition-colors duration-200 text-sm
-                        hover:bg-slate-700
-                        ${
-                          sortBy === option.value
-                            ? "bg-slate-700"
-                            : "bg-transparent"
-                        }
-                      `}
+                        hover:bg-slate-700 ${
+                          sortBy === option.value ? "bg-slate-700" : "bg-transparent"
+                        } ${isRTL ? "text-right pr-3" : "text-left pl-3"}`
+                      }
                       onClick={() => {
                         setSortBy(option.value);
                         setIsDropdownOpen(false);
                       }}
-                    >
-                      {option.label}
+                      >
+                      {t(`tournaments.sort.options.${option.value}`)}
                     </button>
                   ))}
                 </div>
@@ -191,6 +202,10 @@ export default function Tournaments() {
                 .includes(searchTerm.toLowerCase())
             )
             .sort((a, b) => {
+              const collator = new Intl.Collator(
+                i18n.language === "ar" ? "ar" : "en",
+                { sensitivity: "base" }
+              );
               const parsePrize = (s: string) =>
                 parseFloat(s.replace(/[^\d.]/g, "")) || 0;
               const aDate = new Date(a.startDate).getTime();
@@ -209,7 +224,7 @@ export default function Tournaments() {
                 case "players-low":
                   return a.playersJoined - b.playersJoined;
                 case "game":
-                  return a.game.localeCompare(b.game);
+                  return collator.compare(a.game, b.game);
                 default:
                   return 0;
               }

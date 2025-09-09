@@ -228,7 +228,11 @@ export default function Signup() {
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 bg-none border-none cursor-pointer p-1 text-[#9CA3AF] flex items-center justify-center"
-                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-label={
+                  showPassword
+                    ? t("auth_extras.hidePassword")
+                    : t("auth_extras.showPassword")
+                }
               >
                 {showPassword ? (
                   <svg
@@ -286,7 +290,9 @@ export default function Signup() {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 bg-none border-none cursor-pointer p-1 text-[#9CA3AF] flex items-center justify-center"
                 aria-label={
-                  showConfirmPassword ? "Hide password" : "Show password"
+                  showConfirmPassword
+                    ? t("auth_extras.hidePassword")
+                    : t("auth_extras.showPassword")
                 }
               >
                 {showConfirmPassword ? (
@@ -322,7 +328,7 @@ export default function Signup() {
               disabled={isLoading}
             >
               {isLoading
-                ? t("common.loading") || "Creating Account..."
+                ? t("common.loading") || t("auth.creatingAccount")
                 : t("auth.signup")}
             </Button>
           </div>

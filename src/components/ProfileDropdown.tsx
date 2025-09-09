@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useAppContext } from "../context/useAppContext";
+import { useTranslation } from "react-i18next";
 
 interface ProfileDropdownProps {
   onSectionChange?: (section: string) => void;
@@ -40,10 +41,17 @@ export default function ProfileDropdown({
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  const { t } = useTranslation();
+
   const menuItems = [
-    { key: "profile", label: "Profile", icon: "👤" },
-    { key: "wishlist", label: "Wishlist", icon: "❤️", badge: wishlist.length },
-    { key: "settings", label: "Settings", icon: "⚙️" },
+    { key: "profile", label: t("nav.profile"), icon: "👤" },
+    {
+      key: "wishlist",
+      label: t("wishlist.title"),
+      icon: "❤️",
+      badge: wishlist.length,
+    },
+    { key: "settings", label: t("settings.title"), icon: "⚙️" },
   ];
 
   return (
@@ -142,7 +150,7 @@ export default function ProfileDropdown({
                 className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-100 rounded-md transition"
               >
                 <span aria-hidden>🚪</span>
-                <span>Logout</span>
+                <span>{t("auth.logout")}</span>
               </button>
             </div>
           </div>

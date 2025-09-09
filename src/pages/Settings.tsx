@@ -440,7 +440,7 @@ export default function Settings() {
               <div className="grid gap-0">
                 <SettingRow
                   label={t("settings.sections.preferences.language")}
-                  description="Choose your preferred language"
+                  description={t("settings.sections.preferences.language_desc")}
                 >
                   <Dropdown
                     type="language"
@@ -455,7 +455,7 @@ export default function Settings() {
 
                 <SettingRow
                   label={t("settings.sections.preferences.theme")}
-                  description="Choose your preferred theme"
+                  description={t("settings.sections.preferences.theme_desc")}
                 >
                   <Dropdown
                     type="theme"
@@ -470,7 +470,7 @@ export default function Settings() {
 
                 <SettingRow
                   label={t("settings.sections.preferences.currency")}
-                  description="Choose your preferred currency"
+                  description={t("settings.sections.preferences.currency_desc")}
                   isLast={true}
                 >
                   <Dropdown

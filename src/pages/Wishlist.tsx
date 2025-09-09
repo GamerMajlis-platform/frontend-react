@@ -1,9 +1,11 @@
 import { Card, BackgroundDecor } from "../components";
 import { useAppContext } from "../context/useAppContext";
 import type { WishlistItem } from "../context/AppContext";
+import { useTranslation } from "react-i18next";
 
 export default function Wishlist() {
   const { wishlist } = useAppContext();
+  const { t } = useTranslation();
 
   return (
     <main
@@ -16,10 +18,10 @@ export default function Wishlist() {
         {/* Header Section */}
         <header className="text-center mb-12">
           <h1 className="text-[3rem] font-light text-[var(--color-text)] mb-4">
-            My Wishlist
+            {t("wishlist.title")}
           </h1>
           <p className="text-lg text-[var(--color-text-secondary)] font-[Alice-Regular,serif] mb-12">
-            Your favorite gaming gear saved for later
+            {t("wishlist.subtitle")}
           </p>
         </header>
 
@@ -49,7 +51,8 @@ export default function Wishlist() {
                     imageUrl={item.imageUrl}
                   />
                   <div className="text-[var(--color-text)] text-sm text-center mt-4 font-medium">
-                    Added {new Date(item.dateAdded).toLocaleDateString()}
+                    {t("wishlist.added")}{" "}
+                    {new Date(item.dateAdded).toLocaleDateString()}
                   </div>
                 </div>
               ))}
@@ -71,10 +74,10 @@ export default function Wishlist() {
                 </svg>
               </div>
               <h3 className="text-2xl font-semibold text-[var(--color-text)] mb-2">
-                Your Wishlist is Empty
+                {t("wishlist.emptyTitle")}
               </h3>
               <p className="text-base mb-6 text-[var(--color-text-secondary)]">
-                Start adding items from the marketplace to see them here
+                {t("wishlist.emptyDesc")}
               </p>
               <button
                 className="
@@ -84,7 +87,7 @@ export default function Wishlist() {
                   transition duration-200 hover:bg-[var(--color-primary-hover)]
                 "
               >
-                Browse Marketplace
+                {t("wishlist.browseMarketplace")}
               </button>
             </div>
           )}

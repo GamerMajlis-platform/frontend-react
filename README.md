@@ -80,6 +80,25 @@ src/
 - **Dynamic font switching** (Alice for English, Scheherazade for Arabic)
 - **Layout mirroring** for proper RTL experience
 
+#### i18n: common race condition and the project's fix
+
+When translations are loaded at runtime via the HTTP backend, i18next initialization and namespace loading are asynchronous. A common runtime warning is:
+
+```
+i18next::translator: key "labels.organizer" ... won't get resolved as namespace "translation" was not yet loaded
+```
+
+This happens when code calls `i18n.t(...)` before the backend has finished loading the requested namespace for the active language.
+
+Project fix
+- The project centralizes debug logging in `src/i18n/config.ts` and now waits for the namespace to load using `i18n.loadNamespaces(ns)` before calling `i18n.t(...)`. This removes the noisy warning and guarantees translations are available when read.
+
+How to verify
+- Start the dev server and open browser DevTools Console. You should see a single grouped block per language titled `i18n translation debug: <lang>` with the requested keys and values (or a single clear missing warning if a key is not present).
+
+Notes on Context7
+- The repository integrates with Context7 (see `src/services/Context7Service.ts`) for external documentation and tooling. If you run Context7 locally or via the project's integration, include the Context7 server url in your environment (or set it in the service) to enable richer documentation linking. The i18n debug and README notes can be used alongside Context7 to provide troubleshooting guides to translators or contributors.
+
 ### Component Architecture
 
 - **Tailwind-first styling** with utility classes

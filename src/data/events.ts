@@ -102,11 +102,11 @@ export const events: EventItem[] = [
 ];
 
 export const eventSortOptions = [
-  { value: "date-soonest", label: "Scheduled: Soonest" },
-  { value: "date-latest", label: "Scheduled: Latest" },
-  { value: "name", label: "Name A-Z" },
-  { value: "organizer", label: "Organizer A-Z" },
-  { value: "location", label: "Location A-Z" },
+  { value: "date-soonest", labelKey: "events.sort.date-soonest" },
+  { value: "date-latest", labelKey: "events.sort.date-latest" },
+  { value: "name", labelKey: "sort.name" },
+  { value: "organizer", labelKey: "events.sort.organizer" },
+  { value: "location", labelKey: "events.sort.location" },
 ];
 
 export type EventSortOption = (typeof eventSortOptions)[number]["value"];

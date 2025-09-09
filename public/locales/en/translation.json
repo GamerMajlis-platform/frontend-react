@@ -27,7 +27,8 @@
     "alreadyHaveAccount": "Already have an account?",
     "dontHaveAccount": "Don't have an account?",
     "joinCommunity": "Join the gaming community",
-    "welcomeBack": "Welcome back to the community"
+    "welcomeBack": "Welcome back to the community",
+    "logout": "Logout"
   },
   "pages": {
     "profile": "Profile",
@@ -95,8 +96,123 @@
         "language_options": { "en": "English", "ar": "Arabic" },
         "theme": "Theme",
         "theme_options": { "dark": "Dark", "light": "Light", "auto": "Auto" },
-        "currency": "Currency"
+        "currency": "Currency",
+        "currency_options": { "usd": "USD", "eur": "EUR", "gbp": "GBP", "jpy": "JPY" },
+        "language_desc": "Choose your preferred language",
+        "theme_desc": "Choose your preferred theme",
+        "currency_desc": "Choose your preferred currency"
       }
     }
+  },
+  "labels": {
+    "price": "Price",
+    "organizer": "Organizer",
+    "startDate": "Start Date",
+    "prizePool": "Prize Pool",
+    "playersJoined": "Players Joined"
+  },
+  "wishlist": {
+    "title": "My Wishlist",
+    "subtitle": "Your favorite gaming gear saved for later",
+    "added": "Added",
+    "emptyTitle": "Your Wishlist is Empty",
+    "emptyDesc": "Start adding items from the marketplace to see them here",
+    "browseMarketplace": "Browse Marketplace"
+  },
+  "profile": {
+    "edit": "Edit Profile",
+    "save": "Save Profile",
+    "displayName": "Display name",
+    "discordName": "Discord name",
+    "placeholders": {
+      "gamingPreferences": "Gaming Preferences",
+      "bio": "Bio",
+      "gamingStatistics": "Gaming Statistics"
+    },
+    "level": "Level {{level}}"
+  },
+  "auth_extras": {
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
+  },
+  "auth_messages": {
+    "signingIn": "Signing In...",
+    "creatingAccount": "Creating Account..."
+  },
+  "marketplace": {
+    "title": "Gaming Marketplace",
+    "subtitle": "Discover premium gaming gear from trusted sellers worldwide",
+    "searchPlaceholder": "Search for gaming gear, accessories..."
+  },
+  "categories": {
+    "allItems": "All Items",
+    "gamingGear": "Gaming Gear",
+    "console": "Console",
+    "pcParts": "PC Parts",
+    "audio": "Audio"
+  },
+  "sort": {
+    "name": "Name A-Z",
+    "price_low": "Price: Low to High",
+    "price_high": "Price: High to Low",
+    "rating": "Highest Rated",
+    "reviews": "Most Reviews"
+  },
+  "conversations": {
+    "searchPlaceholder": "Search DMs...",
+    "searchAria": "Search conversations",
+    "selectPrompt": "Select a conversation to start chatting"
+  },
+  "chatbot": {
+    "open": "Open chatbot"
+  },
+  "product": {
+    "details": "Details",
+    "buyNow": "Buy Now",
+    "freeShipping": "Free shipping"
+  ,"noImage": "No Image",
+  "by": "by"
+  ,"reviews": "{{count}} reviews"
+  },
+  "activity": {
+    "join": "Join",
+    "watch": "Watch",
+    "view": "View",
+    "viewResults": "View Results"
+  }
+  ,"tournaments": {
+    "categories": {
+      "upcoming": "Upcoming",
+      "ongoing": "Ongoing",
+      "past": "Past"
+    },
+    "searchPlaceholder": "Search tournaments, organizers...",
+    "sort": {
+      "placeholder": "Sort by",
+      "options": {
+        "date-soonest": "Start Date: Soonest",
+        "date-latest": "Start Date: Latest",
+        "prize-high": "Prize Pool: High to Low",
+        "prize-low": "Prize Pool: Low to High",
+        "players-high": "Players: Most to Least",
+        "players-low": "Players: Least to Most",
+        "game": "Game A-Z"
+      }
+    }
+  }
+  ,"events": {
+    "categories": {
+      "upcoming": "Upcoming",
+      "ongoing": "Ongoing",
+      "past": "Past"
+    },
+    "sort": {
+      "placeholder": "Sort by",
+      "date-soonest": "Scheduled: Soonest",
+      "date-latest": "Scheduled: Latest",
+      "organizer": "Organizer A-Z",
+      "location": "Location A-Z"
+    },
+    "searchPlaceholder": "Search events, organizers..."
   }
 }

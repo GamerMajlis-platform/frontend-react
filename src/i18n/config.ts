@@ -67,6 +67,60 @@ if (import.meta.env.DEV) {
   i18n.on("missingKey", (_lngs, ns, key) => {
     console.warn(`[i18n] Missing key: ${ns}:${key}`);
   });
+
+  // Centralized translation debug (prints once per language)
+  const _loggedLangs = new Set<string>();
+  const _debugKeys = [
+    "labels.organizer",
+    "labels.startDate",
+    "labels.prizePool",
+    "labels.playersJoined",
+    "activity.join",
+    "activity.watch",
+    "activity.view",
+    "activity.viewResults",
+  ];
+
+  const _getNS = () =>
+    Array.isArray(i18n.options.defaultNS)
+      ? i18n.options.defaultNS[0]
+      : (i18n.options.defaultNS as string) || "translation";
+
+  function _debugLogFor(lang?: string) {
+    const language = (lang || i18n.language) as string;
+    if (_loggedLangs.has(language)) return;
+    _loggedLangs.add(language);
+    const ns = _getNS();
+
+    // Ensure the namespace is loaded before calling i18n.t to avoid
+    // "access t before namespace loaded" warnings from i18next.
+    // loadNamespaces returns a Promise; we run the debug after it resolves.
+    i18n
+      .loadNamespaces(ns)
+      .then(() => {
+        console.group(`i18n translation debug: ${language}`);
+        _debugKeys.forEach((key) => {
+          try {
+            const raw = i18n.getResource(language, ns, key);
+            if (raw !== undefined && raw !== null) {
+              console.log(key + ":", i18n.t(key, { lng: language }));
+            } else {
+              console.warn(`${key} is missing in '${language}' -> raw:`, raw);
+            }
+          } catch (e) {
+            console.error("i18n debug error for key", key, e);
+          }
+        });
+        console.groupEnd();
+      })
+      .catch((err) => {
+        console.error("i18n: failed to load namespace for debug", ns, err);
+      });
+  }
+
+  // Run once on init and whenever the language changes
+  i18n.on("initialized", () => _debugLogFor());
+  i18n.on("languageChanged", (lng) => _debugLogFor(lng));
 }
 
 export default i18n;

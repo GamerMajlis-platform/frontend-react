@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function Profile() {
+  const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
     displayName: "Display Name",
@@ -93,9 +95,7 @@ export default function Profile() {
                 <button
                   onClick={handleEditClick}
                   className="bg-[#d9d9d9] rounded-[20px] hover:bg-[#c0c0c0] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#6fffe9] px-6 py-3 flex items-center gap-3"
-                  aria-label={
-                    isEditing ? "Save profile changes" : "Edit profile"
-                  }
+                  aria-label={isEditing ? t("profile.save") : t("profile.edit")}
                 >
                   <svg
                     className="w-5 h-5"
@@ -110,7 +110,7 @@ export default function Profile() {
                     />
                   </svg>
                   <span className="[font-family:'Alice-Regular',Helvetica] font-normal text-black text-sm sm:text-lg whitespace-nowrap">
-                    {isEditing ? "Save Profile" : "Edit Profile"}
+                    {isEditing ? t("profile.save") : t("profile.edit")}
                   </span>
                 </button>
               </div>

@@ -27,7 +27,8 @@
     "alreadyHaveAccount": "لديك حساب بالفعل؟",
     "dontHaveAccount": "ليس لديك حساب؟",
     "joinCommunity": "انضم إلى مجتمع الألعاب",
-    "welcomeBack": "أهلاً بعودتك إلى المجتمع"
+    "welcomeBack": "أهلاً بعودتك إلى المجتمع",
+    "logout": "تسجيل الخروج"
   },
   "pages": {
     "profile": "الملف الشخصي",
@@ -95,8 +96,124 @@
         "language_options": { "en": "الإنجليزية", "ar": "العربية" },
         "theme": "السمة",
         "theme_options": { "dark": "داكن", "light": "فاتح", "auto": "تلقائي" },
-        "currency": "العملة"
+        "currency": "العملة",
+        "currency_options": { "usd": "دولار أمريكي", "eur": "يورو", "gbp": "جنيه إسترليني", "jpy": "ين ياباني" },
+        "language_desc": "اختر لغتك المفضلة",
+        "theme_desc": "اختر سماتك المفضلة",
+        "currency_desc": "اختر عملتك المفضلة"
       }
     }
+  },
+  "labels": {
+    "price": "السعر",
+    "organizer": "المنظم",
+    "startDate": "تاريخ البدء",
+    "prizePool": "مجموع الجوائز",
+    "playersJoined": "اللاعبون المنضمون"
+  },
+  "wishlist": {
+    "title": "قائمة الرغبات",
+    "subtitle": "أجهزتك المفضلة محفوظة لوقت لاحق",
+    "added": "أضيفت",
+    "emptyTitle": "قائمة الرغبات فارغة",
+    "emptyDesc": "ابدأ بإضافة عناصر من المتجر لرؤيتها هنا",
+    "browseMarketplace": "تصفح المتجر"
+  },
+  "profile": {
+    "edit": "تعديل الملف",
+    "save": "حفظ التغييرات",
+    "displayName": "الاسم الظاهر",
+    "discordName": "اسم ديسكورد",
+    "placeholders": {
+      "gamingPreferences": "تفضيلات اللعب",
+      "bio": "نبذة",
+      "gamingStatistics": "إحصائيات اللعب"
+    },
+    "level": "المستوى {{level}}"
+  },
+  "auth_extras": {
+    "showPassword": "إظهار كلمة المرور",
+    "hidePassword": "إخفاء كلمة المرور"
+  },
+  "auth_messages": {
+    "signingIn": "جاري تسجيل الدخول...",
+    "creatingAccount": "جاري إنشاء الحساب..."
+  },
+  "marketplace": {
+    "title": "متجر الألعاب",
+    "subtitle": "اكتشف أفضل معدات الألعاب من بائعين موثوقين حول العالم",
+    "searchPlaceholder": "ابحث عن معدات الألعاب والملحقات..."
+  },
+  "categories": {
+    "allItems": "جميع العناصر",
+    "gamingGear": "معدات الألعاب",
+    "console": "وحدة تحكم",
+    "pcParts": "قطع الحاسوب",
+    "audio": "الصوتيات"
+  },
+  "sort": {
+    "name": "الاسم أ-ي",
+    "price_low": "السعر: من الأقل للأعلى",
+    "price_high": "السعر: من الأعلى للأقل",
+    "rating": "الأعلى تقييماً",
+    "reviews": "الأكثر مراجعات"
+  },
+  "conversations": {
+    "searchPlaceholder": "ابحث في الرسائل...",
+    "searchAria": "ابحث في المحادثات",
+    "selectPrompt": "اختر محادثة لبدء الدردشة"
+  },
+  "chatbot": {
+    "open": "افتح الدردشة"
+  },
+  "product": {
+    "details": "تفاصيل",
+    "buyNow": "اشترِ الآن",
+    "freeShipping": "شحن مجاني"
+  ,"noImage": "لا توجد صورة",
+  "by": "بواسطة"
+  ,"reviews": "{{count}} مراجعة"
+  },
+  "activity": {
+    "join": "انضم",
+    "watch": "شاهد",
+    "view": "عرض",
+    "viewResults": "عرض النتائج"
+  }
+
+  ,"tournaments": {
+    "categories": {
+      "upcoming": "قادمة",
+      "ongoing": "جارية",
+      "past": "منتهية"
+    },
+    "searchPlaceholder": "ابحث في البطولات أو المنظمين...",
+    "sort": {
+      "placeholder": "ترتيب بحسب",
+      "options": {
+        "date-soonest": "تاريخ البدء: الأقرب",
+        "date-latest": "تاريخ البدء: الأحدث",
+        "prize-high": "مجموعة الجوائز: من الأكبر للأصغر",
+        "prize-low": "مجموعة الجوائز: من الأصغر للأكبر",
+        "players-high": "اللاعبون: من الأكبر للأصغر",
+        "players-low": "اللاعبون: من الأصغر للأكبر",
+        "game": "اللعبة أ-ي"
+      }
+    }
+  }
+  ,"events": {
+    "categories": {
+      "upcoming": "قادمة",
+      "ongoing": "جارية",
+      "past": "منتهية"
+    },
+    "sort": {
+      "placeholder": "ترتيب بحسب",
+      "date-soonest": "مجدول: الأقرب",
+      "date-latest": "مجدول: الأحدث",
+      "organizer": "المنظم أ-ي",
+      "location": "الموقع أ-ي"
+    },
+    "searchPlaceholder": "ابحث في الفعاليات أو المنظمين..."
   }
 }

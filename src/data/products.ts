@@ -158,11 +158,11 @@ export const productCategories = [
 
 // Sort options for marketplace
 export const sortOptions = [
-  { value: "name" as const, label: "Name A-Z" },
-  { value: "price-low" as const, label: "Price: Low to High" },
-  { value: "price-high" as const, label: "Price: High to Low" },
-  { value: "rating" as const, label: "Highest Rated" },
-  { value: "reviews" as const, label: "Most Reviews" },
+  { value: "name" as const, labelKey: "sort.name" },
+  { value: "price-low" as const, labelKey: "sort.price_low" },
+  { value: "price-high" as const, labelKey: "sort.price_high" },
+  { value: "rating" as const, labelKey: "sort.rating" },
+  { value: "reviews" as const, labelKey: "sort.reviews" },
 ];
 
 export type SortOption = (typeof sortOptions)[number]["value"];

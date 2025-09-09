@@ -2,7 +2,10 @@ interface ChatBotProps {
   className?: string;
 }
 
+import { useTranslation } from "react-i18next";
+
 export default function ChatBot({ className = "" }: ChatBotProps) {
+  const { t } = useTranslation();
   const handleChatClick = () => {
     // TODO: Implement chatbot functionality
     console.log("Chatbot clicked");
@@ -13,7 +16,7 @@ export default function ChatBot({ className = "" }: ChatBotProps) {
       <button
         onClick={handleChatClick}
         className="w-16 h-16 bg-[#6fffe9] hover:bg-[#5ee6d3] rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer group"
-        aria-label="Open chatbot"
+        aria-label={t("chatbot.open")}
       >
         <svg
           className="w-8 h-8 text-slate-800 group-hover:scale-110 transition-transform duration-200"
