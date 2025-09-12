@@ -14,8 +14,7 @@ export interface AuthError {
   error: string;
 }
 
-// Configuration
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
+import { apiFetch, ApiError } from "../lib/api";
 
 export class AuthService {
   /**
@@ -26,100 +25,65 @@ export class AuthService {
     email: string,
     password: string
   ): Promise<AuthResponse> {
-    const response = await fetch(`${API_BASE}/auth/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        displayName,
-        email,
-        password,
-      }),
-    });
+    try {
+      const data = await apiFetch<AuthResponse>("/auth/register", {
+        method: "POST",
+        body: JSON.stringify({ displayName, email, password }),
+      });
 
-    if (!response.ok) {
-      let errorMessage = "Registration failed";
-
-      try {
-        const errorData: AuthError = await response.json();
-        errorMessage = errorData.error || errorMessage;
-      } catch {
-        // If JSON parsing fails, use status-based messages
-        if (response.status === 409) {
+      this.storeAuthData(data);
+      return data;
+    } catch (err) {
+      if (err instanceof ApiError) {
+        let errorMessage = "Registration failed";
+        if (err.status === 409) {
           errorMessage = "Email or username already exists";
-        } else if (response.status >= 500) {
+        } else if (err.status && err.status >= 500) {
           errorMessage = "Server error. Please try again later.";
+        } else if (err.message) {
+          errorMessage = err.message;
         }
+        throw new Error(errorMessage);
       }
-
-      throw new Error(errorMessage);
+      throw err;
     }
-
-    const data: AuthResponse = await response.json();
-
-    // Store authentication data
-    this.storeAuthData(data);
-
-    return data;
   }
 
   /**
    * Login user
    */
   static async login(email: string, password: string): Promise<AuthResponse> {
-    const response = await fetch(`${API_BASE}/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    });
+    try {
+      const data = await apiFetch<AuthResponse>("/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (!response.ok) {
-      let errorMessage = "Login failed";
-
-      try {
-        const errorData: AuthError = await response.json();
-        errorMessage = errorData.error || errorMessage;
-      } catch {
-        // Status-based error messages
-        if (response.status === 401) {
+      this.storeAuthData(data);
+      return data;
+    } catch (err) {
+      if (err instanceof ApiError) {
+        let errorMessage = "Login failed";
+        if (err.status === 401) {
           errorMessage = "Invalid email or password";
-        } else if (response.status >= 500) {
+        } else if (err.status && err.status >= 500) {
           errorMessage = "Server error. Please try again later.";
+        } else if (err.message) {
+          errorMessage = err.message;
         }
+        throw new Error(errorMessage);
       }
-
-      throw new Error(errorMessage);
+      throw err;
     }
-
-    const data: AuthResponse = await response.json();
-
-    // Store authentication data
-    this.storeAuthData(data);
-
-    return data;
   }
 
   /**
    * Logout user
    */
   static async logout(): Promise<void> {
-    const token = this.getStoredToken();
-
     try {
       // Call backend logout endpoint
-      await fetch(`${API_BASE}/auth/logout`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      await apiFetch("/auth/logout", { method: "POST" });
     } catch (error) {
       // Continue with local logout even if backend call fails
       console.warn("Backend logout failed:", error);
@@ -156,11 +120,11 @@ export class AuthService {
    * Get stored user data
    */
   static getStoredUser(): User | null {
-    const userData = localStorage.getItem("userData");
+    const userData = localStorage.getItem("user");
     if (!userData) return null;
 
     try {
-      return JSON.parse(userData);
+      return JSON.parse(userData) as User;
     } catch {
       return null;
     }

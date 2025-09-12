@@ -4,7 +4,8 @@ import { Button } from "../components";
 import { useAppContext } from "../context/useAppContext";
 
 export default function Login() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRtl = !!(i18n.language && i18n.language.startsWith("ar"));
   const { login } = useAppContext();
 
   // Form state
@@ -95,6 +96,7 @@ export default function Login() {
 
         <form
           onSubmit={handleSubmit}
+          dir={isRtl ? "rtl" : "ltr"}
           className="w-full flex flex-col items-center gap-4 sm:gap-[22px]"
         >
           {/* Error Display */}
@@ -109,8 +111,12 @@ export default function Login() {
               htmlFor={`${id}-email`}
               className={`absolute ${
                 formData.email || focus.email
-                  ? "left-[14px] -top-[10px] transform-none text-sm leading-4 text-[#C4FFF9] px-[6px]"
-                  : "left-4 sm:left-5 top-1/2 -translate-y-1/2 text-sm sm:text-base leading-[18px] text-[rgba(255,255,255,0.6)] px-2"
+                  ? `${
+                      isRtl ? "right-[14px]" : "left-[14px]"
+                    } -top-[10px] transform-none text-sm leading-4 text-[#C4FFF9] px-[6px]`
+                  : `${
+                      isRtl ? "right-4 sm:right-5" : "left-4 sm:left-5"
+                    } top-1/2 -translate-y-1/2 text-sm sm:text-base leading-[18px] text-[rgba(255,255,255,0.6)] px-2`
               } font-[Alice] font-normal pointer-events-none transition-all duration-200 bg-[rgba(11,19,43,0.95)]`}
             >
               {t("auth.email")}
@@ -127,7 +133,9 @@ export default function Login() {
                 formData.email || focus.email
                   ? "border-[#6fffe9] shadow-[0_0_0_4px_rgba(111,255,233,0.06)]"
                   : "border-[rgba(255,255,255,0.28)]"
-              } border rounded-3xl bg-transparent text-white text-base sm:text-lg font-[Alice] px-4 sm:px-5 outline-none box-border transition-all duration-200`}
+              } border rounded-3xl bg-transparent text-white text-base sm:text-lg font-[Alice] px-4 sm:px-5 outline-none box-border transition-all duration-200 ${
+                isRtl ? "text-right" : "text-left"
+              }`}
               required
             />
           </div>
@@ -137,8 +145,12 @@ export default function Login() {
               htmlFor={`${id}-password`}
               className={`absolute ${
                 formData.password || focus.password
-                  ? "left-[14px] -top-[10px] transform-none text-sm leading-4 text-[#C4FFF9] px-[6px]"
-                  : "left-4 sm:left-5 top-1/2 -translate-y-1/2 text-sm sm:text-base leading-[18px] text-[rgba(255,255,255,0.6)] px-2"
+                  ? `${
+                      isRtl ? "right-[14px]" : "left-[14px]"
+                    } -top-[10px] transform-none text-sm leading-4 text-[#C4FFF9] px-[6px]`
+                  : `${
+                      isRtl ? "right-4 sm:right-5" : "left-4 sm:left-5"
+                    } top-1/2 -translate-y-1/2 text-sm sm:text-base leading-[18px] text-[rgba(255,255,255,0.6)] px-2`
               } font-[Alice] font-normal pointer-events-none transition-all duration-[180ms] bg-[rgba(11,19,43,0.95)]`}
             >
               {t("auth.password")}
@@ -156,13 +168,17 @@ export default function Login() {
                   formData.password || focus.password
                     ? "border-[#6fffe9] shadow-[0_0_0_4px_rgba(111,255,233,0.06)]"
                     : "border-[rgba(255,255,255,0.28)]"
-                } border rounded-3xl bg-transparent text-white text-base sm:text-lg font-[Alice] px-4 sm:px-5 outline-none box-border transition-all duration-200 pr-12`}
+                } border rounded-3xl bg-transparent text-white text-base sm:text-lg font-[Alice] px-4 sm:px-5 outline-none box-border transition-all duration-200 pr-12 ${
+                  isRtl ? "text-right" : "text-left"
+                }`}
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 bg-none border-none cursor-pointer p-1 text-[#9CA3AF] flex items-center justify-center hover:text-white transition-colors"
+                className={`absolute ${
+                  isRtl ? "left-3" : "right-3"
+                } top-1/2 -translate-y-1/2 bg-none border-none cursor-pointer p-1 text-[#9CA3AF] flex items-center justify-center hover:text-white transition-colors`}
                 aria-label={
                   showPassword
                     ? t("auth_extras.hidePassword")

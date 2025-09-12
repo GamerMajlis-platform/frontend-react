@@ -93,7 +93,25 @@ const defaultSettings: UserSettings = {
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
-  const [settings, setSettings] = useState<UserSettings>(defaultSettings);
+  const [settings, setSettings] = useState<UserSettings>(() => {
+    try {
+      const raw = localStorage.getItem(LS_SETTINGS);
+      if (raw) {
+        const parsed = JSON.parse(raw) as UserSettings;
+        // Basic validation
+        if (
+          parsed &&
+          parsed.preferences &&
+          typeof parsed.preferences.language === "string"
+        ) {
+          return parsed;
+        }
+      }
+    } catch {
+      // ignore parse errors
+    }
+    return defaultSettings;
+  });
 
   // Authentication state
   const [user, setUser] = useState<User | null>(null);
@@ -104,12 +122,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     try {
       const w = localStorage.getItem(LS_WISHLIST);
       if (w) setWishlist(JSON.parse(w));
-    } catch {
-      // ignore localStorage errors
-    }
-    try {
-      const s = localStorage.getItem(LS_SETTINGS);
-      if (s) setSettings(JSON.parse(s));
     } catch {
       // ignore localStorage errors
     }

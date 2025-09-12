@@ -97,7 +97,12 @@
         "theme": "Theme",
         "theme_options": { "dark": "Dark", "light": "Light", "auto": "Auto" },
         "currency": "Currency",
-        "currency_options": { "usd": "USD", "eur": "EUR", "gbp": "GBP", "jpy": "JPY" },
+        "currency_options": {
+          "usd": "USD",
+          "eur": "EUR",
+          "gbp": "GBP",
+          "jpy": "JPY"
+        },
         "language_desc": "Choose your preferred language",
         "theme_desc": "Choose your preferred theme",
         "currency_desc": "Choose your preferred currency"
@@ -122,12 +127,30 @@
   "profile": {
     "edit": "Edit Profile",
     "save": "Save Profile",
+    "cancel": "Cancel",
     "displayName": "Display name",
     "discordName": "Discord name",
+    "uploadPhoto": "Upload photo",
+    "tabs": {
+      "about": "About",
+      "preferences": "Preferences",
+      "stats": "Statistics"
+    },
+    "editing": {
+      "bold": "Formatting:",
+      "characters": "{{count}}/500",
+      "addPreference": "Add preference",
+      "remove": "Remove",
+      "addStat": "Add stat"
+    },
     "placeholders": {
       "gamingPreferences": "Gaming Preferences",
       "bio": "Bio",
-      "gamingStatistics": "Gaming Statistics"
+      "gamingStatistics": "Gaming Statistics",
+      "preferenceItem": "Add a preference...",
+      "statName": "Stat name (e.g. Win Rate)",
+      "displayName": "Enter your display name",
+      "discordName": "Discord username"
     },
     "level": "Level {{level}}"
   },
@@ -161,7 +184,12 @@
   "conversations": {
     "searchPlaceholder": "Search DMs...",
     "searchAria": "Search conversations",
-    "selectPrompt": "Select a conversation to start chatting"
+    "selectPrompt": "Select a conversation to start chatting",
+    "composer": {
+      "placeholder": "Message...",
+      "send": "Send",
+      "attach": "Attach"
+    }
   },
   "chatbot": {
     "open": "Open chatbot"
@@ -169,18 +197,18 @@
   "product": {
     "details": "Details",
     "buyNow": "Buy Now",
-    "freeShipping": "Free shipping"
-  ,"noImage": "No Image",
-  "by": "by"
-  ,"reviews": "{{count}} reviews"
+    "freeShipping": "Free shipping",
+    "noImage": "No Image",
+    "by": "by",
+    "reviews": "{{count}} reviews"
   },
   "activity": {
     "join": "Join",
     "watch": "Watch",
     "view": "View",
     "viewResults": "View Results"
-  }
-  ,"tournaments": {
+  },
+  "tournaments": {
     "categories": {
       "upcoming": "Upcoming",
       "ongoing": "Ongoing",
@@ -199,8 +227,8 @@
         "game": "Game A-Z"
       }
     }
-  }
-  ,"events": {
+  },
+  "events": {
     "categories": {
       "upcoming": "Upcoming",
       "ongoing": "Ongoing",

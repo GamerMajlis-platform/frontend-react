@@ -8,12 +8,12 @@ export default function ChatBot({ className = "" }: ChatBotProps) {
   const { t } = useTranslation();
   const handleChatClick = () => {
     // TODO: Implement chatbot functionality
-    console.log("Chatbot clicked");
   };
 
   return (
     <div className={`fixed bottom-6 right-6 z-50 ${className}`}>
       <button
+        type="button"
         onClick={handleChatClick}
         className="w-16 h-16 bg-[#6fffe9] hover:bg-[#5ee6d3] rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer group"
         aria-label={t("chatbot.open")}

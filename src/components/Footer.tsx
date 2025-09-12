@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
+import { memo } from "react";
 
-export default function Footer() {
+function Footer() {
   const { t } = useTranslation();
   return (
     <footer className="w-full bg-[var(--color-dark)] border-t border-[var(--color-dark-secondary)]">
@@ -15,7 +16,7 @@ export default function Footer() {
                 className="h-[24px] sm:h-[30px] w-auto block"
                 draggable={false}
               />
-              <span className="text-white font-[var(--font-alice)] text-[18px] sm:text-[22px] font-semibold">
+              <span className="text-white font-[var(--font-alice)] text-[18px] sm:text-[22px]">
                 GamerMajlis
               </span>
             </div>
@@ -26,7 +27,7 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-[var(--color-text)] font-semibold mb-3 font-[var(--font-alice)] text-base sm:text-lg">
+            <h3 className="text-[var(--color-text)] mb-3 font-[var(--font-alice)] text-base sm:text-lg">
               {t("footer.quickLinks")}
             </h3>
             <ul className="list-none p-0 m-0 space-y-2">
@@ -67,7 +68,7 @@ export default function Footer() {
 
           {/* Community */}
           <div>
-            <h3 className="text-[var(--color-text)] font-semibold mb-3 font-[var(--font-alice)] text-base sm:text-lg">
+            <h3 className="text-[var(--color-text)] mb-3 font-[var(--font-alice)] text-base sm:text-lg">
               {t("footer.community")}
             </h3>
             <ul className="list-none p-0 m-0 space-y-2">
@@ -109,3 +110,5 @@ export default function Footer() {
     </footer>
   );
 }
+
+export default memo(Footer);

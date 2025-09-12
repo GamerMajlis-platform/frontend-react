@@ -1,33 +1,21 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BackgroundDecor, Card } from "../components";
 import { events, eventSortOptions, type EventSortOption } from "../data";
+import SortBy from "../components/SortBy";
 
 export default function Events() {
   const { i18n, t } = useTranslation();
   // Search / Sort state
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<EventSortOption>("date-soonest");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  // SortBy handles dropdown state and outside clicks
 
   // Category filter state
   type Category = "upcoming" | "ongoing" | "past";
   const [category, setCategory] = useState<Category>("upcoming");
 
-  // Close dropdown on outside click
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  // SortBy handles dropdown state and outside clicks
 
   const handleSearchFocus = (e: React.FocusEvent<HTMLInputElement>) => {
     e.currentTarget.style.borderColor = "#6fffe9";
@@ -93,7 +81,7 @@ export default function Events() {
           <div className="mb-6 flex w-full max-w-[800px] mx-auto items-center gap-3 search-controls">
             <input
               type="text"
-              placeholder="Search events, organizers..."
+              placeholder={t("events.searchPlaceholder")}
               className={`
                 h-12 w-full flex-1 rounded-xl border border-slate-600
                 bg-[#1C2541] px-4 py-3 text-white placeholder-slate-400
@@ -106,54 +94,13 @@ export default function Events() {
               onBlur={handleSearchBlur}
             />
 
-            <div
-              className="relative w-[140px] sort-container"
-              ref={dropdownRef}
-            >
-              <button
-                className={`
-                  flex h-12 w-full items-center justify-between
-                  rounded-xl border-none bg-cyan-300 px-3 py-3 text-slate-900
-                  transition-colors duration-200 hover:bg-cyan-200 sort-button
-                  text-sm font-medium
-                `}
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              >
-                <span className="truncate">Sort by</span>
-                <span
-                  className={`ml-1 transform transition-transform duration-300 ease-in-out ${
-                    isDropdownOpen ? "rotate-180" : "rotate-0"
-                  }`}
-                >
-                  ▼
-                </span>
-              </button>
-
-              {isDropdownOpen && (
-                <div
-                  className={`absolute top-full right-0 z-50 mt-2 w-56 rounded-xl border border-slate-600 bg-slate-800 p-2 shadow-2xl sort-dropdown backdrop-blur-sm`}
-                >
-                      {eventSortOptions.map((option) => (
-                        <button
-                          key={option.value}
-                          className={`block w-full rounded-md border-none px-3 py-2 text-left text-white transition-colors duration-200 text-sm hover:bg-slate-700 ${
-                            sortBy === option.value
-                              ? "bg-slate-700"
-                              : "bg-transparent"
-                          } ${i18n.language && i18n.language.startsWith("ar") ? "text-right pr-3" : "text-left pl-3"}`}
-                          onClick={() => {
-                            setSortBy(option.value);
-                            setIsDropdownOpen(false);
-                          }}
-                        >
-                          {option.labelKey ? t(option.labelKey) : (
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            (option as any).label
-                          )}
-                        </button>
-                      ))}
-                </div>
-              )}
+            <div className="relative w-[140px] sort-container">
+              <SortBy
+                options={eventSortOptions}
+                value={sortBy}
+                onChange={(v) => setSortBy(v as EventSortOption)}
+                placeholderKey={"events.sort.placeholder"}
+              />
             </div>
           </div>
         </section>

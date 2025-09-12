@@ -27,6 +27,7 @@ export default function LanguageSwitcher({
         value={i18n.resolvedLanguage}
         onChange={(e) => changeLanguage(e.target.value)}
         className={variant === "light" ? baseLight : baseDark}
+        aria-label="Select language"
       >
         {languages.map((lang) => (
           <option key={lang.code} value={lang.code}>

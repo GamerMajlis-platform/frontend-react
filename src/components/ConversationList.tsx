@@ -56,7 +56,10 @@ export default function ConversationList({
               }`}
             >
               <div className="w-12 h-12 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold">
-                {c.name.split(" ")[0][0] ?? "U"}
+                {(() => {
+                  const first = (c.name || "").split(" ")[0] || "";
+                  return first[0] ? first[0].toUpperCase() : "U";
+                })()}
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">

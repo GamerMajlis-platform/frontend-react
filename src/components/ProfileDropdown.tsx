@@ -41,7 +41,8 @@ export default function ProfileDropdown({
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language && i18n.language.startsWith("ar");
 
   const menuItems = [
     { key: "profile", label: t("nav.profile"), icon: "👤" },
@@ -107,9 +108,6 @@ export default function ProfileDropdown({
           />
 
           <div
-            role="menu"
-            aria-expanded={isOpen}
-            aria-hidden={!isOpen}
             className="fixed md:absolute right-4 md:right-0 top-16 md:top-12 
                   w-[calc(100%-2rem)] md:w-56 bg-white rounded-lg shadow-lg 
                   border border-gray-100 py-3 z-[1000] grid gap-2 animate-in fade-in-10 max-h-[60vh] overflow-auto"
@@ -121,7 +119,11 @@ export default function ProfileDropdown({
             </div>
 
             {/* Menu Items */}
-            <div className="grid gap-1 px-2">
+            <div
+              className={`grid gap-1 px-2 ${
+                isRTL ? "text-right" : "text-left"
+              }`}
+            >
               {menuItems.map((item) => (
                 <button
                   key={item.key}
@@ -129,28 +131,60 @@ export default function ProfileDropdown({
                     setIsOpen(false);
                     onSectionChange?.(item.key);
                   }}
-                  className="flex items-center justify-between px-3 py-2 text-sm 
-                    rounded-md hover:bg-[#5BC0BE]/10 transition"
+                  className="flex items-center px-3 py-2 text-sm rounded-md hover:bg-[#5BC0BE]/10 transition"
                 >
-                  <span className="flex items-center gap-2">
-                    <span>{item.icon}</span>
-                    {item.label}
+                  <span
+                    className={`flex items-center gap-2 ${
+                      isRTL ? "ml-auto" : ""
+                    }`}
+                  >
+                    {isRTL ? (
+                      <>
+                        {item.badge ? (
+                          <span className="text-xs bg-[#6fffe9] px-2 py-0.5 rounded-full">
+                            {item.badge}
+                          </span>
+                        ) : null}
+                        <span className="truncate">{item.label}</span>
+                        <span>{item.icon}</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>{item.icon}</span>
+                        <span className="truncate">{item.label}</span>
+                        {item.badge ? (
+                          <span className="text-xs bg-[#6fffe9] px-2 py-0.5 rounded-full">
+                            {item.badge}
+                          </span>
+                        ) : null}
+                      </>
+                    )}
                   </span>
-                  {item.badge ? (
-                    <span className="text-xs bg-[#6fffe9] px-2 py-0.5 rounded-full">
-                      {item.badge}
-                    </span>
-                  ) : null}
                 </button>
               ))}
 
               {/* Logout */}
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-100 rounded-md transition"
+                className="flex items-center justify-between px-3 py-2 text-sm text-red-600 hover:bg-red-100 rounded-md transition"
               >
-                <span aria-hidden>🚪</span>
-                <span>{t("auth.logout")}</span>
+                <span
+                  className={`flex items-center gap-2 ${
+                    isRTL ? "ml-auto" : ""
+                  }`}
+                >
+                  {isRTL ? (
+                    <>
+                      <span className="truncate">{t("auth.logout")}</span>
+                      <span aria-hidden>🚪</span>
+                    </>
+                  ) : (
+                    <>
+                      <span aria-hidden>🚪</span>
+                      <span className="truncate">{t("auth.logout")}</span>
+                    </>
+                  )}
+                </span>
               </button>
             </div>
           </div>

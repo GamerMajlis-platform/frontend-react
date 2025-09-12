@@ -97,7 +97,12 @@
         "theme": "السمة",
         "theme_options": { "dark": "داكن", "light": "فاتح", "auto": "تلقائي" },
         "currency": "العملة",
-        "currency_options": { "usd": "دولار أمريكي", "eur": "يورو", "gbp": "جنيه إسترليني", "jpy": "ين ياباني" },
+        "currency_options": {
+          "usd": "دولار أمريكي",
+          "eur": "يورو",
+          "gbp": "جنيه إسترليني",
+          "jpy": "ين ياباني"
+        },
         "language_desc": "اختر لغتك المفضلة",
         "theme_desc": "اختر سماتك المفضلة",
         "currency_desc": "اختر عملتك المفضلة"
@@ -122,12 +127,30 @@
   "profile": {
     "edit": "تعديل الملف",
     "save": "حفظ التغييرات",
+    "cancel": "إلغاء",
     "displayName": "الاسم الظاهر",
     "discordName": "اسم ديسكورد",
+    "uploadPhoto": "رفع صورة",
+    "tabs": {
+      "about": "نبذة",
+      "preferences": "التفضيلات",
+      "stats": "الإحصائيات"
+    },
+    "editing": {
+      "bold": "تنسيق:",
+      "characters": "{{count}}/500",
+      "addPreference": "إضافة تفضيل",
+      "remove": "إزالة",
+      "addStat": "إضافة إحصائية"
+    },
     "placeholders": {
       "gamingPreferences": "تفضيلات اللعب",
       "bio": "نبذة",
-      "gamingStatistics": "إحصائيات اللعب"
+      "gamingStatistics": "إحصائيات اللعب",
+      "preferenceItem": "أضف تفضيلاً...",
+      "statName": "اسم الإحصائية (مثل معدل الفوز)",
+      "displayName": "أدخل اسمك الظاهر",
+      "discordName": "اسم المستخدم في ديسكورد"
     },
     "level": "المستوى {{level}}"
   },
@@ -140,14 +163,14 @@
     "creatingAccount": "جاري إنشاء الحساب..."
   },
   "marketplace": {
-    "title": "متجر الألعاب",
+    "title": "سوق الألعاب",
     "subtitle": "اكتشف أفضل معدات الألعاب من بائعين موثوقين حول العالم",
     "searchPlaceholder": "ابحث عن معدات الألعاب والملحقات..."
   },
   "categories": {
     "allItems": "جميع العناصر",
     "gamingGear": "معدات الألعاب",
-    "console": "وحدة تحكم",
+    "console": "أجهزة الترفيه",
     "pcParts": "قطع الحاسوب",
     "audio": "الصوتيات"
   },
@@ -161,7 +184,12 @@
   "conversations": {
     "searchPlaceholder": "ابحث في الرسائل...",
     "searchAria": "ابحث في المحادثات",
-    "selectPrompt": "اختر محادثة لبدء الدردشة"
+    "selectPrompt": "اختر محادثة لبدء الدردشة",
+    "composer": {
+      "placeholder": "رسالة...",
+      "send": "إرسال",
+      "attach": "إرفاق"
+    }
   },
   "chatbot": {
     "open": "افتح الدردشة"
@@ -169,19 +197,19 @@
   "product": {
     "details": "تفاصيل",
     "buyNow": "اشترِ الآن",
-    "freeShipping": "شحن مجاني"
-  ,"noImage": "لا توجد صورة",
-  "by": "بواسطة"
-  ,"reviews": "{{count}} مراجعة"
+    "freeShipping": "شحن مجاني",
+    "noImage": "لا توجد صورة",
+    "by": "بواسطة",
+    "reviews": "{{count}} مراجعة"
   },
   "activity": {
     "join": "انضم",
     "watch": "شاهد",
     "view": "عرض",
     "viewResults": "عرض النتائج"
-  }
+  },
 
-  ,"tournaments": {
+  "tournaments": {
     "categories": {
       "upcoming": "قادمة",
       "ongoing": "جارية",
@@ -200,8 +228,8 @@
         "game": "اللعبة أ-ي"
       }
     }
-  }
-  ,"events": {
+  },
+  "events": {
     "categories": {
       "upcoming": "قادمة",
       "ongoing": "جارية",

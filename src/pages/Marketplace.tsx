@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, BackgroundDecor } from "../components";
 import { productData, sortOptions, type SortOption } from "../data";
+import SortBy from "../components/SortBy";
 
 // Utility function to detect RTL text
 const isRTLText = (text: string): boolean => {
@@ -12,9 +13,7 @@ export default function Marketplace() {
   const { i18n, t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("name");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("All Items");
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Filter categories: keep canonical values for filtering and translation keys for display
   const categories = [
@@ -25,20 +24,7 @@ export default function Marketplace() {
     { value: "Audio", labelKey: "categories.audio" },
   ];
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  // SortBy component handles dropdown state and outside clicks
 
   const parsePrice = (priceString: string): number => {
     return parseFloat(priceString.replace("$", ""));
@@ -107,8 +93,8 @@ export default function Marketplace() {
                 isRTLText(
                   "Discover premium gaming gear from trusted sellers worldwide"
                 )
-                  ? "font-tahoma text-right"
-                  : "font-sans text-left"
+                  ? "font-tahoma text-center"
+                  : "font-sans text-center"
               }
             `}
           >
@@ -134,63 +120,13 @@ export default function Marketplace() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
 
-            <div
-              className="relative w-[140px] sort-container"
-              ref={dropdownRef}
-            >
-              <button
-                className="
-                  flex h-12 w-full items-center justify-between 
-                  rounded-xl border-none bg-cyan-300 px-3 py-3 text-slate-900 
-                  transition-colors duration-200 hover:bg-cyan-200 sort-button
-                  text-sm font-medium
-                "
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              >
-                <span className="truncate">{t("tournaments.sort.placeholder") /* generic 'Sort by' key used */}</span>
-                <span
-                  className={`ml-1 transform transition-transform duration-300 ease-in-out ${
-                    isDropdownOpen ? "rotate-180" : "rotate-0"
-                  }`}
-                >
-                  ▼
-                </span>
-              </button>
-
-              {isDropdownOpen && (
-                <div
-                  className="
-                  absolute top-full right-0 z-50 mt-2 w-56 rounded-xl 
-                  border border-slate-600 bg-slate-800 p-2 shadow-2xl sort-dropdown
-                  backdrop-blur-sm
-                "
-                >
-                  {sortOptions.map((option) => (
-                    <button
-                      key={option.value}
-                      className={`
-                        block w-full rounded-md border-none px-3 py-2
-                        text-white transition-colors duration-200 text-sm
-                        hover:bg-slate-700
-                        ${
-                          sortBy === option.value
-                            ? "bg-slate-700"
-                            : "bg-transparent"
-                        } ${i18n.language && i18n.language.startsWith("ar") ? "text-right pr-3" : "text-left pl-3"}
-                      `}
-                      onClick={() => {
-                        setSortBy(option.value);
-                        setIsDropdownOpen(false);
-                      }}
-                    >
-                      {option.labelKey ? t(option.labelKey) : (
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        (option as any).label
-                      )}
-                    </button>
-                  ))}
-                </div>
-              )}
+            <div className="relative w-[140px] sort-container">
+              <SortBy
+                options={sortOptions}
+                value={sortBy}
+                onChange={(v) => setSortBy(v as SortOption)}
+                placeholderKey={"tournaments.sort.placeholder"}
+              />
             </div>
           </div>
 

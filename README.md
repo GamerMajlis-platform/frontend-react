@@ -8,7 +8,7 @@ A modern React 19 gaming platform with TypeScript, Vite, and Tailwind CSS. Featu
 - **Vite 7.1.4** for fast development and optimized builds
 - **Tailwind CSS 3.4.14** for utility-first styling
 - **react-i18next** for internationalization with English/Arabic support
-- **Bun** for fast package management and builds
+- **Node + npm** for package management and running scripts
 
 ## Project Structure
 
@@ -75,10 +75,19 @@ src/
 
 ### Internationalization (i18n)
 
-- **Bilingual support**: English (default) and Arabic with RTL layout
-- **Automatic RTL detection** based on Unicode character ranges
+- **Bilingual support**: English and Arabic with RTL layout
+- **RTL handling**: the app uses the active language (Arabic) to set document `dir` and component-level direction; explicit language checks (e.g. `i18n.language.startsWith('ar')`) are used to flip label/button positions in form fields.
 - **Dynamic font switching** (Alice for English, Scheherazade for Arabic)
 - **Layout mirroring** for proper RTL experience
+
+### Recent updates (localization & navigation fixes)
+
+- Persisted user language preference across refreshes: the app now reads saved preferences from `localStorage` (`gm_settings`) early during initialization and applies the saved language so the chosen language (e.g., Arabic) survives reloads.
+- Fixed i18n race conditions: centralized namespace readiness and a controlled post-init language application in `src/i18n/config.ts` to avoid "access t before namespace loaded" warnings and noisy missing-key logs.
+- Login/Signup: input fields and labels are RTL-aware (form `dir`, label positioning, input alignment, and password toggle placement) so fields behave correctly in Arabic.
+- Navigation hash behavior: the app no longer force-redirects to Home on refresh. The app now keeps `window.location.hash` synchronized with internal page state so refreshing preserves the current page.
+- Replaced repeated sort/dropdown logic with a reusable `SortBy` component and wired translations via `labelKey` values.
+- Product cards: removed duplicate category badge and localized UI strings (buy now, details, no image, reviews).
 
 #### i18n: common race condition and the project's fix
 
@@ -91,12 +100,15 @@ i18next::translator: key "labels.organizer" ... won't get resolved as namespace 
 This happens when code calls `i18n.t(...)` before the backend has finished loading the requested namespace for the active language.
 
 Project fix
+
 - The project centralizes debug logging in `src/i18n/config.ts` and now waits for the namespace to load using `i18n.loadNamespaces(ns)` before calling `i18n.t(...)`. This removes the noisy warning and guarantees translations are available when read.
 
 How to verify
+
 - Start the dev server and open browser DevTools Console. You should see a single grouped block per language titled `i18n translation debug: <lang>` with the requested keys and values (or a single clear missing warning if a key is not present).
 
 Notes on Context7
+
 - The repository integrates with Context7 (see `src/services/Context7Service.ts`) for external documentation and tooling. If you run Context7 locally or via the project's integration, include the Context7 server url in your environment (or set it in the service) to enable richer documentation linking. The i18n debug and README notes can be used alongside Context7 to provide troubleshooting guides to translators or contributors.
 
 ### Component Architecture
@@ -243,17 +255,79 @@ Consistent layering system for proper element stacking:
 
 ```bash
 # Install dependencies
-bun install
+npm install
 
 # Start development server
-bun run dev
+npm run dev
 
 # Build for production
-bun run build
+npm run build
 
 # Lint code
-bun run lint
+npm run lint
 ```
+
+### Dev checklist
+
+Quick, repeatable steps for local development and verification:
+
+- Install dependencies
+
+  ```bash
+  npm install
+  ```
+
+- Start the dev server and open the app (Vite default port 5173)
+
+  ```bash
+  npm run dev
+  # then open http://localhost:5173
+  ```
+
+- Verify translations & RTL
+
+  - Use the in-app LanguageSwitcher (top-right) to toggle between English and Arabic.
+  - Alternatively, append `?lang=ar` or `?lang=en` to the URL to test language-specific load behavior.
+  - Confirm translations persist across refresh and that the current page remains after reload (URL hash is synchronized with app state).
+  - Confirm: Marketplace/Events/Tournaments sort dropdowns and product cards show translated labels and proper RTL alignment.
+
+- Smoke tests
+
+  - Check the product card: no category badge on the card, localized "Buy Now"/"Details"/"No Image" strings, and review counts render via translations.
+  - Open browser console to observe the centralized i18n debug block (dev only) and ensure there are no repeated "namespace not loaded" warnings.
+
+- Build, typecheck & lint
+
+  ```bash
+  npm run build   # runs tsc -b && vite build
+  npm run lint
+  ```
+
+- Preview production build
+
+  ```bash
+  npm run preview
+  # then open the preview URL printed by Vite
+  ```
+
+- Commit & branch workflow
+
+  ```bash
+  git checkout -b feat/your-feature
+  git add -A
+  git commit -m "feat: short description"
+  git push --set-upstream origin feat/your-feature
+  ```
+
+- Optional: quick translation parity check (node)
+
+  This one-liner will list keys present in English but missing in Arabic. Run from the repo root (requires Node.js):
+
+  ```bash
+  node -e "const en=require('./public/locales/en/translation.json'); const ar=require('./public/locales/ar/translation.json'); const keys=(o)=>Object.keys(o).reduce((acc,k)=>{ if(typeof o[k]==='object') Object.keys((function f(x){return x})(o[k])||{}).forEach(sub=>acc.push(k+'.'+sub)); else acc.push(k); return acc; },[]); const flat=(o,p='')=>Object.entries(o).flatMap(([k,v])=>typeof v==='object'&&v!==null?flat(v,p?`${p}.${k}`:k):[(p?`${p}.`:'')+k]); const enKeys=flat(en); const arKeys=flat(ar); console.log('missing in ar:', enKeys.filter(k=>!arKeys.includes(k)).join('\n')||'none');"
+  ```
+
+If you'd like, I can add a small parity script to the repo and a package.json script for convenience.
 
 ### Key Development Patterns
 

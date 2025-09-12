@@ -64,7 +64,6 @@ export default function Header({
             }`}
             onClick={() => setIsMobileMenuOpen((v) => !v)}
             aria-label="Toggle mobile menu"
-            aria-expanded={isMobileMenuOpen}
           >
             <div className="w-6 h-5 flex flex-col justify-between items-center">
               <div

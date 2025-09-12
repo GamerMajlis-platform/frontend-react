@@ -37,6 +37,21 @@ export const transitions = {
   fast: "var(--transition-fast)",
   normal: "var(--transition-normal)",
   slow: "0.4s ease",
+  smooth: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+  bounce: "all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+} as const;
+
+// ===== REUSABLE SHADOW EFFECTS =====
+export const shadows = {
+  small: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+  medium:
+    "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+  large:
+    "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+  xl: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+  glow: "0 0 20px rgba(111, 255, 233, 0.3)", // primary glow
+  glowCyan: "0 0 20px rgba(103, 232, 249, 0.3)", // cyan glow
+  innerGlow: "inset 0 2px 4px 0 rgba(111, 255, 233, 0.1)",
 } as const;
 
 // ===== BASE COMPONENT STYLES =====
@@ -107,6 +122,7 @@ export const getRTLStyles = (text: string): CSSProperties => {
 // ===== RESPONSIVE UTILITIES =====
 export const breakpoints = {
   sm: "640px",
+  md: "768px",
   lg: "1024px",
   xl: "1280px",
 } as const;
@@ -114,9 +130,13 @@ export const breakpoints = {
 export const getResponsiveStyle = (
   base: CSSProperties,
   sm?: CSSProperties,
-  lg?: CSSProperties
+  md?: CSSProperties,
+  lg?: CSSProperties,
+  xl?: CSSProperties
 ) => ({
   ...base,
   ...(sm && { [`@media (min-width: ${breakpoints.sm})`]: sm }),
+  ...(md && { [`@media (min-width: ${breakpoints.md})`]: md }),
   ...(lg && { [`@media (min-width: ${breakpoints.lg})`]: lg }),
+  ...(xl && { [`@media (min-width: ${breakpoints.xl})`]: xl }),
 });

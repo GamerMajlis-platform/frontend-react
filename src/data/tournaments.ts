@@ -166,12 +166,30 @@ export const tournaments: Tournament[] = [
 
 // Sort options specific to tournaments
 export const tournamentSortOptions = [
-  { value: "date-soonest" as const, labelKey: "tournaments.sort.options.date-soonest" },
-  { value: "date-latest" as const, labelKey: "tournaments.sort.options.date-latest" },
-  { value: "prize-high" as const, labelKey: "tournaments.sort.options.prize-high" },
-  { value: "prize-low" as const, labelKey: "tournaments.sort.options.prize-low" },
-  { value: "players-high" as const, labelKey: "tournaments.sort.options.players-high" },
-  { value: "players-low" as const, labelKey: "tournaments.sort.options.players-low" },
+  {
+    value: "date-soonest" as const,
+    labelKey: "tournaments.sort.options.date-soonest",
+  },
+  {
+    value: "date-latest" as const,
+    labelKey: "tournaments.sort.options.date-latest",
+  },
+  {
+    value: "prize-high" as const,
+    labelKey: "tournaments.sort.options.prize-high",
+  },
+  {
+    value: "prize-low" as const,
+    labelKey: "tournaments.sort.options.prize-low",
+  },
+  {
+    value: "players-high" as const,
+    labelKey: "tournaments.sort.options.players-high",
+  },
+  {
+    value: "players-low" as const,
+    labelKey: "tournaments.sort.options.players-low",
+  },
   { value: "game" as const, labelKey: "tournaments.sort.options.game" },
 ];
 

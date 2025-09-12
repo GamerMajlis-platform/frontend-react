@@ -1,11 +1,12 @@
 import Logo from "./Logo";
+import { memo } from "react";
 
 /**
  * BackgroundDecor renders the decorative shapes and floating controller
  * used on the Home page so they can be reused across other pages.
  * Place this inside a relatively positioned container.
  */
-export default function BackgroundDecor() {
+function BackgroundDecor() {
   return (
     <div className="pointer-events-none absolute inset-0 z-0">
       {/* Decorative shapes (hidden on small screens for cleanliness) */}
@@ -23,3 +24,5 @@ export default function BackgroundDecor() {
     </div>
   );
 }
+
+export default memo(BackgroundDecor);

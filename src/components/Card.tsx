@@ -21,7 +21,6 @@ import {
   IconUsers,
 } from "./icons.tsx";
 
-
 // Common variant type for event & tournament presets
 export type ActivityVariant = "upcoming" | "ongoing" | "past";
 
@@ -98,7 +97,6 @@ const tournamentVariantStyles: Record<
 };
 
 function CardComponent(props: CardProps) {
-
   // debug logs removed; centralized debug in src/i18n/config.ts handles translation checks
   switch (props.preset) {
     case "product":
@@ -225,7 +223,6 @@ function ProductPreset({
   };
 
   return (
-    
     <div className={`${presetStyles.product.container} ${className}`}>
       {/* Image Container */}
       <div className={presetStyles.product.image}>
@@ -276,7 +273,8 @@ function ProductPreset({
               : "text-left font-sans"
           }`}
         >
-          {t("product.by")} <span className="font-medium text-primary">{seller}</span>
+          {t("product.by")}{" "}
+          <span className="font-medium text-primary">{seller}</span>
         </p>
         <div
           className={`mb-3 sm:mb-3.5 flex items-center gap-2 ${

@@ -60,7 +60,38 @@ const applyHtmlAttributes = (lng: string | undefined) => {
 };
 
 applyHtmlAttributes(i18n.resolvedLanguage);
-i18n.on("languageChanged", (lng) => applyHtmlAttributes(lng));
+
+// Only persist language when it changes at runtime — don't overwrite
+// an existing stored preference during i18n init (that can clobber a
+// user's chosen language before detectors or preferences are applied).
+i18n.on("languageChanged", (lng) => {
+  try {
+    if (typeof window !== "undefined" && lng) {
+      localStorage.setItem("i18nextLng", lng);
+    }
+  } catch {
+    /* ignore storage errors */
+  }
+  applyHtmlAttributes(lng);
+});
+
+// After i18n finishes initialization, check app settings in localStorage for
+// an explicit saved language preference and apply it if different. This
+// ensures the app-level preferences (saved by AppContext) win on refresh.
+i18n.on("initialized", () => {
+  try {
+    if (typeof window === "undefined") return;
+    const raw = localStorage.getItem("gm_settings");
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    const saved = parsed?.preferences?.language;
+    if (saved && typeof saved === "string" && saved !== i18n.language) {
+      i18n.changeLanguage(saved).catch(() => {});
+    }
+  } catch {
+    // ignore parse/storage errors
+  }
+});
 
 // Surface missing translation keys in dev to ensure mapping correctness
 if (import.meta.env.DEV) {

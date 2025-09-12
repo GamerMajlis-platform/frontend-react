@@ -4,8 +4,9 @@ import { Button } from "../components";
 import { useAppContext } from "../context/useAppContext";
 
 export default function Signup() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { register } = useAppContext();
+  const isRtl = !!(i18n.language && i18n.language.startsWith("ar"));
 
   // Form state
   const [formData, setFormData] = useState({
@@ -129,6 +130,7 @@ export default function Signup() {
 
         <form
           onSubmit={handleSubmit}
+          dir={isRtl ? "rtl" : "ltr"}
           className="w-full flex flex-col items-center gap-4 sm:gap-[22px]"
         >
           {/* Error Display */}
@@ -143,8 +145,12 @@ export default function Signup() {
               htmlFor={`${id}-username`}
               className={`absolute ${
                 formData.username || focus.username
-                  ? "left-[14px] -top-[10px] transform-none text-sm leading-4 text-[#C4FFF9] px-[6px]"
-                  : "left-4 sm:left-5 top-1/2 -translate-y-1/2 text-sm sm:text-base leading-[18px] text-[rgba(255,255,255,0.6)] px-2"
+                  ? `${
+                      isRtl ? "right-[14px]" : "left-[14px]"
+                    } -top-[10px] transform-none text-sm leading-4 text-[#C4FFF9] px-[6px]`
+                  : `${
+                      isRtl ? "right-4 sm:right-5" : "left-4 sm:left-5"
+                    } top-1/2 -translate-y-1/2 text-sm sm:text-base leading-[18px] text-[rgba(255,255,255,0.6)] px-2`
               } font-[Alice] font-normal pointer-events-none transition-all duration-200 bg-[rgba(11,19,43,0.95)]`}
             >
               {t("auth.username")}
@@ -161,7 +167,9 @@ export default function Signup() {
                 formData.username || focus.username
                   ? "border-[#6fffe9] shadow-[0_0_0_4px_rgba(111,255,233,0.06)]"
                   : "border-[rgba(255,255,255,0.28)]"
-              } border rounded-3xl bg-transparent text-white text-lg font-[Alice] px-5 outline-none box-border transition-all duration-200`}
+              } border rounded-3xl bg-transparent text-white text-lg font-[Alice] px-5 outline-none box-border transition-all duration-200 ${
+                isRtl ? "text-right" : "text-left"
+              }`}
               aria-label={t("auth.username")}
               required
             />
@@ -172,8 +180,12 @@ export default function Signup() {
               htmlFor={`${id}-email`}
               className={`absolute ${
                 formData.email || focus.email
-                  ? "left-[14px] -top-[10px] transform-none text-sm leading-4 text-[#C4FFF9] px-[6px]"
-                  : "left-5 top-1/2 -translate-y-1/2 text-base leading-[18px] text-[rgba(255,255,255,0.6)] px-2"
+                  ? `${
+                      isRtl ? "right-[14px]" : "left-[14px]"
+                    } -top-[10px] transform-none text-sm leading-4 text-[#C4FFF9] px-[6px]`
+                  : `${
+                      isRtl ? "right-5" : "left-5"
+                    } top-1/2 -translate-y-1/2 text-base leading-[18px] text-[rgba(255,255,255,0.6)] px-2`
               } font-[Alice] font-normal pointer-events-none transition-all duration-200 bg-[rgba(11,19,43,0.95)]`}
             >
               {t("auth.email")}
@@ -190,7 +202,9 @@ export default function Signup() {
                 formData.email || focus.email
                   ? "border-[#6fffe9] shadow-[0_0_0_4px_rgba(111,255,233,0.06)]"
                   : "border-[rgba(255,255,255,0.28)]"
-              } border rounded-3xl bg-transparent text-white text-lg font-[Alice] px-5 outline-none box-border transition-all duration-200`}
+              } border rounded-3xl bg-transparent text-white text-lg font-[Alice] px-5 outline-none box-border transition-all duration-200 ${
+                isRtl ? "text-right" : "text-left"
+              }`}
               aria-label={t("auth.email")}
               required
             />
@@ -201,8 +215,12 @@ export default function Signup() {
               htmlFor={`${id}-password`}
               className={`absolute ${
                 formData.password || focus.password
-                  ? "left-[14px] -top-[10px] transform-none text-sm leading-4 text-[#C4FFF9] px-[6px]"
-                  : "left-5 top-1/2 -translate-y-1/2 text-base leading-[18px] text-[rgba(255,255,255,0.6)] px-2"
+                  ? `${
+                      isRtl ? "right-[14px]" : "left-[14px]"
+                    } -top-[10px] transform-none text-sm leading-4 text-[#C4FFF9] px-[6px]`
+                  : `${
+                      isRtl ? "right-5" : "left-5"
+                    } top-1/2 -translate-y-1/2 text-base leading-[18px] text-[rgba(255,255,255,0.6)] px-2`
               } font-[Alice] font-normal pointer-events-none transition-all duration-[180ms] bg-[rgba(11,19,43,0.95)]`}
             >
               {t("auth.password")}
@@ -220,14 +238,18 @@ export default function Signup() {
                   formData.password || focus.password
                     ? "border-[#6fffe9] shadow-[0_0_0_4px_rgba(111,255,233,0.06)]"
                     : "border-[rgba(255,255,255,0.28)]"
-                } border rounded-3xl bg-transparent text-white text-lg font-[Alice] px-5 outline-none box-border transition-all duration-200`}
+                } border rounded-3xl bg-transparent text-white text-lg font-[Alice] px-5 outline-none box-border transition-all duration-200 ${
+                  isRtl ? "text-right" : "text-left"
+                }`}
                 aria-label={t("auth.password")}
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 bg-none border-none cursor-pointer p-1 text-[#9CA3AF] flex items-center justify-center"
+                className={`absolute ${
+                  isRtl ? "left-3" : "right-3"
+                } top-1/2 -translate-y-1/2 bg-none border-none cursor-pointer p-1 text-[#9CA3AF] flex items-center justify-center`}
                 aria-label={
                   showPassword
                     ? t("auth_extras.hidePassword")
@@ -262,8 +284,12 @@ export default function Signup() {
               htmlFor={`${id}-confirmPassword`}
               className={`absolute ${
                 formData.confirmPassword || focus.confirmPassword
-                  ? "left-[14px] -top-[10px] transform-none text-sm leading-4 text-[#C4FFF9] px-[6px]"
-                  : "left-5 top-1/2 -translate-y-1/2 text-base leading-[18px] text-[rgba(255,255,255,0.6)] px-2"
+                  ? `${
+                      isRtl ? "right-[14px]" : "left-[14px]"
+                    } -top-[10px] transform-none text-sm leading-4 text-[#C4FFF9] px-[6px]`
+                  : `${
+                      isRtl ? "right-5" : "left-5"
+                    } top-1/2 -translate-y-1/2 text-base leading-[18px] text-[rgba(255,255,255,0.6)] px-2`
               } font-[Alice] font-normal pointer-events-none transition-all duration-[180ms] bg-[rgba(11,19,43,0.95)]`}
             >
               {t("auth.confirmPassword")}
@@ -281,14 +307,18 @@ export default function Signup() {
                   formData.confirmPassword || focus.confirmPassword
                     ? "border-[#6fffe9] shadow-[0_0_0_4px_rgba(111,255,233,0.06)]"
                     : "border-[rgba(255,255,255,0.28)]"
-                } border rounded-3xl bg-transparent text-white text-lg font-[Alice] px-5 outline-none box-border transition-all duration-200`}
+                } border rounded-3xl bg-transparent text-white text-lg font-[Alice] px-5 outline-none box-border transition-all duration-200 ${
+                  isRtl ? "text-right" : "text-left"
+                }`}
                 aria-label={t("auth.confirmPassword")}
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 bg-none border-none cursor-pointer p-1 text-[#9CA3AF] flex items-center justify-center"
+                className={`absolute ${
+                  isRtl ? "left-3" : "right-3"
+                } top-1/2 -translate-y-1/2 bg-none border-none cursor-pointer p-1 text-[#9CA3AF] flex items-center justify-center`}
                 aria-label={
                   showConfirmPassword
                     ? t("auth_extras.hidePassword")

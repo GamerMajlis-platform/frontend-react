@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BackgroundDecor, Card } from "../components";
 import {
@@ -6,6 +6,7 @@ import {
   tournamentSortOptions,
   type TournamentSortOption,
 } from "../data";
+import SortBy from "../components/SortBy";
 
 export default function Tournaments() {
   const { t, i18n } = useTranslation();
@@ -17,34 +18,21 @@ export default function Tournaments() {
     const ns = Array.isArray(i18n.options.defaultNS)
       ? i18n.options.defaultNS[0]
       : (i18n.options.defaultNS as string) || "translation";
-    i18n.loadNamespaces(ns).then(() => setNsReady(true)).catch(() => setNsReady(true));
+    i18n
+      .loadNamespaces(ns)
+      .then(() => setNsReady(true))
+      .catch(() => setNsReady(true));
   }, [i18n]);
-
-  const isRTL = i18n.language && i18n.language.startsWith("ar");
 
   // Search / Sort state
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<TournamentSortOption>("date-soonest");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Category filter state
   type Category = "upcoming" | "ongoing" | "past";
   const [category, setCategory] = useState<Category>("upcoming");
 
-  // Close dropdown on outside click
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  // SortBy handles dropdown state and outside click behavior
 
   const handleSearchFocus = (e: React.FocusEvent<HTMLInputElement>) => {
     e.currentTarget.style.borderColor = "#6fffe9";
@@ -125,57 +113,13 @@ export default function Tournaments() {
               onBlur={handleSearchBlur}
             />
 
-            <div
-              className="relative w-[140px] sort-container"
-              ref={dropdownRef}
-            >
-              <button
-                className={`
-                  flex h-12 w-full items-center justify-between
-                  rounded-xl border-none bg-cyan-300 px-3 py-3 text-slate-900
-                  transition-colors duration-200 hover:bg-cyan-200 sort-button
-                  text-sm font-medium
-                `}
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              >
-                <span className="truncate">{t("tournaments.sort.placeholder")}</span>
-                <span
-                  className={`ml-1 transform transition-transform duration-300 ease-in-out ${
-                    isDropdownOpen ? "rotate-180" : "rotate-0"
-                  }`}
-                >
-                  ▼
-                </span>
-              </button>
-
-              {isDropdownOpen && (
-                <div
-                  className={`
-                    absolute top-full right-0 z-50 mt-2 w-56 rounded-xl
-                    border border-slate-600 bg-slate-800 p-2 shadow-2xl sort-dropdown
-                    backdrop-blur-sm
-                  `}
-                >
-                  {tournamentSortOptions.map((option) => (
-                    <button
-                      key={option.value}
-                      className={
-                        `block w-full rounded-md border-none px-3 py-2
-                        text-white transition-colors duration-200 text-sm
-                        hover:bg-slate-700 ${
-                          sortBy === option.value ? "bg-slate-700" : "bg-transparent"
-                        } ${isRTL ? "text-right pr-3" : "text-left pl-3"}`
-                      }
-                      onClick={() => {
-                        setSortBy(option.value);
-                        setIsDropdownOpen(false);
-                      }}
-                      >
-                      {t(`tournaments.sort.options.${option.value}`)}
-                    </button>
-                  ))}
-                </div>
-              )}
+            <div className="relative w-[140px] sort-container">
+              <SortBy
+                options={tournamentSortOptions}
+                value={sortBy}
+                onChange={(v) => setSortBy(v as TournamentSortOption)}
+                placeholderKey={"tournaments.sort.placeholder"}
+              />
             </div>
           </div>
 

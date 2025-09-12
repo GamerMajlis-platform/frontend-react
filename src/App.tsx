@@ -64,12 +64,9 @@ function App() {
     resolvePageFromHash()
   );
 
-  // If the app is opened without a hash, show the Messages page by default
-  useEffect(() => {
-    if (!window.location.hash) {
-      setCurrentPage("messages");
-    }
-  }, []);
+  // No forced navigation on mount. keep the URL as-is so refresh preserves
+  // the page the user is currently on. resolvePageFromHash() already picks
+  // the appropriate initial page.
 
   // Keep the app responsive to hash changes so simple SPA navigation works
   useState(() => {
@@ -77,6 +74,19 @@ function App() {
     window.addEventListener("hashchange", handler);
     return () => window.removeEventListener("hashchange", handler);
   });
+
+  // Keep the URL hash in sync when navigation happens inside the app so
+  // refreshing the page preserves the current view.
+  useEffect(() => {
+    try {
+      const currentHash = (window.location.hash || "").replace(/^#/, "");
+      if (currentHash !== currentPage) {
+        window.location.hash = `#${currentPage}`;
+      }
+    } catch {
+      // ignore cross-origin/frame errors
+    }
+  }, [currentPage]);
 
   // i18n readiness: load default namespace once, but keep hooks order stable
   const [i18nReady, setI18nReady] = useState(false);
@@ -139,7 +149,9 @@ function App() {
             }
           >
             {!i18nReady ? (
-              <div className="w-full h-full flex items-center justify-center text-white/70">Loading translations...</div>
+              <div className="w-full h-full flex items-center justify-center text-white/70">
+                Loading translations...
+              </div>
             ) : (
               renderPage()
             )}

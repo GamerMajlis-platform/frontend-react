@@ -4,14 +4,10 @@ interface LogoProps {
   className?: string;
 }
 
-import { useState } from "react";
+import { useState, memo } from "react";
 import { useTranslation } from "react-i18next";
 
-export default function Logo({
-  size = "medium",
-  showText = true,
-  className = "",
-}: LogoProps) {
+function Logo({ size = "medium", showText = true, className = "" }: LogoProps) {
   // Banner (with wordmark) versus standalone icon sizing
   const bannerHeights = {
     small: "h-7",
@@ -86,3 +82,5 @@ export default function Logo({
     />
   );
 }
+
+export default memo(Logo);

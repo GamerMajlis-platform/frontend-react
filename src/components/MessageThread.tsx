@@ -72,7 +72,10 @@ export default function MessageThread({ conversationId }: Props) {
       </div>
 
       <div className="border-t border-slate-700 p-4">
-        <Composer onSend={handleSend} />
+        <Composer
+          onSend={handleSend}
+          placeholder={t("conversations.composer.placeholder") ?? "Message..."}
+        />
       </div>
     </div>
   );

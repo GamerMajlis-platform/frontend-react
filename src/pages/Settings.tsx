@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { useAppContext } from "../context/useAppContext";
 import usePreferences from "../hooks/usePreferences";
-import { colors, fonts, transitions } from "../styles/BaseStyles";
+// ...existing code...
 
 interface UserSettings {
   notifications: {
@@ -29,21 +29,28 @@ export default function Settings() {
   const { setLanguage, setTheme } = usePreferences();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
-  // RTL detection - optimized
-  const isRTL =
-    document.documentElement.dir === "rtl" ||
-    document.documentElement.lang === "ar" ||
-    /[\u0600-\u06FF\u0750-\u077F]/.test(document.body.innerText || "");
+  // RTL detection - improved (based on i18n language)
+  const isRTL = ["ar", "fa", "he", "ur"].includes(
+    document.documentElement.lang || "en"
+  );
 
-  const getToggleStyles = (isActive: boolean) => ({
-    button: {
-      backgroundColor: isActive ? colors.primary : colors.textMuted,
-      direction: isRTL ? "rtl" : "ltr",
-    },
-    switch: {
-      left: isRTL ? (isActive ? "2px" : "26px") : isActive ? "26px" : "2px",
-    },
-  });
+  // Tailwind-based toggle styles
+  const getToggleClasses = (isActive: boolean) =>
+    `${
+      isActive ? "bg-primary" : "bg-slate-500"
+    } relative w-12 h-6 min-h-0 rounded-xl border-none cursor-pointer flex items-center ${
+      isRTL ? "flex-row-reverse" : "flex-row"
+    }`;
+  const getSwitchClasses = (isActive: boolean) =>
+    `absolute top-0.5 w-5 h-5 bg-white rounded-full transition-all duration-200 ${
+      isRTL
+        ? isActive
+          ? "left-0.5"
+          : "left-6"
+        : isActive
+        ? "left-6"
+        : "left-0.5"
+    }`;
 
   // Consolidated handlers
   const handleToggle = (category: keyof UserSettings, setting: string) => {
@@ -146,28 +153,15 @@ export default function Settings() {
   }: {
     value: boolean;
     onClick: () => void;
-  }) => {
-    const toggleStyles = getToggleStyles(value);
-    return (
-      <button
-        className="w-12 h-6 min-h-0 rounded-xl border-none cursor-pointer relative"
-        style={{
-          backgroundColor: toggleStyles.button.backgroundColor,
-          direction: toggleStyles.button.direction as "ltr" | "rtl",
-          transition: transitions.normal,
-        }}
-        onClick={onClick}
-      >
-        <div
-          className="w-5 h-5 bg-white rounded-full absolute top-0.5"
-          style={{
-            left: toggleStyles.switch.left,
-            transition: transitions.normal,
-          }}
-        />
-      </button>
-    );
-  };
+  }) => (
+    <button
+      className={getToggleClasses(value)}
+      onClick={onClick}
+      aria-label={value ? "Disable" : "Enable"}
+    >
+      <div className={getSwitchClasses(value)} />
+    </button>
+  );
 
   const Dropdown = ({
     type,
@@ -182,23 +176,14 @@ export default function Settings() {
   }) => (
     <div className="relative">
       <button
-        className="flex items-center justify-between py-2 px-3 rounded-md cursor-pointer min-w-[120px] text-sm"
-        style={{
-          backgroundColor: colors.darkSecondary,
-          border: `1px solid ${colors.textMuted}`,
-          color: colors.text,
-          transition: transitions.fast,
-        }}
+        className="flex items-center justify-between py-2 px-3 rounded-md cursor-pointer min-w-[120px] text-sm bg-dark-secondary border border-slate-500 text-text transition duration-150"
         onClick={() => toggleDropdown(type)}
       >
         {options.find((opt) => opt.value === value)?.label || value}
         <svg
-          className="w-4 h-4"
-          style={{
-            transition: transitions.fast,
-            transform:
-              openDropdown === type ? "rotate(180deg)" : "rotate(0deg)",
-          }}
+          className={`w-4 h-4 transition-transform duration-150 ${
+            openDropdown === type ? "rotate-180" : "rotate-0"
+          }`}
           fill="currentColor"
           viewBox="0 0 20 20"
         >
@@ -206,21 +191,11 @@ export default function Settings() {
         </svg>
       </button>
       {openDropdown === type && (
-        <div
-          className="absolute top-full right-0 mt-1 rounded-md shadow-lg z-10 min-w-[120px]"
-          style={{
-            backgroundColor: colors.darkSecondary,
-            border: `1px solid ${colors.textMuted}`,
-          }}
-        >
+        <div className="absolute top-full right-0 mt-1 rounded-md shadow-lg z-10 min-w-[120px] bg-dark-secondary border border-slate-500">
           {options.map((option) => (
             <button
               key={option.value}
-              className="block w-full py-2 px-3 bg-transparent border-none text-left cursor-pointer text-sm hover:bg-opacity-80"
-              style={{
-                color: colors.text,
-                transition: transitions.fast,
-              }}
+              className="block w-full py-2 px-3 bg-transparent border-none text-left cursor-pointer text-sm text-text hover:bg-dark-secondary/80 transition duration-150"
               onClick={() => {
                 onSelect(option.value);
                 toggleDropdown(type);
@@ -247,23 +222,14 @@ export default function Settings() {
   }) => (
     <div
       className={`grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 md:gap-6 py-3 md:py-4 items-start md:items-center ${
-        !isLast ? "border-b" : ""
+        !isLast ? "border-b border-slate-500" : ""
       }`}
-      style={{
-        borderBottomColor: !isLast ? colors.textMuted : "transparent",
-      }}
     >
       <div className="grid gap-1">
-        <div
-          className="font-medium text-sm md:text-base"
-          style={{ color: colors.text }}
-        >
+        <div className="font-medium text-sm md:text-base text-text">
           {label}
         </div>
-        <div
-          className="text-xs md:text-sm leading-relaxed"
-          style={{ color: colors.textSecondary }}
-        >
+        <div className="text-xs md:text-sm leading-relaxed text-text-secondary">
           {description}
         </div>
       </div>
@@ -272,52 +238,28 @@ export default function Settings() {
   );
 
   return (
-    <main
-      className="w-full max-w-6xl mx-auto px-4 sm:px-6 pt-6 pb-6"
-      style={{ minHeight: "calc(100vh - 88px)" }}
-    >
+    <main className="w-full max-w-6xl mx-auto px-4 sm:px-6 pt-6 pb-6 min-h-[calc(100vh-88px)]">
       <div className="grid gap-6 lg:gap-8">
         {/* Header */}
         <header className="grid gap-3">
-          <h1
-            className="text-xl sm:text-2xl lg:text-3xl font-semibold"
-            style={{
-              fontFamily: fonts.alice,
-              color: colors.text,
-            }}
-          >
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold font-alice text-text">
             {t("settings.title")}
           </h1>
-          <p
-            className="text-sm sm:text-base lg:text-lg max-w-3xl"
-            style={{ color: colors.textSecondary }}
-          >
+          <p className="text-sm sm:text-base lg:text-lg max-w-3xl text-text-secondary">
             {t("settings.subtitle")}
           </p>
         </header>
 
-        {/* Settings Grid - Single column on mobile, can expand to 2 columns on larger screens if needed */}
+        {/* Settings Grid */}
         <div className="grid gap-4 sm:gap-6">
           {/* Notifications Section */}
-          <section
-            className="rounded-xl p-4 sm:p-6"
-            style={{ backgroundColor: colors.darkSecondary }}
-          >
+          <section className="rounded-xl p-4 sm:p-6 bg-dark-secondary">
             <div className="grid gap-4">
               <div className="grid gap-2">
-                <h2
-                  className="text-lg sm:text-xl lg:text-2xl font-semibold"
-                  style={{
-                    fontFamily: fonts.alice,
-                    color: colors.text,
-                  }}
-                >
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold font-alice text-text">
                   {t("settings.sections.notifications.title")}
                 </h2>
-                <p
-                  className="text-xs sm:text-sm lg:text-base"
-                  style={{ color: colors.textSecondary }}
-                >
+                <p className="text-xs sm:text-sm lg:text-base text-text-secondary">
                   {t("settings.sections.notifications.description")}
                 </p>
               </div>
@@ -349,25 +291,13 @@ export default function Settings() {
           </section>
 
           {/* Privacy Section */}
-          <section
-            className="rounded-xl p-4 sm:p-6"
-            style={{ backgroundColor: colors.darkSecondary }}
-          >
+          <section className="rounded-xl p-4 sm:p-6 bg-dark-secondary">
             <div className="grid gap-4">
               <div className="grid gap-2">
-                <h2
-                  className="text-lg sm:text-xl lg:text-2xl font-semibold"
-                  style={{
-                    fontFamily: fonts.alice,
-                    color: colors.text,
-                  }}
-                >
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold font-alice text-text">
                   {t("settings.sections.privacy.title")}
                 </h2>
-                <p
-                  className="text-xs sm:text-sm lg:text-base"
-                  style={{ color: colors.textSecondary }}
-                >
+                <p className="text-xs sm:text-sm lg:text-base text-text-secondary">
                   {t("settings.sections.privacy.description")}
                 </p>
               </div>
@@ -414,25 +344,13 @@ export default function Settings() {
           </section>
 
           {/* Preferences Section */}
-          <section
-            className="rounded-xl p-4 sm:p-6"
-            style={{ backgroundColor: colors.darkSecondary }}
-          >
+          <section className="rounded-xl p-4 sm:p-6 bg-dark-secondary">
             <div className="grid gap-4">
               <div className="grid gap-2">
-                <h2
-                  className="text-lg sm:text-xl lg:text-2xl font-semibold"
-                  style={{
-                    fontFamily: fonts.alice,
-                    color: colors.text,
-                  }}
-                >
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold font-alice text-text">
                   {t("settings.sections.preferences.title")}
                 </h2>
-                <p
-                  className="text-xs sm:text-sm lg:text-base"
-                  style={{ color: colors.textSecondary }}
-                >
+                <p className="text-xs sm:text-sm lg:text-base text-text-secondary">
                   {t("settings.sections.preferences.description")}
                 </p>
               </div>
