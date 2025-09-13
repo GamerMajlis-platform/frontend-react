@@ -1,11 +1,15 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BackgroundDecor, Card } from "../components";
 import { events, eventSortOptions, type EventSortOption } from "../data";
 import SortBy from "../components/SortBy";
+import useIsMobile from "../hooks/useIsMobile";
+import { IconSearch } from "../components/icons";
 
 export default function Events() {
   const { i18n, t } = useTranslation();
+  const isMobile = useIsMobile();
+  const searchRef = useRef<HTMLInputElement>(null);
   // Search / Sort state
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<EventSortOption>("date-soonest");
@@ -78,10 +82,16 @@ export default function Events() {
 
         {/* Search and Sort controls (marketplace-style) */}
         <section className="mb-12 search-section md:mb-8 relative z-10">
-          <div className="mb-6 flex w-full max-w-[800px] mx-auto items-center gap-3 search-controls">
+          <div
+            className="mb-6 flex w-full max-w-[800px] mx-auto items-center gap-3 search-controls"
+            dir={i18n.dir()}
+          >
             <input
               type="text"
-              placeholder={t("events.searchPlaceholder")}
+              ref={searchRef}
+              placeholder={
+                isMobile ? t("common.search") : t("events.searchPlaceholder")
+              }
               className={`
                 h-12 w-full flex-1 rounded-xl border border-slate-600
                 bg-[#1C2541] px-4 py-3 text-white placeholder-slate-400
@@ -93,8 +103,20 @@ export default function Events() {
               onFocus={handleSearchFocus}
               onBlur={handleSearchBlur}
             />
+            {/* Mobile search icon button */}
+            <button
+              type="button"
+              aria-label={t("common.search")}
+              className={`sm:hidden inline-flex items-center justify-center h-10 w-10 rounded-lg border border-slate-600 text-slate-200 hover:text-white hover:border-cyan-300 transition-all ${
+                i18n.dir() === "rtl" ? "mr-auto" : "ml-auto"
+              }`}
+              onClick={() => searchRef.current?.focus()}
+            >
+              <IconSearch />
+            </button>
 
-            <div className="relative w-[140px] sort-container">
+            {/* Sort dropdown hidden on mobile */}
+            <div className="relative w-[140px] sort-container hidden sm:block">
               <SortBy
                 options={eventSortOptions}
                 value={sortBy}

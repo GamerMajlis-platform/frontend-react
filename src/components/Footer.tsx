@@ -4,95 +4,110 @@ import { memo } from "react";
 function Footer() {
   const { t } = useTranslation();
   return (
-    <footer className="w-full bg-[var(--color-dark)] border-t border-[var(--color-dark-secondary)]">
-      <div className="w-full max-w-screen-xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+    <footer className="relative w-full bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 border-t border-slate-700/50 backdrop-blur-xl">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-cyan-300/5" />
+      <div className="absolute top-0 left-0 w-96 h-48 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-0 w-64 h-32 bg-gradient-to-tl from-cyan-300/10 to-transparent rounded-full blur-2xl" />
+
+      <div className="relative z-10 w-full max-w-screen-xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {/* Brand and description */}
+          {/* Enhanced Brand Section */}
           <div className="sm:col-span-2 lg:col-span-1">
-            <div className="flex items-center gap-3 mb-3">
-              <img
-                src="/brand/controller.png"
-                alt="GamerMajlis controller icon"
-                className="h-[24px] sm:h-[30px] w-auto block"
-                draggable={false}
-              />
-              <span className="text-white font-[var(--font-alice)] text-[18px] sm:text-[22px]">
+            <div className="flex items-center gap-3 mb-4 group">
+              <div className="relative">
+                <img
+                  src="/brand/controller.png"
+                  alt="GamerMajlis controller icon"
+                  className="h-[28px] sm:h-[34px] w-auto block drop-shadow-lg transform group-hover:scale-110 transition-transform duration-300"
+                  draggable={false}
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-cyan-300/20 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+              <span className="text-white font-[var(--font-alice)] text-[20px] sm:text-[26px] bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
                 GamerMajlis
               </span>
             </div>
-            <p className="text-[var(--color-text-secondary)] text-sm leading-[1.6] max-w-[400px]">
+            <p className="text-slate-400 text-sm leading-[1.7] max-w-[400px] backdrop-blur-sm">
               {t("home.subtitle")}
             </p>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-[var(--color-text)] mb-3 font-[var(--font-alice)] text-base sm:text-lg">
+          {/* Enhanced Quick Links */}
+          <div className="bg-slate-800/30 backdrop-blur-sm rounded-2xl p-6 border border-slate-700/50 hover:border-slate-600/50 transition-all duration-300">
+            <h3 className="text-white mb-4 font-[var(--font-alice)] text-base sm:text-lg bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
               {t("footer.quickLinks")}
             </h3>
-            <ul className="list-none p-0 m-0 space-y-2">
+            <ul className="list-none p-0 m-0 space-y-3">
               <li>
                 <a
                   href="#"
-                  className="text-[var(--color-text-secondary)] no-underline text-sm hover:text-[var(--color-primary)] transition-colors"
+                  className="group flex items-center gap-2 text-slate-400 no-underline text-sm hover:text-primary transition-all duration-300 transform hover:translate-x-1"
                 >
+                  <div className="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover:bg-primary transition-colors duration-300" />
                   {t("nav.home")}
                 </a>
               </li>
               <li>
                 <a
                   href="#"
-                  className="text-[var(--color-text-secondary)] no-underline text-sm hover:text-[var(--color-primary)] transition-colors"
+                  className="group flex items-center gap-2 text-slate-400 no-underline text-sm hover:text-primary transition-all duration-300 transform hover:translate-x-1"
                 >
+                  <div className="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover:bg-primary transition-colors duration-300" />
                   {t("nav.tournaments")}
                 </a>
               </li>
               <li>
                 <a
                   href="#"
-                  className="text-[var(--color-text-secondary)] no-underline text-sm hover:text-[var(--color-primary)] transition-colors"
+                  className="group flex items-center gap-2 text-slate-400 no-underline text-sm hover:text-primary transition-all duration-300 transform hover:translate-x-1"
                 >
+                  <div className="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover:bg-primary transition-colors duration-300" />
                   {t("nav.marketplace")}
                 </a>
               </li>
               <li>
                 <a
                   href="#"
-                  className="text-[var(--color-text-secondary)] no-underline text-sm hover:text-[var(--color-primary)] transition-colors"
+                  className="group flex items-center gap-2 text-slate-400 no-underline text-sm hover:text-primary transition-all duration-300 transform hover:translate-x-1"
                 >
+                  <div className="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover:bg-primary transition-colors duration-300" />
                   {t("nav.events")}
                 </a>
               </li>
             </ul>
           </div>
 
-          {/* Community */}
-          <div>
-            <h3 className="text-[var(--color-text)] mb-3 font-[var(--font-alice)] text-base sm:text-lg">
+          {/* Enhanced Community Section */}
+          <div className="bg-slate-800/30 backdrop-blur-sm rounded-2xl p-6 border border-slate-700/50 hover:border-slate-600/50 transition-all duration-300">
+            <h3 className="text-white mb-4 font-[var(--font-alice)] text-base sm:text-lg bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
               {t("footer.community")}
             </h3>
-            <ul className="list-none p-0 m-0 space-y-2">
+            <ul className="list-none p-0 m-0 space-y-3">
               <li>
                 <a
                   href="#"
-                  className="text-[var(--color-text-secondary)] no-underline text-sm hover:text-[var(--color-primary)] transition-colors"
+                  className="group flex items-center gap-2 text-slate-400 no-underline text-sm hover:text-cyan-300 transition-all duration-300 transform hover:translate-x-1"
                 >
+                  <div className="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover:bg-cyan-300 transition-colors duration-300" />
                   {t("footer.forums")}
                 </a>
               </li>
               <li>
                 <a
                   href="#"
-                  className="text-[var(--color-text-secondary)] no-underline text-sm hover:text-[var(--color-primary)] transition-colors"
+                  className="group flex items-center gap-2 text-slate-400 no-underline text-sm hover:text-cyan-300 transition-all duration-300 transform hover:translate-x-1"
                 >
+                  <div className="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover:bg-cyan-300 transition-colors duration-300" />
                   {t("footer.support")}
                 </a>
               </li>
               <li>
                 <a
                   href="#"
-                  className="text-[var(--color-text-secondary)] no-underline text-sm hover:text-[var(--color-primary)] transition-colors"
+                  className="group flex items-center gap-2 text-slate-400 no-underline text-sm hover:text-cyan-300 transition-all duration-300 transform hover:translate-x-1"
                 >
+                  <div className="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover:bg-cyan-300 transition-colors duration-300" />
                   {t("footer.contact")}
                 </a>
               </li>
@@ -100,11 +115,23 @@ function Footer() {
           </div>
         </div>
 
-        {/* Bottom section */}
-        <div className="border-t border-[var(--color-dark-secondary)] mt-6 sm:mt-8 pt-4 sm:pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-[var(--color-text-secondary)] text-[13px] text-center sm:text-left">
+        {/* Enhanced Bottom Section */}
+        <div className="border-t border-slate-700/50 mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-slate-500 text-[13px] text-center sm:text-left">
             {t("footer.allRightsReserved")}
           </p>
+
+          {/* Social Links or Additional Info - Commented out for now */}
+          {/* 
+          <div className="flex items-center gap-4">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary/20 to-cyan-300/20 border border-slate-600/50 flex items-center justify-center hover:from-primary/30 hover:to-cyan-300/30 transition-all duration-300 cursor-pointer">
+              <div className="w-2 h-2 rounded-full bg-gradient-to-r from-primary to-cyan-300" />
+            </div>
+            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary/20 to-cyan-300/20 border border-slate-600/50 flex items-center justify-center hover:from-primary/30 hover:to-cyan-300/30 transition-all duration-300 cursor-pointer">
+              <div className="w-2 h-2 rounded-full bg-gradient-to-r from-primary to-cyan-300" />
+            </div>
+          </div>
+          */}
         </div>
       </div>
     </footer>

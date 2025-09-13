@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, BackgroundDecor } from "../components";
 import { productData, sortOptions, type SortOption } from "../data";
 import SortBy from "../components/SortBy";
+import useIsMobile from "../hooks/useIsMobile";
+import { IconSearch } from "../components/icons";
 
 // Utility function to detect RTL text
 const isRTLText = (text: string): boolean => {
@@ -11,6 +13,8 @@ const isRTLText = (text: string): boolean => {
 
 export default function Marketplace() {
   const { i18n, t } = useTranslation();
+  const isMobile = useIsMobile();
+  const searchRef = useRef<HTMLInputElement>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("name");
   const [selectedCategory, setSelectedCategory] = useState<string>("All Items");
@@ -105,10 +109,18 @@ export default function Marketplace() {
         {/* Search and Filter Section */}
         <section className="mb-12 search-section md:mb-8 relative z-10">
           {/* Search and Sort Row */}
-          <div className="mb-6 flex w-full max-w-[800px] mx-auto items-center gap-3 search-controls">
+          <div
+            className="mb-6 flex w-full max-w-[800px] mx-auto items-center gap-3 search-controls"
+            dir={i18n.dir()}
+          >
             <input
               type="text"
-              placeholder={t("marketplace.searchPlaceholder")}
+              ref={searchRef}
+              placeholder={
+                isMobile
+                  ? t("common.search")
+                  : t("marketplace.searchPlaceholder")
+              }
               className="
                 h-12 w-full flex-1 rounded-xl border border-slate-600 
                 bg-slate-800 px-4 py-3 text-white placeholder-slate-400 
@@ -119,8 +131,20 @@ export default function Marketplace() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
+            {/* Mobile search icon button */}
+            <button
+              type="button"
+              aria-label={t("common.search")}
+              className={`sm:hidden inline-flex items-center justify-center h-10 w-10 rounded-lg border border-slate-600 text-slate-200 hover:text-white hover:border-cyan-300 transition-all ${
+                i18n.dir() === "rtl" ? "mr-auto" : "ml-auto"
+              }`}
+              onClick={() => searchRef.current?.focus()}
+            >
+              <IconSearch />
+            </button>
 
-            <div className="relative w-[140px] sort-container">
+            {/* Sort dropdown hidden on mobile */}
+            <div className="relative w-[140px] sort-container hidden sm:block">
               <SortBy
                 options={sortOptions}
                 value={sortBy}

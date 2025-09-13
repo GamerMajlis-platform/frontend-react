@@ -5,13 +5,15 @@
     "marketplace": "Marketplace",
     "events": "Events",
     "messages": "Messages",
-    "profile": "Profile"
+    "profile": "Profile",
+    "settings": "Settings"
   },
   "home": {
     "title": "GAMERMAJLIS",
     "subtitle": "Join the ultimate gaming community. Compete in tournaments, connect with players, and discover amazing deals in our marketplace.",
     "signupFree": "Sign up Free",
-    "viewTournaments": "View Tournaments"
+    "viewTournaments": "View Tournaments",
+    "subscribe": "Subscribe"
   },
   "auth": {
     "signup": "Sign Up",
@@ -192,7 +194,17 @@
     }
   },
   "chatbot": {
-    "open": "Open chatbot"
+    "open": "Open chatbot",
+    "close": "Close chat",
+    "toggle": "Toggle chatbot",
+    "send": "Send message",
+    "welcome": "Hi! I'm the GamerMajlis Bot. How can I help you today? 🎮",
+    "response": "Thanks for your message! I'm here to help with any gaming questions.",
+    "status": "Online",
+    "placeholder": "Type your message...",
+    "quickHelp": "Help",
+    "quickTournaments": "Tournaments",
+    "quickMarketplace": "Shop"
   },
   "product": {
     "details": "Details",
