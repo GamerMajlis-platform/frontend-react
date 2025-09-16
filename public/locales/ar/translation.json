@@ -96,8 +96,6 @@
         "description": "خصص التطبيق كما تحب.",
         "language": "اللغة",
         "language_options": { "en": "الإنجليزية", "ar": "العربية" },
-        "theme": "السمة",
-        "theme_options": { "dark": "داكن", "light": "فاتح", "auto": "تلقائي" },
         "currency": "العملة",
         "currency_options": {
           "usd": "دولار أمريكي",
@@ -106,7 +104,6 @@
           "jpy": "ين ياباني"
         },
         "language_desc": "اختر لغتك المفضلة",
-        "theme_desc": "اختر سماتك المفضلة",
         "currency_desc": "اختر عملتك المفضلة"
       }
     }

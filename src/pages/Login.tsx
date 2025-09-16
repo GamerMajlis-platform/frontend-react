@@ -1,7 +1,8 @@
 import { useState, useId, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "../components";
+// Button removed: using native button
 import { useAppContext } from "../context/useAppContext";
+import { FaDiscord } from "react-icons/fa";
 
 export default function Login() {
   const { t, i18n } = useTranslation();
@@ -222,18 +223,15 @@ export default function Login() {
           </div>
 
           <div className="w-full flex justify-center mt-3">
-            <Button
+            <button
               type="submit"
-              variant="link"
-              width={345}
-              height={57}
-              borderRadius={20}
               disabled={isLoading}
+              className="w-[345px] h-[57px] rounded-[20px] font-semibold transition-colors focus:outline-hidden focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center bg-[#C4FFF9] text-[#0B132B] hover:bg-[#CFFFEF] focus:ring-[#CFFFEF]"
             >
               {isLoading
                 ? t("common.loading") || t("auth.signingIn")
                 : t("auth.login")}
-            </Button>
+            </button>
           </div>
 
           <div className="font-[Alice] font-normal text-xl leading-[23px] text-center text-white my-3 w-full">
@@ -241,11 +239,21 @@ export default function Login() {
           </div>
 
           <div className="w-full flex justify-center">
+            {/* Responsive Discord login button: full-width on small screens, fixed max width on larger */}
             <button
-              className="w-[345px] h-[57px] bg-[#C4FFF9] rounded-[20px] border-none text-black font-[Alice] font-normal text-xl leading-[23px] cursor-pointer transition-opacity duration-200 block mx-auto mt-[6px] text-center py-3 px-[18px] hover:opacity-90"
+              type="button"
               onClick={() => (window.location.href = "/auth/discord")}
+              aria-label={t("auth.loginWithDiscord")}
+              className={`w-full max-w-[345px] sm:w-[345px] h-[57px] rounded-[20px] flex items-center justify-center gap-3 px-4 bg-[#5865F2] hover:bg-[#4a54d1] text-white font-[Alice] font-normal text-xl leading-[23px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                isRtl ? "flex-row-reverse" : ""
+              }`}
             >
-              <span className="text-[#0B132B] font-[Alice] text-xl">
+              {/* Discord icon component */}
+              <span className="flex items-center justify-center w-8 h-8">
+                <FaDiscord className="w-5 h-5 text-white" aria-hidden />
+              </span>
+
+              <span className="font-[Alice] text-xl">
                 {t("auth.loginWithDiscord")}
               </span>
             </button>

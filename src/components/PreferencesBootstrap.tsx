@@ -3,13 +3,7 @@ import usePreferences from "../hooks/usePreferences";
 
 // Applies saved preferences (theme/lang) on app mount. Renders nothing.
 export default function PreferencesBootstrap() {
-  const { applyTheme, theme, language, setLanguage } = usePreferences();
-
-  useEffect(() => {
-    if (theme) {
-      applyTheme(theme);
-    }
-  }, [theme, applyTheme]);
+  const { language, setLanguage } = usePreferences();
 
   // Apply language preference immediately on mount if present
   useEffect(() => {

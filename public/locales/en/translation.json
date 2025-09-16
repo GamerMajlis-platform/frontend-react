@@ -96,8 +96,6 @@
         "description": "Personalize the app to your liking.",
         "language": "Language",
         "language_options": { "en": "English", "ar": "Arabic" },
-        "theme": "Theme",
-        "theme_options": { "dark": "Dark", "light": "Light", "auto": "Auto" },
         "currency": "Currency",
         "currency_options": {
           "usd": "USD",
@@ -106,7 +104,6 @@
           "jpy": "JPY"
         },
         "language_desc": "Choose your preferred language",
-        "theme_desc": "Choose your preferred theme",
         "currency_desc": "Choose your preferred currency"
       }
     }

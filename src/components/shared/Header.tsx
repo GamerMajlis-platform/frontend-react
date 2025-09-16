@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { LanguageSwitcher, ProfileDropdown } from "./index";
-import { useAppContext } from "../context/useAppContext";
-import { navigationItems } from "../data";
+import { LanguageSwitcher, ProfileDropdown } from "../index";
+import { useAppContext } from "../../context/useAppContext";
+import { navigationItems } from "../../data";
 
 interface HeaderProps {
   activeSection?: string;
@@ -117,29 +117,7 @@ export default function Header({
           </button>
         </div>
 
-        {/* 
-        Alternative Option 2: Only Hamburger, Profile in dropdown
-        <button
-          className="flex-none p-2"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          aria-label="Toggle mobile menu"
-        >
-          <div className="w-6 h-5 flex flex-col justify-between">
-            {isMobileMenuOpen ? (
-              <div className="relative w-6 h-5">
-                <div className="absolute top-1/2 left-0 w-full h-0.5 bg-black transform -translate-y-1/2 rotate-45"></div>
-                <div className="absolute top-1/2 left-0 w-full h-0.5 bg-black transform -translate-y-1/2 -rotate-45"></div>
-              </div>
-            ) : (
-              <>
-                <div className="w-full h-0.5 bg-black"></div>
-                <div className="w-full h-0.5 bg-black"></div>
-                <div className="w-full h-0.5 bg-black"></div>
-              </>
-            )}
-          </div>
-        </button>
-        */}
+        {/* (kept simplified hamburger above; alternative implementations removed) */}
       </div>
 
       {/* Mobile profile dropdown anchored under header */}
@@ -226,8 +204,8 @@ export default function Header({
                 setIsProfileMenuOpen(false);
                 try {
                   await logout();
-                } catch (e) {
-                  console.error(e);
+                } catch {
+                  // logout errors are non-fatal for UI; handled upstream if necessary
                 }
                 window.location.hash = "#home";
               }}

@@ -1,10 +1,8 @@
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { BackgroundDecor, Card } from "../components";
+import { BackgroundDecor, Card, SortBy, IconSearch } from "../components";
 import { events, eventSortOptions, type EventSortOption } from "../data";
-import SortBy from "../components/SortBy";
 import useIsMobile from "../hooks/useIsMobile";
-import { IconSearch } from "../components/icons";
 
 export default function Events() {
   const { i18n, t } = useTranslation();

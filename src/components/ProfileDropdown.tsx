@@ -23,8 +23,8 @@ export default function ProfileDropdown({
     setIsOpen(false);
     try {
       await logout();
-    } catch (e) {
-      console.error("Logout failed:", e);
+    } catch {
+      // logout errors are handled by the auth service; UI can continue
     }
     window.location.hash = "#home";
   };

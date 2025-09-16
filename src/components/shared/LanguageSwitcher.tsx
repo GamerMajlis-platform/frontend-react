@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { languages } from "../data";
+import { languages } from "../../data";
+import type { Language } from "../../data";
 
 interface LanguageSwitcherProps {
   className?: string;
@@ -29,7 +30,7 @@ export default function LanguageSwitcher({
         className={variant === "light" ? baseLight : baseDark}
         aria-label="Select language"
       >
-        {languages.map((lang) => (
+        {languages.map((lang: Language) => (
           <option key={lang.code} value={lang.code}>
             {lang.flag} {lang.name}
           </option>

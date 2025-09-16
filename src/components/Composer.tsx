@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 interface ComposerProps {
@@ -12,10 +12,7 @@ export default function Composer({ onSend, placeholder }: ComposerProps) {
   const textRef = useRef<HTMLInputElement | null>(null);
   const fileRef = useRef<HTMLInputElement | null>(null);
 
-  // keep focus behavior consistent if needed in future
-  useEffect(() => {
-    // no-op: single line input, no auto-resize
-  }, [text]);
+  // Intentionally minimal composer; no auto-resize needed for single-line input
 
   const send = () => {
     if (text.trim()) {

@@ -1,6 +1,6 @@
 import { useState, useId, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "../components";
+// import removed: using native button
 import { useAppContext } from "../context/useAppContext";
 
 export default function Signup() {
@@ -163,7 +163,7 @@ export default function Signup() {
               onChange={handleInputChange}
               onFocus={() => handleFocus("username")}
               onBlur={() => handleBlur("username")}
-              className={`w-[720px] h-12 ${
+              className={`w-full h-12 ${
                 formData.username || focus.username
                   ? "border-[#6fffe9] shadow-[0_0_0_4px_rgba(111,255,233,0.06)]"
                   : "border-[rgba(255,255,255,0.28)]"
@@ -175,7 +175,7 @@ export default function Signup() {
             />
           </div>
 
-          <div className="relative w-[720px] h-12">
+          <div className="relative w-full max-w-[720px] h-12">
             <label
               htmlFor={`${id}-email`}
               className={`absolute ${
@@ -198,7 +198,7 @@ export default function Signup() {
               onChange={handleInputChange}
               onFocus={() => handleFocus("email")}
               onBlur={() => handleBlur("email")}
-              className={`w-[720px] h-12 ${
+              className={`w-full h-12 ${
                 formData.email || focus.email
                   ? "border-[#6fffe9] shadow-[0_0_0_4px_rgba(111,255,233,0.06)]"
                   : "border-[rgba(255,255,255,0.28)]"
@@ -210,7 +210,7 @@ export default function Signup() {
             />
           </div>
 
-          <div className="relative w-[720px] h-12">
+          <div className="relative w-full max-w-[720px] h-12">
             <label
               htmlFor={`${id}-password`}
               className={`absolute ${
@@ -234,7 +234,7 @@ export default function Signup() {
                 onChange={handleInputChange}
                 onFocus={() => handleFocus("password")}
                 onBlur={() => handleBlur("password")}
-                className={`w-[720px] h-12 ${
+                className={`w-full h-12 ${
                   formData.password || focus.password
                     ? "border-[#6fffe9] shadow-[0_0_0_4px_rgba(111,255,233,0.06)]"
                     : "border-[rgba(255,255,255,0.28)]"
@@ -279,7 +279,7 @@ export default function Signup() {
             </div>
           </div>
 
-          <div className="relative w-[720px] h-12">
+          <div className="relative w-full max-w-[720px] h-12">
             <label
               htmlFor={`${id}-confirmPassword`}
               className={`absolute ${
@@ -303,7 +303,7 @@ export default function Signup() {
                 onChange={handleInputChange}
                 onFocus={() => handleFocus("confirmPassword")}
                 onBlur={() => handleBlur("confirmPassword")}
-                className={`w-[720px] h-12 ${
+                className={`w-full h-12 ${
                   formData.confirmPassword || focus.confirmPassword
                     ? "border-[#6fffe9] shadow-[0_0_0_4px_rgba(111,255,233,0.06)]"
                     : "border-[rgba(255,255,255,0.28)]"
@@ -349,18 +349,15 @@ export default function Signup() {
           </div>
 
           <div className="w-full flex justify-center mt-[18px]">
-            <Button
+            <button
               type="submit"
-              variant="link"
-              width={345}
-              height={57}
-              borderRadius={20}
               disabled={isLoading}
+              className="w-full max-w-[345px] h-[57px] rounded-[20px] font-semibold transition-colors focus:outline-hidden focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center bg-[#C4FFF9] text-[#0B132B] hover:bg-[#CFFFEF] focus:ring-[#CFFFEF]"
             >
               {isLoading
                 ? t("common.loading") || t("auth.creatingAccount")
                 : t("auth.signup")}
-            </Button>
+            </button>
           </div>
         </form>
 

@@ -1,10 +1,8 @@
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Card, BackgroundDecor } from "../components";
+import { Card, BackgroundDecor, SortBy, IconSearch } from "../components";
 import { productData, sortOptions, type SortOption } from "../data";
-import SortBy from "../components/SortBy";
 import useIsMobile from "../hooks/useIsMobile";
-import { IconSearch } from "../components/icons";
 
 // Utility function to detect RTL text
 const isRTLText = (text: string): boolean => {

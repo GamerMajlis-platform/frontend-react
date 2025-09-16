@@ -1,8 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
+import { Dropdown, SettingRow, ToggleButton } from "../components/settings";
 import { useAppContext } from "../context/useAppContext";
 import usePreferences from "../hooks/usePreferences";
-// ...existing code...
 
 interface UserSettings {
   notifications: {
@@ -26,31 +26,13 @@ interface UserSettings {
 export default function Settings() {
   const { t } = useTranslation();
   const { settings, updateSetting } = useAppContext();
-  const { setLanguage, setTheme } = usePreferences();
+  const { setLanguage } = usePreferences();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   // RTL detection - improved (based on i18n language)
   const isRTL = ["ar", "fa", "he", "ur"].includes(
     document.documentElement.lang || "en"
   );
-
-  // Tailwind-based toggle styles
-  const getToggleClasses = (isActive: boolean) =>
-    `${
-      isActive ? "bg-primary" : "bg-slate-500"
-    } relative w-12 h-6 min-h-0 rounded-xl border-none cursor-pointer flex items-center ${
-      isRTL ? "flex-row-reverse" : "flex-row"
-    }`;
-  const getSwitchClasses = (isActive: boolean) =>
-    `absolute top-0.5 w-5 h-5 bg-white rounded-full transition-all duration-200 ${
-      isRTL
-        ? isActive
-          ? "left-0.5"
-          : "left-6"
-        : isActive
-        ? "left-6"
-        : "left-0.5"
-    }`;
 
   // Consolidated handlers
   const handleToggle = (category: keyof UserSettings, setting: string) => {
@@ -125,20 +107,7 @@ export default function Settings() {
         label: t("settings.sections.preferences.language_options.ar"),
       },
     ],
-    theme: [
-      {
-        value: "dark",
-        label: t("settings.sections.preferences.theme_options.dark"),
-      },
-      {
-        value: "light",
-        label: t("settings.sections.preferences.theme_options.light"),
-      },
-      {
-        value: "auto",
-        label: t("settings.sections.preferences.theme_options.auto"),
-      },
-    ],
+    // theme removed (dark-only app)
     currency: [
       { value: "USD", label: "USD ($)" },
       { value: "EUR", label: "EUR (€)" },
@@ -146,96 +115,7 @@ export default function Settings() {
     ],
   };
 
-  // Reusable components
-  const ToggleButton = ({
-    value,
-    onClick,
-  }: {
-    value: boolean;
-    onClick: () => void;
-  }) => (
-    <button
-      className={getToggleClasses(value)}
-      onClick={onClick}
-      aria-label={value ? "Disable" : "Enable"}
-    >
-      <div className={getSwitchClasses(value)} />
-    </button>
-  );
-
-  const Dropdown = ({
-    type,
-    value,
-    options,
-    onSelect,
-  }: {
-    type: string;
-    value: string;
-    options: Array<{ value: string; label: string }>;
-    onSelect: (value: string) => void;
-  }) => (
-    <div className="relative">
-      <button
-        className="flex items-center justify-between py-2 px-3 rounded-md cursor-pointer min-w-[120px] text-sm bg-dark-secondary border border-slate-500 text-text transition duration-150"
-        onClick={() => toggleDropdown(type)}
-      >
-        {options.find((opt) => opt.value === value)?.label || value}
-        <svg
-          className={`w-4 h-4 transition-transform duration-150 ${
-            openDropdown === type ? "rotate-180" : "rotate-0"
-          }`}
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-        </svg>
-      </button>
-      {openDropdown === type && (
-        <div className="absolute top-full right-0 mt-1 rounded-md shadow-lg z-10 min-w-[120px] bg-dark-secondary border border-slate-500">
-          {options.map((option) => (
-            <button
-              key={option.value}
-              className="block w-full py-2 px-3 bg-transparent border-none text-left cursor-pointer text-sm text-text hover:bg-dark-secondary/80 transition duration-150"
-              onClick={() => {
-                onSelect(option.value);
-                toggleDropdown(type);
-              }}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-
-  const SettingRow = ({
-    label,
-    description,
-    children,
-    isLast = false,
-  }: {
-    label: string;
-    description: string;
-    children: React.ReactNode;
-    isLast?: boolean;
-  }) => (
-    <div
-      className={`grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 md:gap-6 py-3 md:py-4 items-start md:items-center ${
-        !isLast ? "border-b border-slate-500" : ""
-      }`}
-    >
-      <div className="grid gap-1">
-        <div className="font-medium text-sm md:text-base text-text">
-          {label}
-        </div>
-        <div className="text-xs md:text-sm leading-relaxed text-text-secondary">
-          {description}
-        </div>
-      </div>
-      <div className="justify-self-start md:justify-self-end">{children}</div>
-    </div>
-  );
+  // Components moved to shared
 
   return (
     <main className="w-full max-w-6xl mx-auto px-4 sm:px-6 pt-6 pb-6 min-h-[calc(100vh-88px)]">
@@ -282,6 +162,7 @@ export default function Settings() {
                         onClick={() =>
                           handleToggle("notifications", setting.key)
                         }
+                        isRTL={isRTL}
                       />
                     </SettingRow>
                   );
@@ -317,6 +198,8 @@ export default function Settings() {
                     onSelect={(value) =>
                       updateSetting("privacy", "profileVisibility", value)
                     }
+                    isOpen={openDropdown === "profileVisibility"}
+                    onToggle={toggleDropdown}
                   />
                 </SettingRow>
 
@@ -335,6 +218,7 @@ export default function Settings() {
                       <ToggleButton
                         value={Boolean(value)}
                         onClick={() => handleToggle("privacy", setting.key)}
+                        isRTL={isRTL}
                       />
                     </SettingRow>
                   );
@@ -368,23 +252,12 @@ export default function Settings() {
                       updateSetting("preferences", "language", value);
                       setLanguage(value);
                     }}
+                    isOpen={openDropdown === "language"}
+                    onToggle={toggleDropdown}
                   />
                 </SettingRow>
 
-                <SettingRow
-                  label={t("settings.sections.preferences.theme")}
-                  description={t("settings.sections.preferences.theme_desc")}
-                >
-                  <Dropdown
-                    type="theme"
-                    value={settings.preferences.theme}
-                    options={dropdownOptions.theme}
-                    onSelect={(value) => {
-                      updateSetting("preferences", "theme", value);
-                      setTheme(value as "dark" | "light" | "auto");
-                    }}
-                  />
-                </SettingRow>
+                {/* Theme selection removed: app is dark-only */}
 
                 <SettingRow
                   label={t("settings.sections.preferences.currency")}
@@ -398,6 +271,8 @@ export default function Settings() {
                     onSelect={(value) =>
                       updateSetting("preferences", "currency", value)
                     }
+                    isOpen={openDropdown === "currency"}
+                    onToggle={toggleDropdown}
                   />
                 </SettingRow>
               </div>

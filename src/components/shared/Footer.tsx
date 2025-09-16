@@ -121,17 +121,7 @@ function Footer() {
             {t("footer.allRightsReserved")}
           </p>
 
-          {/* Social Links or Additional Info - Commented out for now */}
-          {/* 
-          <div className="flex items-center gap-4">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary/20 to-cyan-300/20 border border-slate-600/50 flex items-center justify-center hover:from-primary/30 hover:to-cyan-300/30 transition-all duration-300 cursor-pointer">
-              <div className="w-2 h-2 rounded-full bg-gradient-to-r from-primary to-cyan-300" />
-            </div>
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary/20 to-cyan-300/20 border border-slate-600/50 flex items-center justify-center hover:from-primary/30 hover:to-cyan-300/30 transition-all duration-300 cursor-pointer">
-              <div className="w-2 h-2 rounded-full bg-gradient-to-r from-primary to-cyan-300" />
-            </div>
-          </div>
-          */}
+          {/* Social links removed for now; add back via Footer props if needed */}
         </div>
       </div>
     </footer>

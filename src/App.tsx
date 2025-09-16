@@ -5,7 +5,7 @@ import "./App.css";
 
 // Components
 import { Header, Footer } from "./components";
-const ChatBot = lazy(() => import("./components/ChatBot"));
+const ChatBot = lazy(() => import("./components/shared/ChatBot"));
 
 // Pages
 const Home = lazy(() => import("./pages/Home"));

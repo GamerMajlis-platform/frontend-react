@@ -1,9 +1,9 @@
+import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+
 interface ChatBotProps {
   className?: string;
 }
-
-import { useState, useRef, useEffect } from "react";
-import { useTranslation } from "react-i18next";
 
 export default function ChatBot({ className = "" }: ChatBotProps) {
   const { t, i18n } = useTranslation();
@@ -26,7 +26,32 @@ export default function ChatBot({ className = "" }: ChatBotProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const isRTL = i18n.language === "ar";
+  // Robust RTL detection: handle locales like 'ar', 'ar-SA', any rtl direction returned by i18n.dir(),
+  // and the document/html dir or lang attributes in case the app sets them elsewhere.
+  const htmlDir =
+    typeof document !== "undefined" ? document.documentElement?.dir : undefined;
+  const htmlLang =
+    typeof document !== "undefined"
+      ? document.documentElement?.lang
+      : undefined;
+  // resolvedLanguage is present on some i18n instances (e.g. react-i18next)
+  const maybeResolvedLang = (i18n as unknown as { resolvedLanguage?: string })
+    .resolvedLanguage;
+  const resolvedLang = maybeResolvedLang || i18n.language;
+
+  const hasDirFunc =
+    typeof (i18n as unknown as { dir?: unknown }).dir === "function";
+  const i18nDirIsRtl =
+    hasDirFunc && (i18n as unknown as { dir: () => string }).dir() === "rtl";
+
+  const isRTL = Boolean(
+    (resolvedLang &&
+      typeof resolvedLang === "string" &&
+      resolvedLang.startsWith("ar")) ||
+      i18nDirIsRtl ||
+      (htmlDir && htmlDir.toLowerCase() === "rtl") ||
+      (htmlLang && htmlLang.toLowerCase().startsWith("ar"))
+  );
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -156,7 +181,7 @@ export default function ChatBot({ className = "" }: ChatBotProps) {
                     <img
                       src="/brand/controller.png"
                       alt="GamerMajlis Bot"
-                      className="w-8 h-8 drop-shadow-sm"
+                      className="h-6 w-auto drop-shadow-sm"
                       draggable={false}
                     />
                   </div>
@@ -210,7 +235,7 @@ export default function ChatBot({ className = "" }: ChatBotProps) {
                   <img
                     src="/brand/controller.png"
                     alt="GamerMajlis Bot"
-                    className="w-8 h-8 drop-shadow-sm"
+                    className="h-6 w-auto drop-shadow-sm"
                     draggable={false}
                   />
                 </div>
@@ -228,12 +253,10 @@ export default function ChatBot({ className = "" }: ChatBotProps) {
 
           {/* Enhanced Input Area */}
           <div className="p-4 border-t border-slate-600/30 bg-slate-800/50 backdrop-blur-sm">
-            <div
-              className={`flex gap-3 ${
-                isRTL ? "flex-row-reverse" : "flex-row"
-              }`}
-            >
-              <div className="flex-1 relative">
+            <div className="flex gap-3">
+              <div
+                className={`flex-1 relative ${isRTL ? "order-2" : "order-1"}`}
+              >
                 <textarea
                   ref={textareaRef}
                   value={message}
@@ -263,13 +286,15 @@ export default function ChatBot({ className = "" }: ChatBotProps) {
               <button
                 onClick={handleSendMessage}
                 disabled={!message.trim()}
-                className="w-12 h-12 bg-gradient-to-r from-primary to-cyan-300 text-slate-900 rounded-xl font-medium hover:from-primary/90 hover:to-cyan-300/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-glow transform hover:scale-105 disabled:hover:scale-100 group"
+                className={`w-12 h-12 bg-gradient-to-r from-primary to-cyan-300 text-slate-900 rounded-xl font-medium hover:from-primary/90 hover:to-cyan-300/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-glow transform hover:scale-105 disabled:hover:scale-100 group ${
+                  isRTL ? "order-1" : "order-2"
+                }`}
                 aria-label={t("chatbot.send", { defaultValue: "Send message" })}
               >
                 <svg
-                  className={`w-5 h-5 group-hover:scale-110 transition-transform duration-200 ${
-                    isRTL ? "rotate-180" : ""
-                  }`}
+                  className={`w-5 h-5 transform origin-center transition-transform duration-200 ${
+                    isRTL ? "rotate-180" : "rotate-0"
+                  } group-hover:scale-110`}
                   fill="currentColor"
                   viewBox="0 0 24 24"
                 >

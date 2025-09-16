@@ -1,14 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { BackgroundDecor, Card } from "../components";
+import { BackgroundDecor, Card, SortBy, IconSearch } from "../components";
 import {
   tournaments,
   tournamentSortOptions,
   type TournamentSortOption,
 } from "../data";
-import SortBy from "../components/SortBy";
 import useIsMobile from "../hooks/useIsMobile";
-import { IconSearch } from "../components/icons";
 
 export default function Tournaments() {
   const { t, i18n } = useTranslation();

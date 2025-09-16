@@ -1,25 +1,15 @@
-/**
- * Unified Card component supporting three presets: product, event, tournament.
- * Each preset reproduces the exact original layout, sizes, alignment and behavior
- * of the previous individual components (ProductCard, EventCard, TournamentCard)
- * so existing visuals are preserved while eliminating duplication.
- *
- * DRY Strategy:
- *  - A discriminated union on `preset` provides strong typing for required fields.
- *  - Variant styling (upcoming | ongoing | past) centralized for event & tournament.
- *  - Product wishlist + RTL logic retained exactly from original ProductCard.
- *  - Minimal abstraction to avoid layout regressions; only safely shared utilities.
- */
+// Unified Card component for product / event / tournament presets.
+// Preserves original layouts while reducing duplication across card types.
 import { useEffect, useState, memo } from "react";
 import { useTranslation } from "react-i18next";
-import { useAppContext } from "../context/useAppContext";
+import { useAppContext } from "../../context/useAppContext";
 import {
   IconCalendar,
   IconLocation,
   IconOrganizer,
   IconTrophy,
   IconUsers,
-} from "./icons.tsx";
+} from "./icons";
 
 // Common variant type for event & tournament presets
 export type ActivityVariant = "upcoming" | "ongoing" | "past";
@@ -346,12 +336,18 @@ function EventPreset({
   return (
     <div className={`${presetStyles.event.container} ${className}`}>
       <div className={presetStyles.event.bodyWrap}>
-        <div
-          className={`${presetStyles.event.image} ${
-            !imageUrl && "bg-dark-secondary"
-          }`}
-          style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : {}}
-        />
+        <div className={presetStyles.event.image}>
+          {imageUrl ? (
+            <img
+              src={imageUrl}
+              alt={name}
+              className="w-full h-full object-cover rounded-[15px]"
+              loading="lazy"
+            />
+          ) : (
+            <div className="w-full h-full bg-dark-secondary rounded-[15px]" />
+          )}
+        </div>
         <div className="flex flex-col items-start gap-1">
           <h3 className="font-alice text-[20px] sm:text-[24px] lg:text-[28px] text-white m-0">
             {name}
@@ -413,12 +409,18 @@ function TournamentPreset({
       className={`${presetStyles.tournament.container} ${currentVariant.card} ${className}`}
     >
       <div className={presetStyles.tournament.inner}>
-        <div
-          className={`${presetStyles.tournament.image} ${
-            !imageUrl && "bg-dark-secondary"
-          }`}
-          style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : {}}
-        />
+        <div className={presetStyles.tournament.image}>
+          {imageUrl ? (
+            <img
+              src={imageUrl}
+              alt={game}
+              className="w-full h-full object-cover rounded-[15px] sm:rounded-[18px] lg:rounded-[20px]"
+              loading="lazy"
+            />
+          ) : (
+            <div className="w-full h-full bg-dark-secondary rounded-[15px] sm:rounded-[18px] lg:rounded-[20px]" />
+          )}
+        </div>
         <div className="flex flex-col items-center gap-1 sm:gap-1.5 w-full">
           <h3 className="w-full font-alice font-normal text-[20px] sm:text-[24px] lg:text-[28px] leading-tight text-center text-white m-0">
             {game}
