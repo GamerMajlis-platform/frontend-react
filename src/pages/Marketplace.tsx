@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, BackgroundDecor, SortBy, IconSearch } from "../components";
+import EmptyState from "../states/EmptyState";
 import { productData, sortOptions, type SortOption } from "../data";
 import useIsMobile from "../hooks/useIsMobile";
 
@@ -185,20 +186,48 @@ export default function Marketplace() {
           mt-8 md:mt-6 relative z-0
         "
         >
-          {sortedAndFilteredProducts.map((product) => (
-            <Card
-              key={product.id}
-              preset="product"
-              id={product.id}
-              category={product.category}
-              productName={product.productName}
-              seller={product.seller}
-              price={product.price}
-              rate={product.rate}
-              reviews={product.reviews}
-              imageUrl={product.imageUrl}
-            />
-          ))}
+          {sortedAndFilteredProducts.length === 0 ? (
+            <div className="col-span-full w-full max-w-2xl">
+              <EmptyState
+                icon={
+                  <svg
+                    className="w-10 h-10 text-cyan-300"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path d="M21 16V8a2 2 0 0 0-2-2h-5l-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2Z" />
+                  </svg>
+                }
+                title={t("common.noResults") || "No results"}
+                description={
+                  t("marketplace.noMatches") ||
+                  "Try adjusting your search or filters."
+                }
+                actionLabel={t("common.clearFilters") || "Clear filters"}
+                onAction={() => {
+                  setSearchTerm("");
+                  setSelectedCategory("All Items");
+                  setSortBy("name");
+                  searchRef.current?.focus();
+                }}
+              />
+            </div>
+          ) : (
+            sortedAndFilteredProducts.map((product) => (
+              <Card
+                key={product.id}
+                preset="product"
+                id={product.id}
+                category={product.category}
+                productName={product.productName}
+                seller={product.seller}
+                price={product.price}
+                rate={product.rate}
+                reviews={product.reviews}
+                imageUrl={product.imageUrl}
+              />
+            ))
+          )}
         </section>
       </div>
     </main>

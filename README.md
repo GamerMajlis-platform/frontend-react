@@ -28,6 +28,12 @@ src/
 │   │   ├── MessageThread.tsx    # Message thread display
 │   │   ├── SortBy.tsx           # Reusable sort dropdown component
 │   │   └── index.ts             # Barrel that exports all shared components
+│   ├── profile/                 # Profile page components
+│   │   ├── AboutSection.tsx     # Profile bio editor/view
+│   │   ├── PreferencesList.tsx  # Editable list of user preferences
+│   │   ├── StatsList.tsx        # Editable stats with progress
+│   │   ├── TabBar.tsx           # Profile tabs (About/Preferences/Stats)
+│   │   └── ProfileHeader.tsx    # Composite header (avatar, name, XP, actions)
 │   ├── settings/                # Components only used inside Settings UI
 │   │   └── ...                  # (e.g. color pickers, theme toggles — if present)
 │   └── index.ts                 # Main component barrel -> `export * from './shared'`
@@ -65,8 +71,9 @@ src/
 ├── i18n/
 │   └── config.ts                # Internationalization setup
 ├── services/
-│   ├── AuthService.ts           # Authentication service
-│   └── Context7Service.ts       # External documentation service
+│   └── AuthService.ts           # Authentication service
+├── states/
+│   └── EmptyState.tsx           # Shared empty state UI used by multiple pages
 └── types/
     └── context7-mcp.d.ts        # TypeScript definitions
 
@@ -105,7 +112,46 @@ public/
   - Mobile: CTA buttons reduced in size and set to ~half-width side-by-side
   - Labels updated to “Subscribe” and “Tournaments” (with translations)
 - i18n
+
   - Persist language across refresh; namespace loading and debug logs refined
+
+- Profile refactor and cleanup
+
+  - Introduced a composite `ProfileHeader` that encapsulates avatar picker, name/discord editing, level + XP progress (via `ProgressBar`), and edit/save/cancel actions.
+  - Split Profile content into `TabBar`, `AboutSection`, `PreferencesList`, and `StatsList` for clarity and reuse.
+  - Reduced component count by inlining header subcomponents to avoid over-fragmentation.
+
+- Shared Empty State
+
+  - Added `src/states/EmptyState.tsx` and adopted it in `Wishlist`, `Marketplace`, `Events`, and `Tournaments` for consistent empty views.
+  - Localized messages and actions in both English and Arabic.
+
+- Lifecycle fix
+
+  - Moved `hashchange` side-effect from `useState` to `useEffect` in `App.tsx` with proper cleanup.
+
+- Favicon stabilization
+
+  - Switched to PNG-based favicons for consistent cross-browser rendering; added guidance for cache-busting.
+
+- RTL and ChatBot fixes
+
+  - Corrected RTL alignment and arrow flipping in ChatBot composer; reduced brand icon height; improved `dir` detection.
+
+- Auth polish
+  - Added responsive "Login with Discord" button using `react-icons`.
+  - Fixed mobile viewport issues in `Signup.tsx` with responsive widths and layout.
+
+- Performance and cleanup
+  - Wrapped leaf components with `React.memo` to reduce unnecessary re-renders:
+    - `src/components/shared/SortBy.tsx`
+    - `src/components/profile/TabBar.tsx`
+    - `src/components/profile/AboutSection.tsx`
+    - `src/components/profile/PreferencesList.tsx`
+    - `src/components/profile/StatsList.tsx`
+  - Stabilized handler identities in `src/pages/Profile.tsx` using `useCallback` so memoized children don’t re-render on every parent update.
+  - Adopted a `props.xxx` access style in child components for clarity and consistency.
+  - Removed unused/empty files: `src/components/MobileMenu.tsx` and `src/services/Context7Service.ts`.
 
 #### i18n: namespace loading and debug
 
@@ -127,7 +173,7 @@ How to verify
 
 Notes on Context7
 
-- The repository integrates with Context7 (see `src/services/Context7Service.ts`) for external documentation and tooling. If you run Context7 locally or via the project's integration, include the Context7 server url in your environment (or set it in the service) to enable richer documentation linking. The i18n debug and README notes can be used alongside Context7 to provide troubleshooting guides to translators or contributors.
+- Context7 integration is currently deferred in this branch to keep the codebase lean. The previous placeholder service has been removed. If/when integration resumes, add back a service under `src/services/` and wire configuration via environment variables.
 
 ### Component architecture
 
@@ -143,6 +189,117 @@ import Header from "../components/shared/Header";
 ```
 
 This keeps imports stable when components are reorganized and simplifies refactors.
+
+## Application Structure (Parent → Children)
+
+Below is a high-level parent/children map of the application using Mermaid for a clean visual. It focuses on the app shell and key pages. You can preview Mermaid diagrams directly on GitHub.
+
+```mermaid
+flowchart TD
+  A[App] --> B[AppProvider]
+  B --> C[PreferencesBootstrap]
+  B --> D{isAuthPage?}
+  D -- no --> E[Header]
+  B --> F[<Suspense>]
+  F --> G[[Page Content]]
+  D -- no --> H[Footer]
+  B --> I[<Suspense>]
+  I --> J[ChatBot]
+
+  %% Pages (lazy-loaded)
+  G --> G1[Home]
+  G --> G2[Profile]
+  G --> G3[Tournaments]
+  G --> G4[Events]
+  G --> G5[Messages]
+  G --> G6[Marketplace]
+  G --> G7[Signup]
+  G --> G8[Login]
+  G --> G9[Wishlist]
+  G --> G10[Settings]
+```
+
+### Page Composition Details
+
+```mermaid
+flowchart LR
+  subgraph Shell
+    E[Header]:::shell
+    H[Footer]:::shell
+    J[ChatBot]:::shell
+  end
+
+  subgraph Home
+    HO[Home]
+    HO --> H1[BackgroundDecor]
+  end
+
+  subgraph Messages
+    MS[MessagesPage]
+    MS --> MS1[ConversationList]
+    MS --> MS2[MessageThread]
+    MS2 --> MS3[MessageBubble]
+    MS2 --> MS4[Composer]
+  end
+
+  subgraph Profile
+    PR[Profile]
+    PR --> PR1[ProfileHeader]
+    PR --> PR2[TabBar]
+    PR --> PR3[AboutSection]
+    PR --> PR4[PreferencesList]
+    PR --> PR5[StatsList]
+  end
+
+  subgraph Marketplace
+    MK[Marketplace]
+    %% Uses SortBy, Card (repeated), search UI
+    MK --> MK1[SortBy]
+    MK --> MK2[Card xN]
+  end
+
+  subgraph Tournaments
+    TO[Tournaments]
+    TO --> TO1[SortBy]
+    TO --> TO2[Card xN]
+  end
+
+  subgraph Events
+    EV[Events]
+    EV --> EV1[SortBy]
+    EV --> EV2[Card xN]
+  end
+
+  classDef shell fill:#0ea5,fill-opacity:0.15,stroke:#22d3ee,color:#e2e8f0;
+```
+
+Notes
+
+- The shell (`Header`, `Footer`, `ChatBot`) is hidden on auth pages (`Login`, `Signup`).
+- Pages are lazy-loaded via React `lazy` and wrapped in `Suspense`.
+- Shared UI like `Card`, `SortBy`, `BackgroundDecor`, `Logo`, and icons live under `src/components/shared` and are imported through the barrel `src/components`.
+- Navigation between pages is handled via the URL hash (e.g., `#home`, `#tournaments`), which the `App` component listens to and syncs.
+
+### Changelog (structural)
+
+- Removed files (inlined into `ProfileHeader`):
+
+  - `src/components/profile/AvatarPicker.tsx`
+  - `src/components/profile/NameSection.tsx`
+  - `src/components/profile/LevelXp.tsx`
+  - `src/components/profile/ActionButtons.tsx`
+
+- Added files:
+  - `src/states/EmptyState.tsx`
+  - `src/components/profile/ProfileHeader.tsx` (composite)
+  - `src/components/profile/TabBar.tsx`
+  - `src/components/profile/AboutSection.tsx`
+  - `src/components/profile/PreferencesList.tsx`
+  - `src/components/profile/StatsList.tsx`
+
+- Removed files (cleanup):
+  - `src/components/MobileMenu.tsx` (unused after mobile dropdown rollback)
+  - `src/services/Context7Service.ts` (deferred integration)
 
 ### State Management
 
@@ -328,6 +485,17 @@ If you'd like, I can add a small parity script to the repo and a package.json sc
 - **Optimized builds** with Vite
 - **Tree shaking** for unused code elimination
 - **Fast development** with hot module replacement
+– **Memoization where it counts**: Leaf components with primitive props are wrapped in `React.memo`.
+– **Stable callbacks**: Parent components (e.g., Profile page) use `useCallback` to keep function identities stable for memoized children.
+– **Pragmatic memo**: High-level composites with local state (e.g., `ProfileHeader`) are intentionally not memoized to avoid complexity with minimal upside.
+
+### Prop Style Convention
+
+To keep code skimmable and consistent, child components use a single `props` parameter and access props as `props.xxx` instead of destructuring long lists at the top of the function. Rationale:
+
+- Easier to scan and refactor, especially in components with many props
+- Reduces churn when adding/removing props
+- Plays nicely with inline IDE hovers and jump-to-def on `props`
 
 ## Changelog (Sep 2025)
 

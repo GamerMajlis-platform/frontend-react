@@ -57,7 +57,10 @@
     "save": "Save",
     "edit": "Edit",
     "delete": "Delete",
-    "search": "Search"
+    "search": "Search",
+    "noResults": "No results",
+    "clearFilters": "Clear filters",
+    "clearSearch": "Clear search"
   },
   "settings": {
     "title": "Settings",
@@ -164,7 +167,8 @@
   "marketplace": {
     "title": "Gaming Marketplace",
     "subtitle": "Discover premium gaming gear from trusted sellers worldwide",
-    "searchPlaceholder": "Search for gaming gear, accessories..."
+    "searchPlaceholder": "Search for gaming gear, accessories...",
+    "noMatches": "Try adjusting your search or filters."
   },
   "categories": {
     "allItems": "All Items",
@@ -224,6 +228,7 @@
       "past": "Past"
     },
     "searchPlaceholder": "Search tournaments, organizers...",
+    "noMatches": "Try adjusting your search or filters.",
     "sort": {
       "placeholder": "Sort by",
       "options": {
@@ -250,6 +255,7 @@
       "organizer": "Organizer A-Z",
       "location": "Location A-Z"
     },
-    "searchPlaceholder": "Search events, organizers..."
+    "searchPlaceholder": "Search events, organizers...",
+    "noMatches": "Try adjusting your search or filters."
   }
 }

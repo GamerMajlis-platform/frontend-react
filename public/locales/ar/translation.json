@@ -57,7 +57,10 @@
     "save": "حفظ",
     "edit": "تعديل",
     "delete": "حذف",
-    "search": "بحث"
+    "search": "بحث",
+    "noResults": "لا توجد نتائج",
+    "clearFilters": "إزالة الفلاتر",
+    "clearSearch": "مسح البحث"
   },
   "settings": {
     "title": "الإعدادات",
@@ -164,7 +167,8 @@
   "marketplace": {
     "title": "سوق الألعاب",
     "subtitle": "اكتشف أفضل معدات الألعاب من بائعين موثوقين حول العالم",
-    "searchPlaceholder": "ابحث عن معدات الألعاب والملحقات..."
+    "searchPlaceholder": "ابحث عن معدات الألعاب والملحقات...",
+    "noMatches": "جرّب تعديل البحث أو الفلاتر."
   },
   "categories": {
     "allItems": "جميع العناصر",
@@ -225,6 +229,7 @@
       "past": "منتهية"
     },
     "searchPlaceholder": "ابحث في البطولات أو المنظمين...",
+    "noMatches": "جرّب تعديل البحث أو الفلاتر.",
     "sort": {
       "placeholder": "ترتيب بحسب",
       "options": {
@@ -251,6 +256,7 @@
       "organizer": "المنظم أ-ي",
       "location": "الموقع أ-ي"
     },
-    "searchPlaceholder": "ابحث في الفعاليات أو المنظمين..."
+    "searchPlaceholder": "ابحث في الفعاليات أو المنظمين...",
+    "noMatches": "جرّب تعديل البحث أو الفلاتر."
   }
 }

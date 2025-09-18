@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BackgroundDecor, Card, SortBy, IconSearch } from "../components";
+import EmptyState from "../states/EmptyState";
 import { events, eventSortOptions, type EventSortOption } from "../data";
 import useIsMobile from "../hooks/useIsMobile";
 
@@ -180,7 +181,43 @@ export default function Events() {
                 )}
                 location={ev.location}
               />
-            ))}
+            ))
+            .concat(
+              events
+                .filter((e) => e.category === category)
+                .filter((e) =>
+                  [e.name, e.organizer, e.location]
+                    .join(" ")
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase())
+                ).length === 0
+                ? [
+                    <div key="empty" className="col-span-full w-full max-w-2xl">
+                      <EmptyState
+                        icon={
+                          <svg
+                            className="w-10 h-10 text-cyan-300"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                          >
+                            <path d="M3 6h18M3 12h18M3 18h18" />
+                          </svg>
+                        }
+                        title={t("common.noResults") || "No results"}
+                        description={
+                          t("events.noMatches") ||
+                          "Try adjusting your search or filters."
+                        }
+                        actionLabel={t("common.clearSearch") || "Clear search"}
+                        onAction={() => {
+                          setSearchTerm("");
+                          searchRef.current?.focus();
+                        }}
+                      />
+                    </div>,
+                  ]
+                : []
+            )}
         </section>
       </div>
     </main>

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export type SortOptionItem = {
@@ -15,13 +15,8 @@ type SortByProps = {
   className?: string;
 };
 
-export default function SortBy({
-  options,
-  value,
-  onChange,
-  placeholderKey,
-  className = "",
-}: SortByProps) {
+function SortBy(props: SortByProps) {
+  const { options, value, onChange, placeholderKey, className = "" } = props;
   const { i18n, t } = useTranslation();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
@@ -81,3 +76,5 @@ export default function SortBy({
     </div>
   );
 }
+
+export default memo(SortBy);

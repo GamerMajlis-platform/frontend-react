@@ -69,11 +69,11 @@ function App() {
   // the appropriate initial page.
 
   // Keep the app responsive to hash changes so simple SPA navigation works
-  useState(() => {
+  useEffect(() => {
     const handler = () => setCurrentPage(resolvePageFromHash());
     window.addEventListener("hashchange", handler);
     return () => window.removeEventListener("hashchange", handler);
-  });
+  }, []);
 
   // Keep the URL hash in sync when navigation happens inside the app so
   // refreshing the page preserves the current view.

@@ -1,4 +1,5 @@
 import { Card, BackgroundDecor } from "../components";
+import EmptyState from "../states/EmptyState";
 import { useAppContext } from "../context/useAppContext";
 import type { WishlistItem } from "../context/AppContext";
 import { useTranslation } from "react-i18next";
@@ -58,9 +59,8 @@ export default function Wishlist() {
               ))}
             </div>
           ) : (
-            /* Empty State */
-            <div className="text-center py-12 text-[var(--color-text-secondary)]">
-              <div className="w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-full bg-[var(--color-dark-secondary)]">
+            <EmptyState
+              icon={
                 <svg
                   className="w-10 h-10 text-[var(--color-text-secondary)]"
                   fill="currentColor"
@@ -72,24 +72,14 @@ export default function Wishlist() {
                     clipRule="evenodd"
                   />
                 </svg>
-              </div>
-              <h3 className="text-2xl font-semibold text-[var(--color-text)] mb-2">
-                {t("wishlist.emptyTitle")}
-              </h3>
-              <p className="text-base mb-6 text-[var(--color-text-secondary)]">
-                {t("wishlist.emptyDesc")}
-              </p>
-              <button
-                className="
-                  inline-flex items-center justify-center gap-2
-                  px-8 py-3 text-lg font-medium rounded-md 
-                  bg-[var(--color-primary)] text-[var(--color-dark)] 
-                  transition duration-200 hover:bg-[var(--color-primary-hover)]
-                "
-              >
-                {t("wishlist.browseMarketplace")}
-              </button>
-            </div>
+              }
+              title={t("wishlist.emptyTitle")}
+              description={t("wishlist.emptyDesc")}
+              actionLabel={t("wishlist.browseMarketplace")}
+              onAction={() => {
+                window.location.hash = "#marketplace";
+              }}
+            />
           )}
         </section>
       </div>

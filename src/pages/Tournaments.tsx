@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BackgroundDecor, Card, SortBy, IconSearch } from "../components";
+import EmptyState from "../states/EmptyState";
 import {
   tournaments,
   tournamentSortOptions,
@@ -211,7 +212,43 @@ export default function Tournaments() {
                 prizePool={t.prizePool}
                 playersJoined={t.playersJoined}
               />
-            ))}
+            ))
+            .concat(
+              tournaments
+                .filter((t) => t.category === category)
+                .filter((t) =>
+                  [t.game, t.organizer]
+                    .join(" ")
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase())
+                ).length === 0
+                ? [
+                    <div key="empty" className="col-span-full w-full max-w-2xl">
+                      <EmptyState
+                        icon={
+                          <svg
+                            className="w-10 h-10 text-cyan-300"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                          >
+                            <path d="M12 2l3 7h7l-5.5 4 2.5 7L12 16l-7 4 2.5-7L2 9h7z" />
+                          </svg>
+                        }
+                        title={t("common.noResults") || "No results"}
+                        description={
+                          t("tournaments.noMatches") ||
+                          "Try adjusting your search or filters."
+                        }
+                        actionLabel={t("common.clearSearch") || "Clear search"}
+                        onAction={() => {
+                          setSearchTerm("");
+                          searchRef.current?.focus();
+                        }}
+                      />
+                    </div>,
+                  ]
+                : []
+            )}
         </section>
       </div>
     </main>
