@@ -18,27 +18,26 @@ interface PreferencesListProps {
  */
 function PreferencesList(props: PreferencesListProps) {
   const { t } = useTranslation();
-  const { items, isEditing, isRTL, onAdd, onRemove, onUpdate } = props;
 
-  if (isEditing) {
+  if (props.isEditing) {
     return (
       <div className="space-y-4">
-        {items.map((item) => (
+        {props.items.map((item) => (
           <div key={item.id} className="flex items-center gap-3 group">
             <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0" />
             <input
               value={item.text}
-              onChange={(e) => onUpdate(item.id, e.target.value)}
+              onChange={(e) => props.onUpdate(item.id, e.target.value)}
               placeholder={
                 t("profile.placeholders.preferenceItem") ||
                 "Add a preference..."
               }
               className={`flex-1 bg-slate-700/50 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-300 ${
-                isRTL ? "text-right" : ""
+                props.isRTL ? "text-right" : ""
               }`}
             />
             <button
-              onClick={() => onRemove(item.id)}
+              onClick={() => props.onRemove(item.id)}
               className="opacity-0 group-hover:opacity-100 p-2 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-lg transition-all duration-200"
               aria-label={t("profile.editing.remove") || "Remove"}
             >
@@ -53,7 +52,7 @@ function PreferencesList(props: PreferencesListProps) {
           </div>
         ))}
         <button
-          onClick={onAdd}
+          onClick={props.onAdd}
           className="flex items-center gap-2 px-4 py-3 rounded-lg font-medium hover:shadow-lg hover:shadow-primary/30 transition-all duration-200 bg-gradient-to-r from-primary to-cyan-300 text-slate-900"
         >
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -69,7 +68,7 @@ function PreferencesList(props: PreferencesListProps) {
     );
   }
 
-  const nonEmpty = items.filter((p) => p.text.trim());
+  const nonEmpty = props.items.filter((p) => p.text.trim());
   return (
     <div className="grid gap-3">
       {nonEmpty.length > 0 ? (

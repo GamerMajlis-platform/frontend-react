@@ -16,7 +16,8 @@ type SortByProps = {
 };
 
 function SortBy(props: SortByProps) {
-  const { options, value, onChange, placeholderKey, className = "" } = props;
+  // Using direct props.xxx access for clarity and consistency across the codebase (requested style)
+  const className = props.className || "";
   const { i18n, t } = useTranslation();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
@@ -40,7 +41,9 @@ function SortBy(props: SortByProps) {
         aria-haspopup="listbox"
       >
         <span className="truncate">
-          {placeholderKey ? t(placeholderKey) : t("sort.placeholder")}
+          {props.placeholderKey
+            ? t(props.placeholderKey)
+            : t("sort.placeholder")}
         </span>
         <span
           className={`ml-1 transform transition-transform duration-300 ease-in-out ${
@@ -57,14 +60,14 @@ function SortBy(props: SortByProps) {
             isRTL ? "right-0" : "right-0"
           } z-50 mt-2 w-48 rounded-xl border border-slate-600 bg-slate-800 p-2 shadow-2xl sort-dropdown backdrop-blur-sm`}
         >
-          {options.map((option) => (
+          {props.options.map((option) => (
             <button
               key={option.value}
               className={`block w-full rounded-md border-none px-3 py-2 text-white transition-colors duration-200 text-sm hover:bg-slate-700 ${
-                value === option.value ? "bg-slate-700" : "bg-transparent"
+                props.value === option.value ? "bg-slate-700" : "bg-transparent"
               } ${isRTL ? "text-right pr-3" : "text-left pl-3"}`}
               onClick={() => {
-                onChange(option.value);
+                props.onChange(option.value);
                 setOpen(false);
               }}
             >

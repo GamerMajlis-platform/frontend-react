@@ -5,13 +5,11 @@ interface ProgressBarProps {
   gradientTo?: string;
 }
 
-export function ProgressBar({
-  percentage,
-  className = "",
-  gradientFrom = "from-primary",
-  gradientTo = "to-cyan-300",
-}: ProgressBarProps) {
-  const safePercentage = Math.min(100, Math.max(0, percentage));
+export function ProgressBar(props: ProgressBarProps) {
+  const safePercentage = Math.min(100, Math.max(0, props.percentage));
+  const className = props.className || "";
+  const gradientFrom = props.gradientFrom || "from-primary";
+  const gradientTo = props.gradientTo || "to-cyan-300";
 
   return (
     <div className={`relative overflow-hidden ${className}`}>

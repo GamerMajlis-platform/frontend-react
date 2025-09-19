@@ -139,6 +139,7 @@ public/
   - Corrected RTL alignment and arrow flipping in ChatBot composer; reduced brand icon height; improved `dir` detection.
 
 - Auth polish
+
   - Added responsive "Login with Discord" button using `react-icons`.
   - Fixed mobile viewport issues in `Signup.tsx` with responsive widths and layout.
 
@@ -290,6 +291,7 @@ Notes
   - `src/components/profile/ActionButtons.tsx`
 
 - Added files:
+
   - `src/states/EmptyState.tsx`
   - `src/components/profile/ProfileHeader.tsx` (composite)
   - `src/components/profile/TabBar.tsx`
@@ -485,9 +487,9 @@ If you'd like, I can add a small parity script to the repo and a package.json sc
 - **Optimized builds** with Vite
 - **Tree shaking** for unused code elimination
 - **Fast development** with hot module replacement
-– **Memoization where it counts**: Leaf components with primitive props are wrapped in `React.memo`.
-– **Stable callbacks**: Parent components (e.g., Profile page) use `useCallback` to keep function identities stable for memoized children.
-– **Pragmatic memo**: High-level composites with local state (e.g., `ProfileHeader`) are intentionally not memoized to avoid complexity with minimal upside.
+  – **Memoization where it counts**: Leaf components with primitive props are wrapped in `React.memo`.
+  – **Stable callbacks**: Parent components (e.g., Profile page) use `useCallback` to keep function identities stable for memoized children.
+  – **Pragmatic memo**: High-level composites with local state (e.g., `ProfileHeader`) are intentionally not memoized to avoid complexity with minimal upside.
 
 ### Prop Style Convention
 

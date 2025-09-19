@@ -13,14 +13,13 @@ interface TabBarProps {
  * - Single `props` param for consistent style.
  */
 function TabBar(props: TabBarProps) {
-  const { active, onChange } = props;
   const { t } = useTranslation();
 
   const TabButton = ({ id, label }: { id: TabKey; label: string }) => {
-    const isActive = active === id;
+    const isActive = props.active === id;
     return (
       <button
-        onClick={() => onChange(id)}
+        onClick={() => props.onChange(id)}
         className={`relative px-4 py-2 sm:px-6 sm:py-3 rounded-full font-medium transition-all duration-300 transform hover:scale-105 text-sm sm:text-base ${
           isActive
             ? "bg-gradient-to-r from-primary to-cyan-300 text-slate-900 shadow-glow"

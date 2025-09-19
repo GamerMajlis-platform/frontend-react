@@ -14,7 +14,6 @@ interface AboutSectionProps {
  * - Single `props` parameter for consistent `props.xxx` access pattern.
  */
 function AboutSection(props: AboutSectionProps) {
-  const { isEditing, isRTL, bio, onChange } = props;
   const { t } = useTranslation();
   const bioRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -27,7 +26,7 @@ function AboutSection(props: AboutSectionProps) {
 
   useEffect(() => {
     autoSizeBio();
-  }, [isEditing]);
+  }, [props.isEditing]);
 
   const wrapSelection = (before: string, after: string = before) => {
     const el = bioRef.current;
@@ -38,7 +37,7 @@ function AboutSection(props: AboutSectionProps) {
     const selected = value.slice(start, end);
     const newValue =
       value.slice(0, start) + before + selected + after + value.slice(end);
-    onChange(newValue);
+    props.onChange(newValue);
     requestAnimationFrame(() => {
       el.focus();
       el.setSelectionRange(start + before.length, end + before.length);
@@ -46,14 +45,14 @@ function AboutSection(props: AboutSectionProps) {
     });
   };
 
-  if (!isEditing) {
+  if (!props.isEditing) {
     return (
       <div
         className={`text-base sm:text-lg leading-relaxed ${
-          bio ? "text-slate-200" : "text-slate-500 italic"
+          props.bio ? "text-slate-200" : "text-slate-500 italic"
         } whitespace-pre-wrap`}
       >
-        {bio ||
+        {props.bio ||
           (t("profile.placeholders.bio") as string) ||
           "Tell others about yourself..."}
       </div>
@@ -82,9 +81,9 @@ function AboutSection(props: AboutSectionProps) {
         </div>
         <textarea
           ref={bioRef}
-          value={bio}
+          value={props.bio}
           onChange={(e) => {
-            onChange(e.target.value);
+            props.onChange(e.target.value);
             autoSizeBio();
           }}
           placeholder={
@@ -92,11 +91,11 @@ function AboutSection(props: AboutSectionProps) {
             "Tell others about yourself..."
           }
           className={`w-full min-h-[120px] bg-slate-700/50 border border-slate-600 rounded-xl p-4 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary resize-none transition-all duration-300 ${
-            isRTL ? "text-right" : ""
+            props.isRTL ? "text-right" : ""
           }`}
         />
         <div className="text-right text-slate-400 text-sm">
-          {bio.length} / 500
+          {props.bio.length} / 500
         </div>
       </div>
     </div>

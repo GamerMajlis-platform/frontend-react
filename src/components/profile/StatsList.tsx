@@ -18,13 +18,12 @@ interface StatsListProps {
  * - Parents should keep `onAdd/onRemove/onUpdate` stable (useCallback) for best memo effectiveness.
  */
 function StatsList(props: StatsListProps) {
-  const { items, isEditing, isRTL, onAdd, onRemove, onUpdate } = props;
   const { t } = useTranslation();
 
-  if (isEditing) {
+  if (props.isEditing) {
     return (
       <div className="space-y-6">
-        {items.map((s) => (
+        {props.items.map((s) => (
           <div
             key={s.id}
             className="space-y-3 p-4 bg-slate-700/30 rounded-xl border border-slate-600/50"
@@ -32,17 +31,17 @@ function StatsList(props: StatsListProps) {
             <div className="flex items-center gap-3">
               <input
                 value={s.name}
-                onChange={(e) => onUpdate(s.id, { name: e.target.value })}
+                onChange={(e) => props.onUpdate(s.id, { name: e.target.value })}
                 placeholder={
                   t("profile.placeholders.statName") ||
                   "Stat name (e.g. Win Rate)"
                 }
                 className={`flex-1 bg-slate-700/50 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-300 ${
-                  isRTL ? "text-right" : ""
+                  props.isRTL ? "text-right" : ""
                 }`}
               />
               <button
-                onClick={() => onRemove(s.id)}
+                onClick={() => props.onRemove(s.id)}
                 className="p-2 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-lg transition-all duration-200"
                 aria-label={t("profile.editing.remove") || "Remove statistic"}
               >
@@ -66,7 +65,7 @@ function StatsList(props: StatsListProps) {
                 max={100}
                 value={s.value}
                 onChange={(e) =>
-                  onUpdate(s.id, { value: Number(e.target.value) })
+                  props.onUpdate(s.id, { value: Number(e.target.value) })
                 }
                 className="flex-1 accent-primary"
                 aria-label={
@@ -80,7 +79,7 @@ function StatsList(props: StatsListProps) {
           </div>
         ))}
         <button
-          onClick={onAdd}
+          onClick={props.onAdd}
           className="flex items-center gap-2 px-4 py-3 rounded-lg font-medium hover:shadow-lg hover:shadow-primary/30 transition-all duration-200 bg-gradient-to-r from-primary to-cyan-300 text-slate-900"
         >
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -98,8 +97,8 @@ function StatsList(props: StatsListProps) {
 
   return (
     <div className="grid gap-4">
-      {items.length > 0 ? (
-        items.map((s) => (
+      {props.items.length > 0 ? (
+        props.items.map((s) => (
           <div key={s.id} className="space-y-2 p-4 bg-slate-700/30 rounded-xl">
             <div className="flex justify-between items-center">
               <span className="text-white font-medium text-sm sm:text-base">

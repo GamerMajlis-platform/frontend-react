@@ -16,19 +16,7 @@ interface ProfileHeaderProps {
   onEdit: () => void;
 }
 
-export default function ProfileHeader({
-  isEditing,
-  isRTL,
-  displayName,
-  discordName,
-  level,
-  xp,
-  nextLevelXp,
-  onChange,
-  onSave,
-  onCancel,
-  onEdit,
-}: ProfileHeaderProps) {
+export default function ProfileHeader(props: ProfileHeaderProps) {
   // Design note:
   // ProfileHeader remains intentionally non-memoized because it holds local state (avatar preview)
   // and is a high-level composition with multiple interactive controls.
@@ -61,22 +49,26 @@ export default function ProfileHeader({
       {/* Name & Level */}
       <div className="space-y-4 order-2 text-center lg:text-left w-full">
         <InlineNameSection
-          isEditing={isEditing}
-          isRTL={isRTL}
-          displayName={displayName}
-          discordName={discordName}
-          onChange={onChange}
+          isEditing={props.isEditing}
+          isRTL={props.isRTL}
+          displayName={props.displayName}
+          discordName={props.discordName}
+          onChange={props.onChange}
         />
-        <InlineLevelXp level={level} xp={xp} nextLevelXp={nextLevelXp} />
+        <InlineLevelXp
+          level={props.level}
+          xp={props.xp}
+          nextLevelXp={props.nextLevelXp}
+        />
       </div>
 
       {/* Actions */}
       <div className="flex gap-3 order-3">
         <InlineActionButtons
-          isEditing={isEditing}
-          onSave={onSave}
-          onCancel={onCancel}
-          onEdit={onEdit}
+          isEditing={props.isEditing}
+          onSave={props.onSave}
+          onCancel={props.onCancel}
+          onEdit={props.onEdit}
         />
       </div>
     </div>
