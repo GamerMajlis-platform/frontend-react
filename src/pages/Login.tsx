@@ -21,15 +21,17 @@ export default function Login() {
     submit,
     setError,
   } = useFormValidation<LoginFormData>(
-    { email: "", password: "", general: "" },
+    { identifier: "", password: "", general: "" },
     {
-      email: commonValidationRules.email,
+      identifier: commonValidationRules.email, // Accept email format for now
       password: commonValidationRules.password,
     }
   );
 
   const isFormValid =
-    isValid && formData.email.trim() !== "" && formData.password.trim() !== "";
+    isValid &&
+    formData.identifier.trim() !== "" &&
+    formData.password.trim() !== "";
   const isSubmitDisabled = isSubmitting || !isFormValid;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,7 +46,7 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const success = await submit(async () => {
-      await login(formData.email, formData.password);
+      await login(formData.identifier, formData.password);
       window.location.hash = "#home";
     });
     if (!success) {
@@ -76,14 +78,14 @@ export default function Login() {
           )}
 
           <InputField
-            name="email"
+            name="identifier"
             type="email"
-            value={formData.email}
-            label={t("auth.email")}
-            error={touched.email ? errors.email : undefined}
+            value={formData.identifier}
+            label={t("auth.emailOrUsername")}
+            error={touched.identifier ? errors.identifier : undefined}
             disabled={isSubmitting}
             onChange={handleInputChange}
-            onBlur={() => handleInputBlur("email")}
+            onBlur={() => handleInputBlur("identifier")}
             required
           />
 

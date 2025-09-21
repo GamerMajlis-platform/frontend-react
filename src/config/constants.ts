@@ -48,7 +48,7 @@ export const STORAGE_KEYS = {
 
 // ===== API CONFIGURATION =====
 export const API_CONFIG = {
-  baseUrl: import.meta.env.VITE_API_BASE_URL || "/api",
+  baseUrl: import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api",
   timeout: 10000,
   retryAttempts: 3,
   retryDelay: 1000,
@@ -58,21 +58,25 @@ export const API_ENDPOINTS = {
   // Auth endpoints
   auth: {
     login: "/auth/login",
-    register: "/auth/register",
+    signup: "/auth/signup",
     logout: "/auth/logout",
-    refresh: "/auth/refresh",
-    discord: "/auth/discord",
-    verify: "/auth/verify",
+    me: "/auth/me",
+    validateToken: "/auth/validate-token",
+    verifyEmail: "/auth/verify-email",
+    resendVerification: "/auth/resend-verification",
   },
 
-  // User endpoints
-  user: {
-    profile: "/user/profile",
-    settings: "/user/settings",
-    avatar: "/user/avatar",
+  // Profile endpoints
+  profile: {
+    me: "/profile/me",
+    byId: "/profile", // append /{userId}
+    update: "/profile/me", // PUT request
+    uploadPicture: "/profile/me/profile-picture",
+    removePicture: "/profile/me/profile-picture",
+    updateStats: "/profile/me/gaming-stats",
   },
 
-  // Data endpoints
+  // Data endpoints (to be updated later)
   products: "/products",
   tournaments: "/tournaments",
   events: "/events",
@@ -265,23 +269,9 @@ export const DEFAULTS = {
   // User settings defaults
   settings: {
     language: "en",
-    notifications: {
-      email: true,
-      push: true,
-      tournaments: true,
-      messages: true,
-      marketing: false,
-    },
     privacy: {
       profileVisibility: "public" as const,
       showOnlineStatus: true,
-      allowDirectMessages: true,
-      showGameStats: true,
-    },
-    display: {
-      compactMode: false,
-      animationsEnabled: true,
-      autoPlayVideos: false,
     },
   },
 } as const;

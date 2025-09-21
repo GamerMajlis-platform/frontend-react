@@ -21,6 +21,7 @@ const Messages = lazy(() => import("./pages/Messages"));
 const Marketplace = lazy(() => import("./pages/Marketplace"));
 const Signup = lazy(() => import("./pages/Signup"));
 const Login = lazy(() => import("./pages/Login"));
+const EmailVerification = lazy(() => import("./pages/EmailVerification"));
 const Wishlist = lazy(() => import("./pages/Wishlist"));
 const Settings = lazy(() => import("./pages/Settings"));
 import { PreferencesBootstrap } from "./components";
@@ -34,6 +35,7 @@ type PageType =
   | "marketplace"
   | "signup"
   | "login"
+  | "verify-email"
   | "wishlist"
   | "settings";
 
@@ -41,6 +43,13 @@ function App() {
   const { i18n } = useTranslation();
   const resolvePageFromHash = (): PageType => {
     const hash = (window.location.hash || "").replace(/^#/, "").toLowerCase();
+    // Check for verify-email with query parameters
+    if (
+      window.location.pathname === "/verify-email" ||
+      hash === "verify-email"
+    ) {
+      return "verify-email";
+    }
     switch (hash) {
       case "signup":
         return "signup";
@@ -123,6 +132,8 @@ function App() {
         return <Signup />;
       case "login":
         return <Login />;
+      case "verify-email":
+        return <EmailVerification />;
       case "wishlist":
         return <Wishlist />;
       case "settings":
@@ -132,7 +143,10 @@ function App() {
     }
   };
 
-  const isAuthPage = currentPage === "signup" || currentPage === "login";
+  const isAuthPage =
+    currentPage === "signup" ||
+    currentPage === "login" ||
+    currentPage === "verify-email";
 
   return (
     <AppProvider>

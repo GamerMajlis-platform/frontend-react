@@ -1,6 +1,12 @@
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { BackgroundDecor, Card, SortBy, IconSearch } from "../components";
+import {
+  BackgroundDecor,
+  Card,
+  SortBy,
+  IconSearch,
+  CategoryButtons,
+} from "../components";
 import EmptyState from "../states/EmptyState";
 import { events, eventSortOptions, type EventSortOption } from "../data";
 import { useIsMobile, useDebounce } from "../hooks";
@@ -43,42 +49,12 @@ export default function Events() {
           </h1>
         </header>
 
-        {/* Category Filter (between label and search) */}
-        <div
-          className="mb-6 sm:mb-7 flex w-full flex-row flex-wrap items-center justify-center gap-4 sm:gap-8 lg:gap-[100px]"
-          aria-label="Event category filter"
-        >
-          <button
-            className={`h-[36px] sm:h-[40px] lg:h-[45px] rounded-[15px] sm:rounded-[18px] lg:rounded-[20px] border-none px-4 sm:px-5 lg:px-6 text-center font-medium text-[16px] sm:text-[18px] lg:text-[22px] leading-tight transition-colors ${
-              category === "upcoming"
-                ? "bg-[#6FFFE9] text-black"
-                : "bg-transparent text-white hover:bg-white/10"
-            }`}
-            onClick={() => setCategory("upcoming")}
-          >
-            {t("events.categories.upcoming")}
-          </button>
-          <button
-            className={`h-[36px] sm:h-[40px] lg:h-[45px] rounded-[15px] sm:rounded-[18px] lg:rounded-[20px] border-none px-4 sm:px-5 lg:px-6 text-center font-medium text-[16px] sm:text-[18px] lg:text-[22px] leading-tight transition-colors ${
-              category === "ongoing"
-                ? "bg-[#6FFFE9] text-black"
-                : "bg-transparent text-white hover:bg-white/10"
-            }`}
-            onClick={() => setCategory("ongoing")}
-          >
-            {t("events.categories.ongoing")}
-          </button>
-          <button
-            className={`h-[36px] sm:h-[40px] lg:h-[45px] rounded-[15px] sm:rounded-[18px] lg:rounded-[20px] border-none px-4 sm:px-5 lg:px-6 text-center font-medium text-[16px] sm:text-[18px] lg:text-[22px] leading-tight transition-colors ${
-              category === "past"
-                ? "bg-[#6FFFE9] text-black"
-                : "bg-transparent text-white hover:bg-white/10"
-            }`}
-            onClick={() => setCategory("past")}
-          >
-            {t("events.categories.past")}
-          </button>
-        </div>
+        {/* Category Filter */}
+        <CategoryButtons
+          category={category}
+          onCategoryChange={setCategory}
+          translationPrefix="events"
+        />
 
         {/* Search and Sort controls (marketplace-style) */}
         <section className="mb-12 search-section md:mb-8 relative z-10">

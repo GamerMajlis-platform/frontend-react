@@ -22,18 +22,18 @@ export default function Signup() {
     setError,
   } = useFormValidation<SignupFormData>(
     {
-      name: "",
+      displayName: "",
       email: "",
       password: "",
       confirmPassword: "",
       general: "",
     },
     {
-      name: {
+      displayName: {
         custom: (value: unknown) => {
           const stringValue = String(value || "");
           if (!stringValue || stringValue.trim().length < 2) {
-            return "Name must be at least 2 characters";
+            return "Display name must be at least 2 characters";
           }
           return undefined;
         },
@@ -54,7 +54,7 @@ export default function Signup() {
 
   const isFormValid =
     isValid &&
-    formData.name.trim() !== "" &&
+    formData.displayName.trim() !== "" &&
     formData.email.trim() !== "" &&
     formData.password.trim() !== "" &&
     formData.confirmPassword.trim() !== "";
@@ -73,8 +73,14 @@ export default function Signup() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const success = await submit(async () => {
-      await register(formData.name, formData.email, formData.password);
-      window.location.hash = "#home";
+      const message = await register(
+        formData.displayName,
+        formData.email,
+        formData.password
+      );
+      // Show success message and redirect to login instead of home
+      alert(message); // TODO: Replace with proper notification system
+      window.location.hash = "#login";
     });
     if (!success) {
       setError("general", "Signup failed. Please try again.");
@@ -105,14 +111,14 @@ export default function Signup() {
           )}
 
           <InputField
-            name="name"
+            name="displayName"
             type="text"
-            value={formData.name}
-            label={t("auth.fullName")}
-            error={touched.name ? errors.name : undefined}
+            value={formData.displayName}
+            label={t("auth.displayName")}
+            error={touched.displayName ? errors.displayName : undefined}
             disabled={isSubmitting}
             onChange={handleInputChange}
-            onBlur={() => handleInputBlur("name")}
+            onBlur={() => handleInputBlur("displayName")}
             required
           />
 

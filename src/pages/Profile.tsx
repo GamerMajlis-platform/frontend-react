@@ -1,10 +1,12 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useAppContext } from "../context/useAppContext";
+import { useProfile } from "../hooks/useProfile";
 import PreferencesList from "../components/profile/PreferencesList";
 import StatsList from "../components/profile/StatsList";
 import TabBar from "../components/profile/TabBar";
 import AboutSection from "../components/profile/AboutSection";
-import ProfileHeader from "../components/profile/ProfileHeader";
+import BackendProfileHeader from "../components/profile/BackendProfileHeader";
 import {
   type StatItem,
   type ProfileData,
@@ -17,22 +19,73 @@ type TabKey = "about" | "preferences" | "stats";
 
 export default function Profile() {
   const { t, i18n } = useTranslation();
+  const { user } = useAppContext();
+  const { updateProfile, clearError } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>("about");
+  const [editData, setEditData] = useState({
+    displayName: "",
+    bio: "",
+  });
 
   const isRTL = i18n.language === "ar";
 
+  // Initialize edit data when user data is available
+  useEffect(() => {
+    if (user) {
+      setEditData({
+        displayName: user.displayName || "",
+        bio: user.bio || "",
+      });
+    }
+  }, [user]);
+
+  // Legacy profile data for preferences and stats (TODO: integrate with backend)
   const [profileData, setProfileData] = useState<ProfileData>(
     getInitialProfileData
   );
 
-  const startEditing = useCallback(() => setIsEditing(true), []);
-  const cancelEditing = useCallback(() => setIsEditing(false), []);
-  const saveEditing = useCallback(() => setIsEditing(false), []);
+  const startEditing = useCallback(() => {
+    if (user) {
+      setEditData({
+        displayName: user.displayName || "",
+        bio: user.bio || "",
+      });
+    }
+    setIsEditing(true);
+    clearError();
+  }, [user, clearError]);
 
-  const handleInputChange = useCallback((field: string, value: string) => {
-    setProfileData((prev) => ({ ...prev, [field]: value }));
-  }, []);
+  const cancelEditing = useCallback(() => {
+    if (user) {
+      setEditData({
+        displayName: user.displayName || "",
+        bio: user.bio || "",
+      });
+    }
+    setIsEditing(false);
+    clearError();
+  }, [user, clearError]);
+
+  const saveEditing = useCallback(async () => {
+    try {
+      await updateProfile({
+        displayName: editData.displayName,
+        bio: editData.bio,
+      });
+      setIsEditing(false);
+    } catch (err) {
+      console.error("Failed to save profile:", err);
+      // Error will be shown by the useProfile hook
+    }
+  }, [updateProfile, editData]);
+
+  const handleInputChange = useCallback(
+    (field: "displayName" | "bio", value: string) => {
+      setEditData((prev) => ({ ...prev, [field]: value }));
+    },
+    []
+  );
 
   // Preferences handlers
   const addPreference = useCallback(() => {
@@ -77,7 +130,7 @@ export default function Profile() {
     }));
   }, []);
 
-  // Avatar handled inside ProfileHeader component
+  // Avatar handled inside BackendProfileHeader component
 
   // Name, level and bio are handled in subcomponents
 
@@ -98,14 +151,9 @@ export default function Profile() {
           <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl" />
 
           <div className="relative p-4 sm:p-6 lg:p-12">
-            <ProfileHeader
+            <BackendProfileHeader
               isEditing={isEditing}
               isRTL={isRTL}
-              displayName={profileData.displayName}
-              discordName={profileData.discordName}
-              level={profileData.level}
-              xp={profileData.xp}
-              nextLevelXp={profileData.nextLevelXp}
               onChange={(field, value) => handleInputChange(field, value)}
               onSave={saveEditing}
               onCancel={cancelEditing}

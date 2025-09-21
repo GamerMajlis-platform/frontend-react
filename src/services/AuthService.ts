@@ -1,20 +1,14 @@
 // Authentication Service - Handles all API communication
-export interface User {
-  id: string;
-  displayName: string;
-  email: string;
-}
-
-export interface AuthResponse {
-  token: string;
-  user: User;
-}
-
-export interface AuthError {
-  error: string;
-}
-
-import { apiFetch, ApiError } from "../lib/api";
+import { apiFetch, ApiError, createFormData } from "../lib/api";
+import { API_ENDPOINTS } from "../config/constants";
+import type {
+  User,
+  LoginResponse,
+  SignupResponse,
+  ProfileResponse,
+  TokenValidationResponse,
+  BackendResponse,
+} from "../types/auth";
 
 export class AuthService {
   /**
@@ -24,14 +18,20 @@ export class AuthService {
     displayName: string,
     email: string,
     password: string
-  ): Promise<AuthResponse> {
+  ): Promise<SignupResponse> {
     try {
-      const data = await apiFetch<AuthResponse>("/auth/register", {
-        method: "POST",
-        body: JSON.stringify({ displayName, email, password }),
+      const formData = createFormData({
+        displayName,
+        email,
+        password,
       });
 
-      this.storeAuthData(data);
+      const data = await apiFetch<SignupResponse>(API_ENDPOINTS.auth.signup, {
+        method: "POST",
+        body: formData,
+        useFormData: true,
+      });
+
       return data;
     } catch (err) {
       if (err instanceof ApiError) {
@@ -52,20 +52,32 @@ export class AuthService {
   /**
    * Login user
    */
-  static async login(email: string, password: string): Promise<AuthResponse> {
+  static async login(
+    identifier: string,
+    password: string
+  ): Promise<LoginResponse> {
     try {
-      const data = await apiFetch<AuthResponse>("/auth/login", {
-        method: "POST",
-        body: JSON.stringify({ email, password }),
+      const formData = createFormData({
+        identifier, // Can be email or displayName
+        password,
       });
 
-      this.storeAuthData(data);
+      const data = await apiFetch<LoginResponse>(API_ENDPOINTS.auth.login, {
+        method: "POST",
+        body: formData,
+        useFormData: true,
+      });
+
+      if (data.success && data.token && data.user) {
+        this.storeAuthData(data);
+      }
+
       return data;
     } catch (err) {
       if (err instanceof ApiError) {
         let errorMessage = "Login failed";
         if (err.status === 401) {
-          errorMessage = "Invalid email or password";
+          errorMessage = "Invalid email/username or password";
         } else if (err.status && err.status >= 500) {
           errorMessage = "Server error. Please try again later.";
         } else if (err.message) {
@@ -83,7 +95,9 @@ export class AuthService {
   static async logout(): Promise<void> {
     try {
       // Call backend logout endpoint
-      await apiFetch("/auth/logout", { method: "POST" });
+      await apiFetch<BackendResponse>(API_ENDPOINTS.auth.logout, {
+        method: "POST",
+      });
     } catch (error) {
       // Continue with local logout even if backend call fails
       console.warn("Backend logout failed:", error);
@@ -94,9 +108,47 @@ export class AuthService {
   }
 
   /**
+   * Get current user from backend
+   */
+  static async getCurrentUser(): Promise<User> {
+    try {
+      const data = await apiFetch<ProfileResponse>(API_ENDPOINTS.auth.me);
+      if (data.success && data.user) {
+        return data.user;
+      }
+      throw new Error("Failed to get user data");
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 401) {
+        this.clearAuthData();
+        throw new Error("Session expired. Please login again.");
+      }
+      throw err;
+    }
+  }
+
+  /**
+   * Validate current token
+   */
+  static async validateToken(): Promise<boolean> {
+    try {
+      const token = this.getStoredToken();
+      if (!token) return false;
+
+      const data = await apiFetch<TokenValidationResponse>(
+        API_ENDPOINTS.auth.validateToken
+      );
+      return data.valid;
+    } catch (err) {
+      console.warn("Token validation failed:", err);
+      this.clearAuthData();
+      return false;
+    }
+  }
+
+  /**
    * Store authentication data in localStorage
    */
-  private static storeAuthData(data: AuthResponse): void {
+  private static storeAuthData(data: LoginResponse): void {
     localStorage.setItem("authToken", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
   }
@@ -140,7 +192,7 @@ export class AuthService {
   }
 
   /**
-   * Make authenticated API requests
+   * Make authenticated API requests (deprecated - use apiFetch instead)
    */
   static async authenticatedFetch(
     url: string,
@@ -160,7 +212,10 @@ export class AuthService {
     // Handle token expiration
     if (response.status === 401) {
       this.clearAuthData();
-      window.location.hash = "#login";
+      // Redirect to login using a safe method instead of hash manipulation
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("auth-redirect-login"));
+      }
       throw new Error("Session expired. Please login again.");
     }
 
