@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useClickOutside } from "../../hooks/useClickOutside";
 
 interface ChatBotProps {
   className?: string;
@@ -7,7 +8,6 @@ interface ChatBotProps {
 
 export default function ChatBot({ className = "" }: ChatBotProps) {
   const { t, i18n } = useTranslation();
-  const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [messages, setMessages] = useState<
@@ -26,32 +26,12 @@ export default function ChatBot({ className = "" }: ChatBotProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Robust RTL detection: handle locales like 'ar', 'ar-SA', any rtl direction returned by i18n.dir(),
-  // and the document/html dir or lang attributes in case the app sets them elsewhere.
-  const htmlDir =
-    typeof document !== "undefined" ? document.documentElement?.dir : undefined;
-  const htmlLang =
-    typeof document !== "undefined"
-      ? document.documentElement?.lang
-      : undefined;
-  // resolvedLanguage is present on some i18n instances (e.g. react-i18next)
-  const maybeResolvedLang = (i18n as unknown as { resolvedLanguage?: string })
-    .resolvedLanguage;
-  const resolvedLang = maybeResolvedLang || i18n.language;
+  // Modern infrastructure - useClickOutside hook replaces manual state management
+  const [isOpen, setIsOpen] = useState(false);
+  const chatRef = useClickOutside<HTMLDivElement>(() => setIsOpen(false));
 
-  const hasDirFunc =
-    typeof (i18n as unknown as { dir?: unknown }).dir === "function";
-  const i18nDirIsRtl =
-    hasDirFunc && (i18n as unknown as { dir: () => string }).dir() === "rtl";
-
-  const isRTL = Boolean(
-    (resolvedLang &&
-      typeof resolvedLang === "string" &&
-      resolvedLang.startsWith("ar")) ||
-      i18nDirIsRtl ||
-      (htmlDir && htmlDir.toLowerCase() === "rtl") ||
-      (htmlLang && htmlLang.toLowerCase().startsWith("ar"))
-  );
+  // Simplified RTL detection using i18n.language
+  const isRTL = i18n.language.startsWith("ar");
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -133,6 +113,7 @@ export default function ChatBot({ className = "" }: ChatBotProps) {
         <div
           className="absolute bottom-16 right-0 w-80 sm:w-96 md:w-[28rem] max-h-[32rem] bg-gradient-to-b from-slate-800/98 via-slate-700/98 to-slate-800/98 backdrop-blur-2xl rounded-3xl border border-slate-600/40 shadow-2xl overflow-hidden"
           dir={isRTL ? "rtl" : "ltr"}
+          ref={chatRef}
         >
           {/* Decorative header elements */}
           <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-transparent to-cyan-300/8 pointer-events-none" />

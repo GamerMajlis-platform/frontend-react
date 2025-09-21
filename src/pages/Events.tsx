@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { BackgroundDecor, Card, SortBy, IconSearch } from "../components";
 import EmptyState from "../states/EmptyState";
 import { events, eventSortOptions, type EventSortOption } from "../data";
-import useIsMobile from "../hooks/useIsMobile";
+import { useIsMobile, useDebounce } from "../hooks";
 
 export default function Events() {
   const { i18n, t } = useTranslation();
@@ -11,6 +11,7 @@ export default function Events() {
   const searchRef = useRef<HTMLInputElement>(null);
   // Search / Sort state
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const [sortBy, setSortBy] = useState<EventSortOption>("date-soonest");
   // SortBy handles dropdown state and outside clicks
 
@@ -136,7 +137,7 @@ export default function Events() {
               [e.name, e.organizer, e.location]
                 .join(" ")
                 .toLowerCase()
-                .includes(searchTerm.toLowerCase())
+                .includes(debouncedSearchTerm.toLowerCase())
             )
             .sort((a, b) => {
               const collator = new Intl.Collator(
@@ -189,7 +190,7 @@ export default function Events() {
                   [e.name, e.organizer, e.location]
                     .join(" ")
                     .toLowerCase()
-                    .includes(searchTerm.toLowerCase())
+                    .includes(debouncedSearchTerm.toLowerCase())
                 ).length === 0
                 ? [
                     <div key="empty" className="col-span-full w-full max-w-2xl">

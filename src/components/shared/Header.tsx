@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher, ProfileDropdown } from "../index";
 import { useAppContext } from "../../context/useAppContext";
+import { useClickOutside } from "../../hooks";
 import { navigationItems } from "../../data";
 
 interface HeaderProps {
@@ -21,7 +22,9 @@ export default function Header({
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
   const profileButtonRef = useRef<HTMLButtonElement | null>(null);
-  const profileMenuRef = useRef<HTMLDivElement | null>(null);
+  const profileMenuRef = useClickOutside<HTMLDivElement>(() =>
+    setIsProfileMenuOpen(false)
+  );
 
   // Close on Escape only (no scroll lock needed for dropdown)
   useEffect(() => {
@@ -38,26 +41,6 @@ export default function Header({
       document.removeEventListener("keydown", onKey);
     };
   }, [isMobileMenuOpen, isProfileMenuOpen]);
-
-  // Click outside to close profile dropdown
-  useEffect(() => {
-    function onClick(e: MouseEvent) {
-      const target = e.target as Node;
-      if (
-        isProfileMenuOpen &&
-        profileMenuRef.current &&
-        !profileMenuRef.current.contains(target) &&
-        profileButtonRef.current &&
-        !profileButtonRef.current.contains(target)
-      ) {
-        setIsProfileMenuOpen(false);
-      }
-    }
-    if (isProfileMenuOpen) {
-      document.addEventListener("mousedown", onClick);
-    }
-    return () => document.removeEventListener("mousedown", onClick);
-  }, [isProfileMenuOpen]);
   return (
     <header
       className={`relative isolate bg-gradient-to-r from-slate-800/90 via-slate-700/90 to-slate-800/90 backdrop-blur-xl border-b border-slate-600/50 shadow-xl ${

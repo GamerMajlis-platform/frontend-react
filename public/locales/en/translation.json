@@ -18,6 +18,8 @@
   "auth": {
     "signup": "Sign Up",
     "login": "Log In",
+    "createAccount": "Create your account",
+    "fullName": "Full Name",
     "email": "Email",
     "password": "Password",
     "or": "or",

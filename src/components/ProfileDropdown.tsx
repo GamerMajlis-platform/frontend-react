@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useAppContext } from "../context/useAppContext";
 import { useTranslation } from "react-i18next";
+import { useClickOutside } from "../hooks";
 
 interface ProfileDropdownProps {
   onSectionChange?: (section: string) => void;
@@ -12,7 +13,7 @@ export default function ProfileDropdown({
   userInfo,
 }: ProfileDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useClickOutside<HTMLDivElement>(() => setIsOpen(false));
   const { wishlist, logout, user } = useAppContext();
 
   const displayUser = user
@@ -28,18 +29,6 @@ export default function ProfileDropdown({
     }
     window.location.hash = "#home";
   };
-
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
-      )
-        setIsOpen(false);
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
 
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language && i18n.language.startsWith("ar");

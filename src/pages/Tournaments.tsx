@@ -7,7 +7,7 @@ import {
   tournamentSortOptions,
   type TournamentSortOption,
 } from "../data";
-import useIsMobile from "../hooks/useIsMobile";
+import { useIsMobile, useDebounce } from "../hooks";
 
 export default function Tournaments() {
   const { t, i18n } = useTranslation();
@@ -29,6 +29,7 @@ export default function Tournaments() {
 
   // Search / Sort state
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const [sortBy, setSortBy] = useState<TournamentSortOption>("date-soonest");
 
   // Category filter state
@@ -166,7 +167,7 @@ export default function Tournaments() {
               [t.game, t.organizer]
                 .join(" ")
                 .toLowerCase()
-                .includes(searchTerm.toLowerCase())
+                .includes(debouncedSearchTerm.toLowerCase())
             )
             .sort((a, b) => {
               const collator = new Intl.Collator(
@@ -220,7 +221,7 @@ export default function Tournaments() {
                   [t.game, t.organizer]
                     .join(" ")
                     .toLowerCase()
-                    .includes(searchTerm.toLowerCase())
+                    .includes(debouncedSearchTerm.toLowerCase())
                 ).length === 0
                 ? [
                     <div key="empty" className="col-span-full w-full max-w-2xl">

@@ -18,6 +18,8 @@
   "auth": {
     "signup": "إنشاء حساب",
     "login": "تسجيل الدخول",
+    "createAccount": "إنشاء حسابك",
+    "fullName": "الاسم الكامل",
     "email": "البريد الإلكتروني",
     "password": "كلمة المرور",
     "confirmPassword": "تأكيد كلمة المرور",

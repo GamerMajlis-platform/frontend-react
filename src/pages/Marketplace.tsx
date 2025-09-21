@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Card, BackgroundDecor, SortBy, IconSearch } from "../components";
 import EmptyState from "../states/EmptyState";
 import { productData, sortOptions, type SortOption } from "../data";
-import useIsMobile from "../hooks/useIsMobile";
+import { useIsMobile, useDebounce } from "../hooks";
 
 // Utility function to detect RTL text
 const isRTLText = (text: string): boolean => {
@@ -15,6 +15,7 @@ export default function Marketplace() {
   const isMobile = useIsMobile();
   const searchRef = useRef<HTMLInputElement>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const [sortBy, setSortBy] = useState<SortOption>("name");
   const [selectedCategory, setSelectedCategory] = useState<string>("All Items");
 
@@ -41,9 +42,15 @@ export default function Marketplace() {
   const sortedAndFilteredProducts = productData
     .filter(
       (product) =>
-        product.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.seller.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.category.toLowerCase().includes(searchTerm.toLowerCase())
+        product.productName
+          .toLowerCase()
+          .includes(debouncedSearchTerm.toLowerCase()) ||
+        product.seller
+          .toLowerCase()
+          .includes(debouncedSearchTerm.toLowerCase()) ||
+        product.category
+          .toLowerCase()
+          .includes(debouncedSearchTerm.toLowerCase())
     )
     .filter((product) => {
       if (selectedCategory === "All Items") return true;

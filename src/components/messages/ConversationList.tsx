@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useDebounce } from "../../hooks/useDebounce";
 
 type Conversation = {
   id: string;
@@ -21,17 +22,18 @@ export default function ConversationList({
   onSelect,
 }: Props) {
   const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounce(query, 300);
   const { t } = useTranslation();
 
   const filtered = useMemo(() => {
-    if (!query) return conversations;
+    if (!debouncedQuery) return conversations;
     return conversations.filter((c) =>
       [c.name, c.lastMessage]
         .join(" ")
         .toLowerCase()
-        .includes(query.toLowerCase())
+        .includes(debouncedQuery.toLowerCase())
     );
-  }, [conversations, query]);
+  }, [conversations, debouncedQuery]);
 
   return (
     <aside className="w-full max-w-[360px] border-r border-slate-700 pr-3 md:pr-6 hidden md:block">

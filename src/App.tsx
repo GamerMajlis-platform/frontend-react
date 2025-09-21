@@ -1,10 +1,15 @@
-import { useState, useEffect, lazy, Suspense } from "react";
+import { useState, useEffect, lazy } from "react";
 import { useTranslation } from "react-i18next";
 import { AppProvider } from "./context/AppContext";
 import "./App.css";
 
 // Components
 import { Header, Footer } from "./components";
+import {
+  ErrorBoundary,
+  MultipleSuspense,
+  DefaultLoader,
+} from "./components/shared";
 const ChatBot = lazy(() => import("./components/shared/ChatBot"));
 
 // Pages
@@ -134,36 +139,46 @@ function App() {
       <PreferencesBootstrap />
       <div className="w-full min-h-screen bg-slate-900 flex flex-col">
         {!isAuthPage && (
-          <Header
-            activeSection={currentPage}
-            onSectionChange={(section) => setCurrentPage(section as PageType)}
-          />
-        )}
-
-        <div className="flex-1">
-          <Suspense
+          <ErrorBoundary
             fallback={
-              <div className="w-full h-full flex items-center justify-center text-white/70">
-                Loading...
+              <div className="h-16 bg-slate-800 text-white text-center p-4">
+                Header error
               </div>
             }
           >
-            {!i18nReady ? (
-              <div className="w-full h-full flex items-center justify-center text-white/70">
-                Loading translations...
-              </div>
-            ) : (
-              renderPage()
-            )}
-          </Suspense>
+            <Header
+              activeSection={currentPage}
+              onSectionChange={(section) => setCurrentPage(section as PageType)}
+            />
+          </ErrorBoundary>
+        )}
+
+        <div className="flex-1">
+          <ErrorBoundary>
+            <MultipleSuspense level="page">
+              {!i18nReady ? <DefaultLoader /> : renderPage()}
+            </MultipleSuspense>
+          </ErrorBoundary>
         </div>
 
-        {!isAuthPage && <Footer />}
+        {!isAuthPage && (
+          <ErrorBoundary
+            fallback={
+              <div className="h-16 bg-slate-800 text-white text-center p-4">
+                Footer error
+              </div>
+            }
+          >
+            <Footer />
+          </ErrorBoundary>
+        )}
 
         {/* Global ChatBot - appears on all pages */}
-        <Suspense fallback={null}>
-          <ChatBot />
-        </Suspense>
+        <ErrorBoundary fallback={null}>
+          <MultipleSuspense level="component">
+            <ChatBot />
+          </MultipleSuspense>
+        </ErrorBoundary>
       </div>
     </AppProvider>
   );

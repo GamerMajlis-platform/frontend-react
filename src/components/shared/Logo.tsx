@@ -21,9 +21,9 @@ function Logo({ size = "medium", showText = true, className = "" }: LogoProps) {
     large: "h-12",
   } as const;
 
+  const { t } = useTranslation();
   const [bannerError, setBannerError] = useState(false);
   const [iconError, setIconError] = useState(false);
-  const { t } = useTranslation();
 
   // When showText is true, render the full banner; otherwise render just the controller icon
   if (showText) {

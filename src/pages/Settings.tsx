@@ -2,7 +2,8 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { Dropdown, SettingRow, ToggleButton } from "../components/settings";
 import { useAppContext } from "../context/useAppContext";
-import usePreferences from "../hooks/usePreferences";
+import { usePreferences } from "../hooks";
+import { useClickOutside } from "../hooks/useClickOutside";
 
 interface UserSettings {
   notifications: {
@@ -18,7 +19,6 @@ interface UserSettings {
   };
   preferences: {
     language: string;
-    theme: "dark" | "light" | "auto";
     currency: string;
   };
 }
@@ -28,6 +28,11 @@ export default function Settings() {
   const { settings, updateSetting } = useAppContext();
   const { setLanguage } = usePreferences();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+
+  // Close dropdowns when clicking outside
+  const settingsRef = useClickOutside<HTMLDivElement>(() =>
+    setOpenDropdown(null)
+  );
 
   // RTL detection - improved (based on i18n language)
   const isRTL = ["ar", "fa", "he", "ur"].includes(
@@ -107,7 +112,6 @@ export default function Settings() {
         label: t("settings.sections.preferences.language_options.ar"),
       },
     ],
-    // theme removed (dark-only app)
     currency: [
       { value: "USD", label: "USD ($)" },
       { value: "EUR", label: "EUR (€)" },
@@ -118,7 +122,10 @@ export default function Settings() {
   // Components moved to shared
 
   return (
-    <main className="w-full max-w-6xl mx-auto px-4 sm:px-6 pt-6 pb-6 min-h-[calc(100vh-88px)]">
+    <main
+      className="w-full max-w-6xl mx-auto px-4 sm:px-6 pt-6 pb-6 min-h-[calc(100vh-88px)]"
+      ref={settingsRef}
+    >
       <div className="grid gap-6 lg:gap-8">
         {/* Header */}
         <header className="grid gap-3">
@@ -256,8 +263,6 @@ export default function Settings() {
                     onToggle={toggleDropdown}
                   />
                 </SettingRow>
-
-                {/* Theme selection removed: app is dark-only */}
 
                 <SettingRow
                   label={t("settings.sections.preferences.currency")}

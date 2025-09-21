@@ -1,5 +1,6 @@
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useClickOutside } from "../../hooks";
 
 export type SortOptionItem = {
   value: string;
@@ -20,16 +21,7 @@ function SortBy(props: SortByProps) {
   const className = props.className || "";
   const { i18n, t } = useTranslation();
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const onDoc = (ev: MouseEvent) => {
-      if (!ref.current) return;
-      if (!ref.current.contains(ev.target as Node)) setOpen(false);
-    };
-    document.addEventListener("mousedown", onDoc);
-    return () => document.removeEventListener("mousedown", onDoc);
-  }, []);
+  const ref = useClickOutside<HTMLDivElement>(() => setOpen(false));
 
   const isRTL = i18n.language && i18n.language.startsWith("ar");
 

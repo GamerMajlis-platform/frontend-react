@@ -6,6 +6,7 @@ import {
   useState,
 } from "react";
 import { AuthService, type User } from "../services/AuthService";
+import { useLocalStorage } from "../hooks";
 
 export interface Product {
   id: number;
@@ -36,7 +37,6 @@ export interface UserSettings {
   };
   preferences: {
     language: string;
-    theme: "dark" | "light" | "auto";
     currency: string;
   };
 }
@@ -73,9 +73,6 @@ const AppContext = createContext<AppContextShape | undefined>(undefined);
 
 export { AppContext };
 
-const LS_WISHLIST = "gm_wishlist";
-const LS_SETTINGS = "gm_settings";
-
 const defaultSettings: UserSettings = {
   notifications: {
     email: true,
@@ -88,30 +85,18 @@ const defaultSettings: UserSettings = {
     showOnlineStatus: true,
     showGameActivity: true,
   },
-  preferences: { language: "en", theme: "dark", currency: "USD" },
+  preferences: { language: "en", currency: "USD" },
 };
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
-  const [settings, setSettings] = useState<UserSettings>(() => {
-    try {
-      const raw = localStorage.getItem(LS_SETTINGS);
-      if (raw) {
-        const parsed = JSON.parse(raw) as UserSettings;
-        // Basic validation
-        if (
-          parsed &&
-          parsed.preferences &&
-          typeof parsed.preferences.language === "string"
-        ) {
-          return parsed;
-        }
-      }
-    } catch {
-      // ignore parse errors
-    }
-    return defaultSettings;
-  });
+  const [wishlist, setWishlist] = useLocalStorage<WishlistItem[]>(
+    "wishlist",
+    []
+  );
+  const [settings, setSettings] = useLocalStorage<UserSettings>(
+    "settings",
+    defaultSettings
+  );
 
   // Authentication state
   const [user, setUser] = useState<User | null>(null);
@@ -119,13 +104,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   // Load from localStorage
   useEffect(() => {
-    try {
-      const w = localStorage.getItem(LS_WISHLIST);
-      if (w) setWishlist(JSON.parse(w));
-    } catch {
-      // ignore localStorage errors
-    }
-
     // Initialize authentication state from localStorage
     try {
       const storedUser = AuthService.getStoredUser();
@@ -139,52 +117,46 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Persist to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem(LS_WISHLIST, JSON.stringify(wishlist));
-    } catch {
-      // ignore persistence errors
-    }
-  }, [wishlist]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(LS_SETTINGS, JSON.stringify(settings));
-    } catch {
-      // ignore persistence errors
-    }
-  }, [settings]);
-
   // Wishlist functions
   const isInWishlist = useCallback(
-    (id: number) => wishlist.some((w) => w.id === id),
+    (id: number) => wishlist.some((w: WishlistItem) => w.id === id),
     [wishlist]
   );
 
-  const addToWishlist = useCallback((item: Product) => {
-    setWishlist((prev) =>
-      prev.some((w) => w.id === item.id)
-        ? prev
-        : [{ ...item, dateAdded: new Date().toISOString() }, ...prev]
-    );
-  }, []);
+  const addToWishlist = useCallback(
+    (item: Product) => {
+      setWishlist((prev: WishlistItem[]) =>
+        prev.some((w: WishlistItem) => w.id === item.id)
+          ? prev
+          : [{ ...item, dateAdded: new Date().toISOString() }, ...prev]
+      );
+    },
+    [setWishlist]
+  );
 
-  const removeFromWishlist = useCallback((id: number) => {
-    setWishlist((prev) => prev.filter((w) => w.id !== id));
-  }, []);
+  const removeFromWishlist = useCallback(
+    (id: number) => {
+      setWishlist((prev: WishlistItem[]) =>
+        prev.filter((w: WishlistItem) => w.id !== id)
+      );
+    },
+    [setWishlist]
+  );
 
-  const toggleWishlist = useCallback((item: Product) => {
-    setWishlist((prev) => {
-      const exists = prev.some((w) => w.id === item.id);
-      if (exists) return prev.filter((w) => w.id !== item.id);
-      return [{ ...item, dateAdded: new Date().toISOString() }, ...prev];
-    });
-  }, []);
+  const toggleWishlist = useCallback(
+    (item: Product) => {
+      setWishlist((prev: WishlistItem[]) => {
+        const exists = prev.some((w: WishlistItem) => w.id === item.id);
+        if (exists) return prev.filter((w: WishlistItem) => w.id !== item.id);
+        return [{ ...item, dateAdded: new Date().toISOString() }, ...prev];
+      });
+    },
+    [setWishlist]
+  );
 
   const updateSetting: AppContextShape["updateSetting"] = useCallback(
     (category, key, value) => {
-      setSettings((prev) => ({
+      setSettings((prev: UserSettings) => ({
         ...prev,
         [category]: {
           ...prev[category],
@@ -192,7 +164,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         },
       }));
     },
-    []
+    [setSettings]
   );
 
   // Authentication functions
