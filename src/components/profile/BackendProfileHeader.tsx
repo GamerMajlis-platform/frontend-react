@@ -2,6 +2,8 @@ import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../../context/useAppContext";
 import { useProfile } from "../../hooks/useProfile";
+import { DiscordUserInfo } from "../discord/DiscordUserInfo";
+import { DiscordLinkButton } from "../discord/DiscordLinkButton";
 
 interface BackendProfileHeaderProps {
   isEditing: boolean;
@@ -86,7 +88,11 @@ export default function BackendProfileHeader(props: BackendProfileHeaderProps) {
   const profileImageUrl = avatarUrl || user.profilePictureUrl || null;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr_auto] gap-6 lg:gap-8 items-center justify-items-center lg:justify-items-start">
+    <div
+      className={`grid grid-cols-1 lg:grid-cols-[auto_1fr_auto] gap-6 lg:gap-8 items-center justify-items-center ${
+        props.isRTL ? "lg:justify-items-end" : "lg:justify-items-start"
+      }`}
+    >
       {/* Avatar */}
       <div className="relative order-1">
         <BackendAvatarPicker
@@ -101,7 +107,11 @@ export default function BackendProfileHeader(props: BackendProfileHeaderProps) {
       </div>
 
       {/* Name & User Info */}
-      <div className="space-y-4 order-2 text-center lg:text-left w-full">
+      <div
+        className={`space-y-4 order-2 w-full text-center ${
+          props.isRTL ? "lg:text-right" : "lg:text-left"
+        }`}
+      >
         {props.isEditing ? (
           <>
             <input
@@ -123,42 +133,53 @@ export default function BackendProfileHeader(props: BackendProfileHeaderProps) {
           </>
         ) : (
           <>
-            <h1 className="text-xl sm:text-2xl font-semibold text-white">
+            <h1
+              className="text-xl sm:text-2xl font-semibold text-white"
+              dir={props.isRTL ? "rtl" : "ltr"}
+            >
               {displayName}
             </h1>
-            {user.bio && <p className="text-slate-300 text-sm">{user.bio}</p>}
+            {user.bio && (
+              <p
+                className="text-slate-300 text-sm"
+                dir={props.isRTL ? "rtl" : "ltr"}
+              >
+                {user.bio}
+              </p>
+            )}
           </>
         )}
 
-        {user.discordUsername && (
-          <p className="text-slate-400 text-sm">
-            Discord: {user.discordUsername}
-          </p>
-        )}
+        {/* Discord Integration Section */}
+        <div className="mt-4">
+          {user.discordUsername ? (
+            <DiscordUserInfo
+              className={`${
+                props.isRTL ? "lg:justify-end" : "lg:justify-start"
+              } justify-center`}
+            />
+          ) : (
+            <div
+              className={`flex items-center gap-2 ${
+                props.isRTL ? "lg:justify-end" : "lg:justify-start"
+              } justify-center`}
+            >
+              <DiscordLinkButton
+                variant="outline"
+                size="sm"
+                onLink={(discordUser) => {
+                  console.log("Discord account linked:", discordUser);
+                  // User context will be updated automatically
+                }}
+                onError={(error) => {
+                  console.error("Discord linking error:", error);
+                }}
+              />
+            </div>
+          )}
+        </div>
 
-        {user.emailVerified ? (
-          <div className="flex items-center gap-2 text-green-400 text-sm">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                clipRule="evenodd"
-              />
-            </svg>
-            {t("profile.emailVerified")}
-          </div>
-        ) : (
-          <div className="flex items-center gap-2 text-yellow-400 text-sm">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                clipRule="evenodd"
-              />
-            </svg>
-            {t("profile.emailNotVerified")}
-          </div>
-        )}
+        {/* Email verification status removed from profile display */}
       </div>
 
       {/* Action Buttons */}

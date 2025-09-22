@@ -66,6 +66,15 @@ export const API_ENDPOINTS = {
     validateToken: "/auth/validate-token",
     verifyEmail: "/auth/verify-email",
     resendVerification: "/auth/resend-verification",
+    // Discord OAuth endpoints
+    discord: {
+      login: "/auth/discord/login",
+      callback: "/auth/discord/callback",
+      link: "/auth/discord/link",
+      unlink: "/auth/discord/unlink",
+      userInfo: "/auth/discord/user-info",
+      refresh: "/auth/discord/refresh",
+    },
   },
 
   // Profile endpoints
@@ -95,6 +104,35 @@ export const API_ENDPOINTS = {
     search: "/products/search", // GET with query params
     categories: "/products/categories", // GET
     featured: "/products/featured", // GET with limit param
+  },
+
+  // Media endpoints
+  media: {
+    upload: "/media/upload", // POST
+    list: "/media", // GET with query params
+    byId: "/media", // append /{mediaId}
+    update: "/media", // append /{mediaId} - PUT
+    delete: "/media", // append /{mediaId} - DELETE
+    view: "/media", // append /{mediaId}/view - POST
+    like: "/media", // append /{mediaId}/like - POST
+    unlike: "/media", // append /{mediaId}/unlike - POST
+    search: "/media/search", // GET with query params
+    trending: "/media/trending", // GET with query params
+    categories: "/media/categories", // GET
+  },
+
+  // Post endpoints
+  posts: {
+    create: "/posts", // POST
+    list: "/posts", // GET with query params
+    byId: "/posts", // append /{postId}
+    update: "/posts", // append /{postId} - PUT
+    delete: "/posts", // append /{postId} - DELETE
+    like: "/posts", // append /{postId}/like - POST
+    unlike: "/posts", // append /{postId}/unlike - POST
+    comment: "/posts", // append /{postId}/comments - POST
+    getComments: "/posts", // append /{postId}/comments - GET
+    feed: "/posts/feed", // GET with query params
   },
 
   // Data endpoints (to be updated later)

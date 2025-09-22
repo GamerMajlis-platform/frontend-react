@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { BackgroundDecor, ProfileBrowser } from "../components";
+import { BackgroundDecor } from "../components";
 import { PostFeed, CreatePost } from "../components/posts";
 import { MediaGallery, MediaUpload } from "../components/media";
 import { useAppContext } from "../context/useAppContext";
@@ -15,7 +15,7 @@ export default function Home({ onNavigate }: HomeProps) {
   const [activeTab, setActiveTab] = useState<"posts" | "media" | "create">(
     "posts"
   );
-  const [showProfileBrowser, setShowProfileBrowser] = useState(false);
+  // profile browser moved to header for authorized users
 
   const renderAuthenticatedContent = () => {
     return (
@@ -239,27 +239,7 @@ export default function Home({ onNavigate }: HomeProps) {
           </button>
         </div>
 
-        {/* Profile Browser Demo Section */}
-        <div className="w-full max-w-4xl">
-          <button
-            onClick={() => setShowProfileBrowser(!showProfileBrowser)}
-            className="px-6 py-3 bg-slate-800/50 hover:bg-slate-800/70 text-white rounded-xl border border-slate-600/50 transition-all mb-6"
-          >
-            {showProfileBrowser ? "Hide" : "Try"} Profile Search & Discovery
-          </button>
-
-          {showProfileBrowser && (
-            <div className="bg-slate-900/50 backdrop-blur-xl rounded-2xl p-6 border border-slate-700/50">
-              <ProfileBrowser
-                onProfileSelect={(profile) => {
-                  console.log("Selected profile:", profile);
-                  // Here you could navigate to the profile page
-                  // onNavigate?.(`profile/${profile.id}`);
-                }}
-              />
-            </div>
-          )}
-        </div>
+        {/* Profile browser demo removed — profile search now lives in the header for authorized users */}
       </div>
     );
   };

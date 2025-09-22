@@ -6,6 +6,8 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
+    strictPort: true, // Fail if port 3000 is in use instead of trying another port
+    host: true,
   },
   css: {
     postcss: "./postcss.config.js",

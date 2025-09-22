@@ -66,16 +66,34 @@ function CreateProductForm({
 
     setLoading(true);
     try {
+      // Step 1: Create the product (without images)
       const payload = {
         name: formData.name,
         description: formData.description,
         price: parseFloat(formData.price),
         category: formData.category,
         condition: formData.condition,
-        images: file || undefined,
+        // Note: images are uploaded separately after product creation
       };
 
-      await ProductService.createProduct(payload);
+      const createdProduct = await ProductService.createProduct(payload);
+
+      // Step 2: Upload image if provided
+      if (file && createdProduct.id) {
+        try {
+          await ProductService.uploadProductImages(
+            createdProduct.id,
+            [file],
+            true // Set as main image
+          );
+        } catch (imageError) {
+          console.error("Failed to upload product image:", imageError);
+          // Product was created successfully, but image upload failed
+          // We'll still consider this a success but show a warning
+        }
+      }
+
+      // Reset form
       setFormData({
         name: "",
         description: "",

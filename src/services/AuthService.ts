@@ -37,9 +37,9 @@ export class AuthService {
     } catch (err) {
       if (err instanceof ApiError) {
         let errorMessage = "Registration failed";
-        if (err.status === 409) {
+        if (err.statusCode === 409) {
           errorMessage = "Email or username already exists";
-        } else if (err.status && err.status >= 500) {
+        } else if (err.statusCode && err.statusCode >= 500) {
           errorMessage = "Server error. Please try again later.";
         } else if (err.message) {
           errorMessage = err.message;
@@ -77,9 +77,9 @@ export class AuthService {
     } catch (err) {
       if (err instanceof ApiError) {
         let errorMessage = "Login failed";
-        if (err.status === 401) {
+        if (err.statusCode === 401) {
           errorMessage = "Invalid email/username or password";
-        } else if (err.status && err.status >= 500) {
+        } else if (err.statusCode && err.statusCode >= 500) {
           errorMessage = "Server error. Please try again later.";
         } else if (err.message) {
           errorMessage = err.message;
@@ -124,7 +124,7 @@ export class AuthService {
       }
       throw new Error("Failed to get user data");
     } catch (err) {
-      if (err instanceof ApiError && err.status === 401) {
+      if (err instanceof ApiError && err.statusCode === 401) {
         this.clearAuthData();
         throw new Error("Session expired. Please login again.");
       }

@@ -43,10 +43,17 @@ i18n
 
     // Backend load path (served from /public). Use BASE_URL to support subpath deployments.
     backend: {
-      loadPath: `${import.meta.env.BASE_URL}locales/{{lng}}/{{ns}}.json`,
+      loadPath: `${
+        import.meta.env.BASE_URL
+      }locales/{{lng}}/{{ns}}.json?v=${Date.now()}&nocache=${Math.random()}`,
       // Avoid aggressive caching during development so edits reflect immediately
       requestOptions: {
-        cache: import.meta.env.DEV ? "no-store" : "default",
+        cache: "no-store",
+        headers: {
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+          Pragma: "no-cache",
+          Expires: "0",
+        },
       },
     },
   });
@@ -80,6 +87,20 @@ i18n.on("languageChanged", (lng) => {
 // ensures the app-level preferences (saved by AppContext) win on refresh.
 i18n.on("initialized", () => {
   console.log("✅ i18n: Translations loaded successfully");
+  console.log("🌐 Current language:", i18n.language);
+  console.log("📚 Loaded resources:", Object.keys(i18n.store.data));
+
+  // Debug: Check if specific keys exist
+  const postsKeys = i18n.t("posts", { returnObjects: true });
+  console.log("🔍 Posts object:", postsKeys);
+  const feedKeys = i18n.t("posts.feed", { returnObjects: true });
+  console.log("🔍 Posts.feed object:", feedKeys);
+  console.log("🔍 Direct key test - noPosts:", i18n.t("posts.feed.noPosts"));
+  console.log(
+    "🔍 Direct key test - noPostsDescription:",
+    i18n.t("posts.feed.noPostsDescription")
+  );
+
   try {
     if (typeof window === "undefined") return;
     const raw = localStorage.getItem("gm_settings");

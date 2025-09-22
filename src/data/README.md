@@ -1,18 +1,8 @@
 # Data Folder
 
-This folder contains all the sample/mock data used throughout the application to keep components clean and maintainable.
+This folder contains essential static data used throughout the application.
 
 ## Files
-
-### `products.ts`
-
-Contains product data for the marketplace, including:
-
-- Product interfaces and types
-- Sample product data with images from Unsplash
-- Product categories for filtering
-- Sort options for marketplace
-- Export of `SortOption` type
 
 ### `navigation.ts`
 
@@ -37,13 +27,12 @@ Main export file that re-exports all data modules for easy importing.
 Import data from the main index file:
 
 ```typescript
-import { productData, sortOptions, navigationItems, languages } from "../data";
+import { navigationItems, languages } from "../data";
 ```
 
 Or import from specific files:
 
 ```typescript
-import { productData, type Product, type SortOption } from "../data/products";
 import { navigationItems } from "../data/navigation";
 import { languages } from "../data/languages";
 ```
@@ -51,10 +40,9 @@ import { languages } from "../data/languages";
 ## Benefits
 
 1. **Reduced Bundle Size**: Static data is separated from component code
-2. **Better Maintainability**: All sample data is centralized
+2. **Better Maintainability**: All essential data is centralized
 3. **Type Safety**: Proper TypeScript interfaces and types exported
 4. **Reusability**: Data can be easily shared between components
-5. **Easy Testing**: Mock data can be easily replaced for testing
 
 ## Adding New Data
 

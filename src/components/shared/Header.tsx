@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher, ProfileDropdown } from "../index";
+import ProfileSearch from "../profile/ProfileSearch";
 import { useAppContext } from "../../context/useAppContext";
 import { useClickOutside } from "../../hooks";
 import { navigationItems } from "../../data";
@@ -15,13 +16,17 @@ export default function Header({
   onSectionChange,
 }: HeaderProps) {
   const { t, i18n } = useTranslation();
-  const { wishlist, logout } = useAppContext();
+  const { wishlist, logout, isAuthenticated } = useAppContext();
   const SHOW_LANG = import.meta.env.VITE_SHOW_LANG_SWITCHER === "true";
   const [isMessageHovered, setIsMessageHovered] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
   const profileButtonRef = useRef<HTMLButtonElement | null>(null);
+  const searchModalRef = useClickOutside<HTMLDivElement>(() =>
+    setIsSearchOpen(false)
+  );
   const profileMenuRef = useClickOutside<HTMLDivElement>(() =>
     setIsProfileMenuOpen(false)
   );
@@ -73,6 +78,28 @@ export default function Header({
 
         {/* Mobile Controls */}
         <div className="flex items-center gap-3">
+          {/* Mobile search button: opens full-screen search modal */}
+          {isAuthenticated && (
+            <button
+              aria-label="Open profile search"
+              onClick={() => setIsSearchOpen(true)}
+              className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+            >
+              <svg
+                className="w-5 h-5 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </button>
+          )}
           {/* Profile Avatar button */}
           <button
             ref={profileButtonRef}
@@ -209,8 +236,42 @@ export default function Header({
         </div>
       )}
 
+      {/* Mobile profile search modal */}
+      {isSearchOpen && isAuthenticated && (
+        <div className="fixed inset-0 z-[10003] bg-black/40 flex items-start justify-center p-4">
+          <div
+            ref={searchModalRef}
+            className="w-full max-w-2xl mt-20 bg-slate-900/95 border border-slate-700/50 rounded-xl p-4"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-white font-semibold">
+                {t("profile.browser.title") || "Discover Gamers"}
+              </h3>
+              <button
+                aria-label="Close search"
+                onClick={() => setIsSearchOpen(false)}
+                className="text-slate-300 hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+            <ProfileSearch
+              onProfileSelect={(p) => {
+                setIsSearchOpen(false);
+                const u = p as unknown;
+                if (u && typeof u === "object") {
+                  const obj = u as { [k: string]: unknown };
+                  const id = (obj.id ?? obj.userId) as string | undefined;
+                  if (id) onSectionChange?.(`profile/${id}`);
+                }
+              }}
+            />
+          </div>
+        </div>
+      )}
+
       {/* Desktop Header */}
-      <div className="hidden md:block relative w-full h-[64px] sm:h-[72px] md:h-[88px] px-4 sm:px-6 z-10">
+      <div className="hidden md:block relative w-full h-[64px] sm:h-[72px] md:h-[88px] px-4 sm:px-6">
         {/* Left: Enhanced Logo with custom text styling */}
         <div className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10">
           <div className="flex items-center gap-3 group transform hover:scale-105 transition-transform duration-300">
@@ -251,10 +312,30 @@ export default function Header({
         </nav>
 
         {/* Desktop Controls with enhanced styling */}
-        <div className="hidden md:flex items-center gap-3 lg:gap-4 absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10">
+        <div className="hidden md:flex items-center gap-3 lg:gap-4 absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20">
           {SHOW_LANG && (
             <div className="transform hover:scale-105 transition-transform duration-200">
               <LanguageSwitcher variant="light" />
+            </div>
+          )}
+
+          {/* Profile search (desktop only) - show only for authenticated users */}
+          {isAuthenticated && (
+            <div className="relative z-[100] flex-none w-[120px] lg:w-[140px]">
+              <ProfileSearch
+                dir={i18n.dir()}
+                className="w-full"
+                onProfileSelect={(profile) => {
+                  // profile may be either a search result or suggestion; guard for id
+                  const p = profile as unknown;
+                  if (p && typeof p === "object") {
+                    const obj = p as { [k: string]: unknown };
+                    const id = (obj.id ?? obj.userId) as string | undefined;
+                    if (id) onSectionChange?.(`profile/${id}`);
+                  }
+                }}
+                compact
+              />
             </div>
           )}
 

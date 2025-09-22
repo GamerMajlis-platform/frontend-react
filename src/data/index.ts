@@ -1,7 +1,3 @@
-// Export all data modules
-export * from "./products";
+// Export all data modules (only navigation and languages are used with backend integration)
 export * from "./navigation";
 export * from "./languages";
-export * from "./tournaments";
-export * from "./events";
-export * from "./profile";

@@ -13,8 +13,18 @@ export default function LanguageSwitcher({
 }: LanguageSwitcherProps) {
   const { i18n } = useTranslation();
 
-  const changeLanguage = (langCode: string) => {
-    i18n.changeLanguage(langCode);
+  const changeLanguage = async (langCode: string) => {
+    try {
+      // Force reload the language resources
+      await i18n.reloadResources(langCode);
+      await i18n.changeLanguage(langCode);
+      // Force a hard refresh to ensure all components re-render with new translations
+      window.location.reload();
+    } catch (error) {
+      console.error("Failed to change language:", error);
+      // Fallback to simple language change
+      i18n.changeLanguage(langCode);
+    }
   };
 
   const baseLight =

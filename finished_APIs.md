@@ -426,6 +426,60 @@ Base URL (backend): `http://localhost:8080/api`
   - Wired in UI: `src/components/chat/MessageInput.tsx` and `TypingIndicator.tsx`
   - Features: Real-time typing indicators with animated display
 
+## Discord OAuth APIs
+
+- **#88 — Initiate Discord OAuth**
+
+  - Endpoint: `GET /api/auth/discord/login`
+  - Implemented in: `src/services/DiscordService.ts` → `initiateOAuth(returnUrl?: string)`
+  - Wired in UI: `src/components/discord/DiscordLoginButton.tsx` — OAuth login integration
+  - Usage: Redirects to backend OAuth endpoint which handles Discord OAuth flow
+
+- **#89 — Discord OAuth Callback**
+
+  - Endpoint: `GET /api/auth/discord/callback?code=...&state=...`
+  - Implemented in: `src/services/DiscordService.ts` → `handleOAuthCallback(code: string, state: string)`
+  - Wired in UI: `src/pages/DiscordCallback.tsx` — handles OAuth callback processing
+  - Features: State verification, JWT token handling, user session creation
+
+- **#90 — Link Discord Account**
+
+  - Endpoint: `POST /api/auth/discord/link` (form-data)
+  - Implemented in: `src/services/DiscordService.ts` → `linkAccount(code: string)`
+  - Wired in UI: `src/components/discord/DiscordLinkButton.tsx` — account linking in settings
+  - Usage: Links Discord account to existing user account
+
+- **#91 — Unlink Discord Account**
+
+  - Endpoint: `POST /api/auth/discord/unlink`
+  - Implemented in: `src/services/DiscordService.ts` → `unlinkAccount()`
+  - Wired in UI: `src/components/discord/DiscordUserInfo.tsx` — unlink option in settings
+  - Features: Removes Discord account association with confirmation
+
+- **#92 — Get Discord User Info**
+
+  - Endpoint: `GET /api/auth/discord/user-info`
+  - Implemented in: `src/services/DiscordService.ts` → `getUserInfo()`
+  - Wired in UI: `src/components/discord/DiscordUserInfo.tsx` — displays linked Discord info
+  - Features: Shows Discord username, avatar, email in profile/settings
+
+- **#93 — Refresh Discord Token**
+
+  - Endpoint: `POST /api/auth/discord/refresh`
+  - Implemented in: `src/services/DiscordService.ts` → `refreshToken()`
+  - Usage: Refreshes Discord access token for continued API access
+  - Integration: Service ready for automatic token refresh flows
+
+## WebSocket Implementation
+
+- **WebSocket Service**
+
+  - Endpoint: `ws://localhost:8080/api/ws`
+  - Implemented in: `src/services/WebSocketService.ts` — complete real-time messaging service
+  - Features: Connection management, topic subscriptions, automatic reconnection
+  - Topics: `/topic/chat/room/{roomId}`, `/topic/notifications/{userId}`, `/topic/tournament/{tournamentId}`, `/topic/typing/{roomId}`, `/user/queue/private`
+  - Wired in UI: `src/pages/Chat.tsx` — full chat interface with real-time updates
+
 - **Auth endpoints (#1..#7, #88..#93)**
   - `AuthService.ts` provides login/logout/signup helpers mapped to `APIs_guide.md`. The core login flow uses `src/services/AuthService.ts` and `src/context/AppContext.tsx` for storing tokens and session initialization. Specific endpoints used by UI: `POST /api/auth/login`, `POST /api/auth/logout`, `POST /api/auth/signup`, `GET /api/auth/me`.
 

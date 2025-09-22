@@ -170,6 +170,13 @@ export class ProfileService {
       const formData = new FormData();
       formData.append("file", file);
 
+      console.log("📤 Uploading profile picture:", {
+        fileName: file.name,
+        fileSize: file.size,
+        fileType: file.type,
+        endpoint: API_ENDPOINTS.profile.uploadPicture,
+      });
+
       const data = await apiFetch<
         BackendResponse & { profilePictureUrl: string }
       >(API_ENDPOINTS.profile.uploadPicture, {
@@ -177,6 +184,8 @@ export class ProfileService {
         body: formData,
         useFormData: true,
       });
+
+      console.log("✅ Profile picture upload response:", data);
 
       if (data.success && data.profilePictureUrl) {
         return data.profilePictureUrl;
@@ -192,12 +201,32 @@ export class ProfileService {
     } catch (err) {
       console.error("Upload profile picture error:", err);
 
+      // Log detailed error information for debugging
+      if (err instanceof Error) {
+        console.error("Error details:", {
+          message: err.message,
+          name: err.name,
+          stack: err.stack,
+        });
+      }
+
       // Handle different types of errors
       if (err instanceof Error) {
         // If it's already a user-friendly message, keep it
         if (err.message.includes("Please") || err.message.includes("Unable")) {
           throw err;
         }
+
+        // Check if it's a network/API error with more details
+        if (
+          err.message.includes("500") ||
+          err.message.includes("Internal Server Error")
+        ) {
+          throw new Error(
+            "Backend server error. The image upload service may be temporarily unavailable. Please try again later or contact support."
+          );
+        }
+
         throw new Error(`Failed to upload profile picture: ${err.message}`);
       }
       throw new Error("Failed to upload profile picture: Unknown error");

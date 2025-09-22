@@ -1,725 +1,904 @@
 {
-  "nav": {
-    "home": "Home",
-    "tournaments": "Tournaments",
-    "marketplace": "Marketplace",
-    "events": "Events",
-    "messages": "Messages",
-    "profile": "Profile",
-    "settings": "Settings"
-  },
-  "home": {
-    "title": "GAMERMAJLIS",
-    "subtitle": "Join the ultimate gaming community. Compete in tournaments, connect with players, and discover amazing deals in our marketplace.",
-    "signupFree": "Sign up Free",
-    "viewTournaments": "View Tournaments",
-    "subscribe": "Subscribe",
-    "joinCommunity": "Join Community",
-    "tabs": {
-      "posts": "Community Posts",
-      "media": "Media Gallery",
-      "create": "Create Content"
-    },
-    "content": {
-      "postsTitle": "Latest Community Posts",
-      "mediaTitle": "Gaming Media Gallery",
-      "createTitle": "Create & Share",
-      "createPost": "Create New Post",
-      "uploadMedia": "Upload Media"
-    }
+  "activity": {
+    "join": "Join",
+    "view": "View",
+    "viewResults": "View results",
+    "watch": "Watch"
   },
   "auth": {
-    "signup": "Sign Up",
-    "login": "Log In",
-    "createAccount": "Create your account",
-    "fullName": "Full Name",
-    "displayName": "Display Name",
-    "email": "Email",
-    "emailOrUsername": "Email or Username",
-    "password": "Password",
-    "or": "or",
-    "loginWithDiscord": "Login with Discord",
-    "confirmPassword": "Confirm Password",
-    "username": "Username",
-    "rememberMe": "Remember me",
-    "forgotPassword": "Forgot password?",
     "alreadyHaveAccount": "Already have an account?",
-    "dontHaveAccount": "Don't have an account?",
-    "joinCommunity": "Join the gaming community",
-    "welcomeBack": "Welcome back to the community",
-    "signingIn": "Signing in...",
+    "backToLogin": "Back to login",
+    "confirmPassword": "Confirm password",
+    "createAccount": "Create your account",
     "creatingAccount": "Creating account...",
-    "verifyingEmail": "Verifying Email",
-    "pleaseWait": "Please wait while we verify your email address...",
-    "emailVerified": "Email Verified!",
-    "verificationFailed": "Verification Failed",
-    "redirectingToLogin": "Redirecting to login page...",
-    "backToLogin": "Back to Login",
-    "logout": "Logout"
+    "displayName": "Display name",
+    "dontHaveAccount": "Don’t have an account?",
+    "email": "Email",
+    "emailOrUsername": "Email or username",
+    "emailVerified": "Email verified!",
+    "forgotPassword": "Forgot password?",
+    "fullName": "Full name",
+    "joinCommunity": "Join the gamers’ community",
+    "login": "Login",
+    "loginWithDiscord": "Login with Discord",
+    "logout": "Logout",
+    "or": "or",
+    "password": "Password",
+    "pleaseWait": "Please wait while we verify your email...",
+    "redirectingToLogin": "Redirecting to login...",
+    "rememberMe": "Remember me",
+    "signingIn": "Signing in...",
+    "signup": "Sign up",
+    "username": "Username",
+    "verificationFailed": "Verification failed",
+    "verifyingEmail": "Verifying email...",
+    "welcomeBack": "Welcome back to the community"
   },
-  "pages": {
-    "profile": "Profile",
-    "tournaments": "Tournaments",
-    "events": "Events",
-    "messages": "Messages",
-    "marketplace": "Marketplace",
-    "comingSoon": "{{page}} page content coming soon..."
+  "auth_extras": {
+    "hidePassword": "Hide password",
+    "showPassword": "Show password"
   },
-  "footer": {
-    "quickLinks": "Quick Links",
-    "community": "Community",
-    "discord": "Discord",
-    "forums": "Forums",
-    "support": "Support",
-    "contact": "Contact",
-    "allRightsReserved": "© 2025 GamerMajlis. All rights reserved."
+  "auth_messages": {
+    "creatingAccount": "Creating account...",
+    "signingIn": "Signing in..."
+  },
+  "categories": {
+    "accessories": "Accessories",
+    "allItems": "All items",
+    "audio": "Audio",
+    "collectibles": "Collectibles",
+    "console": "Consoles",
+    "games": "Games",
+    "gamingGear": "Gaming gear",
+    "hardware": "Hardware",
+    "merchandise": "Merchandise",
+    "pcParts": "PC parts",
+    "software": "Software"
+  },
+  "chat": {
+    "connected": "Connected to chat",
+    "connecting": "Connecting to chat...",
+    "createRoom": "New room",
+    "createRoomModal": {
+      "cancel": "Cancel",
+      "create": "Create room",
+      "creating": "Creating...",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter room description...",
+      "isPrivate": "Private room",
+      "name": "Room name",
+      "namePlaceholder": "Enter room name...",
+      "privateDescription": "Only invited members can join",
+      "title": "Create a new room",
+      "type": "Room type"
+    },
+    "deleteRoom": "Delete room",
+    "disconnected": "Disconnected from chat",
+    "editRoom": "Edit room",
+    "errors": {
+      "accessDenied": "Access denied",
+      "connectionFailed": "Failed to connect to chat",
+      "createRoomFailed": "Failed to create room",
+      "deleteMessageFailed": "Failed to delete message",
+      "fileTooLarge": "File too large",
+      "invalidFileType": "Invalid file type",
+      "joinRoomFailed": "Failed to join room",
+      "leaveRoomFailed": "Failed to leave room",
+      "loadMessagesFailed": "Failed to load messages",
+      "loadRoomsFailed": "Failed to load chat rooms",
+      "messageTooLong": "Message too long",
+      "roomFull": "Room is full",
+      "roomNotFound": "Room not found",
+      "sendMessageFailed": "Failed to send message",
+      "uploadFailed": "File upload failed"
+    },
+    "inviteModal": {
+      "alreadyMember": "Already a member",
+      "invite": "Invite",
+      "invited": "Invited",
+      "noUsers": "No users found",
+      "search": "Search users...",
+      "title": "Invite members"
+    },
+    "joinRoom": "Join room",
+    "lastMessage": "Last message: {{time}}",
+    "leaveRoom": "Leave room",
+    "loginDescription": "Please log in to access the chat system.",
+    "loginRequired": "Login required",
+    "memberCount": "{{count}} member",
+    "memberCount_plural": "{{count}} members",
+    "memberManagement": {
+      "admin": "Admin",
+      "ban": "Ban member",
+      "banned": "Banned",
+      "invite": "Invite members",
+      "lastSeen": "Last seen {{time}}",
+      "makeAdmin": "Make admin",
+      "member": "Member",
+      "offline": "Offline",
+      "online": "Online",
+      "owner": "Owner",
+      "remove": "Remove member",
+      "removeAdmin": "Remove admin",
+      "title": "Members"
+    },
+    "messageInput": {
+      "attach": "Attach file",
+      "emoji": "Add emoji",
+      "placeholder": "Type a message...",
+      "send": "Send"
+    },
+    "messages": {
+      "copy": "Copy",
+      "delete": "Delete",
+      "deleteConfirm": "Are you sure you want to delete this message?",
+      "downloadFile": "Download",
+      "edit": "Edit",
+      "editedIndicator": "Edited",
+      "fileAttachment": "File attachment",
+      "imageAttachment": "Image attachment",
+      "reply": "Reply",
+      "report": "Report",
+      "viewImage": "View image"
+    },
+    "multipleTyping": "{{users}} are typing...",
+    "noMessages": "No messages yet",
+    "notifications": {
+      "invitedToRoom": "You were invited to {{room}}",
+      "joinedRoom": "{{user}} joined the room",
+      "leftRoom": "{{user}} left the room",
+      "mentionedYou": "{{user}} mentioned you",
+      "newMessage": "New message from {{user}}",
+      "roomDeleted": "Room {{room}} was deleted"
+    },
+    "onlineCount": "{{count}} online",
+    "onlineUsers": {
+      "noOnlineUsers": "No users online",
+      "startDirectMessage": "Start direct message",
+      "title": "Online users",
+      "viewProfile": "View profile"
+    },
+    "roomSettings": "Room settings",
+    "roomTypes": {
+      "direct": "Direct message",
+      "private": "Private",
+      "public": "Public"
+    },
+    "selectRoom": "Select a chat room",
+    "selectRoomDescription": "Choose a room from the sidebar to start chatting, or create a new one.",
+    "startConversation": "Start conversation",
+    "title": "Chat",
+    "typingIndicator": "{{user}} is typing..."
+  },
+  "chatbot": {
+    "close": "Close chat",
+    "open": "Open bot",
+    "placeholder": "Type your message...",
+    "quickHelp": "Help",
+    "quickMarketplace": "Marketplace",
+    "quickTournaments": "Tournaments",
+    "response": "Thanks for your message! I’m here to help with any gaming questions.",
+    "send": "Send message",
+    "status": "Online",
+    "toggle": "Show/Hide bot",
+    "welcome": "Hi! I’m the Gamer Majlis bot. How can I help you today? 🎮"
   },
   "common": {
-    "loading": "Loading...",
-    "error": "Error",
-    "success": "Success",
     "cancel": "Cancel",
+    "clearFilters": "Clear filters",
+    "clearSearch": "Clear search",
+    "delete": "Delete",
+    "edit": "Edit",
+    "error": "Error",
+    "loading": "Loading...",
+    "noResults": "No results",
+    "retry": "Retry",
     "save": "Save",
     "saving": "Saving...",
-    "edit": "Edit",
-    "delete": "Delete",
     "search": "Search",
-    "noResults": "No results",
-    "clearFilters": "Clear filters",
-    "clearSearch": "Clear search"
+    "select": "Select",
+    "success": "Success",
+    "tryAgain": "Try again"
   },
-  "settings": {
-    "title": "Settings",
-    "subtitle": "Customize your gaming experience.",
-    "save": "Save Changes",
-    "sections": {
-      "privacy": {
-        "title": "Privacy",
-        "description": "Manage what others can see about you.",
-        "profileVisibility": "Profile Visibility",
-        "profileVisibility_desc": "Control who can view your profile.",
-        "visibility": {
-          "public": "Public",
-          "friends": "Friends Only",
-          "private": "Private"
-        },
-        "showOnlineStatus": "Show Online Status",
-        "showOnlineStatus_desc": "Let others know when you're online."
-      },
-      "preferences": {
-        "title": "Preferences",
-        "description": "Personalize the app to your liking.",
-        "language": "Language",
-        "language_options": { "en": "English", "ar": "Arabic" },
-        "language_desc": "Choose your preferred language"
-      },
-      "accounts": {
-        "title": "Connected Accounts",
-        "description": "Manage your connected social accounts and integrations.",
-        "discord": {
-          "title": "Discord",
-          "description": "Connect your Discord account for enhanced gaming features."
-        }
-      }
+  "conversations": {
+    "composer": {
+      "attach": "Attach",
+      "placeholder": "Type a message...",
+      "send": "Send"
+    },
+    "searchAria": "Search conversations",
+    "searchPlaceholder": "Search messages...",
+    "selectPrompt": "Select a conversation to start chatting"
+  },
+  "discord": {
+    "auth": {
+      "connecting": "Connecting...",
+      "loginWithDiscord": "Continue with Discord"
+    },
+    "callback": {
+      "backToLogin": "Back to login",
+      "error": "Authentication failed",
+      "errorDescription": "There was an issue authenticating with Discord.",
+      "processing": "Authenticating with Discord",
+      "processingDescription": "Please wait while we verify your Discord account...",
+      "success": "Authenticated successfully!",
+      "successDescription": "You’ve been authenticated. Redirecting..."
+    },
+    "link": {
+      "checking": "Checking status...",
+      "link": "Link Discord account",
+      "linking": "Linking...",
+      "unlink": "Unlink Discord account",
+      "unlinking": "Unlinking..."
+    },
+    "userInfo": {
+      "linkedAt": "Linked on {{date}}",
+      "loading": "Loading Discord info...",
+      "notLinked": "No Discord account linked",
+      "unlink": "Unlink",
+      "unlinking": "Unlinking..."
     }
   },
-  "labels": {
-    "price": "Price",
-    "organizer": "Organizer",
-    "startDate": "Start Date",
-    "prizePool": "Prize Pool",
-    "playersJoined": "Players Joined"
+  "errors": {
+    "accessDenied": "You don’t have permission to perform this action",
+    "authRequired": "Please log in to continue",
+    "chatRoomFull": "Chat room is full",
+    "discordOAuth": "Discord authentication failed. Please try again",
+    "fileTooLarge": "File too large",
+    "invalidFileType": "Invalid file type",
+    "messageTooLong": "Message too long",
+    "networkError": "Network error. Please check your connection",
+    "notFound": "Requested resource not found",
+    "rateLimited": "Too many requests. Please wait and try again",
+    "serverError": "Something went wrong. Please try again later",
+    "validationFailed": "Please check the data and try again"
   },
-  "wishlist": {
-    "title": "My Wishlist",
-    "subtitle": "Your favorite gaming gear saved for later",
-    "added": "Added",
-    "emptyTitle": "Your Wishlist is Empty",
-    "emptyDesc": "Start adding items from the marketplace to see them here",
-    "browseMarketplace": "Browse Marketplace"
+  "events": {
+    "attendanceStatuses": {
+      "CANCELLED": "Cancelled",
+      "CHECKED_IN": "Checked in",
+      "NO_SHOW": "No show",
+      "REGISTERED": "Registered"
+    },
+    "attendees": {
+      "checkedIn": "Checked in",
+      "empty": "No attendees yet",
+      "emptyDescription": "Be the first to register for this event!",
+      "loadMore": "Load more",
+      "noShow": "No show",
+      "registered": "Registered",
+      "title": "Event attendees",
+      "total": "Total attendees"
+    },
+    "categories": {
+      "all": "All events",
+      "my-events": "My events",
+      "ongoing": "Ongoing",
+      "past": "Past",
+      "upcoming": "Upcoming"
+    },
+    "checkIn": "Check in",
+    "closeCreate": "Cancel",
+    "create": "Create event",
+    "createEvent": "Create new event",
+    "delete": "Delete event",
+    "details": {
+      "address": "Address",
+      "ageRestriction": "Minimum age",
+      "attendees": "Attendees",
+      "competitive": "Competitive",
+      "endTime": "End time",
+      "entryFee": "Entry fee",
+      "free": "Free",
+      "gameCategory": "Category",
+      "gameTitle": "Game",
+      "interestedCount": "Interested",
+      "location": "Location",
+      "noRequirements": "No special requirements",
+      "organizer": "Organizer",
+      "registrationDeadline": "Registration deadline",
+      "requirements": "Requirements",
+      "startTime": "Start time",
+      "status": "Status",
+      "unlimited": "Unlimited",
+      "venue": "Venue",
+      "viewCount": "Views",
+      "virtualPlatform": "Platform",
+      "yearsAndUp": "years and up"
+    },
+    "edit": "Edit event",
+    "featured": "Featured events",
+    "filters": {
+      "all": "All events",
+      "apply": "Apply filters",
+      "clear": "Clear filters",
+      "eventType": "Event type",
+      "gameCategory": "Game category",
+      "locationType": "Location",
+      "myEvents": "Only my events",
+      "upcoming": "Upcoming only"
+    },
+    "form": {
+      "ageRestriction": "Minimum age",
+      "cancel": "Cancel",
+      "competitive": "Competitive event",
+      "create": "Create event",
+      "description": "Description",
+      "endDateTime": "End date & time (optional)",
+      "entryFee": "Entry fee",
+      "eventType": "Event type",
+      "gameCategory": "Game category",
+      "gameTitle": "Game title",
+      "isPublic": "Public event",
+      "locationType": "Location type",
+      "maxAttendees": "Max attendees",
+      "physicalAddress": "Physical address",
+      "physicalVenue": "Venue name",
+      "placeholders": {
+        "ageRestriction": "16",
+        "description": "Describe your event...",
+        "entryFee": "10.00",
+        "gameTitle": "Valorant, League of Legends, etc.",
+        "maxAttendees": "100",
+        "physicalAddress": "123 Main St, City, Region",
+        "physicalVenue": "Gaming hall, community center, etc.",
+        "registrationRequirements": "Must be 16+...",
+        "title": "Enter event title...",
+        "virtualLink": "https://discord.gg/...",
+        "virtualPlatform": "Discord, Zoom, etc."
+      },
+      "registrationDeadline": "Registration deadline",
+      "registrationRequirements": "Registration requirements",
+      "requiresRegistration": "Requires registration",
+      "save": "Save changes",
+      "startDateTime": "Start date & time",
+      "title": "Event title",
+      "update": "Update event",
+      "virtualLink": "Virtual event link",
+      "virtualPlatform": "Virtual platform"
+    },
+    "gameCategories": {
+      "FIGHTING": "Fighting",
+      "FPS": "Shooter",
+      "MOBA": "MOBA",
+      "OTHER": "Other",
+      "RACING": "Racing",
+      "RPG": "RPG",
+      "SPORTS": "Sports",
+      "STRATEGY": "Strategy"
+    },
+    "locationTypes": {
+      "HYBRID": "Hybrid",
+      "PHYSICAL": "Physical",
+      "VIRTUAL": "Virtual"
+    },
+    "messages": {
+      "attendeesError": "Failed to load attendees. Please try again.",
+      "autoRedirect": "Redirecting to the new chat system...",
+      "checkInError": "Failed to check in. Please try again.",
+      "checkInSuccess": "Checked in successfully!",
+      "createError": "Failed to create event. Please try again.",
+      "createSuccess": "Event created successfully!",
+      "deleteConfirm": "Are you sure you want to delete this event? This action cannot be undone.",
+      "deleteError": "Failed to delete event. Please try again.",
+      "deleteSuccess": "Event deleted successfully!",
+      "eventFull": "This event is full",
+      "eventNotFound": "Event not found",
+      "goToChat": "Go to chat now",
+      "loadError": "Failed to load events. Please try again.",
+      "redirectDescription": "The messaging system has been upgraded to a full-featured chat with rooms, DMs, and real-time features.",
+      "redirecting": "Messaging system updated",
+      "registerError": "Failed to register for event. Please try again.",
+      "registerSuccess": "Successfully registered for the event!",
+      "registrationClosed": "Registration for this event has closed",
+      "searchError": "Failed to search events. Please try again.",
+      "unauthorized": "You are not authorized to perform this action",
+      "unregisterConfirm": "Are you sure you want to unregister from this event?",
+      "unregisterError": "Failed to unregister from event. Please try again.",
+      "unregisterSuccess": "Successfully unregistered from the event!",
+      "updateError": "Failed to update event. Please try again.",
+      "updateSuccess": "Event updated successfully!"
+    },
+    "noMatches": "Try adjusting your search or filters.",
+
+    "recommended": "Recommended for you",
+    "register": "Register",
+    "report": "Report event",
+    "searchPlaceholder": "Search for events or organizers...",
+    "share": "Share event",
+    "sort": {
+      "attendees-least": "Attendees: least",
+      "attendees-most": "Attendees: most",
+      "created-latest": "Created: newest",
+      "created-oldest": "Created: oldest",
+      "date-latest": "Date: farthest",
+      "date-soonest": "Date: soonest",
+      "name": "Name A-Z",
+      "organizer": "Organizer A-Z",
+      "placeholder": "Sort by"
+    },
+    "statuses": {
+      "CANCELLED": "Cancelled",
+      "COMPLETED": "Completed",
+      "DRAFT": "Draft",
+      "LIVE": "Live",
+      "REGISTRATION_CLOSED": "Registration Closed",
+      "REGISTRATION_OPEN": "Registration Open"
+    },
+    "trending": "Trending Events",
+    "types": {
+      "COMMUNITY_GATHERING": "Community Gathering",
+      "TOURNAMENT": "Tournament"
+    },
+    "unregister": "Unregister",
+    "validation": {
+      "ageRestrictionRange": "Minimum age must be between 1 and 99",
+      "descriptionMaxLength": "Description cannot exceed 1000 characters",
+      "endDateTimeAfterStart": "End date must be after start date",
+      "entryFeeMax": "Entry fee cannot exceed 10000",
+      "entryFeePositive": "Entry fee must be 0 or higher",
+      "maxAttendeesMax": "Maximum attendees cannot exceed 10000",
+      "maxAttendeesPositive": "Maximum attendees must be a positive number",
+      "physicalAddressRequired": "Physical address is required for in-person events",
+      "physicalVenueRequired": "Venue name is required for in-person events",
+      "registrationDeadlineBeforeStart": "Registration deadline must be before the event start",
+      "startDateTimeFuture": "Start date must be in the future",
+      "startDateTimeRequired": "Start date and time are required",
+      "titleMaxLength": "Title cannot exceed 100 characters",
+      "titleMinLength": "Title must be at least 3 characters",
+      "titleRequired": "Event title is required",
+      "virtualLinkRequired": "Virtual event link is required for online events",
+      "virtualLinkValid": "Please enter a valid link"
+    },
+    "viewAttendees": "View attendees",
+    "viewDetails": "View details"
+  },
+  "media": {
+    "gallery": {
+      "loadError": "Failed to load media",
+      "loadMore": "Load more",
+      "noMedia": "No media yet",
+      "noMediaDescription": "Upload some gaming content to get started!",
+      "showing": "Showing {{count}} of {{total}} items"
+    },
+    "preview": {
+      "moreTags": "More tags",
+      "videoNotSupported": "Your browser doesn’t support video playback."
+    },
+    "upload": {
+      "clickToUpload": "Click to upload",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe your media...",
+      "fileSize": "File size",
+      "gameCategory": "Game category",
+      "orDragAndDrop": "or drag & drop",
+      "private": "Private",
+      "public": "Public",
+      "selectCategory": "Select category",
+      "selectedFile": "Selected file",
+      "supportedFormats": "MP4, AVI, MOV, JPG, PNG, GIF up to 100MB",
+      "tags": "Tags",
+      "tagsHelp": "Separate tags with commas",
+      "tagsPlaceholder": "Games, highlight, funny",
+      "title": "Title",
+      "titlePlaceholder": "Enter media title",
+      "upload": "Upload media",
+      "uploadDetails": "Upload details",
+      "uploading": "Uploading...",
+      "visibility": "Visibility"
+    }
+  },
+  "posts": {
+    "copyLink": "Copy link",
+    "create": {
+      "content": "Content",
+      "contentPlaceholder": "Share your thoughts, experiences, or ask questions...",
+      "createError": "Failed to create post. Please try again.",
+      "gameCategory": "Game category",
+      "gameTitle": "Game title",
+      "gameTitlePlaceholder": "e.g., Valorant, League of Legends",
+      "hashtags": "Hashtags",
+      "hashtagsHelp": "Detected automatically from content or add manually",
+      "hashtagsPlaceholder": "Gaming, esports, community",
+      "platform": "Platform",
+      "postTitle": "Post title",
+      "private": "Private",
+      "public": "Public",
+      "publish": "Publish post",
+      "publishing": "Publishing...",
+      "requiredFields": "Please fill in all required fields.",
+      "selectCategory": "Select category",
+      "selectPlatform": "Select platform",
+      "subtitle": "Share your gaming experiences with the community",
+      "successMessage": "Post created successfully!",
+      "tags": "Tags",
+      "tagsHelp": "Separate tags",
+      "tagsPlaceholder": "Games, Competitive, Strategy",
+      "title": "Create New Post",
+      "titlePlaceholder": "What's your gaming story?",
+      "visibility": "Visibility"
+    },
+    "delete": "Delete Post",
+    "feed": {
+      "confirmDelete": "Are you sure you want to delete this post?",
+      "loadError": "Failed to load posts",
+      "loadMore": "Load more",
+      "noPosts": "No posts yet",
+      "noPostsDescription": "Be the first to share something with the community!",
+      "showing": "Showing {{count}} of {{total}} posts"
+    },
+    "menu": "Post options",
+    "share": "Share"
+  },
+  "footer": {
+    "allRightsReserved": "© 2025 Gamer Majlis. All rights reserved.",
+    "community": "Community",
+    "contact": "Contact Us",
+    "discord": "Discord",
+    "forums": "Forums",
+    "quickLinks": "Quick Links",
+    "support": "Support"
+  },
+  "home": {
+    "content": {
+      "createPost": "Create New Post",
+      "createTitle": "Create & Share",
+      "mediaTitle": "Gaming Media Gallery",
+      "postsTitle": "Latest Community Posts",
+      "uploadMedia": "Upload Media"
+    },
+    "joinCommunity": "Join the Community",
+    "signupFree": "Sign up for free",
+    "subscribe": "Subscribe",
+    "subtitle": "Join the best gamers community. Compete in tournaments, connect with players, and discover great store offers.",
+    "tabs": {
+      "create": "Create Content",
+      "media": "Media Gallery",
+      "posts": "Community Posts"
+    },
+    "title": "Gamer Majlis",
+    "viewTournaments": "Browse Tournaments"
+  },
+  "labels": {
+    "organizer": "Organizer",
+    "playersJoined": "Players joined",
+    "price": "Price",
+    "prizePool": "Prize pool",
+    "startDate": "Start date"
+  },
+  "marketplace": {
+    "createProduct": "Create Product",
+    "legacyView": "Legacy View",
+    "modernView": "Modern View",
+    "noMatches": "Try adjusting your search or filters.",
+    "noProducts": "No products",
+    "searchPlaceholder": "Search for gaming gear or accessories...",
+    "subtitle": "Discover premium gaming gear from trusted sellers worldwide",
+    "title": "Gaming Marketplace"
+  },
+  "nav": {
+    "events": "Events",
+    "home": "Home",
+    "marketplace": "Marketplace",
+    "messages": "Messages",
+    "profile": "Profile",
+    "settings": "Settings",
+    "tournaments": "Tournaments"
+  },
+  "pages": {
+    "comingSoon": "Page {{page}} is under development...",
+    "events": "Events",
+    "marketplace": "Marketplace",
+    "messages": "Messages",
+    "profile": "Profile",
+    "tournaments": "Tournaments"
+  },
+  "product": {
+    "ascending": "Ascending",
+    "buyNow": "Buy Now",
+    "by": "By",
+    "category": "Category",
+    "condition": "Condition",
+    "conditions": {
+      "fair": "Fair",
+      "good": "Good",
+      "likeNew": "Like New",
+      "new": "New"
+    },
+    "create": "Create Product",
+    "createError": "Failed to create product",
+    "createProduct": "Create New Product",
+    "creating": "Creating...",
+    "dateAdded": "Date Added",
+    "defaultOrder": "Default",
+    "descending": "Descending",
+    "description": "Description",
+    "descriptionPlaceholder": "Describe your product",
+    "descriptionRequired": "Description is required",
+    "details": "Details",
+    "filters": {
+      "brand": "Brand",
+      "category": "Category",
+      "condition": "Condition",
+      "maxPrice": "Max Price",
+      "minPrice": "Min Price",
+      "priceRange": "Price Range"
+    },
+    "freeShipping": "Free Shipping",
+    "image": "Product Image",
+    "loadError": "Failed to load products",
+    "name": "Product Name",
+    "namePlaceholder": "Enter product name",
+    "nameRequired": "Product name is required",
+    "noImage": "No Image",
+    "noProducts": "No Products",
+    "noProductsDescription": "Try adjusting your search or filters",
+    "popularity": "Popularity",
+    "price": "Price",
+    "pricePlaceholder": "0.00",
+    "rating": "Rating",
+    "relevance": "Relevance",
+    "reviews": "{{count}} Reviews",
+    "searchPlaceholder": "Search for products...",
+    "sortBy": "Sort By",
+    "validPriceRequired": "Valid price required"
   },
   "profile": {
-    "edit": "Edit Profile",
-    "save": "Save Profile",
+    "bio": "Bio",
+    "browser": {
+      "subtitle": "Search and connect with other players",
+      "suggested": "Suggested Players",
+      "title": "Browse Players"
+    },
     "cancel": "Cancel",
-    "displayName": "Display name",
-    "discordName": "Discord name",
-    "uploadPhoto": "Upload photo",
+    "changeAvatar": "Change Avatar",
+    "discordName": "Discord Name",
+    "displayName": "Display Name",
+    "edit": "Edit Profile",
+    "editing": {
+      "addPreference": "Add Preference",
+      "addStat": "Add Stat",
+      "bold": "Formatting:",
+      "characters": "{{count}}/500",
+      "remove": "Remove"
+    },
+    "emailNotVerified": "Email not verified",
+    "emailVerified": "Email verified",
+    "level": "Level {{level}}",
+    "placeholders": {
+      "bio": "Bio",
+      "discordName": "Discord Username",
+      "displayName": "Enter display name",
+      "gamingPreferences": "Gaming Preferences",
+      "gamingStatistics": "Gaming Statistics",
+      "preferenceItem": "Add preference...",
+      "statName": "Stat name (e.g., Win rate)"
+    },
+    "removeAvatar": "Remove Avatar",
+    "save": "Save Profile",
+    "search": {
+      "aria": "Search for players",
+      "placeholder": "Search for players..."
+    },
     "tabs": {
       "about": "About",
       "preferences": "Preferences",
       "stats": "Statistics"
     },
-    "editing": {
-      "bold": "Formatting:",
-      "characters": "{{count}}/500",
-      "addPreference": "Add preference",
-      "remove": "Remove",
-      "addStat": "Add stat"
+    "uploadAvatar": "Upload Avatar",
+    "uploadPhoto": "Upload Photo"
+  },
+  "settings": {
+    "save": "Save Changes",
+    "sections": {
+      "accounts": {
+        "description": "Manage your linked social accounts and integrations.",
+        "discord": {
+          "description": "Link your Discord account for enhanced gaming features.",
+          "title": "Discord"
+        },
+        "title": "Linked Accounts"
+      },
+      "preferences": {
+        "description": "Customize the app the way you like.",
+        "language": "Language",
+        "language_desc": "Choose your preferred language",
+        "language_options": {
+          "ar": "Arabic",
+          "en": "English"
+        },
+        "title": "Preferences"
+      },
+      "privacy": {
+        "description": "Control what others can see about you.",
+        "profileVisibility": "Profile Visibility",
+        "profileVisibility_desc": "Control who can see your profile.",
+        "showOnlineStatus": "Show Online Status",
+        "showOnlineStatus_desc": "Let others know when you're online.",
+        "title": "Privacy",
+        "visibility": {
+          "friends": "Friends Only",
+          "private": "Private",
+          "public": "Public"
+        }
+      }
     },
-    "placeholders": {
-      "gamingPreferences": "Gaming Preferences",
-      "bio": "Bio",
-      "gamingStatistics": "Gaming Statistics",
-      "preferenceItem": "Add a preference...",
-      "statName": "Stat name (e.g. Win Rate)",
-      "displayName": "Enter your display name",
-      "discordName": "Discord username"
-    },
-    "level": "Level {{level}}"
-  },
-  "auth_extras": {
-    "showPassword": "Show password",
-    "hidePassword": "Hide password"
-  },
-  "auth_messages": {
-    "signingIn": "Signing In...",
-    "creatingAccount": "Creating Account..."
-  },
-  "marketplace": {
-    "title": "Gaming Marketplace",
-    "subtitle": "Discover premium gaming gear from trusted sellers worldwide",
-    "searchPlaceholder": "Search for gaming gear, accessories...",
-    "noMatches": "Try adjusting your search or filters.",
-    "noProducts": "No products found",
-    "createProduct": "Create Product",
-    "modernView": "Modern View",
-    "legacyView": "Legacy View"
-  },
-  "categories": {
-    "allItems": "All Items",
-    "gamingGear": "Gaming Gear",
-    "console": "Console",
-    "pcParts": "PC Parts",
-    "audio": "Audio",
-    "games": "Games",
-    "accessories": "Accessories",
-    "collectibles": "Collectibles",
-    "hardware": "Hardware",
-    "software": "Software",
-    "merchandise": "Merchandise"
+    "subtitle": "Customize your gaming experience.",
+    "title": "Settings"
   },
   "sort": {
     "name": "Name A-Z",
-    "price_low": "Price: Low to High",
     "price_high": "Price: High to Low",
-    "rating": "Highest Rated",
+    "price_low": "Price: Low to High",
+    "rating": "Top Rated",
     "reviews": "Most Reviews"
   },
-  "conversations": {
-    "searchPlaceholder": "Search DMs...",
-    "searchAria": "Search conversations",
-    "selectPrompt": "Select a conversation to start chatting",
-    "composer": {
-      "placeholder": "Message...",
-      "send": "Send",
-      "attach": "Attach"
-    }
-  },
-  "chatbot": {
-    "open": "Open chatbot",
-    "close": "Close chat",
-    "toggle": "Toggle chatbot",
-    "send": "Send message",
-    "welcome": "Hi! I'm the GamerMajlis Bot. How can I help you today? 🎮",
-    "response": "Thanks for your message! I'm here to help with any gaming questions.",
-    "status": "Online",
-    "placeholder": "Type your message...",
-    "quickHelp": "Help",
-    "quickTournaments": "Tournaments",
-    "quickMarketplace": "Shop"
-  },
-  "product": {
-    "details": "Details",
-    "buyNow": "Buy Now",
-    "freeShipping": "Free shipping",
-    "noImage": "No Image",
-    "by": "by",
-    "reviews": "{{count}} reviews",
-    "createProduct": "Create New Product",
-    "name": "Product Name",
-    "description": "Description",
-    "price": "Price",
-    "category": "Category",
-    "condition": "Condition",
-    "image": "Product Image",
-    "create": "Create Product",
-    "creating": "Creating...",
-    "nameRequired": "Product name is required",
-    "descriptionRequired": "Description is required",
-    "validPriceRequired": "Valid price is required",
-    "createError": "Failed to create product",
-    "namePlaceholder": "Enter product name",
-    "pricePlaceholder": "0.00",
-    "descriptionPlaceholder": "Describe your product",
-    "searchPlaceholder": "Search products...",
-    "sortBy": "Sort By",
-    "relevance": "Relevance",
-    "dateAdded": "Date Added",
-    "rating": "Rating",
-    "popularity": "Popularity",
-    "defaultOrder": "Default",
-    "ascending": "Ascending",
-    "descending": "Descending",
-    "loadError": "Error loading products",
-    "noProducts": "No products found",
-    "noProductsDescription": "Try adjusting your search or filters",
-    "conditions": {
-      "new": "New",
-      "likeNew": "Like New",
-      "good": "Good",
-      "fair": "Fair"
-    },
-    "filters": {
-      "category": "Category",
-      "condition": "Condition",
-      "brand": "Brand",
-      "priceRange": "Price Range",
-      "minPrice": "Min Price",
-      "maxPrice": "Max Price"
-    }
-  },
-  "activity": {
-    "join": "Join",
-    "watch": "Watch",
-    "view": "View",
-    "viewResults": "View Results"
-  },
   "tournaments": {
-    "categories": {
-      "upcoming": "Upcoming",
-      "ongoing": "Ongoing",
-      "past": "Past"
-    },
-    "searchPlaceholder": "Search tournaments, organizers...",
-    "noMatches": "Try adjusting your search or filters.",
-    "sort": {
-      "placeholder": "Sort by",
-      "dateSoonest": "Start Date: Soonest",
-      "dateLatest": "Start Date: Latest",
-      "prizeHighest": "Prize Pool: Highest",
-      "prizeLowest": "Prize Pool: Lowest",
-      "participantsMost": "Most Participants",
-      "participantsLeast": "Least Participants"
-    },
-    "empty": {
-      "title": "No tournaments found",
-      "description": "There are no tournaments matching your criteria."
-    },
-    "error": {
-      "title": "Error loading tournaments",
-      "loadFailed": "Failed to load tournaments. Please try again."
-    },
-    "create": {
-      "title": "Create Tournament",
-      "button": "Create Tournament",
-      "form": {
-        "name": "Tournament Name",
-        "namePlaceholder": "Enter tournament name",
-        "description": "Description",
-        "descriptionPlaceholder": "Describe your tournament",
-        "gameTitle": "Game",
-        "gameTitlePlaceholder": "Select game",
-        "tournamentType": "Tournament Type",
-        "maxParticipants": "Max Participants",
-        "maxParticipantsPlaceholder": "Maximum number of participants",
-        "entryFee": "Entry Fee",
-        "entryFeePlaceholder": "Entry fee amount",
-        "prizePool": "Prize Pool",
-        "prizePoolPlaceholder": "Total prize pool",
-        "currency": "Currency",
-        "startDate": "Start Date",
-        "endDate": "End Date",
-        "registrationDeadline": "Registration Deadline",
-        "gameMode": "Game Mode",
-        "gameModePlaceholder": "Tournament game mode",
-        "rules": "Rules",
-        "rulesPlaceholder": "Tournament rules and guidelines",
-        "location": "Location",
-        "locationPlaceholder": "Tournament location"
-      },
-      "types": {
-        "SINGLE_ELIMINATION": "Single Elimination",
-        "DOUBLE_ELIMINATION": "Double Elimination",
-        "ROUND_ROBIN": "Round Robin",
-        "SWISS": "Swiss System",
-        "BRACKET": "Bracket",
-        "LEAGUE": "League"
-      },
-      "validation": {
-        "nameRequired": "Tournament name is required",
-        "nameMinLength": "Tournament name must be at least 3 characters",
-        "nameMaxLength": "Tournament name must be less than 100 characters",
-        "descriptionRequired": "Description is required",
-        "descriptionMinLength": "Description must be at least 10 characters",
-        "gameTitleRequired": "Game selection is required",
-        "maxParticipantsRequired": "Maximum participants is required",
-        "maxParticipantsMin": "Must have at least 2 participants",
-        "maxParticipantsMax": "Cannot exceed 1000 participants",
-        "prizePoolMin": "Prize pool must be 0 or greater",
-        "entryFeeMin": "Entry fee must be 0 or greater",
-        "startDateRequired": "Start date is required",
-        "endDateRequired": "End date is required",
-        "endDateAfterStart": "End date must be after start date",
-        "registrationDeadlineRequired": "Registration deadline is required",
-        "registrationDeadlineBeforeStart": "Registration deadline must be before start date"
-      },
-      "success": "Tournament created successfully",
-      "error": "Failed to create tournament"
-    },
-    "status": {
-      "upcoming": "Upcoming",
-      "registrationOpen": "Registration Open",
-      "registrationClosed": "Registration Closed",
-      "inProgress": "In Progress",
-      "completed": "Completed",
-      "cancelled": "Cancelled"
-    },
     "actions": {
-      "register": "Register",
-      "unregister": "Unregister",
-      "viewDetails": "View Details",
-      "edit": "Edit",
       "cancel": "Cancel",
-      "share": "Share"
+      "edit": "Edit",
+      "register": "Register",
+      "share": "Share",
+      "unregister": "Unregister",
+      "viewDetails": "View Details"
     },
     "card": {
-      "participants": "Participants",
+      "closed": "Closed",
       "entryFee": "Entry Fee",
       "free": "Free",
-      "starts": "Starts",
-      "registration": "Registration",
-      "open": "Open",
-      "closed": "Closed",
-      "type": "Type",
       "gameMode": "Mode",
-      "views": "Views",
-      "rules": "Rules",
+      "inDays": "In {{count}} days",
+      "open": "Open",
+      "participants": "Participants",
       "register": "Register",
+      "registration": "Registration",
+      "rules": "Rules",
+      "starts": "Starts",
       "today": "Today",
       "tomorrow": "Tomorrow",
-      "inDays": "In {{count}} days"
+      "type": "Type",
+      "views": "Views"
     },
-    "details": {
-      "title": "Tournament Details",
-      "overview": "Overview",
-      "participants": "Participants",
-      "bracket": "Bracket",
-      "rules": "Rules",
-      "information": "Information",
-      "organizer": "Organizer",
-      "schedule": "Schedule",
-      "prizes": "Prizes",
-      "contact": "Contact"
-    },
-    "registration": {
-      "title": "Tournament Registration",
-      "success": "Successfully registered for tournament",
-      "error": "Failed to register for tournament",
-      "alreadyRegistered": "You are already registered",
-      "registrationClosed": "Registration is closed",
-      "tournamentFull": "Tournament is full",
-      "confirmUnregister": "Are you sure you want to unregister?",
-      "unregisterSuccess": "Successfully unregistered",
-      "unregisterError": "Failed to unregister"
-    }
-  },
-  "events": {
     "categories": {
-      "all": "All Events",
-      "upcoming": "Upcoming",
       "ongoing": "Ongoing",
       "past": "Past",
-      "my-events": "My Events"
+      "upcoming": "Upcoming"
     },
-    "types": {
-      "TOURNAMENT": "Tournament",
-      "COMMUNITY_GATHERING": "Community Gathering"
-    },
-    "locationTypes": {
-      "VIRTUAL": "Virtual",
-      "PHYSICAL": "Physical",
-      "HYBRID": "Hybrid"
-    },
-    "statuses": {
-      "DRAFT": "Draft",
-      "REGISTRATION_OPEN": "Registration Open",
-      "REGISTRATION_CLOSED": "Registration Closed",
-      "LIVE": "Live",
-      "COMPLETED": "Completed",
-      "CANCELLED": "Cancelled"
-    },
-    "attendanceStatuses": {
-      "REGISTERED": "Registered",
-      "CHECKED_IN": "Checked In",
-      "NO_SHOW": "No Show",
-      "CANCELLED": "Cancelled"
-    },
-    "gameCategories": {
-      "fps": "First Person Shooter",
-      "moba": "MOBA",
-      "rpg": "Role Playing Game",
-      "strategy": "Strategy",
-      "sports": "Sports",
-      "racing": "Racing",
-      "fighting": "Fighting",
-      "other": "Other"
-    },
-    "posts": {
-      "menu": "Post options",
-      "copyLink": "Copy link",
-      "delete": "Delete post",
-      "share": "Share",
-      "create": {
-        "title": "Create New Post",
-        "subtitle": "Share your gaming experiences with the community",
-        "postTitle": "Post Title",
-        "titlePlaceholder": "What's your gaming story?",
-        "content": "Content",
-        "contentPlaceholder": "Share your thoughts, experiences, or ask questions...",
-        "gameTitle": "Game Title",
-        "gameTitlePlaceholder": "e.g., Valorant, League of Legends",
-        "gameCategory": "Game Category",
-        "selectCategory": "Select a category",
-        "platform": "Gaming Platform",
-        "selectPlatform": "Select platform",
-        "visibility": "Visibility",
-        "public": "Public",
-        "private": "Private",
-        "tags": "Tags",
-        "tagsPlaceholder": "gaming, competitive, strategy",
-        "tagsHelp": "Separate tags with commas",
-        "hashtags": "Hashtags",
-        "hashtagsPlaceholder": "gaming, esports, community",
-        "hashtagsHelp": "Auto-detected from content or add manually",
-        "publishing": "Publishing...",
-        "publish": "Publish Post"
-      },
-      "feed": {
-        "loadError": "Failed to load posts",
-        "noPosts": "No posts yet",
-        "noPostsDescription": "Be the first to share something with the community!",
-        "loadMore": "Load More Posts",
-        "showing": "Showing {{count}} of {{total}} posts",
-        "confirmDelete": "Are you sure you want to delete this post?"
-      }
-    },
-    "media": {
-      "upload": {
-        "clickToUpload": "Click to upload",
-        "orDragAndDrop": "or drag and drop",
-        "supportedFormats": "MP4, AVI, MOV, JPG, PNG, GIF up to 100MB",
-        "uploadDetails": "Upload Details",
-        "selectedFile": "Selected File",
-        "fileSize": "File Size",
-        "title": "Title",
-        "titlePlaceholder": "Enter media title",
+    "create": {
+      "button": "Create Tournament",
+      "error": "Failed to create tournament",
+      "form": {
+        "currency": "Currency",
+        "currencyOptions": {
+          "USD": "USD ($)"
+        },
         "description": "Description",
-        "descriptionPlaceholder": "Describe your media...",
-        "tags": "Tags",
-        "tagsPlaceholder": "gaming, highlight, funny",
-        "tagsHelp": "Separate tags with commas",
-        "gameCategory": "Game Category",
-        "selectCategory": "Select category",
-        "visibility": "Visibility",
-        "public": "Public",
-        "private": "Private",
-        "uploading": "Uploading...",
-        "upload": "Upload Media"
+        "descriptionPlaceholder": "Describe your tournament",
+        "endDate": "End Date",
+        "endDatePlaceholder": "mm/dd/yyyy --:-- --",
+        "entryFee": "Entry Fee",
+        "entryFeePlaceholder": "Entry fee amount",
+        "gameMode": "Game Mode",
+        "gameModeOptions": {
+          "competitive": "Competitive"
+        },
+        "gameModePlaceholder": "Tournament game mode",
+        "gameTitle": "Game",
+        "gameTitlePlaceholder": "Select the game",
+        "isPublic": "Public Event",
+        "location": "Location",
+        "locationPlaceholder": "Tournament location",
+        "maxParticipants": "Max Participants",
+        "maxParticipantsDefault": "16",
+        "maxParticipantsPlaceholder": "Maximum number of participants",
+        "name": "Tournament Name",
+        "namePlaceholder": "Enter tournament name",
+        "prizePool": "Prize Pool",
+        "prizePoolPlaceholder": "Total prize pool",
+        "registrationDeadline": "Registration Deadline",
+        "registrationDeadlinePlaceholder": "mm/dd/yyyy --:-- --",
+        "requiresApproval": "Requires Approval",
+        "rules": "Rules",
+        "rulesPlaceholder": "Tournament rules and guidelines",
+        "startDate": "Start Date",
+        "startDatePlaceholder": "mm/dd/yyyy --:-- --",
+        "status": "Status",
+        "tournamentType": "Tournament Type"
       },
-      "preview": {
-        "videoNotSupported": "Your browser does not support the video tag.",
-        "moreTags": "more tags"
+      "success": "Tournament created successfully",
+      "title": "Create Tournament",
+      "types": {
+        "BRACKET": "Bracket",
+        "DOUBLE_ELIMINATION": "Double Elimination",
+        "elimination": "Elimination",
+        "LEAGUE": "League",
+        "ROUND_ROBIN": "Round Robin",
+        "SINGLE_ELIMINATION": "Single Elimination",
+        "SWISS": "Swiss System"
       },
-      "gallery": {
-        "loadError": "Failed to load media",
-        "noMedia": "No media found",
-        "noMediaDescription": "Upload some gaming content to get started!",
-        "loadMore": "Load More",
-        "showing": "Showing {{count}} of {{total}} items"
+      "validation": {
+        "descriptionMinLength": "Description must be at least 10 characters",
+        "descriptionRequired": "Description is required",
+        "endDateAfterStart": "End date must be after start date",
+        "endDateRequired": "End date is required",
+        "entryFeeMin": "Entry fee must be 0 or more",
+        "gameTitleRequired": "Game selection is required",
+        "maxParticipantsMax": "Cannot exceed 1000 participants",
+        "maxParticipantsMin": "At least 2 participants required",
+        "maxParticipantsRequired": "Maximum participants is required",
+        "nameMaxLength": "Tournament name must be less than 100 characters",
+        "nameMinLength": "Tournament name must be at least 3 characters",
+        "nameRequired": "Tournament name is required",
+        "prizePoolMin": "Prize pool must be 0 or more",
+        "registrationDeadlineBeforeStart": "Registration deadline must be before start date",
+        "registrationDeadlineRequired": "Registration deadline is required",
+        "startDateRequired": "Start date is required"
       }
-    },
-    "sort": {
-      "placeholder": "Sort by",
-      "date-soonest": "Date: Soonest",
-      "date-latest": "Date: Latest",
-      "name": "Name A-Z",
-      "organizer": "Organizer A-Z",
-      "attendees-most": "Attendees: Most",
-      "attendees-least": "Attendees: Least",
-      "created-latest": "Created: Latest",
-      "created-oldest": "Created: Oldest"
-    },
-    "searchPlaceholder": "Search events, organizers...",
-    "noMatches": "Try adjusting your search or filters.",
-    "create": "Create Event",
-    "createEvent": "Create New Event",
-    "closeCreate": "Cancel",
-    "edit": "Edit Event",
-    "delete": "Delete Event",
-    "register": "Register",
-    "unregister": "Unregister",
-    "checkIn": "Check In",
-    "viewDetails": "View Details",
-    "viewAttendees": "View Attendees",
-    "share": "Share Event",
-    "report": "Report Event",
-    "trending": "Trending Events",
-    "featured": "Featured Events",
-    "recommended": "Recommended for You",
-    "form": {
-      "title": "Event Title",
-      "description": "Description",
-      "startDateTime": "Start Date & Time",
-      "endDateTime": "End Date & Time (Optional)",
-      "eventType": "Event Type",
-      "locationType": "Location Type",
-      "virtualLink": "Virtual Link",
-      "virtualPlatform": "Virtual Platform",
-      "physicalAddress": "Physical Address",
-      "physicalVenue": "Venue Name",
-      "maxAttendees": "Max Attendees",
-      "requiresRegistration": "Requires Registration",
-      "registrationDeadline": "Registration Deadline",
-      "registrationRequirements": "Registration Requirements",
-      "isPublic": "Public Event",
-      "gameTitle": "Game Title",
-      "gameCategory": "Game Category",
-      "competitive": "Competitive Event",
-      "entryFee": "Entry Fee",
-      "ageRestriction": "Minimum Age",
-      "create": "Create Event",
-      "update": "Update Event",
-      "cancel": "Cancel",
-      "save": "Save Changes",
-      "placeholders": {
-        "title": "Enter event title...",
-        "description": "Describe your event...",
-        "virtualLink": "https://discord.gg/...",
-        "virtualPlatform": "Discord, Zoom, etc.",
-        "physicalAddress": "123 Main St, City, State",
-        "physicalVenue": "Gaming Arena, Community Center, etc.",
-        "maxAttendees": "100",
-        "registrationRequirements": "Must be 16+ years old...",
-        "gameTitle": "Valorant, League of Legends, etc.",
-        "entryFee": "10.00",
-        "ageRestriction": "16"
-      }
-    },
-    "validation": {
-      "titleRequired": "Event title is required",
-      "titleMinLength": "Title must be at least 3 characters",
-      "titleMaxLength": "Title cannot exceed 100 characters",
-      "descriptionMaxLength": "Description cannot exceed 1000 characters",
-      "startDateTimeRequired": "Start date and time is required",
-      "startDateTimeFuture": "Start date must be in the future",
-      "endDateTimeAfterStart": "End date must be after start date",
-      "maxAttendeesPositive": "Max attendees must be a positive number",
-      "maxAttendeesMax": "Max attendees cannot exceed 10000",
-      "registrationDeadlineBeforeStart": "Registration deadline must be before event start",
-      "entryFeePositive": "Entry fee must be 0 or greater",
-      "entryFeeMax": "Entry fee cannot exceed 10000",
-      "ageRestrictionRange": "Age restriction must be between 1 and 99",
-      "virtualLinkRequired": "Virtual link is required for virtual events",
-      "virtualLinkValid": "Please enter a valid URL",
-      "physicalAddressRequired": "Physical address is required for physical events",
-      "physicalVenueRequired": "Venue name is required for physical events"
-    },
-    "messages": {
-      "createSuccess": "Event created successfully!",
-      "createError": "Failed to create event. Please try again.",
-      "updateSuccess": "Event updated successfully!",
-      "updateError": "Failed to update event. Please try again.",
-      "deleteSuccess": "Event deleted successfully!",
-      "deleteError": "Failed to delete event. Please try again.",
-      "deleteConfirm": "Are you sure you want to delete this event? This action cannot be undone.",
-      "registerSuccess": "Successfully registered for event!",
-      "registerError": "Failed to register for event. Please try again.",
-      "unregisterSuccess": "Successfully unregistered from event!",
-      "unregisterError": "Failed to unregister from event. Please try again.",
-      "unregisterConfirm": "Are you sure you want to unregister from this event?",
-      "checkInSuccess": "Successfully checked in to event!",
-      "checkInError": "Failed to check in to event. Please try again.",
-      "loadError": "Failed to load events. Please try again.",
-      "searchError": "Failed to search events. Please try again.",
-      "attendeesError": "Failed to load attendees. Please try again.",
-      "eventFull": "This event is full",
-      "registrationClosed": "Registration for this event has closed",
-      "eventNotFound": "Event not found",
-      "unauthorized": "You are not authorized to perform this action"
     },
     "details": {
+      "bracket": "Bracket",
+      "contact": "Contact",
+      "information": "Information",
       "organizer": "Organizer",
-      "startTime": "Start Time",
-      "endTime": "End Time",
-      "location": "Location",
-      "attendees": "Attendees",
-      "gameTitle": "Game",
-      "gameCategory": "Category",
-      "entryFee": "Entry Fee",
-      "ageRestriction": "Age Restriction",
-      "registrationDeadline": "Registration Deadline",
-      "requirements": "Requirements",
-      "virtualPlatform": "Platform",
-      "venue": "Venue",
-      "address": "Address",
-      "status": "Status",
-      "competitive": "Competitive",
-      "free": "Free",
-      "yearsAndUp": "years and up",
-      "unlimited": "Unlimited",
-      "noRequirements": "No special requirements",
-      "viewCount": "views",
-      "interestedCount": "interested"
+      "overview": "Overview",
+      "participants": "Participants",
+      "prizes": "Prizes",
+      "rules": "Rules",
+      "schedule": "Schedule",
+      "title": "Tournament Details"
     },
-    "filters": {
-      "all": "All Events",
-      "eventType": "Event Type",
-      "gameCategory": "Game Category",
-      "locationType": "Location",
-      "upcoming": "Upcoming Only",
-      "myEvents": "My Events Only",
-      "clear": "Clear Filters",
-      "apply": "Apply Filters"
+    "empty": {
+      "description": "No tournaments match your criteria.",
+      "title": "No Tournaments"
     },
-    "attendees": {
-      "title": "Event Attendees",
-      "registered": "Registered",
-      "checkedIn": "Checked In",
-      "noShow": "No Show",
-      "total": "Total Attendees",
-      "loadMore": "Load More",
-      "empty": "No attendees yet",
-      "emptyDescription": "Be the first to register for this event!"
+    "error": {
+      "loadFailed": "Failed to load tournaments. Please try again.",
+      "title": "Error loading tournaments"
+    },
+    "noMatches": "Try adjusting your search or filters.",
+    "registration": {
+      "alreadyRegistered": "You are already registered",
+      "confirmUnregister": "Are you sure you want to unregister?",
+      "error": "Failed to register for the tournament",
+      "registrationClosed": "Registration closed",
+      "success": "Successfully registered for the tournament",
+      "title": "Tournament Registration",
+      "tournamentFull": "Tournament is full",
+      "unregisterError": "Failed to unregister",
+      "unregisterSuccess": "Unregistered successfully"
+    },
+    "searchPlaceholder": "Search tournaments or organizers...",
+    "sort": {
+      "dateLatest": "Start Date: Latest",
+      "dateSoonest": "Start Date: Soonest",
+      "participantsLeast": "Participants: Least",
+      "participantsMost": "Participants: Most",
+      "placeholder": "Sort by",
+      "prizeHighest": "Prize: Highest",
+      "prizeLowest": "Prize: Lowest"
+    },
+    "status": {
+      "cancelled": "Cancelled",
+      "completed": "Completed",
+      "inProgress": "In Progress",
+      "registrationClosed": "Registration Closed",
+      "registrationOpen": "Registration Open",
+      "upcoming": "Upcoming"
+    },
+    "ui": {
+      "dropdownCaret": "▼",
+      "no": "No",
+      "noTournaments": "No tournaments",
+      "searchPlaceholder": "Search tournaments or organizers...",
+      "sortLabel": "Sort By"
     }
   },
-  "discord": {
-    "auth": {
-      "loginWithDiscord": "Continue with Discord",
-      "connecting": "Connecting..."
-    },
-    "link": {
-      "link": "Link Discord Account",
-      "unlink": "Unlink Discord Account",
-      "linking": "Linking...",
-      "unlinking": "Unlinking...",
-      "checking": "Checking status..."
-    },
-    "userInfo": {
-      "loading": "Loading Discord info...",
-      "notLinked": "No Discord account linked",
-      "linkedAt": "Linked on {{date}}",
-      "unlink": "Unlink",
-      "unlinking": "Unlinking..."
-    },
-    "callback": {
-      "processing": "Authenticating with Discord",
-      "processingDescription": "Please wait while we verify your Discord account...",
-      "success": "Authentication Successful!",
-      "successDescription": "You have been successfully authenticated. Redirecting...",
-      "error": "Authentication Failed",
-      "errorDescription": "There was an issue with Discord authentication.",
-      "backToLogin": "Back to Login"
-    }
+  "wishlist": {
+    "added": "Added",
+    "browseMarketplace": "Browse Marketplace",
+    "emptyDesc": "Start adding items from the marketplace to see them here",
+    "emptyTitle": "Wishlist is empty",
+    "subtitle": "Your favorite gaming gear saved for later",
+    "title": "My Wishlist"
   }
 }

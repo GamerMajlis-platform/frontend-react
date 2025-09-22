@@ -1,20 +1,23 @@
 import { API_CONFIG, STORAGE_KEYS } from "../config/constants";
+import { ErrorHandler, RetryHandler } from "./errors";
 
 // Use the unified env var `VITE_API_BASE_URL` if set, otherwise fall back to constant
 const API_BASE = import.meta.env.VITE_API_BASE_URL || API_CONFIG.baseUrl;
 
-export class ApiError extends Error {
-  status?: number;
-  data?: unknown;
-  constructor(message: string, status?: number, data?: unknown) {
-    super(message);
-    this.status = status;
-    this.data = data;
-  }
-}
+// Log API configuration on startup
+console.log("🔧 API Configuration:", {
+  baseUrl: API_BASE,
+  environment: import.meta.env.NODE_ENV || "development",
+  timeout: API_CONFIG.timeout,
+});
 
 export interface ApiOptions extends RequestInit {
   useFormData?: boolean;
+  retryOptions?: {
+    maxAttempts?: number;
+    delay?: number;
+    backoffFactor?: number;
+  };
 }
 
 export async function apiFetch<T = unknown>(
@@ -26,7 +29,7 @@ export async function apiFetch<T = unknown>(
       ? localStorage.getItem(STORAGE_KEYS.auth)
       : null;
 
-  const { useFormData = false, ...fetchOptions } = options;
+  const { useFormData = false, retryOptions, ...fetchOptions } = options;
 
   const headers: Record<string, string> = {
     ...((fetchOptions.headers as Record<string, string>) || {}),
@@ -41,50 +44,47 @@ export async function apiFetch<T = unknown>(
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const res = await fetch(`${API_BASE}${path}`, {
-    ...fetchOptions,
-    headers,
-  });
-
-  // Debug multipart uploads
-  if (fetchOptions.body instanceof FormData) {
-    console.log("🔍 Multipart Upload Debug:");
-    console.log("URL:", `${API_BASE}${path}`);
-    console.log("Method:", fetchOptions.method || "GET");
-    console.log("Headers sent:", headers);
-    console.log("Body type:", typeof fetchOptions.body);
-    console.log("FormData entries:", [...fetchOptions.body.entries()]);
-  }
-
-  const text = await res.text();
-  const contentType = res.headers.get("content-type") || "";
-  let data: unknown = undefined;
-
-  if (contentType.includes("application/json") && text) {
+  const makeRequest = async (): Promise<T> => {
     try {
-      data = JSON.parse(text);
-    } catch {
-      data = text;
+      const url = `${API_BASE}${path}`;
+      console.log(`🌐 API Request: ${fetchOptions.method || "GET"} ${url}`);
+
+      const res = await fetch(url, {
+        ...fetchOptions,
+        headers,
+      });
+
+      console.log(
+        `📡 API Response: ${res.status} ${res.statusText} for ${
+          fetchOptions.method || "GET"
+        } ${path}`
+      );
+
+      return await ErrorHandler.handleResponse<T>(res);
+    } catch (error) {
+      console.error(
+        `❌ API Error for ${fetchOptions.method || "GET"} ${path}:`,
+        error
+      );
+      const apiError = ErrorHandler.handleNetworkError(error);
+      ErrorHandler.logError(
+        apiError,
+        `apiFetch: ${fetchOptions.method || "GET"} ${path}`
+      );
+      throw apiError;
     }
-  } else {
-    data = text;
+  };
+
+  // Apply retry logic if specified
+  if (retryOptions) {
+    return RetryHandler.retry(makeRequest, retryOptions);
   }
 
-  if (!res.ok) {
-    // Extract error message from response
-    let errMsg: string | undefined = undefined;
-    if (typeof data === "object" && data !== null) {
-      const obj = data as Record<string, unknown>;
-      const maybeError = obj["error"] || obj["message"];
-      if (typeof maybeError === "string") errMsg = maybeError;
-    }
-
-    const finalMsg = errMsg || res.statusText || "API Error";
-    throw new ApiError(finalMsg, res.status, data);
-  }
-
-  return data as T;
+  return makeRequest();
 }
+
+// Re-export ApiError for backward compatibility
+export { ApiError } from "./errors";
 
 // Helper function to create FormData from object
 export function createFormData(data: Record<string, string | Blob>): FormData {

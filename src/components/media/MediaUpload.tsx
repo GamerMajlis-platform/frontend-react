@@ -254,7 +254,7 @@ export const MediaUpload: React.FC<MediaUploadProps> = ({
                 <option value="">{t("media.upload.selectCategory")}</option>
                 {GAME_CATEGORIES.map((category) => (
                   <option key={category} value={category}>
-                    {t(`gameCategories.${category.toLowerCase()}`)}
+                    {t(`events.gameCategories.${category.toUpperCase()}`, {})}
                   </option>
                 ))}
               </select>

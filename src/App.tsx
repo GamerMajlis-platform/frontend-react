@@ -18,6 +18,7 @@ const Profile = lazy(() => import("./pages/Profile"));
 const Tournaments = lazy(() => import("./pages/Tournaments"));
 const Events = lazy(() => import("./pages/Events"));
 const Messages = lazy(() => import("./pages/Messages"));
+const Chat = lazy(() => import("./pages/Chat"));
 const Marketplace = lazy(() => import("./pages/Marketplace"));
 const Signup = lazy(() => import("./pages/Signup"));
 const Login = lazy(() => import("./pages/Login"));
@@ -33,6 +34,7 @@ type PageType =
   | "tournaments"
   | "events"
   | "messages"
+  | "chat"
   | "marketplace"
   | "signup"
   | "login"
@@ -54,7 +56,7 @@ function App() {
     }
     // Check for Discord OAuth callback
     if (
-      window.location.pathname === "/auth/discord/callback" ||
+      window.location.pathname === "/discord-callback" ||
       hash === "discord-callback"
     ) {
       return "discord-callback";
@@ -72,6 +74,8 @@ function App() {
         return "events";
       case "messages":
         return "messages";
+      case "chat":
+        return "chat";
       case "marketplace":
         return "marketplace";
       case "wishlist":
@@ -135,6 +139,8 @@ function App() {
         return <Events />;
       case "messages":
         return <Messages />;
+      case "chat":
+        return <Chat />;
       case "marketplace":
         return <Marketplace />;
       case "signup":

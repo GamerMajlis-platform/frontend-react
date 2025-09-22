@@ -1,4 +1,5 @@
 import { apiFetch } from "../lib/api";
+import { API_ENDPOINTS } from "../config/constants";
 import {
   SUPPORTED_VIDEO_TYPES,
   SUPPORTED_IMAGE_TYPES,
@@ -45,9 +46,10 @@ export class MediaService {
       formData.append("visibility", request.visibility);
     }
 
-    return await apiFetch<MediaUploadResponse>("/media/upload", {
+    return await apiFetch<MediaUploadResponse>(API_ENDPOINTS.media.upload, {
       method: "POST",
       body: formData,
+      useFormData: true,
     });
   }
 
@@ -55,7 +57,9 @@ export class MediaService {
    * Get media details by ID
    */
   static async getMedia(mediaId: number): Promise<MediaResponse> {
-    return await apiFetch<MediaResponse>(`/media/${mediaId}`);
+    return await apiFetch<MediaResponse>(
+      `${API_ENDPOINTS.media.byId}/${mediaId}`
+    );
   }
 
   /**
@@ -90,7 +94,9 @@ export class MediaService {
       params.append("myMedia", filters.myMedia.toString());
     }
 
-    return await apiFetch<MediaListResponse>(`/media?${params.toString()}`);
+    return await apiFetch<MediaListResponse>(
+      `${API_ENDPOINTS.media.list}?${params.toString()}`
+    );
   }
 
   /**
@@ -122,28 +128,38 @@ export class MediaService {
       formData.append("visibility", request.visibility);
     }
 
-    return await apiFetch<MediaResponse>(`/media/${mediaId}`, {
-      method: "PUT",
-      body: formData,
-    });
+    return await apiFetch<MediaResponse>(
+      `${API_ENDPOINTS.media.update}/${mediaId}`,
+      {
+        method: "PUT",
+        body: formData,
+        useFormData: true,
+      }
+    );
   }
 
   /**
    * Delete media
    */
   static async deleteMedia(mediaId: number): Promise<MediaDeleteResponse> {
-    return await apiFetch<MediaDeleteResponse>(`/media/${mediaId}`, {
-      method: "DELETE",
-    });
+    return await apiFetch<MediaDeleteResponse>(
+      `${API_ENDPOINTS.media.delete}/${mediaId}`,
+      {
+        method: "DELETE",
+      }
+    );
   }
 
   /**
    * Increment media view count
    */
   static async incrementViewCount(mediaId: number): Promise<MediaViewResponse> {
-    return await apiFetch<MediaViewResponse>(`/media/${mediaId}/view`, {
-      method: "POST",
-    });
+    return await apiFetch<MediaViewResponse>(
+      `${API_ENDPOINTS.media.view}/${mediaId}/view`,
+      {
+        method: "POST",
+      }
+    );
   }
 
   /**
@@ -168,7 +184,7 @@ export class MediaService {
     }
 
     return await apiFetch<MediaListResponse>(
-      `/media/search?${params.toString()}`
+      `${API_ENDPOINTS.media.search}?${params.toString()}`
     );
   }
 
@@ -189,7 +205,7 @@ export class MediaService {
     }
 
     return await apiFetch<MediaListResponse>(
-      `/media/trending?${params.toString()}`
+      `${API_ENDPOINTS.media.trending}?${params.toString()}`
     );
   }
 

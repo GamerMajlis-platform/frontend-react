@@ -1,7 +1,7 @@
 import { apiFetch } from "../lib/api";
+import { API_ENDPOINTS } from "../config/constants";
 import type {
   DiscordOAuthCallbackResponse,
-  DiscordLinkRequest,
   DiscordLinkResponse,
   DiscordUnlinkResponse,
   DiscordUserInfoResponse,
@@ -18,15 +18,28 @@ import type {
 export class DiscordService {
   private static readonly DISCORD_CONFIG: DiscordOAuthConfig = {
     clientId: "1416218898063429724", // From API spec
-    redirectUri: `${window.location.origin}/auth/discord/callback`,
+    redirectUri: "http://localhost:8080/api/auth/discord/callback", // Backend callback
     scopes: ["identify", "email"],
   };
 
   private static readonly OAUTH_STATE_KEY = "discord_oauth_state";
 
+  // Get the backend base URL from environment or default
+  private static getBackendUrl(): string {
+    return import.meta.env.VITE_BACKEND_URL || "http://localhost:8080";
+  }
+
+  // Get the frontend base URL, ensuring we use port 3000 for OAuth consistency
+  private static getFrontendUrl(): string {
+    const url = new URL(window.location.origin);
+    // Force port 3000 for OAuth consistency with backend expectations
+    url.port = "3000";
+    return url.toString().replace(/\/$/, ""); // Remove trailing slash
+  }
+
   /**
    * API #88: Initiate Discord OAuth
-   * Generates Discord OAuth URL and redirects user
+   * Redirect to backend OAuth endpoint which handles Discord OAuth flow
    */
   static async initiateOAuth(returnUrl?: string): Promise<void> {
     try {
@@ -37,25 +50,21 @@ export class DiscordService {
         returnUrl: returnUrl || "/",
       };
 
-      // Store state in localStorage
+      // Store state in localStorage for later verification
       localStorage.setItem(this.OAUTH_STATE_KEY, JSON.stringify(oauthState));
 
-      // Build Discord OAuth URL
-      const authUrl = new URL("https://discord.com/api/oauth2/authorize");
-      authUrl.searchParams.append("client_id", this.DISCORD_CONFIG.clientId);
-      authUrl.searchParams.append(
-        "redirect_uri",
-        this.DISCORD_CONFIG.redirectUri
-      );
-      authUrl.searchParams.append("response_type", "code");
-      authUrl.searchParams.append(
-        "scope",
-        this.DISCORD_CONFIG.scopes.join(" ")
-      );
-      authUrl.searchParams.append("state", state);
+      // Redirect to backend OAuth endpoint which will handle Discord OAuth flow
+      const frontendUrl = this.getFrontendUrl();
+      const backendOAuthUrl = `${this.getBackendUrl()}${
+        API_ENDPOINTS.auth.discord.login
+      }?state=${encodeURIComponent(state)}&return_url=${encodeURIComponent(
+        frontendUrl + (returnUrl || "/")
+      )}`;
 
-      // Redirect to Discord OAuth
-      window.location.href = authUrl.toString();
+      console.log("🔗 Discord OAuth URL:", backendOAuthUrl);
+      console.log("🏠 Frontend URL:", frontendUrl);
+
+      window.location.href = backendOAuthUrl;
     } catch (error) {
       console.error("Discord OAuth initiation failed:", error);
       throw new Error("Failed to initiate Discord authentication");
@@ -87,7 +96,7 @@ export class DiscordService {
 
       // Call backend callback endpoint
       const response = await apiFetch<DiscordOAuthCallbackResponse>(
-        `/auth/discord/callback?code=${encodeURIComponent(
+        `${API_ENDPOINTS.auth.discord.callback}?code=${encodeURIComponent(
           code
         )}&state=${encodeURIComponent(state)}`
       );
@@ -105,15 +114,17 @@ export class DiscordService {
    */
   static async linkAccount(code: string): Promise<DiscordLinkResponse> {
     try {
-      const request: DiscordLinkRequest = { code };
+      const formData = new FormData();
+      formData.append("code", code);
 
-      return await apiFetch<DiscordLinkResponse>("/auth/discord/link", {
-        method: "POST",
-        body: JSON.stringify(request),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      return await apiFetch<DiscordLinkResponse>(
+        API_ENDPOINTS.auth.discord.link,
+        {
+          method: "POST",
+          body: formData,
+          useFormData: true,
+        }
+      );
     } catch (error) {
       console.error("Discord account linking failed:", error);
       throw new Error("Failed to link Discord account");
@@ -126,9 +137,12 @@ export class DiscordService {
    */
   static async unlinkAccount(): Promise<DiscordUnlinkResponse> {
     try {
-      return await apiFetch<DiscordUnlinkResponse>("/auth/discord/unlink", {
-        method: "POST",
-      });
+      return await apiFetch<DiscordUnlinkResponse>(
+        API_ENDPOINTS.auth.discord.unlink,
+        {
+          method: "POST",
+        }
+      );
     } catch (error) {
       console.error("Discord account unlinking failed:", error);
       throw new Error("Failed to unlink Discord account");
@@ -141,7 +155,9 @@ export class DiscordService {
    */
   static async getUserInfo(): Promise<DiscordUserInfoResponse> {
     try {
-      return await apiFetch<DiscordUserInfoResponse>("/auth/discord/user-info");
+      return await apiFetch<DiscordUserInfoResponse>(
+        API_ENDPOINTS.auth.discord.userInfo
+      );
     } catch (error) {
       console.error("Discord user info retrieval failed:", error);
       throw new Error("Failed to retrieve Discord user info");
@@ -154,9 +170,12 @@ export class DiscordService {
    */
   static async refreshToken(): Promise<DiscordRefreshResponse> {
     try {
-      return await apiFetch<DiscordRefreshResponse>("/auth/discord/refresh", {
-        method: "POST",
-      });
+      return await apiFetch<DiscordRefreshResponse>(
+        API_ENDPOINTS.auth.discord.refresh,
+        {
+          method: "POST",
+        }
+      );
     } catch (error) {
       console.error("Discord token refresh failed:", error);
       throw new Error("Failed to refresh Discord token");

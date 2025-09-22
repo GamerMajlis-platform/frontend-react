@@ -49,6 +49,8 @@ export const CreatePost: React.FC<CreatePostProps> = ({
   const { t } = useTranslation();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [postData, setPostData] = useState({
     title: "",
     content: "",
@@ -62,8 +64,10 @@ export const CreatePost: React.FC<CreatePostProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
 
     if (!postData.title.trim() || !postData.content.trim()) {
+      setError(t("posts.create.requiredFields"));
       return;
     }
 
@@ -93,11 +97,20 @@ export const CreatePost: React.FC<CreatePostProps> = ({
       const response = await PostService.createPost(createRequest);
 
       if (response.success) {
-        onPostCreated?.(response.post.id);
-        resetForm();
+        setShowSuccess(true);
+        setTimeout(() => {
+          onPostCreated?.(response.post.id);
+          resetForm();
+          setShowSuccess(false);
+        }, 2000);
+      } else {
+        setError(response.message || t("posts.create.createError"));
       }
     } catch (error) {
       console.error("Failed to create post:", error);
+      setError(
+        error instanceof Error ? error.message : t("posts.create.createError")
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -145,6 +158,52 @@ export const CreatePost: React.FC<CreatePostProps> = ({
           {t("posts.create.subtitle")}
         </p>
       </div>
+
+      {/* Success Message */}
+      {showSuccess && (
+        <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+          <div className="flex items-center">
+            <svg
+              className="w-5 h-5 text-green-600 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+            <p className="text-green-800 text-sm font-medium">
+              {t("posts.create.successMessage")}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Error Message */}
+      {error && (
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <div className="flex items-center">
+            <svg
+              className="w-5 h-5 text-red-600 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <p className="text-red-800 text-sm font-medium">{error}</p>
+          </div>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Post Title */}
@@ -227,7 +286,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({
               <option value="">{t("posts.create.selectCategory")}</option>
               {GAME_CATEGORIES.map((category) => (
                 <option key={category} value={category}>
-                  {t(`gameCategories.${category.toLowerCase()}`)}
+                  {t(`events.gameCategories.${category.toUpperCase()}`, {})}
                 </option>
               ))}
             </select>

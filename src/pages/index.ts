@@ -4,6 +4,7 @@ export { default as Profile } from "./Profile";
 export { default as Tournaments } from "./Tournaments";
 export { default as Events } from "./Events";
 export { default as Messages } from "./Messages";
+export { default as Chat } from "./Chat";
 export { default as Marketplace } from "./Marketplace";
 export { default as Signup } from "./Signup";
 export { default as Login } from "./Login";
