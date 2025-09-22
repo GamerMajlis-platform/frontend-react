@@ -13,7 +13,20 @@
     "subtitle": "Join the ultimate gaming community. Compete in tournaments, connect with players, and discover amazing deals in our marketplace.",
     "signupFree": "Sign up Free",
     "viewTournaments": "View Tournaments",
-    "subscribe": "Subscribe"
+    "subscribe": "Subscribe",
+    "joinCommunity": "Join Community",
+    "tabs": {
+      "posts": "Community Posts",
+      "media": "Media Gallery",
+      "create": "Create Content"
+    },
+    "content": {
+      "postsTitle": "Latest Community Posts",
+      "mediaTitle": "Gaming Media Gallery",
+      "createTitle": "Create & Share",
+      "createPost": "Create New Post",
+      "uploadMedia": "Upload Media"
+    }
   },
   "auth": {
     "signup": "Sign Up",
@@ -99,6 +112,14 @@
         "language": "Language",
         "language_options": { "en": "English", "ar": "Arabic" },
         "language_desc": "Choose your preferred language"
+      },
+      "accounts": {
+        "title": "Connected Accounts",
+        "description": "Manage your connected social accounts and integrations.",
+        "discord": {
+          "title": "Discord",
+          "description": "Connect your Discord account for enhanced gaming features."
+        }
       }
     }
   },
@@ -435,14 +456,88 @@
       "CANCELLED": "Cancelled"
     },
     "gameCategories": {
-      "FPS": "First Person Shooter",
-      "MOBA": "MOBA",
-      "RPG": "Role Playing Game",
-      "STRATEGY": "Strategy",
-      "SPORTS": "Sports",
-      "RACING": "Racing",
-      "FIGHTING": "Fighting",
-      "OTHER": "Other"
+      "fps": "First Person Shooter",
+      "moba": "MOBA",
+      "rpg": "Role Playing Game",
+      "strategy": "Strategy",
+      "sports": "Sports",
+      "racing": "Racing",
+      "fighting": "Fighting",
+      "other": "Other"
+    },
+    "posts": {
+      "menu": "Post options",
+      "copyLink": "Copy link",
+      "delete": "Delete post",
+      "share": "Share",
+      "create": {
+        "title": "Create New Post",
+        "subtitle": "Share your gaming experiences with the community",
+        "postTitle": "Post Title",
+        "titlePlaceholder": "What's your gaming story?",
+        "content": "Content",
+        "contentPlaceholder": "Share your thoughts, experiences, or ask questions...",
+        "gameTitle": "Game Title",
+        "gameTitlePlaceholder": "e.g., Valorant, League of Legends",
+        "gameCategory": "Game Category",
+        "selectCategory": "Select a category",
+        "platform": "Gaming Platform",
+        "selectPlatform": "Select platform",
+        "visibility": "Visibility",
+        "public": "Public",
+        "private": "Private",
+        "tags": "Tags",
+        "tagsPlaceholder": "gaming, competitive, strategy",
+        "tagsHelp": "Separate tags with commas",
+        "hashtags": "Hashtags",
+        "hashtagsPlaceholder": "gaming, esports, community",
+        "hashtagsHelp": "Auto-detected from content or add manually",
+        "publishing": "Publishing...",
+        "publish": "Publish Post"
+      },
+      "feed": {
+        "loadError": "Failed to load posts",
+        "noPosts": "No posts yet",
+        "noPostsDescription": "Be the first to share something with the community!",
+        "loadMore": "Load More Posts",
+        "showing": "Showing {{count}} of {{total}} posts",
+        "confirmDelete": "Are you sure you want to delete this post?"
+      }
+    },
+    "media": {
+      "upload": {
+        "clickToUpload": "Click to upload",
+        "orDragAndDrop": "or drag and drop",
+        "supportedFormats": "MP4, AVI, MOV, JPG, PNG, GIF up to 100MB",
+        "uploadDetails": "Upload Details",
+        "selectedFile": "Selected File",
+        "fileSize": "File Size",
+        "title": "Title",
+        "titlePlaceholder": "Enter media title",
+        "description": "Description",
+        "descriptionPlaceholder": "Describe your media...",
+        "tags": "Tags",
+        "tagsPlaceholder": "gaming, highlight, funny",
+        "tagsHelp": "Separate tags with commas",
+        "gameCategory": "Game Category",
+        "selectCategory": "Select category",
+        "visibility": "Visibility",
+        "public": "Public",
+        "private": "Private",
+        "uploading": "Uploading...",
+        "upload": "Upload Media"
+      },
+      "preview": {
+        "videoNotSupported": "Your browser does not support the video tag.",
+        "moreTags": "more tags"
+      },
+      "gallery": {
+        "loadError": "Failed to load media",
+        "noMedia": "No media found",
+        "noMediaDescription": "Upload some gaming content to get started!",
+        "loadMore": "Load More",
+        "showing": "Showing {{count}} of {{total}} items"
+      }
     },
     "sort": {
       "placeholder": "Sort by",
@@ -596,6 +691,35 @@
       "loadMore": "Load More",
       "empty": "No attendees yet",
       "emptyDescription": "Be the first to register for this event!"
+    }
+  },
+  "discord": {
+    "auth": {
+      "loginWithDiscord": "Continue with Discord",
+      "connecting": "Connecting..."
+    },
+    "link": {
+      "link": "Link Discord Account",
+      "unlink": "Unlink Discord Account",
+      "linking": "Linking...",
+      "unlinking": "Unlinking...",
+      "checking": "Checking status..."
+    },
+    "userInfo": {
+      "loading": "Loading Discord info...",
+      "notLinked": "No Discord account linked",
+      "linkedAt": "Linked on {{date}}",
+      "unlink": "Unlink",
+      "unlinking": "Unlinking..."
+    },
+    "callback": {
+      "processing": "Authenticating with Discord",
+      "processingDescription": "Please wait while we verify your Discord account...",
+      "success": "Authentication Successful!",
+      "successDescription": "You have been successfully authenticated. Redirecting...",
+      "error": "Authentication Failed",
+      "errorDescription": "There was an issue with Discord authentication.",
+      "backToLogin": "Back to Login"
     }
   }
 }

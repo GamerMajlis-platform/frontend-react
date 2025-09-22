@@ -13,7 +13,20 @@
     "subtitle": "انضم لأفضل مجتمع لاعبين. نافس في البطولات، تواصل مع اللاعبين، واكتشف عروض المتجر الرائعة.",
     "signupFree": "سجّل مجانًا",
     "viewTournaments": "استعرض البطولات",
-    "subscribe": "اشترك"
+    "subscribe": "اشترك",
+    "joinCommunity": "انضم للمجتمع",
+    "tabs": {
+      "posts": "منشورات المجتمع",
+      "media": "معرض الوسائط",
+      "create": "إنشاء محتوى"
+    },
+    "content": {
+      "postsTitle": "أحدث منشورات المجتمع",
+      "mediaTitle": "معرض وسائط الألعاب",
+      "createTitle": "إنشاء ومشاركة",
+      "createPost": "إنشاء منشور جديد",
+      "uploadMedia": "رفع وسائط"
+    }
   },
   "auth": {
     "signup": "إنشاء حساب",
@@ -134,6 +147,14 @@
         "language": "اللغة",
         "language_options": { "en": "الإنجليزية", "ar": "العربية" },
         "language_desc": "اختر لغتك المفضلة"
+      },
+      "accounts": {
+        "title": "الحسابات المربوطة",
+        "description": "إدارة حساباتك الاجتماعية المربوطة والتكاملات.",
+        "discord": {
+          "title": "Discord",
+          "description": "اربط حساب Discord الخاص بك للحصول على ميزات ألعاب محسّنة."
+        }
       }
     }
   },
@@ -440,14 +461,88 @@
       "CANCELLED": "ملغي"
     },
     "gameCategories": {
-      "FPS": "إطلاق نار",
-      "MOBA": "موبا",
-      "RPG": "لعبة أدوار",
-      "STRATEGY": "استراتيجية",
-      "SPORTS": "رياضة",
-      "RACING": "سباق",
-      "FIGHTING": "قتال",
-      "OTHER": "أخرى"
+      "fps": "إطلاق نار",
+      "moba": "موبا",
+      "rpg": "لعبة أدوار",
+      "strategy": "استراتيجية",
+      "sports": "رياضة",
+      "racing": "سباق",
+      "fighting": "قتال",
+      "other": "أخرى"
+    },
+    "posts": {
+      "menu": "خيارات المنشور",
+      "copyLink": "نسخ الرابط",
+      "delete": "حذف المنشور",
+      "share": "مشاركة",
+      "create": {
+        "title": "إنشاء منشور جديد",
+        "subtitle": "شارك تجاربك في الألعاب مع المجتمع",
+        "postTitle": "عنوان المنشور",
+        "titlePlaceholder": "ما هي قصتك في اللعب؟",
+        "content": "المحتوى",
+        "contentPlaceholder": "شارك أفكارك وتجاربك أو اطرح أسئلة...",
+        "gameTitle": "اسم اللعبة",
+        "gameTitlePlaceholder": "مثل: فالورانت، ليج أوف ليجندز",
+        "gameCategory": "فئة اللعبة",
+        "selectCategory": "اختر فئة",
+        "platform": "منصة اللعب",
+        "selectPlatform": "اختر المنصة",
+        "visibility": "الخصوصية",
+        "public": "عام",
+        "private": "خاص",
+        "tags": "العلامات",
+        "tagsPlaceholder": "ألعاب، تنافسي، استراتيجية",
+        "tagsHelp": "افصل العلامات بفواصل",
+        "hashtags": "الهاشتاغ",
+        "hashtagsPlaceholder": "ألعاب، رياضة_إلكترونية، مجتمع",
+        "hashtagsHelp": "يتم اكتشافها تلقائياً من المحتوى أو أضف يدوياً",
+        "publishing": "جاري النشر...",
+        "publish": "نشر المنشور"
+      },
+      "feed": {
+        "loadError": "فشل في تحميل المنشورات",
+        "noPosts": "لا توجد منشورات بعد",
+        "noPostsDescription": "كن أول من يشارك شيئاً مع المجتمع!",
+        "loadMore": "تحميل المزيد",
+        "showing": "عرض {{count}} من {{total}} منشور",
+        "confirmDelete": "هل أنت متأكد من حذف هذا المنشور؟"
+      }
+    },
+    "media": {
+      "upload": {
+        "clickToUpload": "انقر للرفع",
+        "orDragAndDrop": "أو اسحب وأفلت",
+        "supportedFormats": "MP4، AVI، MOV، JPG، PNG، GIF حتى 100 ميجابايت",
+        "uploadDetails": "تفاصيل الرفع",
+        "selectedFile": "الملف المحدد",
+        "fileSize": "حجم الملف",
+        "title": "العنوان",
+        "titlePlaceholder": "أدخل عنوان الوسائط",
+        "description": "الوصف",
+        "descriptionPlaceholder": "اوصف وسائطك...",
+        "tags": "العلامات",
+        "tagsPlaceholder": "ألعاب، لقطة مميزة، مضحك",
+        "tagsHelp": "افصل العلامات بفواصل",
+        "gameCategory": "فئة اللعبة",
+        "selectCategory": "اختر فئة",
+        "visibility": "الخصوصية",
+        "public": "عام",
+        "private": "خاص",
+        "uploading": "جاري الرفع...",
+        "upload": "رفع الوسائط"
+      },
+      "preview": {
+        "videoNotSupported": "متصفحك لا يدعم تشغيل الفيديو.",
+        "moreTags": "المزيد من العلامات"
+      },
+      "gallery": {
+        "loadError": "فشل في تحميل الوسائط",
+        "noMedia": "لا توجد وسائط",
+        "noMediaDescription": "ارفع بعض محتوى الألعاب للبدء!",
+        "loadMore": "تحميل المزيد",
+        "showing": "عرض {{count}} من {{total}} عنصر"
+      }
     },
     "sort": {
       "placeholder": "ترتيب حسب",
@@ -601,6 +696,35 @@
       "loadMore": "تحميل المزيد",
       "empty": "لا يوجد مشاركون بعد",
       "emptyDescription": "كن أول من يسجل في هذه الفعالية!"
+    }
+  },
+  "discord": {
+    "auth": {
+      "loginWithDiscord": "المتابعة مع Discord",
+      "connecting": "جارٍ الاتصال..."
+    },
+    "link": {
+      "link": "ربط حساب Discord",
+      "unlink": "إلغاء ربط حساب Discord",
+      "linking": "جارٍ الربط...",
+      "unlinking": "جارٍ إلغاء الربط...",
+      "checking": "جارٍ فحص الحالة..."
+    },
+    "userInfo": {
+      "loading": "جارٍ تحميل معلومات Discord...",
+      "notLinked": "لا يوجد حساب Discord مربوط",
+      "linkedAt": "تم الربط في {{date}}",
+      "unlink": "إلغاء الربط",
+      "unlinking": "جارٍ إلغاء الربط..."
+    },
+    "callback": {
+      "processing": "جارٍ المصادقة مع Discord",
+      "processingDescription": "يرجى الانتظار بينما نتحقق من حساب Discord الخاص بك...",
+      "success": "تمت المصادقة بنجاح!",
+      "successDescription": "تمت مصادقتك بنجاح. جارٍ إعادة التوجيه...",
+      "error": "فشلت المصادقة",
+      "errorDescription": "حدثت مشكلة في مصادقة Discord.",
+      "backToLogin": "العودة إلى تسجيل الدخول"
     }
   }
 }

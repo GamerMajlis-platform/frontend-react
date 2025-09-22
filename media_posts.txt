@@ -1,0 +1,489 @@
+Media Management APIs
+16. Upload Media
+API: POST /api/media/upload
+
+Body (multipart/form-data):
+
+file: [media file - MP4/AVI/MOV/JPG/PNG/GIF, max 100MB for videos, 10MB for images]
+title: My Gaming Clip
+description: Amazing clutch moment (optional)
+tags: ["gaming", "clutch", "valorant"] (optional)
+gameCategory: FPS (optional)
+visibility: PUBLIC (optional, default: PUBLIC)
+Expected Output:
+
+{
+  "success": true,
+  "message": "Media uploaded successfully",
+  "media": {
+    "id": 1,
+    "title": "My Gaming Clip",
+    "description": "Amazing clutch moment",
+    "originalFilename": "clip.mp4",
+    "storedFilename": "media_1_1703155200000.mp4",
+    "filePath": "/uploads/media/media_1_1703155200000.mp4",
+    "mediaType": "VIDEO",
+    "fileSize": 15728640,
+    "compressedSize": 10485760,
+    "compressionRatio": 0.67,
+    "thumbnailPath": "/uploads/media/thumbnails/thumb_1.jpg",
+    "duration": 30,
+    "resolution": "1920x1080",
+    "tags": "[\"gaming\", \"clutch\", \"valorant\"]",
+    "gameCategory": "FPS",
+    "visibility": "PUBLIC",
+    "viewCount": 0,
+    "downloadCount": 0,
+    "createdAt": "2024-12-21T10:30:00"
+  }
+}
+17. Get Media Details
+API: GET /api/media/{mediaId}
+
+Body: None
+
+Expected Output:
+
+{
+  "success": true,
+  "message": "Media retrieved successfully",
+  "media": {
+    "id": 1,
+    "title": "My Gaming Clip",
+    "description": "Amazing clutch moment",
+    "filePath": "/uploads/media/media_1_1703155200000.mp4",
+    "mediaType": "VIDEO",
+    "fileSize": 15728640,
+    "duration": 30,
+    "resolution": "1920x1080",
+    "thumbnailPath": "/uploads/media/thumbnails/thumb_1.jpg",
+    "tags": "[\"gaming\", \"clutch\", \"valorant\"]",
+    "gameCategory": "FPS",
+    "visibility": "PUBLIC",
+    "viewCount": 5,
+    "downloadCount": 2,
+    "uploader": {
+      "id": 1,
+      "displayName": "GamerUser",
+      "profilePictureUrl": "/uploads/profile-pictures/profile_1.jpg"
+    },
+    "createdAt": "2024-12-21T10:30:00"
+  }
+}
+18. Get Media List
+API: GET /api/media?page=0&size=20&category=FPS&type=VIDEO&visibility=PUBLIC&myMedia=false
+
+Body: None
+
+Expected Output:
+
+{
+  "success": true,
+  "message": "Media list retrieved",
+  "media": [
+    {
+      "id": 1,
+      "title": "My Gaming Clip",
+      "thumbnailPath": "/uploads/media/thumbnails/thumb_1.jpg",
+      "mediaType": "VIDEO",
+      "duration": 30,
+      "gameCategory": "FPS",
+      "viewCount": 5,
+      "uploader": {
+        "id": 1,
+        "displayName": "GamerUser"
+      },
+      "createdAt": "2024-12-21T10:30:00"
+    }
+  ],
+  "totalElements": 1,
+  "totalPages": 1,
+  "currentPage": 0,
+  "pageSize": 20
+}
+19. Update Media
+API: PUT /api/media/{mediaId}
+
+Body (form-data):
+
+title: Updated Gaming Clip (optional)
+description: Updated amazing clutch moment (optional)
+tags: ["gaming", "clutch", "valorant", "updated"] (optional)
+gameCategory: MOBA (optional)
+visibility: PRIVATE (optional)
+Expected Output:
+
+{
+  "success": true,
+  "message": "Media updated successfully",
+  "media": {
+    "id": 1,
+    "title": "Updated Gaming Clip",
+    "description": "Updated amazing clutch moment",
+    // ... other fields
+  }
+}
+20. Delete Media
+API: DELETE /api/media/{mediaId}
+
+Body: None (requires Authorization header)
+
+Expected Output:
+
+{
+  "success": true,
+  "message": "Media deleted successfully"
+}
+21. Increment Media View Count
+API: POST /api/media/{mediaId}/view
+
+Body: None
+
+Expected Output:
+
+{
+  "success": true,
+  "message": "View count updated",
+  "newViewCount": 6
+}
+22. Search Media
+API: GET /api/media/search?query=gaming&page=0&size=20&type=VIDEO
+
+Body: None
+
+Expected Output:
+
+{
+  "success": true,
+  "message": "Media search completed",
+  "media": [
+    {
+      "id": 1,
+      "title": "My Gaming Clip",
+      "thumbnailPath": "/uploads/media/thumbnails/thumb_1.jpg",
+      "mediaType": "VIDEO",
+      "gameCategory": "FPS",
+      "viewCount": 5,
+      "createdAt": "2024-12-21T10:30:00"
+    }
+  ],
+  "totalElements": 1,
+  "totalPages": 1,
+  "currentPage": 0,
+  "pageSize": 20
+}
+23. Get Trending Media
+API: GET /api/media/trending?limit=10&days=7
+
+Body: None
+
+Expected Output:
+
+{
+  "success": true,
+  "message": "Trending media retrieved",
+  "media": [
+    {
+      "id": 2,
+      "title": "Epic Gaming Moments",
+      "thumbnailPath": "/uploads/media/thumbnails/thumb_2.jpg",
+      "mediaType": "VIDEO",
+      "gameCategory": "FPS",
+      "viewCount": 150,
+      "createdAt": "2024-12-20T15:00:00"
+    }
+  ]
+}
+📝 Post Management APIs
+24. Create Post
+API: POST /api/posts
+
+Body (form-data):
+
+title: My Gaming Experience
+content: Just had an amazing gaming session with my squad!
+type: TEXT (optional, default: TEXT)
+gameTitle: Valorant (optional)
+gameCategory: FPS (optional)
+platform: PC (optional)
+tags: ["gaming", "squad", "fun"] (optional)
+hashtags: ["#gaming", "#valorant"] (optional)
+mediaIds: [1, 2] (optional - array of media IDs to attach)
+visibility: PUBLIC (optional, default: PUBLIC)
+Expected Output:
+
+{
+  "success": true,
+  "message": "Post created successfully",
+  "post": {
+    "id": 1,
+    "title": "My Gaming Experience",
+    "content": "Just had an amazing gaming session with my squad!",
+    "type": "TEXT",
+    "gameTitle": "Valorant",
+    "gameCategory": "FPS",
+    "platform": "PC",
+    "tags": "[\"gaming\", \"squad\", \"fun\"]",
+    "hashtags": "[\"#gaming\", \"#valorant\"]",
+    "visibility": "PUBLIC",
+    "viewCount": 0,
+    "likeCount": 0,
+    "commentCount": 0,
+    "shareCount": 0,
+    "attachedMedia": [
+      {
+        "id": 1,
+        "title": "My Gaming Clip",
+        "thumbnailPath": "/uploads/media/thumbnails/thumb_1.jpg"
+      }
+    ],
+    "author": {
+      "id": 1,
+      "displayName": "GamerUser",
+      "profilePictureUrl": "/uploads/profile-pictures/profile_1.jpg"
+    },
+    "createdAt": "2024-12-21T11:00:00"
+  }
+}
+25. Get Post Details
+API: GET /api/posts/{postId}
+
+Body: None
+
+Expected Output:
+
+{
+  "success": true,
+  "message": "Post retrieved successfully",
+  "post": {
+    "id": 1,
+    "title": "My Gaming Experience",
+    "content": "Just had an amazing gaming session with my squad!",
+    "type": "TEXT",
+    "gameTitle": "Valorant",
+    "gameCategory": "FPS",
+    "platform": "PC",
+    "tags": "[\"gaming\", \"squad\", \"fun\"]",
+    "hashtags": "[\"#gaming\", \"#valorant\"]",
+    "visibility": "PUBLIC",
+    "viewCount": 15,
+    "likeCount": 5,
+    "commentCount": 3,
+    "shareCount": 1,
+    "attachedMedia": [],
+    "author": {
+      "id": 1,
+      "displayName": "GamerUser",
+      "profilePictureUrl": "/uploads/profile-pictures/profile_1.jpg"
+    },
+    "createdAt": "2024-12-21T11:00:00",
+    "updatedAt": "2024-12-21T11:05:00"
+  }
+}
+26. Get Posts Feed
+API: GET /api/posts?page=0&size=20&gameCategory=FPS&type=TEXT&myPosts=false
+
+Body: None
+
+Expected Output:
+
+{
+  "success": true,
+  "message": "Posts feed retrieved",
+  "posts": [
+    {
+      "id": 1,
+      "title": "My Gaming Experience",
+      "content": "Just had an amazing gaming session with my squad!",
+      "gameCategory": "FPS",
+      "likeCount": 5,
+      "commentCount": 3,
+      "author": {
+        "id": 1,
+        "displayName": "GamerUser",
+        "profilePictureUrl": "/uploads/profile-pictures/profile_1.jpg"
+      },
+      "createdAt": "2024-12-21T11:00:00"
+    }
+  ],
+  "totalElements": 1,
+  "totalPages": 1,
+  "currentPage": 0,
+  "pageSize": 20
+}
+27. Update Post
+API: PUT /api/posts/{postId}
+
+Body (form-data):
+
+title: Updated Gaming Experience (optional)
+content: Updated content about my gaming session (optional)
+gameTitle: CS2 (optional)
+gameCategory: FPS (optional)
+platform: Steam (optional)
+tags: ["gaming", "updated"] (optional)
+hashtags: ["#updated"] (optional)
+visibility: PRIVATE (optional)
+Expected Output:
+
+{
+  "success": true,
+  "message": "Post updated successfully",
+  "post": {
+    "id": 1,
+    "title": "Updated Gaming Experience",
+    "content": "Updated content about my gaming session",
+    // ... other updated fields
+  }
+}
+28. Delete Post
+API: DELETE /api/posts/{postId}
+
+Body: None (requires Authorization header)
+
+Expected Output:
+
+{
+  "success": true,
+  "message": "Post deleted successfully"
+}
+29. Like/Unlike Post
+API: POST /api/posts/{postId}/like
+
+Body: None (requires Authorization header)
+
+Expected Output:
+
+{
+  "success": true,
+  "message": "Post liked successfully",
+  "liked": true,
+  "newLikeCount": 6
+}
+30. Add Comment to Post
+API: POST /api/posts/{postId}/comments
+
+Body (form-data):
+
+content: Great post! Love your gaming content.
+Expected Output:
+
+{
+  "success": true,
+  "message": "Comment added successfully",
+  "comment": {
+    "id": 1,
+    "content": "Great post! Love your gaming content.",
+    "author": {
+      "id": 2,
+      "displayName": "CommenterUser",
+      "profilePictureUrl": "/uploads/profile-pictures/profile_2.jpg"
+    },
+    "createdAt": "2024-12-21T11:30:00"
+  }
+}
+31. Get Post Comments
+API: GET /api/posts/{postId}/comments?page=0&size=20
+
+Body: None
+
+Expected Output:
+
+{
+  "success": true,
+  "message": "Comments retrieved successfully",
+  "comments": [
+    {
+      "id": 1,
+      "content": "Great post! Love your gaming content.",
+      "author": {
+        "id": 2,
+        "displayName": "CommenterUser",
+        "profilePictureUrl": "/uploads/profile-pictures/profile_2.jpg"
+      },
+      "createdAt": "2024-12-21T11:30:00"
+    }
+  ],
+  "totalElements": 1,
+  "totalPages": 1,
+  "currentPage": 0,
+  "pageSize": 20
+}
+32. Delete Comment
+API: DELETE /api/posts/comments/{commentId}
+
+Body: None (requires Authorization header)
+
+Expected Output:
+
+{
+  "success": true,
+  "message": "Comment deleted successfully"
+}
+33. Share Post
+API: POST /api/posts/{postId}/share
+
+Body: None (requires Authorization header)
+
+Expected Output:
+
+{
+  "success": true,
+  "message": "Post shared successfully",
+  "newShareCount": 2
+}
+34. Get Trending Posts
+API: GET /api/posts/trending?limit=10&days=7
+
+Body: None
+
+Expected Output:
+
+{
+  "success": true,
+  "message": "Trending posts retrieved",
+  "posts": [
+    {
+      "id": 3,
+      "title": "Epic Gaming Montage",
+      "content": "Check out my best plays!",
+      "likeCount": 50,
+      "commentCount": 15,
+      "shareCount": 8,
+      "author": {
+        "id": 3,
+        "displayName": "ProGamer"
+      },
+      "createdAt": "2024-12-20T18:00:00"
+    }
+  ]
+}
+35. Search Posts
+API: GET /api/posts/search?query=gaming&page=0&size=20&gameCategory=FPS
+
+Body: None
+
+Expected Output:
+
+{
+  "success": true,
+  "message": "Posts search completed",
+  "posts": [
+    {
+      "id": 1,
+      "title": "My Gaming Experience",
+      "content": "Just had an amazing gaming session with my squad!",
+      "gameCategory": "FPS",
+      "likeCount": 5,
+      "author": {
+        "id": 1,
+        "displayName": "GamerUser"
+      },
+      "createdAt": "2024-12-21T11:00:00"
+    }
+  ],
+  "totalElements": 1,
+  "totalPages": 1,
+  "currentPage": 0,
+  "pageSize": 20
+}

@@ -36,7 +36,21 @@ src/
 │   │   ├── CreateEventForm.tsx # Event creation form with validation
 │   │   ├── EventGrid.tsx    # Event display grid using shared Card
 │   │   └── index.ts         # Event component exports
-│   └── messages/            # Messaging components
+│   ├── discord/             # Discord OAuth integration components
+│   │   ├── DiscordLoginButton.tsx # Discord OAuth login
+│   │   ├── DiscordLinkButton.tsx # Account linking
+│   │   └── DiscordUserInfo.tsx # Discord account display
+│   └── chat/                # Real-time chat system components
+│       ├── ChatRoom.tsx     # Main chat interface
+│       ├── ChatRoomList.tsx # Room browsing and selection
+│       ├── CreateRoomModal.tsx # Room creation modal
+│       ├── MessageList.tsx  # Message history with pagination
+│       ├── MessageInput.tsx # Message composer with file upload
+│       ├── MessageBubble.tsx # Individual message display
+│       ├── TypingIndicator.tsx # Real-time typing indicators
+│       ├── MemberList.tsx   # Room member management
+│       ├── OnlineUsersList.tsx # Online users sidebar
+│       └── InviteMemberModal.tsx # Member invitation modal
 ├── pages/                   # Application pages
 │   ├── Home.tsx            # Landing page
 │   ├── Profile.tsx         # User profile with backend data
@@ -50,6 +64,8 @@ src/
 │   ├── AuthService.ts      # Authentication with JWT
 │   ├── ProfileService.ts   # Profile management
 │   ├── EventService.ts     # Event management (11 API endpoints)
+│   ├── DiscordService.ts   # Discord OAuth integration (6 API endpoints)
+│   ├── ChatService.ts      # Chat system (14 API endpoints)
 │   └── SessionService.ts   # Session/token management
 ├── context/
 │   ├── AppContext.tsx      # Global state management
@@ -63,6 +79,8 @@ src/
 ├── types/                  # TypeScript definitions
 │   ├── auth.ts            # User and auth types
 │   ├── events.ts          # Event types and interfaces
+│   ├── chat.ts            # Chat system types and interfaces
+│   ├── discord.ts         # Discord integration types
 │   ├── common.ts          # Shared types
 │   └── ui.ts              # Component prop types
 ├── config/
@@ -87,7 +105,9 @@ public/
 - **Profile Management** with real user data from Spring Boot API
 - **Session Management** with automatic logout on token expiration
 - **Event Management** with comprehensive CRUD operations and registration
-- **Form-data Uploads** for profile pictures and event images
+- **Discord OAuth Integration** with account linking and user info
+- **Real-time Chat System** with rooms, direct messages, and file sharing
+- **Form-data Uploads** for profile pictures, event images, and chat attachments
 
 ### 🎨 Modern UI/UX
 
@@ -157,6 +177,30 @@ GET  /api/events/{id}/attendees # Get event attendees
 POST /api/events/{id}/checkin # Check-in attendee
 GET  /api/events/search       # Search events
 GET  /api/events/trending     # Get trending events
+
+Discord OAuth:
+GET  /api/auth/discord/oauth  # Initiate OAuth flow
+POST /api/auth/discord/callback # Handle OAuth callback
+POST /api/auth/discord/link   # Link Discord account
+POST /api/auth/discord/unlink # Unlink Discord account
+GET  /api/auth/discord/user-info # Get Discord user info
+POST /api/auth/discord/refresh # Refresh Discord token
+
+Chat System:
+POST /api/chat/rooms          # Create chat room
+GET  /api/chat/rooms          # Get user chat rooms
+GET  /api/chat/rooms/{id}     # Get room details
+POST /api/chat/rooms/{id}/join # Join room
+POST /api/chat/rooms/{id}/leave # Leave room
+POST /api/chat/rooms/{id}/messages # Send message
+GET  /api/chat/rooms/{id}/messages # Get messages
+DELETE /api/chat/messages/{id} # Delete message
+POST /api/chat/rooms/{id}/members/{userId} # Add member
+DELETE /api/chat/rooms/{id}/members/{userId} # Remove member
+GET  /api/chat/rooms/{id}/members # Get room members
+POST /api/chat/direct         # Start direct message
+GET  /api/chat/online-users   # Get online users
+POST /api/chat/typing         # Send typing indicator
 ```
 
 ### Development Workflow
@@ -251,6 +295,26 @@ colors: {
 - Comprehensive TypeScript types and validation
 - Full English/Arabic translation support
 - Mobile-responsive event grid and forms
+
+### ✅ Discord OAuth Integration
+
+- Complete Discord OAuth flow with 6 API endpoints
+- Discord account linking/unlinking functionality
+- OAuth login and signup integration
+- Discord user info display with avatar and username
+- Account management in Settings page
+- CSRF protection and secure state management
+
+### ✅ Real-time Chat System
+
+- Comprehensive chat system with 14 API endpoints
+- Chat room creation and management
+- Real-time messaging with file attachments
+- Direct message conversations
+- Online user presence and status
+- Typing indicators and message reactions
+- Member management and moderation tools
+- Mobile-responsive chat interface
 
 ### ✅ Backend Integration
 

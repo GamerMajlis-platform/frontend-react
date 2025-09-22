@@ -22,13 +22,18 @@ export {
   TabBar,
 } from "./profile";
 
-// Messages components
+// Chat components
 export {
-  Composer,
-  ConversationList,
-  MessageBubble,
-  MessageThread,
-} from "./messages";
+  ChatRoom,
+  ChatRoomList,
+  CreateRoomModal,
+  MessageList,
+  MessageInput,
+  TypingIndicator,
+  MemberList,
+  OnlineUsersList,
+  InviteMemberModal,
+} from "./chat";
 
 // Events components
 export { CreateEventForm, EventGrid } from "./events";

@@ -241,7 +241,8 @@ export interface TournamentGridProps {
 }
 
 export interface CreateTournamentFormProps {
-  onSubmit: (data: CreateTournamentRequest) => Promise<void>;
+  onSubmit?: (data: CreateTournamentRequest) => Promise<void>;
+  onSuccess?: (tournament: Tournament) => void;
   onCancel: () => void;
   loading?: boolean;
   initialData?: Partial<CreateTournamentRequest>;

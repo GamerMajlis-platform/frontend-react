@@ -3,8 +3,12 @@ export * from "./ui";
 export * from "./auth";
 export * from "./forms";
 export * from "./common";
+export * from "./discord";
 export * from "./events";
 export * from "./tournaments";
+export * from "./media";
+export * from "./posts";
+export * from "./chat";
 
 // Re-export legacy data types (will be replaced gradually)
 export type {

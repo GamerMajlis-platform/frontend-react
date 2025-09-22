@@ -22,6 +22,7 @@ const Marketplace = lazy(() => import("./pages/Marketplace"));
 const Signup = lazy(() => import("./pages/Signup"));
 const Login = lazy(() => import("./pages/Login"));
 const EmailVerification = lazy(() => import("./pages/EmailVerification"));
+const DiscordCallback = lazy(() => import("./pages/DiscordCallback"));
 const Wishlist = lazy(() => import("./pages/Wishlist"));
 const Settings = lazy(() => import("./pages/Settings"));
 import { PreferencesBootstrap } from "./components";
@@ -36,6 +37,7 @@ type PageType =
   | "signup"
   | "login"
   | "verify-email"
+  | "discord-callback"
   | "wishlist"
   | "settings";
 
@@ -49,6 +51,13 @@ function App() {
       hash === "verify-email"
     ) {
       return "verify-email";
+    }
+    // Check for Discord OAuth callback
+    if (
+      window.location.pathname === "/auth/discord/callback" ||
+      hash === "discord-callback"
+    ) {
+      return "discord-callback";
     }
     switch (hash) {
       case "signup":
@@ -134,6 +143,8 @@ function App() {
         return <Login />;
       case "verify-email":
         return <EmailVerification />;
+      case "discord-callback":
+        return <DiscordCallback />;
       case "wishlist":
         return <Wishlist />;
       case "settings":

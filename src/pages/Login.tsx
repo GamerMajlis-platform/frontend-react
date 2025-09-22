@@ -1,6 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { InputField } from "../components/shared";
+import { DiscordLoginButton } from "../components/discord";
 import { useFormValidation, commonValidationRules } from "../hooks";
 import { useAppContext } from "../context/useAppContext";
 import type { LoginFormData } from "../types/auth";
@@ -129,6 +130,31 @@ export default function Login() {
             </button>
           </div>
         </form>
+
+        {/* Discord OAuth Section */}
+        <div className="w-full mt-6">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-600" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-[#1a1a1a] text-gray-400">
+                {t("auth.or")}
+              </span>
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <DiscordLoginButton
+              size="lg"
+              variant="outline"
+              className="w-[345px] mx-auto"
+              onError={(error) => {
+                setError("general", error);
+              }}
+            />
+          </div>
+        </div>
 
         <p className="w-full font-[Alice] font-normal text-base leading-5 text-center text-[#EEEEEE] mt-[18px]">
           {t("auth.dontHaveAccount")}{" "}

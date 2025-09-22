@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import TournamentService from "../../services/TournamentService";
 import type {
   CreateTournamentRequest,
   CreateTournamentFormProps,
@@ -10,6 +11,7 @@ import type {
 
 const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
   onSubmit,
+  onSuccess,
   onCancel,
   loading = false,
   initialData = {},
@@ -156,7 +158,17 @@ const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
     }
 
     try {
-      await onSubmit(formData);
+      if (onSubmit) {
+        await onSubmit(formData);
+      } else if (onSuccess) {
+        // Handle tournament creation internally
+        const newTournament = await TournamentService.createTournament(
+          formData
+        );
+        onSuccess(newTournament);
+      } else {
+        console.error("No submit handler provided");
+      }
     } catch (error) {
       console.error("Failed to create tournament:", error);
     }

@@ -14,8 +14,8 @@ i18n
   .init({
     // Language settings
     fallbackLng: "en",
-    // Disable debug logs to reduce console noise
-    debug: false,
+    // Enable debug logs to show missing translation keys
+    debug: true,
     supportedLngs: ["en", "ar"],
     load: "languageOnly", // normalize en-US -> en
     nonExplicitSupportedLngs: true,
