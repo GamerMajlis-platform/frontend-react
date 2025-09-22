@@ -46,11 +46,27 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const success = await submit(async () => {
-      await login(formData.identifier, formData.password);
-      window.location.hash = "#home";
+      try {
+        await login(formData.identifier, formData.password);
+        // Navigate to home on success
+        window.location.hash = "#home";
+      } catch (err: unknown) {
+        // Map backend error messages into the form's general error
+        let message = "Login failed. Please try again.";
+        if (err instanceof Error && err.message) message = err.message;
+        // Set general form error so it's displayed
+        // `setError` comes from useFormValidation hook
+        setError("general", message);
+        // Re-throw to let the submit wrapper know it failed
+        throw err;
+      }
     });
     if (!success) {
-      setError("general", "Login failed. Please try again.");
+      // `setError` may have been set in the submit handler; ensure a fallback
+      setError(
+        "general",
+        (errors.general as string) || "Login failed. Please try again."
+      );
     }
   };
 

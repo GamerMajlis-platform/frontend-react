@@ -1,6 +1,7 @@
 // Authentication Service - Handles all API communication
 import { apiFetch, ApiError, createFormData } from "../lib/api";
-import { API_ENDPOINTS } from "../config/constants";
+import { API_ENDPOINTS, STORAGE_KEYS } from "../config/constants";
+import { SessionService } from "./SessionService";
 import type {
   User,
   LoginResponse,
@@ -102,8 +103,13 @@ export class AuthService {
       // Continue with local logout even if backend call fails
       console.warn("Backend logout failed:", error);
     } finally {
-      // Always clear local storage
-      this.clearAuthData();
+      // Always clear session and local storage
+      try {
+        SessionService.clearSession();
+      } catch {
+        // Fallback to clearing auth data directly
+        this.clearAuthData();
+      }
     }
   }
 
@@ -149,30 +155,56 @@ export class AuthService {
    * Store authentication data in localStorage
    */
   private static storeAuthData(data: LoginResponse): void {
-    localStorage.setItem("authToken", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
+    try {
+      localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(data.user));
+      // Persist token via SessionService so timer/storage is consistent
+      if (data.token) {
+        try {
+          SessionService.storeToken(data.token);
+        } catch {
+          // Fallback to direct storage if SessionService unavailable
+          localStorage.setItem(STORAGE_KEYS.auth, data.token);
+        }
+      }
+    } catch {
+      console.warn("Failed to persist auth data");
+    }
   }
 
   /**
    * Clear all authentication data
    */
   private static clearAuthData(): void {
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("user");
+    try {
+      localStorage.removeItem(STORAGE_KEYS.auth);
+      localStorage.removeItem(STORAGE_KEYS.user);
+    } catch {
+      console.warn("Failed to clear auth data");
+    }
   }
 
   /**
    * Get stored token
    */
   static getStoredToken(): string | null {
-    return localStorage.getItem("authToken");
+    try {
+      return localStorage.getItem(STORAGE_KEYS.auth);
+    } catch {
+      return null;
+    }
   }
 
   /**
    * Get stored user data
    */
   static getStoredUser(): User | null {
-    const userData = localStorage.getItem("user");
+    const userData = (() => {
+      try {
+        return localStorage.getItem(STORAGE_KEYS.user);
+      } catch {
+        return null;
+      }
+    })();
     if (!userData) return null;
 
     try {

@@ -1,6 +1,6 @@
 // Profile Service - Handles profile-related API communication
 import { apiFetch, createFormData } from "../lib/api";
-import { API_ENDPOINTS } from "../config/constants";
+import { API_ENDPOINTS, STORAGE_KEYS } from "../config/constants";
 import { AuthService } from "./AuthService";
 import type {
   User,
@@ -16,6 +16,40 @@ export interface GamingStats {
   [key: string]: unknown;
 }
 
+export interface ProfileSearchParams {
+  query: string;
+  page?: number;
+  size?: number;
+}
+
+export interface ProfileSearchResult {
+  id: number;
+  displayName: string;
+  bio?: string;
+  profilePictureUrl?: string;
+  roles: string[];
+  createdAt: string;
+}
+
+export interface ProfileSearchResponse extends BackendResponse {
+  profiles: ProfileSearchResult[];
+  totalElements: number;
+  totalPages: number;
+  currentPage: number;
+  pageSize: number;
+}
+
+export interface ProfileSuggestion {
+  id: number;
+  displayName: string;
+  bio?: string;
+  profilePictureUrl?: string;
+}
+
+export interface ProfileSuggestionsResponse extends BackendResponse {
+  suggestions: ProfileSuggestion[];
+}
+
 export class ProfileService {
   /**
    * Get current user's full profile
@@ -24,7 +58,14 @@ export class ProfileService {
     try {
       const data = await apiFetch<ProfileResponse>(API_ENDPOINTS.profile.me);
       if (data.success && data.user) {
-        return data.user;
+        // Parse JSON fields and persist to storage
+        const parsed = this.parseUserJsonFields(data.user);
+        try {
+          localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(parsed));
+        } catch (err) {
+          console.warn("Failed to persist user after fetch:", err);
+        }
+        return parsed as User;
       }
       throw new Error(data.message || "Failed to get profile");
     } catch (err) {
@@ -42,7 +83,7 @@ export class ProfileService {
         `${API_ENDPOINTS.profile.byId}/${userId}`
       );
       if (data.success && data.user) {
-        return data.user;
+        return this.parseUserJsonFields(data.user) as User;
       }
       throw new Error(data.message || "Failed to get user profile");
     } catch (err) {
@@ -65,16 +106,22 @@ export class ProfileService {
       });
 
       if (data.success && data.user) {
-        // Update localStorage with new user data
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-          try {
+        // Update localStorage with new user data using unified storage key
+        try {
+          const storedUser = localStorage.getItem(STORAGE_KEYS.user);
+          if (storedUser) {
             const currentUser = JSON.parse(storedUser);
             const updatedUser = { ...currentUser, ...data.user };
-            localStorage.setItem("user", JSON.stringify(updatedUser));
-          } catch (e) {
-            console.warn("Failed to update stored user data:", e);
+            localStorage.setItem(
+              STORAGE_KEYS.user,
+              JSON.stringify(updatedUser)
+            );
+          } else {
+            // Ensure user is stored if not present
+            localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(data.user));
           }
+        } catch (err) {
+          console.warn("Failed to update stored user data:", err);
         }
         return data.user;
       }
@@ -96,13 +143,8 @@ export class ProfileService {
 
       // Test authentication first
       try {
-        const currentUser = await AuthService.getCurrentUser();
-        console.log(
-          "✅ Authentication verified for upload",
-          currentUser?.email
-        );
-      } catch (authErr) {
-        console.error("❌ Authentication failed before upload:", authErr);
+        await AuthService.getCurrentUser();
+      } catch {
         throw new Error("Please log in again before uploading");
       }
 
@@ -128,24 +170,6 @@ export class ProfileService {
       const formData = new FormData();
       formData.append("file", file);
 
-      // Debug logging
-      console.log("📤 Upload Debug Info:");
-      console.log("File name:", file.name);
-      console.log("File type:", file.type);
-      console.log("File size:", file.size, "bytes");
-      console.log("File size (MB):", (file.size / (1024 * 1024)).toFixed(2));
-      console.log("FormData entries:");
-      for (const [key, value] of formData.entries()) {
-        if (value instanceof File) {
-          console.log(
-            `  ${key}: File(${value.name}, ${value.type}, ${value.size})`
-          );
-        } else {
-          console.log(`  ${key}:`, value);
-        }
-      }
-      console.log("Endpoint:", API_ENDPOINTS.profile.uploadPicture);
-
       const data = await apiFetch<
         BackendResponse & { profilePictureUrl: string }
       >(API_ENDPOINTS.profile.uploadPicture, {
@@ -154,20 +178,9 @@ export class ProfileService {
         useFormData: true,
       });
 
-      console.log("Upload response:", data);
-
       if (data.success && data.profilePictureUrl) {
         return data.profilePictureUrl;
       }
-
-      // Improved error reporting
-      console.error("❌ Upload failed - Backend response:", {
-        success: data.success,
-        message: data.message,
-        profilePictureUrl: data.profilePictureUrl,
-        hasProfilePictureUrl: "profilePictureUrl" in data,
-        fullResponse: data,
-      });
 
       // Provide more specific error messages based on backend response
       const userMessage =
@@ -197,7 +210,7 @@ export class ProfileService {
   static async removeProfilePicture(): Promise<void> {
     try {
       const data = await apiFetch<BackendResponse>(
-        `${API_ENDPOINTS.profile.me}/profile-picture`,
+        API_ENDPOINTS.profile.removePicture,
         {
           method: "DELETE",
         }
@@ -223,7 +236,7 @@ export class ProfileService {
 
       const data = await apiFetch<
         BackendResponse & { gamingStatistics: string }
-      >(`${API_ENDPOINTS.profile.me}/gaming-stats`, {
+      >(API_ENDPOINTS.profile.updateStats, {
         method: "POST",
         body: formData,
         useFormData: true,
@@ -235,6 +248,58 @@ export class ProfileService {
       throw new Error(data.message || "Failed to update gaming statistics");
     } catch (err) {
       console.error("Update gaming stats error:", err);
+      throw err;
+    }
+  }
+
+  /**
+   * Search profiles by query
+   */
+  static async searchProfiles(
+    params: ProfileSearchParams
+  ): Promise<ProfileSearchResponse> {
+    try {
+      const searchParams = new URLSearchParams({
+        query: params.query,
+        page: (params.page || 0).toString(),
+        size: (params.size || 20).toString(),
+      });
+
+      const data = await apiFetch<ProfileSearchResponse>(
+        `${API_ENDPOINTS.profile.search}?${searchParams.toString()}`
+      );
+
+      if (data.success) {
+        return data;
+      }
+      throw new Error(data.message || "Failed to search profiles");
+    } catch (err) {
+      console.error("Search profiles error:", err);
+      throw err;
+    }
+  }
+
+  /**
+   * Get profile suggestions
+   */
+  static async getProfileSuggestions(
+    limit: number = 10
+  ): Promise<ProfileSuggestion[]> {
+    try {
+      const searchParams = new URLSearchParams({
+        limit: limit.toString(),
+      });
+
+      const data = await apiFetch<ProfileSuggestionsResponse>(
+        `${API_ENDPOINTS.profile.suggestions}?${searchParams.toString()}`
+      );
+
+      if (data.success && data.suggestions) {
+        return data.suggestions;
+      }
+      throw new Error(data.message || "Failed to get profile suggestions");
+    } catch (err) {
+      console.error("Get profile suggestions error:", err);
       throw err;
     }
   }

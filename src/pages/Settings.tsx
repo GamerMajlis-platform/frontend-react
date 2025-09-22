@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { Dropdown, SettingRow, ToggleButton } from "../components/settings";
 import { useAppContext } from "../context/useAppContext";
-import { usePreferences } from "../hooks";
+import { usePreferences } from "../hooks/usePreferences";
 import { useClickOutside } from "../hooks/useClickOutside";
 
 interface UserSettings {

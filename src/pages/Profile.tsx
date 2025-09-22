@@ -2,30 +2,23 @@ import { useCallback, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../context/useAppContext";
 import { useProfile } from "../hooks/useProfile";
-import PreferencesList from "../components/profile/PreferencesList";
-import StatsList from "../components/profile/StatsList";
 import TabBar from "../components/profile/TabBar";
 import AboutSection from "../components/profile/AboutSection";
 import BackendProfileHeader from "../components/profile/BackendProfileHeader";
-import {
-  type StatItem,
-  type ProfileData,
-  getInitialProfileData,
-  generateId,
-  statColorOptions,
-} from "../data/profile";
 
 type TabKey = "about" | "preferences" | "stats";
 
 export default function Profile() {
   const { t, i18n } = useTranslation();
   const { user } = useAppContext();
-  const { updateProfile, clearError } = useProfile();
+  const { updateProfile, updateGamingStats, clearError } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>("about");
   const [editData, setEditData] = useState({
     displayName: "",
     bio: "",
+    gamingPreferences: "",
+    socialLinks: "",
   });
 
   const isRTL = i18n.language === "ar";
@@ -36,20 +29,19 @@ export default function Profile() {
       setEditData({
         displayName: user.displayName || "",
         bio: user.bio || "",
+        gamingPreferences: user.gamingPreferences || "{}",
+        socialLinks: user.socialLinks || "{}",
       });
     }
   }, [user]);
-
-  // Legacy profile data for preferences and stats (TODO: integrate with backend)
-  const [profileData, setProfileData] = useState<ProfileData>(
-    getInitialProfileData
-  );
 
   const startEditing = useCallback(() => {
     if (user) {
       setEditData({
         displayName: user.displayName || "",
         bio: user.bio || "",
+        gamingPreferences: user.gamingPreferences || "{}",
+        socialLinks: user.socialLinks || "{}",
       });
     }
     setIsEditing(true);
@@ -61,6 +53,8 @@ export default function Profile() {
       setEditData({
         displayName: user.displayName || "",
         bio: user.bio || "",
+        gamingPreferences: user.gamingPreferences || "{}",
+        socialLinks: user.socialLinks || "{}",
       });
     }
     setIsEditing(false);
@@ -72,6 +66,8 @@ export default function Profile() {
       await updateProfile({
         displayName: editData.displayName,
         bio: editData.bio,
+        gamingPreferences: editData.gamingPreferences,
+        socialLinks: editData.socialLinks,
       });
       setIsEditing(false);
     } catch (err) {
@@ -81,60 +77,27 @@ export default function Profile() {
   }, [updateProfile, editData]);
 
   const handleInputChange = useCallback(
-    (field: "displayName" | "bio", value: string) => {
+    (field: keyof typeof editData, value: string) => {
       setEditData((prev) => ({ ...prev, [field]: value }));
     },
     []
   );
 
-  // Preferences handlers
-  const addPreference = useCallback(() => {
-    setProfileData((p) => ({
-      ...p,
-      preferences: [...p.preferences, { id: generateId(), text: "" }],
-    }));
-  }, []);
-  const removePreference = useCallback((id: string) => {
-    setProfileData((p) => ({
-      ...p,
-      preferences: p.preferences.filter((i) => i.id !== id),
-    }));
-  }, []);
-  const updatePreference = useCallback((id: string, text: string) => {
-    setProfileData((p) => ({
-      ...p,
-      preferences: p.preferences.map((i) => (i.id === id ? { ...i, text } : i)),
-    }));
-  }, []);
+  const handleStatsUpdate = useCallback(
+    async (stats: Record<string, unknown>) => {
+      try {
+        await updateGamingStats(stats);
+      } catch (err) {
+        console.error("Failed to update gaming stats:", err);
+      }
+    },
+    [updateGamingStats]
+  );
 
-  // Stats handlers
-  const addStat = useCallback(() => {
-    setProfileData((p) => ({
-      ...p,
-      stats: [
-        ...p.stats,
-        { id: generateId(), name: "", value: 50, color: statColorOptions[6] },
-      ],
-    }));
-  }, []);
-  const removeStat = useCallback((id: string) => {
-    setProfileData((p) => ({
-      ...p,
-      stats: p.stats.filter((s) => s.id !== id),
-    }));
-  }, []);
-  const updateStat = useCallback((id: string, patch: Partial<StatItem>) => {
-    setProfileData((p) => ({
-      ...p,
-      stats: p.stats.map((s) => (s.id === id ? { ...s, ...patch } : s)),
-    }));
-  }, []);
-
-  // Avatar handled inside BackendProfileHeader component
-
-  // Name, level and bio are handled in subcomponents
-
-  // Tabs are rendered via TabBar component
+  // Parse JSON fields from backend user data
+  const parsedGamingPreferences = user?.parsedGamingPreferences || {};
+  const parsedSocialLinks = user?.parsedSocialLinks || {};
+  const parsedGamingStatistics = user?.parsedGamingStatistics || {};
 
   return (
     <main
@@ -172,7 +135,7 @@ export default function Profile() {
               <AboutSection
                 isEditing={isEditing}
                 isRTL={isRTL}
-                bio={profileData.bio}
+                bio={editData.bio}
                 onChange={(val) => handleInputChange("bio", val)}
               />
             )}
@@ -182,14 +145,56 @@ export default function Profile() {
                 <h2 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6">
                   {t("profile.tabs.preferences")}
                 </h2>
-                <PreferencesList
-                  items={profileData.preferences}
-                  isEditing={isEditing}
-                  isRTL={isRTL}
-                  onAdd={addPreference}
-                  onRemove={removePreference}
-                  onUpdate={updatePreference}
-                />
+                <div className="bg-slate-700/50 rounded-xl p-6">
+                  <h3 className="text-white text-lg font-semibold mb-4">
+                    Gaming Preferences
+                  </h3>
+                  {isEditing ? (
+                    <textarea
+                      value={editData.gamingPreferences}
+                      onChange={(e) =>
+                        handleInputChange("gamingPreferences", e.target.value)
+                      }
+                      className="w-full bg-slate-600/50 text-white rounded-lg p-3 min-h-[100px] border border-slate-500/50 focus:border-primary/50 focus:outline-none"
+                      placeholder="Enter gaming preferences as JSON"
+                    />
+                  ) : (
+                    <div className="text-slate-300">
+                      {Object.keys(parsedGamingPreferences).length > 0 ? (
+                        <pre className="text-sm whitespace-pre-wrap">
+                          {JSON.stringify(parsedGamingPreferences, null, 2)}
+                        </pre>
+                      ) : (
+                        <p>No gaming preferences set</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+                <div className="bg-slate-700/50 rounded-xl p-6">
+                  <h3 className="text-white text-lg font-semibold mb-4">
+                    Social Links
+                  </h3>
+                  {isEditing ? (
+                    <textarea
+                      value={editData.socialLinks}
+                      onChange={(e) =>
+                        handleInputChange("socialLinks", e.target.value)
+                      }
+                      className="w-full bg-slate-600/50 text-white rounded-lg p-3 min-h-[100px] border border-slate-500/50 focus:border-primary/50 focus:outline-none"
+                      placeholder="Enter social links as JSON"
+                    />
+                  ) : (
+                    <div className="text-slate-300">
+                      {Object.keys(parsedSocialLinks).length > 0 ? (
+                        <pre className="text-sm whitespace-pre-wrap">
+                          {JSON.stringify(parsedSocialLinks, null, 2)}
+                        </pre>
+                      ) : (
+                        <p>No social links set</p>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
@@ -198,14 +203,52 @@ export default function Profile() {
                 <h2 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6">
                   {t("profile.tabs.stats")}
                 </h2>
-                <StatsList
-                  items={profileData.stats}
-                  isEditing={isEditing}
-                  isRTL={isRTL}
-                  onAdd={addStat}
-                  onRemove={removeStat}
-                  onUpdate={updateStat}
-                />
+                <div className="bg-slate-700/50 rounded-xl p-6">
+                  <h3 className="text-white text-lg font-semibold mb-4">
+                    Gaming Statistics
+                  </h3>
+                  <div className="text-slate-300">
+                    {Object.keys(parsedGamingStatistics).length > 0 ? (
+                      <div className="space-y-4">
+                        <pre className="text-sm whitespace-pre-wrap bg-slate-600/30 rounded-lg p-4">
+                          {JSON.stringify(parsedGamingStatistics, null, 2)}
+                        </pre>
+                        {isEditing && (
+                          <button
+                            onClick={() =>
+                              handleStatsUpdate({
+                                ...parsedGamingStatistics,
+                                lastUpdated: new Date().toISOString(),
+                              })
+                            }
+                            className="px-4 py-2 bg-primary/80 hover:bg-primary text-white rounded-lg transition-colors"
+                          >
+                            Update Stats
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        <p>No gaming statistics recorded</p>
+                        {isEditing && (
+                          <button
+                            onClick={() =>
+                              handleStatsUpdate({
+                                totalGames: 0,
+                                winRate: 0,
+                                favoriteGame: "Not set",
+                                hoursPlayed: 0,
+                              })
+                            }
+                            className="px-4 py-2 bg-primary/80 hover:bg-primary text-white rounded-lg transition-colors"
+                          >
+                            Initialize Stats
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
           </div>

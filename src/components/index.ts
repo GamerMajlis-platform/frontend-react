@@ -12,6 +12,16 @@ export { default as ProfileDropdown } from "./ProfileDropdown";
 export { default as PreferencesBootstrap } from "./PreferencesBootstrap";
 export { ProgressBar } from "./ProgressBar";
 
+// Profile components
+export {
+  ProfileSearch,
+  ProfileCard,
+  ProfileBrowser,
+  BackendProfileHeader,
+  AboutSection,
+  TabBar,
+} from "./profile";
+
 // Messages components
 export {
   Composer,
@@ -19,3 +29,6 @@ export {
   MessageBubble,
   MessageThread,
 } from "./messages";
+
+// Events components
+export { CreateEventForm, EventGrid } from "./events";

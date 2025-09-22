@@ -1,7 +1,12 @@
 import { useCallback, useState } from "react";
 import { useAppContext } from "../context/useAppContext";
-import { ProfileService } from "../services/ProfileService";
-import type { UpdateProfileData } from "../types/auth";
+import {
+  ProfileService,
+  type ProfileSearchParams,
+  type ProfileSearchResponse,
+  type ProfileSuggestion,
+} from "../services/ProfileService";
+import type { UpdateProfileData, User } from "../types/auth";
 
 export interface UseProfileResult {
   isLoading: boolean;
@@ -11,6 +16,11 @@ export interface UseProfileResult {
   uploadProfilePicture: (file: File) => Promise<string>;
   removeProfilePicture: () => Promise<void>;
   updateGamingStats: (stats: Record<string, unknown>) => Promise<void>;
+  getUserProfile: (userId: number) => Promise<User>;
+  searchProfiles: (
+    params: ProfileSearchParams
+  ) => Promise<ProfileSearchResponse>;
+  getProfileSuggestions: (limit?: number) => Promise<ProfileSuggestion[]>;
   clearError: () => void;
 }
 
@@ -115,6 +125,59 @@ export function useProfile(): UseProfileResult {
     [contextRefreshProfile]
   );
 
+  const getUserProfile = useCallback(async (userId: number): Promise<User> => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      return await ProfileService.getUserProfile(userId);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to get user profile";
+      setError(message);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const searchProfiles = useCallback(
+    async (params: ProfileSearchParams): Promise<ProfileSearchResponse> => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        return await ProfileService.searchProfiles(params);
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to search profiles";
+        setError(message);
+        throw err;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
+
+  const getProfileSuggestions = useCallback(
+    async (limit?: number): Promise<ProfileSuggestion[]> => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        return await ProfileService.getProfileSuggestions(limit);
+      } catch (err) {
+        const message =
+          err instanceof Error
+            ? err.message
+            : "Failed to get profile suggestions";
+        setError(message);
+        throw err;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
+
   return {
     isLoading,
     error,
@@ -123,6 +186,9 @@ export function useProfile(): UseProfileResult {
     uploadProfilePicture,
     removeProfilePicture,
     updateGamingStats,
+    getUserProfile,
+    searchProfiles,
+    getProfileSuggestions,
     clearError,
   };
 }

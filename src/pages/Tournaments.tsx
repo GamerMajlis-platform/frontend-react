@@ -2,18 +2,30 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   BackgroundDecor,
-  Card,
   SortBy,
   IconSearch,
   CategoryButtons,
 } from "../components";
-import EmptyState from "../states/EmptyState";
 import {
-  tournaments,
-  tournamentSortOptions,
-  type TournamentSortOption,
-} from "../data";
+  TournamentGrid,
+  CreateTournamentForm,
+} from "../components/tournaments";
+import TournamentService from "../services/TournamentService";
+import type { Tournament, TournamentSortOption } from "../types/tournaments";
 import { useIsMobile, useDebounce } from "../hooks";
+
+// Tournament sort options for SortBy component
+const tournamentSortOptions = [
+  { value: "date-soonest", labelKey: "tournaments.sort.dateSoonest" },
+  { value: "date-latest", labelKey: "tournaments.sort.dateLatest" },
+  { value: "prize-highest", labelKey: "tournaments.sort.prizeHighest" },
+  { value: "prize-lowest", labelKey: "tournaments.sort.prizeLowest" },
+  { value: "participants-most", labelKey: "tournaments.sort.participantsMost" },
+  {
+    value: "participants-least",
+    labelKey: "tournaments.sort.participantsLeast",
+  },
+];
 
 export default function Tournaments() {
   const { t, i18n } = useTranslation();
@@ -21,17 +33,13 @@ export default function Tournaments() {
   const searchRef = useRef<HTMLInputElement>(null);
   const [nsReady, setNsReady] = useState(false);
 
-  // Ensure translation namespace is loaded before rendering so UI shows
-  // translated strings immediately without requiring a manual reload.
-  useEffect(() => {
-    const ns = Array.isArray(i18n.options.defaultNS)
-      ? i18n.options.defaultNS[0]
-      : (i18n.options.defaultNS as string) || "translation";
-    i18n
-      .loadNamespaces(ns)
-      .then(() => setNsReady(true))
-      .catch(() => setNsReady(true));
-  }, [i18n]);
+  // Tournament data state
+  const [tournaments, setTournaments] = useState<Tournament[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // UI state
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
   // Search / Sort state
   const [searchTerm, setSearchTerm] = useState("");
@@ -42,7 +50,74 @@ export default function Tournaments() {
   type Category = "upcoming" | "ongoing" | "past";
   const [category, setCategory] = useState<Category>("upcoming");
 
-  // SortBy handles dropdown state and outside click behavior
+  // Ensure translation namespace is loaded
+  useEffect(() => {
+    const ns = Array.isArray(i18n.options.defaultNS)
+      ? i18n.options.defaultNS[0]
+      : (i18n.options.defaultNS as string) || "translation";
+    i18n
+      .loadNamespaces(ns)
+      .then(() => setNsReady(true))
+      .catch(() => setNsReady(true));
+  }, [i18n]);
+
+  // Load tournaments
+  useEffect(() => {
+    const loadTournaments = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await TournamentService.listTournaments({
+          page: 1,
+          size: 50,
+          sortBy,
+        });
+        setTournaments(data.tournaments);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : t("tournaments.error.loadFailed")
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (nsReady) {
+      loadTournaments();
+    }
+  }, [nsReady, sortBy, t]);
+
+  // Handle tournament creation
+  const handleTournamentCreated = (newTournament: Tournament) => {
+    setTournaments((prev) => [newTournament, ...prev]);
+    setShowCreateForm(false);
+  };
+
+  // Filter and sort tournaments
+  const filteredTournaments = tournaments
+    .filter((tournament) => {
+      // Filter by category
+      switch (category) {
+        case "upcoming":
+          return ["UPCOMING", "REGISTRATION_OPEN"].includes(tournament.status);
+        case "ongoing":
+          return tournament.status === "IN_PROGRESS";
+        case "past":
+          return ["COMPLETED", "CANCELLED"].includes(tournament.status);
+        default:
+          return true;
+      }
+    })
+    .filter((tournament) => {
+      // Filter by search term
+      if (!debouncedSearchTerm) return true;
+      const searchLower = debouncedSearchTerm.toLowerCase();
+      return (
+        tournament.name.toLowerCase().includes(searchLower) ||
+        tournament.gameTitle.toLowerCase().includes(searchLower) ||
+        tournament.organizer.displayName.toLowerCase().includes(searchLower)
+      );
+    });
 
   const handleSearchFocus = (e: React.FocusEvent<HTMLInputElement>) => {
     e.currentTarget.style.borderColor = "#6fffe9";
@@ -54,19 +129,48 @@ export default function Tournaments() {
     e.currentTarget.style.boxShadow = "none";
   };
 
-  if (!nsReady) return null; // minimal guard while translations load
+  if (!nsReady) return null;
 
   return (
     <main className="relative z-10 min-h-screen bg-gradient-to-b from-[#0F172A] to-[#1C2541] py-4 sm:py-6 lg:py-8 tournaments-container">
       <BackgroundDecor />
 
       <div className="relative z-10 mx-auto max-w-[1440px] px-4 sm:px-6 max-width-container">
-        {/* Page Label */}
-        <header className="mb-6 sm:mb-8 flex w-full items-center justify-center py-4 sm:py-6 tournaments-header">
-          <h1 className="font-alice text-[32px] sm:text-[40px] lg:text-[56px] leading-tight text-white tournaments-title text-center">
+        {/* Page Header */}
+        <header className="mb-6 sm:mb-8 flex w-full items-center justify-between py-4 sm:py-6 tournaments-header">
+          <h1 className="font-alice text-[32px] sm:text-[40px] lg:text-[56px] leading-tight text-white tournaments-title">
             {t("nav.tournaments")}
           </h1>
+          <button
+            onClick={() => setShowCreateForm(true)}
+            className="bg-primary hover:bg-primary-hover text-dark font-semibold py-2 px-4 rounded-lg transition-colors"
+          >
+            {t("tournaments.create.button")}
+          </button>
         </header>
+
+        {/* Create Tournament Form Modal */}
+        {showCreateForm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-dark-secondary rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold text-white">
+                  {t("tournaments.create.title")}
+                </h2>
+                <button
+                  onClick={() => setShowCreateForm(false)}
+                  className="text-gray-400 hover:text-white"
+                >
+                  ×
+                </button>
+              </div>
+              <CreateTournamentForm
+                onSuccess={handleTournamentCreated}
+                onCancel={() => setShowCreateForm(false)}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Category Filter */}
         <CategoryButtons
@@ -75,7 +179,7 @@ export default function Tournaments() {
           translationPrefix="tournaments"
         />
 
-        {/* Search and Sort controls (marketplace-style) */}
+        {/* Search and Sort controls */}
         <section className="mb-12 search-section md:mb-8 relative z-10">
           <div
             className="mb-6 flex w-full max-w-[800px] mx-auto items-center gap-3 search-controls"
@@ -122,111 +226,18 @@ export default function Tournaments() {
               />
             </div>
           </div>
-
-          {/* duplicate category row removed to avoid repeating the filters (top filter remains) */}
         </section>
 
-        {/* Cards grid (filtered + sorted + searched) */}
-        <section
-          className={`
-            grid grid-cols-1 justify-items-center gap-8 products-grid
-            min-[900px]:grid-cols-2
-            xl:grid-cols-3
-            md:gap-6
-            sm:gap-4
-            mt-8 md:mt-6 relative z-0
-          `}
-        >
-          {tournaments
-            .filter((t) => t.category === category)
-            .filter((t) =>
-              [t.game, t.organizer]
-                .join(" ")
-                .toLowerCase()
-                .includes(debouncedSearchTerm.toLowerCase())
-            )
-            .sort((a, b) => {
-              const collator = new Intl.Collator(
-                i18n.language === "ar" ? "ar" : "en",
-                { sensitivity: "base" }
-              );
-              const parsePrize = (s: string) =>
-                parseFloat(s.replace(/[^\d.]/g, "")) || 0;
-              const aDate = new Date(a.startDate).getTime();
-              const bDate = new Date(b.startDate).getTime();
-              switch (sortBy) {
-                case "date-soonest":
-                  return aDate - bDate;
-                case "date-latest":
-                  return bDate - aDate;
-                case "prize-high":
-                  return parsePrize(b.prizePool) - parsePrize(a.prizePool);
-                case "prize-low":
-                  return parsePrize(a.prizePool) - parsePrize(b.prizePool);
-                case "players-high":
-                  return b.playersJoined - a.playersJoined;
-                case "players-low":
-                  return a.playersJoined - b.playersJoined;
-                case "game":
-                  return collator.compare(a.game, b.game);
-                default:
-                  return 0;
-              }
-            })
-            .map((t) => (
-              <Card
-                key={t.id}
-                preset="tournament"
-                variant={t.category}
-                imageUrl={t.imageUrl}
-                game={t.game}
-                organizer={t.organizer}
-                startDate={new Date(t.startDate).toLocaleDateString(undefined, {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-                prizePool={t.prizePool}
-                playersJoined={t.playersJoined}
-              />
-            ))
-            .concat(
-              tournaments
-                .filter((t) => t.category === category)
-                .filter((t) =>
-                  [t.game, t.organizer]
-                    .join(" ")
-                    .toLowerCase()
-                    .includes(debouncedSearchTerm.toLowerCase())
-                ).length === 0
-                ? [
-                    <div key="empty" className="col-span-full w-full max-w-2xl">
-                      <EmptyState
-                        icon={
-                          <svg
-                            className="w-10 h-10 text-cyan-300"
-                            viewBox="0 0 24 24"
-                            fill="currentColor"
-                          >
-                            <path d="M12 2l3 7h7l-5.5 4 2.5 7L12 16l-7 4 2.5-7L2 9h7z" />
-                          </svg>
-                        }
-                        title={t("common.noResults") || "No results"}
-                        description={
-                          t("tournaments.noMatches") ||
-                          "Try adjusting your search or filters."
-                        }
-                        actionLabel={t("common.clearSearch") || "Clear search"}
-                        onAction={() => {
-                          setSearchTerm("");
-                          searchRef.current?.focus();
-                        }}
-                      />
-                    </div>,
-                  ]
-                : []
-            )}
-        </section>
+        {/* Tournament Grid */}
+        <TournamentGrid
+          tournaments={filteredTournaments}
+          loading={loading}
+          error={error}
+          onTournamentClick={(tournament: Tournament) => {
+            console.log("Tournament clicked:", tournament);
+            // TODO: Navigate to tournament details page
+          }}
+        />
       </div>
     </main>
   );

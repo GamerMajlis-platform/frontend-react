@@ -1,6 +1,6 @@
 // Session Management Service - Handles token validation and session lifecycle
 import { apiFetch } from "../lib/api";
-import { API_ENDPOINTS } from "../config/constants";
+import { API_ENDPOINTS, STORAGE_KEYS } from "../config/constants";
 import type { BackendResponse } from "../types/auth";
 
 interface TokenValidationResponse extends BackendResponse {
@@ -10,7 +10,7 @@ interface TokenValidationResponse extends BackendResponse {
 }
 
 export class SessionService {
-  private static readonly TOKEN_KEY = "authToken";
+  private static readonly TOKEN_KEY = STORAGE_KEYS.auth;
   private static readonly REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
   private static refreshTimer: number | null = null;
 

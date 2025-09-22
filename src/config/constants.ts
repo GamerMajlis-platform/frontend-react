@@ -44,6 +44,8 @@ export const STORAGE_KEYS = {
   preferences: "gamerMajlis_preferences",
   language: "gamerMajlis_language",
   session: "gamerMajlis_session",
+  registeredEvents: "gamerMajlis_registeredEvents",
+  registeredTournaments: "gamerMajlis_registeredTournaments",
 } as const;
 
 // ===== API CONFIGURATION =====
@@ -74,14 +76,35 @@ export const API_ENDPOINTS = {
     uploadPicture: "/profile/me/profile-picture",
     removePicture: "/profile/me/profile-picture",
     updateStats: "/profile/me/gaming-stats",
+    search: "/profile/search", // GET with query params
+    suggestions: "/profile/suggestions", // GET with limit param
+  },
+
+  // Product endpoints
+  products: {
+    create: "/products", // POST
+    list: "/products", // GET with query params
+    byId: "/products", // append /{productId}
+    update: "/products", // append /{productId} - PUT
+    delete: "/products", // append /{productId} - DELETE
+    uploadImages: "/products", // append /{productId}/images - POST
+    addReview: "/products", // append /{productId}/reviews - POST
+    getReviews: "/products", // append /{productId}/reviews - GET
+    toggleWishlist: "/products", // append /{productId}/wishlist - POST
+    recordView: "/products", // append /{productId}/view - POST
+    search: "/products/search", // GET with query params
+    categories: "/products/categories", // GET
+    featured: "/products/featured", // GET with limit param
   },
 
   // Data endpoints (to be updated later)
-  products: "/products",
   tournaments: "/tournaments",
   events: "/events",
   messages: "/messages",
   conversations: "/conversations",
+
+  // User-specific data
+  // Note: wishlist and settings are handled via product endpoints and profile endpoints per API guide
 
   // File uploads
   uploads: "/uploads",

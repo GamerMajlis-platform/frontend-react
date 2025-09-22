@@ -1,6 +1,7 @@
-import { API_CONFIG } from "../config/constants";
+import { API_CONFIG, STORAGE_KEYS } from "../config/constants";
 
-const API_BASE = import.meta.env.VITE_API_URL || API_CONFIG.baseUrl;
+// Use the unified env var `VITE_API_BASE_URL` if set, otherwise fall back to constant
+const API_BASE = import.meta.env.VITE_API_BASE_URL || API_CONFIG.baseUrl;
 
 export class ApiError extends Error {
   status?: number;
@@ -21,12 +22,14 @@ export async function apiFetch<T = unknown>(
   options: ApiOptions = {}
 ): Promise<T> {
   const token =
-    typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+    typeof window !== "undefined"
+      ? localStorage.getItem(STORAGE_KEYS.auth)
+      : null;
 
   const { useFormData = false, ...fetchOptions } = options;
 
   const headers: Record<string, string> = {
-    ...(fetchOptions.headers as Record<string, string>),
+    ...((fetchOptions.headers as Record<string, string>) || {}),
   };
 
   // Only set Content-Type to JSON if not using form data

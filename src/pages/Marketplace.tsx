@@ -1,241 +1,391 @@
-import { useRef, useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Card, BackgroundDecor, SortBy, IconSearch } from "../components";
-import EmptyState from "../states/EmptyState";
-import { productData, sortOptions, type SortOption } from "../data";
-import { useIsMobile, useDebounce } from "../hooks";
+import { BackgroundDecor } from "../components";
+import { ProductGrid, ProductSearch } from "../components/products";
+import ProductService from "../services/ProductService";
+import type {
+  ParsedProduct,
+  ProductSearchParams,
+  ProductCategoryType,
+  ProductCondition,
+} from "../types/products";
 
-// Utility function to detect RTL text
-const isRTLText = (text: string): boolean => {
-  return /[\u0600-\u06FF\u0750-\u077F]/.test(text);
-};
+// Enhanced CreateProductForm Component
+function CreateProductForm({
+  onCreated,
+  onCancel,
+}: {
+  onCreated?: () => Promise<void> | void;
+  onCancel?: () => void;
+}) {
+  const { t } = useTranslation();
+  const [formData, setFormData] = useState<{
+    name: string;
+    description: string;
+    price: string;
+    category: ProductCategoryType;
+    condition: ProductCondition;
+  }>({
+    name: "",
+    description: "",
+    price: "",
+    category: "GAMES",
+    condition: "NEW",
+  });
+  const [file, setFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-export default function Marketplace() {
-  const { i18n, t } = useTranslation();
-  const isMobile = useIsMobile();
-  const searchRef = useRef<HTMLInputElement>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const debouncedSearchTerm = useDebounce(searchTerm, 300);
-  const [sortBy, setSortBy] = useState<SortOption>("name");
-  const [selectedCategory, setSelectedCategory] = useState<string>("All Items");
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
 
-  // Filter categories: keep canonical values for filtering and translation keys for display
-  const categories = [
-    { value: "All Items", labelKey: "categories.allItems" },
-    { value: "Gaming Gear", labelKey: "categories.gamingGear" },
-    { value: "Console", labelKey: "categories.console" },
-    { value: "PC Parts", labelKey: "categories.pcParts" },
-    { value: "Audio", labelKey: "categories.audio" },
-  ];
+    if (!formData.name.trim()) {
+      newErrors.name = t("product.nameRequired", "Product name is required");
+    }
+    if (!formData.description.trim()) {
+      newErrors.description = t(
+        "product.descriptionRequired",
+        "Description is required"
+      );
+    }
+    if (!formData.price || parseFloat(formData.price) <= 0) {
+      newErrors.price = t(
+        "product.validPriceRequired",
+        "Valid price is required"
+      );
+    }
 
-  // SortBy component handles dropdown state and outside clicks
-
-  const parsePrice = (priceString: string): number => {
-    return parseFloat(priceString.replace("$", ""));
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const parseReviews = (reviewsString: string): number => {
-    const matches = reviewsString.match(/(\d+(?:,\d+)*)/);
-    return matches ? parseInt(matches[1].replace(/,/g, ""), 10) : 0;
-  };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  const sortedAndFilteredProducts = productData
-    .filter(
-      (product) =>
-        product.productName
-          .toLowerCase()
-          .includes(debouncedSearchTerm.toLowerCase()) ||
-        product.seller
-          .toLowerCase()
-          .includes(debouncedSearchTerm.toLowerCase()) ||
-        product.category
-          .toLowerCase()
-          .includes(debouncedSearchTerm.toLowerCase())
-    )
-    .filter((product) => {
-      if (selectedCategory === "All Items") return true;
-      return product.category
-        .toLowerCase()
-        .includes(selectedCategory.toLowerCase());
-    })
-    .sort((a, b) => {
-      const collator = new Intl.Collator(i18n.language === "ar" ? "ar" : "en", {
-        sensitivity: "base",
+    if (!validateForm()) return;
+
+    setLoading(true);
+    try {
+      const payload = {
+        name: formData.name,
+        description: formData.description,
+        price: parseFloat(formData.price),
+        category: formData.category,
+        condition: formData.condition,
+        images: file || undefined,
+      };
+
+      await ProductService.createProduct(payload);
+      setFormData({
+        name: "",
+        description: "",
+        price: "",
+        category: "GAMES",
+        condition: "NEW",
       });
-      switch (sortBy) {
-        case "name":
-          return collator.compare(a.productName, b.productName);
-        case "price-low":
-          return parsePrice(a.price) - parsePrice(b.price);
-        case "price-high":
-          return parsePrice(b.price) - parsePrice(a.price);
-        case "rating":
-          return parseFloat(b.rate) - parseFloat(a.rate);
-        case "reviews":
-          return parseReviews(b.reviews) - parseReviews(a.reviews);
-        default:
-          return 0;
-      }
-    });
+      setFile(null);
+      setErrors({});
+
+      if (onCreated) await onCreated();
+    } catch (err) {
+      console.error("Failed to create product:", err);
+      setErrors({
+        general: t("product.createError", "Failed to create product"),
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <main className="relative z-10 min-h-[calc(100vh-88px)] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-8 px-4 marketplace-container md:px-3 sm:px-3">
+    <div className="bg-slate-800 border border-slate-600 rounded-lg p-6 mb-8">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold text-white">
+          {t("product.createProduct", "Create New Product")}
+        </h3>
+        {onCancel && (
+          <button
+            onClick={onCancel}
+            className="text-gray-400 hover:text-white transition-colors"
+          >
+            ✕
+          </button>
+        )}
+      </div>
+
+      {errors.general && (
+        <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded text-red-300 text-sm">
+          {errors.general}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              {t("product.name", "Product Name")}
+            </label>
+            <input
+              type="text"
+              value={formData.name}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, name: e.target.value }))
+              }
+              className={`w-full px-3 py-2 bg-slate-700 border rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 ${
+                errors.name ? "border-red-500" : "border-slate-600"
+              }`}
+              placeholder={t("product.namePlaceholder", "Enter product name")}
+            />
+            {errors.name && (
+              <p className="mt-1 text-sm text-red-400">{errors.name}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              {t("product.price", "Price")}
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              value={formData.price}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, price: e.target.value }))
+              }
+              className={`w-full px-3 py-2 bg-slate-700 border rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 ${
+                errors.price ? "border-red-500" : "border-slate-600"
+              }`}
+              placeholder={t("product.pricePlaceholder", "0.00")}
+            />
+            {errors.price && (
+              <p className="mt-1 text-sm text-red-400">{errors.price}</p>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-1">
+            {t("product.description", "Description")}
+          </label>
+          <textarea
+            value={formData.description}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, description: e.target.value }))
+            }
+            className={`w-full px-3 py-2 bg-slate-700 border rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 ${
+              errors.description ? "border-red-500" : "border-slate-600"
+            }`}
+            placeholder={t(
+              "product.descriptionPlaceholder",
+              "Describe your product"
+            )}
+            rows={3}
+          />
+          {errors.description && (
+            <p className="mt-1 text-sm text-red-400">{errors.description}</p>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              {t("product.category", "Category")}
+            </label>
+            <select
+              value={formData.category}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  category: e.target.value as ProductCategoryType,
+                }))
+              }
+              className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+              aria-label={t("product.category", "Category")}
+            >
+              <option value="GAMES">{t("categories.games", "Games")}</option>
+              <option value="ACCESSORIES">
+                {t("categories.accessories", "Accessories")}
+              </option>
+              <option value="HARDWARE">
+                {t("categories.hardware", "Hardware")}
+              </option>
+              <option value="SOFTWARE">
+                {t("categories.software", "Software")}
+              </option>
+              <option value="MERCHANDISE">
+                {t("categories.merchandise", "Merchandise")}
+              </option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              {t("product.condition", "Condition")}
+            </label>
+            <select
+              value={formData.condition}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  condition: e.target.value as ProductCondition,
+                }))
+              }
+              className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+              aria-label={t("product.condition", "Condition")}
+            >
+              <option value="NEW">{t("product.conditions.new", "New")}</option>
+              <option value="USED_LIKE_NEW">
+                {t("product.conditions.likeNew", "Like New")}
+              </option>
+              <option value="USED_GOOD">
+                {t("product.conditions.good", "Good")}
+              </option>
+              <option value="USED_FAIR">
+                {t("product.conditions.fair", "Fair")}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-1">
+            {t("product.image", "Product Image")}
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setFile(e.target.files?.[0] || null)}
+            className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-white file:mr-4 file:py-1 file:px-3 file:border-0 file:text-sm file:bg-primary-600 file:text-white file:rounded-md hover:file:bg-primary-700"
+            aria-label={t("product.image", "Product Image")}
+          />
+        </div>
+
+        <div className="flex gap-3 pt-2">
+          <button
+            type="submit"
+            disabled={loading}
+            className="flex-1 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-md transition-colors"
+          >
+            {loading
+              ? t("product.creating", "Creating...")
+              : t("product.create", "Create Product")}
+          </button>
+          {onCancel && (
+            <button
+              type="button"
+              onClick={onCancel}
+              className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white font-medium rounded-md transition-colors"
+            >
+              {t("common.cancel", "Cancel")}
+            </button>
+          )}
+        </div>
+      </form>
+    </div>
+  );
+}
+
+export default function Marketplace() {
+  const { t } = useTranslation();
+  const [products, setProducts] = useState<ParsedProduct[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+
+  // Load products from the backend
+  const loadProducts = useCallback(
+    async (searchParams: ProductSearchParams = {}) => {
+      try {
+        setLoading(true);
+        const response = await ProductService.getProducts({
+          page: 0,
+          size: 50,
+          ...searchParams,
+        });
+        setProducts((response.products as ParsedProduct[]) || []);
+      } catch (error) {
+        console.error("Failed to load products:", error);
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
+
+  // Handle search params change from ProductSearch component
+  const handleSearchParamsChange = useCallback(
+    (searchParams: ProductSearchParams) => {
+      loadProducts(searchParams);
+    },
+    [loadProducts]
+  );
+
+  // Handle product creation success
+  const handleProductCreated = useCallback(async () => {
+    await loadProducts();
+    setShowCreateForm(false);
+  }, [loadProducts]);
+
+  // Load products on component mount
+  useEffect(() => {
+    loadProducts();
+  }, [loadProducts]);
+
+  return (
+    <main className="relative min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <BackgroundDecor />
 
-      <div className="relative z-10 mx-auto max-w-[1400px] max-width-container">
-        {/* Header Section */}
-        <header className="mb-12 text-center marketplace-header md:mb-8">
-          <h1
-            className={`
-              mb-4 text-5xl font-bold text-white drop-shadow-md marketplace-title
-              md:text-4xl
-              sm:text-3xl
-              ${isRTLText(t("marketplace.title")) ? "font-tahoma" : "font-sans"}
-            `}
-          >
-            {t("marketplace.title")}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <header className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            {t("marketplace.title", "Gaming Marketplace")}
           </h1>
-          <p
-            className={`
-              mx-auto max-w-[600px] text-xl text-cyan-300 marketplace-subtitle
-              md:max-w-[90%] md:text-lg
-              ${
-                isRTLText(
-                  "Discover premium gaming gear from trusted sellers worldwide"
-                )
-                  ? "font-tahoma text-center"
-                  : "font-sans text-center"
-              }
-            `}
-          >
-            {t("marketplace.subtitle")}
+          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+            {t(
+              "marketplace.subtitle",
+              "Discover premium gaming gear from trusted sellers worldwide"
+            )}
           </p>
         </header>
 
-        {/* Search and Filter Section */}
-        <section className="mb-12 search-section md:mb-8 relative z-10">
-          {/* Search and Sort Row */}
-          <div
-            className="mb-6 flex w-full max-w-[800px] mx-auto items-center gap-3 search-controls"
-            dir={i18n.dir()}
+        {/* Create Product Button */}
+        <div className="mb-8 flex justify-center">
+          <button
+            onClick={() => setShowCreateForm(!showCreateForm)}
+            className="bg-primary-600 hover:bg-primary-700 text-white font-medium px-6 py-3 rounded-lg transition-colors"
           >
-            <input
-              type="text"
-              ref={searchRef}
-              placeholder={
-                isMobile
-                  ? t("common.search")
-                  : t("marketplace.searchPlaceholder")
-              }
-              className="
-                h-12 w-full flex-1 rounded-xl border border-slate-600 
-                bg-slate-800 px-4 py-3 text-white placeholder-slate-400 
-                transition-all duration-300 focus:border-cyan-300 
-                focus:shadow-[0_0_0_3px_rgba(111,255,233,0.1)] 
-                focus:outline-none search-input
-              "
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            {/* Mobile search icon button */}
-            <button
-              type="button"
-              aria-label={t("common.search")}
-              className={`sm:hidden inline-flex items-center justify-center h-10 w-10 rounded-lg border border-slate-600 text-slate-200 hover:text-white hover:border-cyan-300 transition-all ${
-                i18n.dir() === "rtl" ? "mr-auto" : "ml-auto"
-              }`}
-              onClick={() => searchRef.current?.focus()}
-            >
-              <IconSearch />
-            </button>
+            {showCreateForm
+              ? t("common.cancel", "Cancel")
+              : t("product.createProduct", "Create Product")}
+          </button>
+        </div>
 
-            {/* Sort dropdown hidden on mobile */}
-            <div className="relative w-[140px] sort-container hidden sm:block">
-              <SortBy
-                options={sortOptions}
-                value={sortBy}
-                onChange={(v) => setSortBy(v as SortOption)}
-                placeholderKey={"tournaments.sort.placeholder"}
-              />
-            </div>
-          </div>
+        {/* Create Product Form */}
+        {showCreateForm && (
+          <CreateProductForm
+            onCreated={handleProductCreated}
+            onCancel={() => setShowCreateForm(false)}
+          />
+        )}
 
-          {/* Filter Buttons Row */}
-          <div className="flex flex-wrap justify-center gap-2 sm:gap-3 filter-buttons mb-8">
-            {categories.map((cat) => (
-              <button
-                key={cat.value}
-                className={`
-                  rounded-2xl border px-4 py-2 text-sm font-medium transition-all duration-200 
-                  filter-button
-                  ${
-                    selectedCategory === cat.value
-                      ? "border-cyan-300 bg-cyan-300 text-slate-900"
-                      : "border-cyan-300 bg-transparent text-cyan-300 hover:bg-cyan-300 hover:text-slate-900"
-                  }
-                `}
-                onClick={() => setSelectedCategory(cat.value)}
-              >
-                {t(cat.labelKey)}
-              </button>
-            ))}
-          </div>
-        </section>
+        {/* Search and Filters */}
+        <div className="mb-8 max-w-4xl mx-auto">
+          <ProductSearch
+            onSearchParamsChange={handleSearchParamsChange}
+            autoSearch={true}
+            showFilters={true}
+          />
+        </div>
 
-        {/* Products Grid */}
-        <section
-          className="
-          grid grid-cols-1 justify-items-center gap-8 products-grid
-          min-[900px]:grid-cols-2
-          xl:grid-cols-3
-          md:gap-6
-          sm:gap-4
-          mt-8 md:mt-6 relative z-0
-        "
-        >
-          {sortedAndFilteredProducts.length === 0 ? (
-            <div className="col-span-full w-full max-w-2xl">
-              <EmptyState
-                icon={
-                  <svg
-                    className="w-10 h-10 text-cyan-300"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <path d="M21 16V8a2 2 0 0 0-2-2h-5l-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2Z" />
-                  </svg>
-                }
-                title={t("common.noResults") || "No results"}
-                description={
-                  t("marketplace.noMatches") ||
-                  "Try adjusting your search or filters."
-                }
-                actionLabel={t("common.clearFilters") || "Clear filters"}
-                onAction={() => {
-                  setSearchTerm("");
-                  setSelectedCategory("All Items");
-                  setSortBy("name");
-                  searchRef.current?.focus();
-                }}
-              />
-            </div>
-          ) : (
-            sortedAndFilteredProducts.map((product) => (
-              <Card
-                key={product.id}
-                preset="product"
-                id={product.id}
-                category={product.category}
-                productName={product.productName}
-                seller={product.seller}
-                price={product.price}
-                rate={product.rate}
-                reviews={product.reviews}
-                imageUrl={product.imageUrl}
-              />
-            ))
-          )}
-        </section>
+        {/* Product Grid */}
+        <ProductGrid
+          products={products}
+          loading={loading}
+          emptyMessage={t("marketplace.noProducts", "No products found")}
+          columns={4}
+        />
       </div>
     </main>
   );

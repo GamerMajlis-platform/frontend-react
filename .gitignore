@@ -15,6 +15,9 @@ dist-ssr
 # IDE generated files
 src/services/MockAuthService.ts
 
+# Internal development notes
+SECURITY_NOTES.md
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

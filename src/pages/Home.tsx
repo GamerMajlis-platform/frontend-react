@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { BackgroundDecor } from "../components";
+import { BackgroundDecor, ProfileBrowser } from "../components";
+import { useState } from "react";
 
 interface HomeProps {
   onNavigate?: (page: string) => void;
@@ -7,6 +8,7 @@ interface HomeProps {
 
 export default function Home({ onNavigate }: HomeProps) {
   const { t } = useTranslation();
+  const [showProfileBrowser, setShowProfileBrowser] = useState(false);
 
   return (
     <main className="relative w-full flex-1 flex items-center justify-center min-h-[calc(100vh-88px)] py-8 sm:py-16 md:py-20 lg:py-24 xl:py-28">
@@ -23,7 +25,7 @@ export default function Home({ onNavigate }: HomeProps) {
             {t("home.subtitle")}
           </p>
           {/* Buttons from Figma Design - Stack on mobile, side by side on desktop */}
-          <div className="flex flex-row flex-wrap items-center justify-center gap-3 sm:gap-8 md:gap-12 lg:gap-[68px] w-full max-w-[600px]">
+          <div className="flex flex-row flex-wrap items-center justify-center gap-3 sm:gap-8 md:gap-12 lg:gap-[68px] w-full max-w-[600px] mb-8">
             <button
               className="flex w-[48%] sm:w-[200px] md:w-[220px] lg:w-[245px] h-[40px] sm:h-[46px] md:h-[50px] items-center justify-center gap-2 px-5 sm:px-8 md:px-10 lg:px-12 py-2.5 bg-[#6fffe9] rounded-[30px] hover:bg-[#5ee6d3] transition-colors duration-200 cursor-pointer"
               type="button"
@@ -45,6 +47,28 @@ export default function Home({ onNavigate }: HomeProps) {
                 {t("nav.tournaments")}
               </span>
             </button>
+          </div>
+
+          {/* Profile Browser Demo Section */}
+          <div className="w-full max-w-4xl">
+            <button
+              onClick={() => setShowProfileBrowser(!showProfileBrowser)}
+              className="px-6 py-3 bg-slate-800/50 hover:bg-slate-800/70 text-white rounded-xl border border-slate-600/50 transition-all mb-6"
+            >
+              {showProfileBrowser ? "Hide" : "Try"} Profile Search & Discovery
+            </button>
+
+            {showProfileBrowser && (
+              <div className="bg-slate-900/50 backdrop-blur-xl rounded-2xl p-6 border border-slate-700/50">
+                <ProfileBrowser
+                  onProfileSelect={(profile) => {
+                    console.log("Selected profile:", profile);
+                    // Here you could navigate to the profile page
+                    // onNavigate?.(`profile/${profile.id}`);
+                  }}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

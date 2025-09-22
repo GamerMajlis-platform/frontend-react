@@ -27,6 +27,11 @@ export interface User {
   socialLinks?: string; // JSON string
   gamingStatistics?: string; // JSON string
   privacySettings?: string; // JSON string
+  // Parsed JSON fields (added by ProfileService.parseUserJsonFields)
+  parsedGamingPreferences?: Record<string, unknown>;
+  parsedSocialLinks?: Record<string, unknown>;
+  parsedGamingStatistics?: Record<string, unknown>;
+  parsedPrivacySettings?: Record<string, unknown>;
 }
 
 export interface AuthState {
