@@ -319,6 +319,167 @@ class ChatService {
     };
     return iconMap[messageType] || "💬";
   }
+
+  // ===== CHAT ENHANCEMENT FEATURES =====
+
+  /**
+   * T24: Message toxicity filtering
+   */
+  private messageHistory: Map<number, { count: number; lastMessage: number }> =
+    new Map();
+  private blockedUsers: Set<number> = new Set();
+
+  /**
+   * F17: Spam detection - rate limiting for rapid messaging
+   */
+  isSpamming(userId: number): boolean {
+    const now = Date.now();
+    const userHistory = this.messageHistory.get(userId);
+
+    if (!userHistory) {
+      this.messageHistory.set(userId, { count: 1, lastMessage: now });
+      return false;
+    }
+
+    // Reset count if more than 60 seconds have passed
+    if (now - userHistory.lastMessage > 60000) {
+      this.messageHistory.set(userId, { count: 1, lastMessage: now });
+      return false;
+    }
+
+    // Check if user is sending more than 10 messages per minute
+    userHistory.count++;
+    userHistory.lastMessage = now;
+
+    return userHistory.count > 10;
+  }
+
+  /**
+   * T24: Basic toxicity filter for messages
+   */
+  containsToxicContent(message: string): { isToxic: boolean; reason?: string } {
+    const toxicWords = [
+      "hate",
+      "toxic",
+      "spam",
+      "abuse",
+      "harassment",
+      "inappropriate",
+      "offensive",
+      "threatening",
+    ];
+
+    const lowerMessage = message.toLowerCase();
+    const foundToxicWord = toxicWords.find((word) =>
+      lowerMessage.includes(word)
+    );
+
+    if (foundToxicWord) {
+      return {
+        isToxic: true,
+        reason: `Message contains inappropriate content: ${foundToxicWord}`,
+      };
+    }
+
+    // Check for excessive caps (more than 70% uppercase)
+    const capsCount = (message.match(/[A-Z]/g) || []).length;
+    const letterCount = (message.match(/[A-Za-z]/g) || []).length;
+
+    if (letterCount > 10 && capsCount / letterCount > 0.7) {
+      return {
+        isToxic: true,
+        reason: "Message contains excessive capitalization",
+      };
+    }
+
+    return { isToxic: false };
+  }
+
+  /**
+   * F16: Block user functionality
+   */
+  blockUser(userId: number): void {
+    this.blockedUsers.add(userId);
+  }
+
+  /**
+   * F16: Unblock user functionality
+   */
+  unblockUser(userId: number): void {
+    this.blockedUsers.delete(userId);
+  }
+
+  /**
+   * F16: Check if user is blocked
+   */
+  isUserBlocked(userId: number): boolean {
+    return this.blockedUsers.has(userId);
+  }
+
+  /**
+   * Enhanced send message with validation
+   */
+  async sendMessageWithValidation(
+    roomId: number,
+    data: SendMessageData,
+    userId: number
+  ): Promise<ChatMessage> {
+    // F16: Check if user is blocked
+    if (this.isUserBlocked(userId)) {
+      throw new Error("You are blocked from sending messages");
+    }
+
+    // F17: Check for spam
+    if (this.isSpamming(userId)) {
+      throw new Error(
+        "You are sending messages too quickly. Please slow down."
+      );
+    }
+
+    // T24: Check for toxic content
+    if (data.content) {
+      const toxicityCheck = this.containsToxicContent(data.content);
+      if (toxicityCheck.isToxic) {
+        throw new Error(
+          toxicityCheck.reason || "Message contains inappropriate content"
+        );
+      }
+    }
+
+    // T21: Message length validation (already handled in UI but double-check)
+    if (data.content && data.content.length > 1000) {
+      throw new Error("Message exceeds maximum length of 1000 characters");
+    }
+
+    // If all validations pass, send the message
+    return this.sendMessage(roomId, data);
+  }
+
+  /**
+   * T23: Chat history preservation (30 days)
+   * This would typically be handled by backend, but we can track it client-side
+   */
+  private messageRetentionDays = 30;
+
+  /**
+   * Check if message is within retention period
+   */
+  isMessageWithinRetention(messageDate: string): boolean {
+    const messageTime = new Date(messageDate).getTime();
+    const retentionTime = this.messageRetentionDays * 24 * 60 * 60 * 1000;
+    const cutoffTime = Date.now() - retentionTime;
+
+    return messageTime > cutoffTime;
+  }
+
+  /**
+   * Filter messages by retention policy
+   */
+  filterMessagesByRetention(messages: ChatMessage[]): ChatMessage[] {
+    return messages.filter((message) =>
+      this.isMessageWithinRetention(message.createdAt)
+    );
+  }
 }
 
 // Export singleton instance

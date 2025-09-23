@@ -51,28 +51,28 @@ export default function CreateEventForm({
 
     // Title validation
     if (!formData.title.trim()) {
-      newErrors.title = t("events.validation.titleRequired");
+      newErrors.title = t("events:validation.titleRequired");
     } else if (formData.title.length < 3) {
-      newErrors.titleMinLength = t("events.validation.titleMinLength");
+      newErrors.titleMinLength = t("events:validation.titleMinLength");
     } else if (formData.title.length > 100) {
-      newErrors.titleMaxLength = t("events.validation.titleMaxLength");
+      newErrors.titleMaxLength = t("events:validation.titleMaxLength");
     }
 
     // Description validation
     if (formData.description && formData.description.length > 1000) {
       newErrors.descriptionMaxLength = t(
-        "events.validation.descriptionMaxLength"
+        "events:validation.descriptionMaxLength"
       );
     }
 
     // Start date validation
     if (!formData.startDateTime) {
       newErrors.startDateTimeRequired = t(
-        "events.validation.startDateTimeRequired"
+        "events:validation.startDateTimeRequired"
       );
     } else if (new Date(formData.startDateTime) <= new Date()) {
       newErrors.startDateTimeFuture = t(
-        "events.validation.startDateTimeFuture"
+        "events:validation.startDateTimeFuture"
       );
     }
 
@@ -80,7 +80,7 @@ export default function CreateEventForm({
     if (formData.endDateTime && formData.startDateTime) {
       if (new Date(formData.endDateTime) <= new Date(formData.startDateTime)) {
         newErrors.endDateTimeAfterStart = t(
-          "events.validation.endDateTimeAfterStart"
+          "events:validation.endDateTimeAfterStart"
         );
       }
     }
@@ -89,10 +89,10 @@ export default function CreateEventForm({
     if (formData.maxAttendees !== undefined) {
       if (formData.maxAttendees <= 0) {
         newErrors.maxAttendeesPositive = t(
-          "events.validation.maxAttendeesPositive"
+          "events:validation.maxAttendeesPositive"
         );
       } else if (formData.maxAttendees > 10000) {
-        newErrors.maxAttendeesMax = t("events.validation.maxAttendeesMax");
+        newErrors.maxAttendeesMax = t("events:validation.maxAttendeesMax");
       }
     }
 
@@ -103,7 +103,7 @@ export default function CreateEventForm({
         new Date(formData.startDateTime)
       ) {
         newErrors.registrationDeadlineBeforeStart = t(
-          "events.validation.registrationDeadlineBeforeStart"
+          "events:validation.registrationDeadlineBeforeStart"
         );
       }
     }
@@ -111,9 +111,9 @@ export default function CreateEventForm({
     // Entry fee validation
     if (formData.entryFee !== undefined) {
       if (formData.entryFee < 0) {
-        newErrors.entryFeePositive = t("events.validation.entryFeePositive");
+        newErrors.entryFeePositive = t("events:validation.entryFeePositive");
       } else if (formData.entryFee > 10000) {
-        newErrors.entryFeeMax = t("events.validation.entryFeeMax");
+        newErrors.entryFeeMax = t("events:validation.entryFeeMax");
       }
     }
 
@@ -121,7 +121,7 @@ export default function CreateEventForm({
     if (formData.ageRestriction !== undefined) {
       if (formData.ageRestriction < 1 || formData.ageRestriction > 99) {
         newErrors.ageRestrictionRange = t(
-          "events.validation.ageRestrictionRange"
+          "events:validation.ageRestrictionRange"
         );
       }
     }
@@ -133,10 +133,10 @@ export default function CreateEventForm({
     ) {
       if (!formData.virtualLink?.trim()) {
         newErrors.virtualLinkRequired = t(
-          "events.validation.virtualLinkRequired"
+          "events:validation.virtualLinkRequired"
         );
       } else if (formData.virtualLink && !isValidUrl(formData.virtualLink)) {
-        newErrors.virtualLinkValid = t("events.validation.virtualLinkValid");
+        newErrors.virtualLinkValid = t("events:validation.virtualLinkValid");
       }
     }
 
@@ -146,12 +146,12 @@ export default function CreateEventForm({
     ) {
       if (!formData.physicalAddress?.trim()) {
         newErrors.physicalAddressRequired = t(
-          "events.validation.physicalAddressRequired"
+          "events:validation.physicalAddressRequired"
         );
       }
       if (!formData.physicalVenue?.trim()) {
         newErrors.physicalVenueRequired = t(
-          "events.validation.physicalVenueRequired"
+          "events:validation.physicalVenueRequired"
         );
       }
     }
@@ -179,7 +179,7 @@ export default function CreateEventForm({
     try {
       await onSubmit(formData);
     } catch {
-      setErrors({ general: t("events.messages.createError") });
+      setErrors({ general: t("events:messages.createError") });
     }
   };
 
@@ -207,7 +207,7 @@ export default function CreateEventForm({
     >
       <div className="text-center">
         <h2 className="text-2xl font-bold text-white mb-2">
-          {t("events.createEvent")}
+          {t("events:createEvent")}
         </h2>
       </div>
 
@@ -223,14 +223,14 @@ export default function CreateEventForm({
           htmlFor="title"
           className="block text-sm font-medium text-white mb-2"
         >
-          {t("events.form.title")} *
+          {t("events:form.title")} *
         </label>
         <input
           type="text"
           id="title"
           value={formData.title}
           onChange={(e) => handleInputChange("title", e.target.value)}
-          placeholder={t("events.form.placeholders.title")}
+          placeholder={t("events:form.placeholders.title")}
           className="w-full rounded-xl border border-slate-600 bg-[#0F172A] px-4 py-3 text-white placeholder-slate-400 focus:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300/20"
           disabled={isSubmitting}
           required
@@ -244,13 +244,13 @@ export default function CreateEventForm({
           htmlFor="description"
           className="block text-sm font-medium text-white mb-2"
         >
-          {t("events.form.description")}
+          {t("events:form.description")}
         </label>
         <textarea
           id="description"
           value={formData.description}
           onChange={(e) => handleInputChange("description", e.target.value)}
-          placeholder={t("events.form.placeholders.description")}
+          placeholder={t("events:form.placeholders.description")}
           rows={4}
           className="w-full rounded-xl border border-slate-600 bg-[#0F172A] px-4 py-3 text-white placeholder-slate-400 focus:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300/20"
           disabled={isSubmitting}
@@ -265,7 +265,7 @@ export default function CreateEventForm({
             htmlFor="startDateTime"
             className="block text-sm font-medium text-white mb-2"
           >
-            {t("events.form.startDateTime")} *
+            {t("events:form.startDateTime")} *
           </label>
           <input
             type="datetime-local"
@@ -283,7 +283,7 @@ export default function CreateEventForm({
             htmlFor="endDateTime"
             className="block text-sm font-medium text-white mb-2"
           >
-            {t("events.form.endDateTime")}
+            {t("events:form.endDateTime")}
           </label>
           <input
             type="datetime-local"
@@ -304,7 +304,7 @@ export default function CreateEventForm({
             htmlFor="eventType"
             className="block text-sm font-medium text-white mb-2"
           >
-            {t("events.form.eventType")}
+            {t("events:form.eventType")}
           </label>
           <select
             id="eventType"
@@ -316,9 +316,9 @@ export default function CreateEventForm({
             disabled={isSubmitting}
           >
             <option value="COMMUNITY_GATHERING">
-              {t("events.types.COMMUNITY_GATHERING")}
+              {t("events:types.COMMUNITY_GATHERING")}
             </option>
-            <option value="TOURNAMENT">{t("events.types.TOURNAMENT")}</option>
+            <option value="TOURNAMENT">{t("events:types.TOURNAMENT")}</option>
           </select>
         </div>
         <div>
@@ -326,7 +326,7 @@ export default function CreateEventForm({
             htmlFor="locationType"
             className="block text-sm font-medium text-white mb-2"
           >
-            {t("events.form.locationType")}
+            {t("events:form.locationType")}
           </label>
           <select
             id="locationType"
@@ -337,11 +337,11 @@ export default function CreateEventForm({
             className="w-full rounded-xl border border-slate-600 bg-[#0F172A] px-4 py-3 text-white focus:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300/20"
             disabled={isSubmitting}
           >
-            <option value="VIRTUAL">{t("events.locationTypes.VIRTUAL")}</option>
+            <option value="VIRTUAL">{t("events:locationTypes.VIRTUAL")}</option>
             <option value="PHYSICAL">
-              {t("events.locationTypes.PHYSICAL")}
+              {t("events:locationTypes.PHYSICAL")}
             </option>
-            <option value="HYBRID">{t("events.locationTypes.HYBRID")}</option>
+            <option value="HYBRID">{t("events:locationTypes.HYBRID")}</option>
           </select>
         </div>
       </div>
@@ -355,14 +355,14 @@ export default function CreateEventForm({
               htmlFor="virtualLink"
               className="block text-sm font-medium text-white mb-2"
             >
-              {t("events.form.virtualLink")} *
+              {t("events:form.virtualLink")} *
             </label>
             <input
               type="url"
               id="virtualLink"
               value={formData.virtualLink}
               onChange={(e) => handleInputChange("virtualLink", e.target.value)}
-              placeholder={t("events.form.placeholders.virtualLink")}
+              placeholder={t("events:form.placeholders.virtualLink")}
               className="w-full rounded-xl border border-slate-600 bg-[#0F172A] px-4 py-3 text-white placeholder-slate-400 focus:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300/20"
               disabled={isSubmitting}
             />
@@ -373,7 +373,7 @@ export default function CreateEventForm({
               htmlFor="virtualPlatform"
               className="block text-sm font-medium text-white mb-2"
             >
-              {t("events.form.virtualPlatform")}
+              {t("events:form.virtualPlatform")}
             </label>
             <input
               type="text"
@@ -382,7 +382,7 @@ export default function CreateEventForm({
               onChange={(e) =>
                 handleInputChange("virtualPlatform", e.target.value)
               }
-              placeholder={t("events.form.placeholders.virtualPlatform")}
+              placeholder={t("events:form.placeholders.virtualPlatform")}
               className="w-full rounded-xl border border-slate-600 bg-[#0F172A] px-4 py-3 text-white placeholder-slate-400 focus:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300/20"
               disabled={isSubmitting}
             />
@@ -399,7 +399,7 @@ export default function CreateEventForm({
               htmlFor="physicalVenue"
               className="block text-sm font-medium text-white mb-2"
             >
-              {t("events.form.physicalVenue")} *
+              {t("events:form.physicalVenue")} *
             </label>
             <input
               type="text"
@@ -408,7 +408,7 @@ export default function CreateEventForm({
               onChange={(e) =>
                 handleInputChange("physicalVenue", e.target.value)
               }
-              placeholder={t("events.form.placeholders.physicalVenue")}
+              placeholder={t("events:form.placeholders.physicalVenue")}
               className="w-full rounded-xl border border-slate-600 bg-[#0F172A] px-4 py-3 text-white placeholder-slate-400 focus:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300/20"
               disabled={isSubmitting}
             />
@@ -419,7 +419,7 @@ export default function CreateEventForm({
               htmlFor="physicalAddress"
               className="block text-sm font-medium text-white mb-2"
             >
-              {t("events.form.physicalAddress")} *
+              {t("events:form.physicalAddress")} *
             </label>
             <input
               type="text"
@@ -428,7 +428,7 @@ export default function CreateEventForm({
               onChange={(e) =>
                 handleInputChange("physicalAddress", e.target.value)
               }
-              placeholder={t("events.form.placeholders.physicalAddress")}
+              placeholder={t("events:form.placeholders.physicalAddress")}
               className="w-full rounded-xl border border-slate-600 bg-[#0F172A] px-4 py-3 text-white placeholder-slate-400 focus:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300/20"
               disabled={isSubmitting}
             />
@@ -444,14 +444,14 @@ export default function CreateEventForm({
             htmlFor="gameTitle"
             className="block text-sm font-medium text-white mb-2"
           >
-            {t("events.form.gameTitle")}
+            {t("events:form.gameTitle")}
           </label>
           <input
             type="text"
             id="gameTitle"
             value={formData.gameTitle}
             onChange={(e) => handleInputChange("gameTitle", e.target.value)}
-            placeholder={t("events.form.placeholders.gameTitle")}
+            placeholder={t("events:form.placeholders.gameTitle")}
             className="w-full rounded-xl border border-slate-600 bg-[#0F172A] px-4 py-3 text-white placeholder-slate-400 focus:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300/20"
             disabled={isSubmitting}
           />
@@ -461,7 +461,7 @@ export default function CreateEventForm({
             htmlFor="gameCategory"
             className="block text-sm font-medium text-white mb-2"
           >
-            {t("events.form.gameCategory")}
+            {t("events:form.gameCategory")}
           </label>
           <select
             id="gameCategory"
@@ -476,18 +476,18 @@ export default function CreateEventForm({
             disabled={isSubmitting}
           >
             <option value="">{t("common.select")}</option>
-            <option value="FPS">{t("events.gameCategories.FPS")}</option>
-            <option value="MOBA">{t("events.gameCategories.MOBA")}</option>
-            <option value="RPG">{t("events.gameCategories.RPG")}</option>
+            <option value="FPS">{t("events:gameCategories.FPS")}</option>
+            <option value="MOBA">{t("events:gameCategories.MOBA")}</option>
+            <option value="RPG">{t("events:gameCategories.RPG")}</option>
             <option value="STRATEGY">
-              {t("events.gameCategories.STRATEGY")}
+              {t("events:gameCategories.STRATEGY")}
             </option>
-            <option value="SPORTS">{t("events.gameCategories.SPORTS")}</option>
-            <option value="RACING">{t("events.gameCategories.RACING")}</option>
+            <option value="SPORTS">{t("events:gameCategories.SPORTS")}</option>
+            <option value="RACING">{t("events:gameCategories.RACING")}</option>
             <option value="FIGHTING">
-              {t("events.gameCategories.FIGHTING")}
+              {t("events:gameCategories.FIGHTING")}
             </option>
-            <option value="OTHER">{t("events.gameCategories.OTHER")}</option>
+            <option value="OTHER">{t("events:gameCategories.OTHER")}</option>
           </select>
         </div>
       </div>
@@ -499,7 +499,7 @@ export default function CreateEventForm({
             htmlFor="maxAttendees"
             className="block text-sm font-medium text-white mb-2"
           >
-            {t("events.form.maxAttendees")}
+            {t("events:form.maxAttendees")}
           </label>
           <input
             type="number"
@@ -511,7 +511,7 @@ export default function CreateEventForm({
                 e.target.value ? parseInt(e.target.value) : undefined
               )
             }
-            placeholder={t("events.form.placeholders.maxAttendees")}
+            placeholder={t("events:form.placeholders.maxAttendees")}
             min="1"
             max="10000"
             className="w-full rounded-xl border border-slate-600 bg-[#0F172A] px-4 py-3 text-white placeholder-slate-400 focus:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300/20"
@@ -524,7 +524,7 @@ export default function CreateEventForm({
             htmlFor="entryFee"
             className="block text-sm font-medium text-white mb-2"
           >
-            {t("events.form.entryFee")}
+            {t("events:form.entryFee")}
           </label>
           <input
             type="number"
@@ -536,7 +536,7 @@ export default function CreateEventForm({
                 e.target.value ? parseFloat(e.target.value) : undefined
               )
             }
-            placeholder={t("events.form.placeholders.entryFee")}
+            placeholder={t("events:form.placeholders.entryFee")}
             min="0"
             step="0.01"
             className="w-full rounded-xl border border-slate-600 bg-[#0F172A] px-4 py-3 text-white placeholder-slate-400 focus:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300/20"
@@ -549,7 +549,7 @@ export default function CreateEventForm({
             htmlFor="ageRestriction"
             className="block text-sm font-medium text-white mb-2"
           >
-            {t("events.form.ageRestriction")}
+            {t("events:form.ageRestriction")}
           </label>
           <input
             type="number"
@@ -561,7 +561,7 @@ export default function CreateEventForm({
                 e.target.value ? parseInt(e.target.value) : undefined
               )
             }
-            placeholder={t("events.form.placeholders.ageRestriction")}
+            placeholder={t("events:form.placeholders.ageRestriction")}
             min="1"
             max="99"
             className="w-full rounded-xl border border-slate-600 bg-[#0F172A] px-4 py-3 text-white placeholder-slate-400 focus:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300/20"
@@ -579,7 +579,7 @@ export default function CreateEventForm({
               htmlFor="registrationDeadline"
               className="block text-sm font-medium text-white mb-2"
             >
-              {t("events.form.registrationDeadline")}
+              {t("events:form.registrationDeadline")}
             </label>
             <input
               type="datetime-local"
@@ -598,7 +598,7 @@ export default function CreateEventForm({
               htmlFor="registrationRequirements"
               className="block text-sm font-medium text-white mb-2"
             >
-              {t("events.form.registrationRequirements")}
+              {t("events:form.registrationRequirements")}
             </label>
             <input
               type="text"
@@ -608,7 +608,7 @@ export default function CreateEventForm({
                 handleInputChange("registrationRequirements", e.target.value)
               }
               placeholder={t(
-                "events.form.placeholders.registrationRequirements"
+                "events:form.placeholders.registrationRequirements"
               )}
               className="w-full rounded-xl border border-slate-600 bg-[#0F172A] px-4 py-3 text-white placeholder-slate-400 focus:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300/20"
               disabled={isSubmitting}
@@ -634,7 +634,7 @@ export default function CreateEventForm({
             htmlFor="requiresRegistration"
             className="ml-3 text-sm text-white"
           >
-            {t("events.form.requiresRegistration")}
+            {t("events:form.requiresRegistration")}
           </label>
         </div>
 
@@ -648,7 +648,7 @@ export default function CreateEventForm({
             disabled={isSubmitting}
           />
           <label htmlFor="competitive" className="ml-3 text-sm text-white">
-            {t("events.form.competitive")}
+            {t("events:form.competitive")}
           </label>
         </div>
 
@@ -662,7 +662,7 @@ export default function CreateEventForm({
             disabled={isSubmitting}
           />
           <label htmlFor="isPublic" className="ml-3 text-sm text-white">
-            {t("events.form.isPublic")}
+            {t("events:form.isPublic")}
           </label>
         </div>
       </div>
@@ -675,14 +675,14 @@ export default function CreateEventForm({
           className="px-6 py-3 border border-slate-600 text-white rounded-xl hover:bg-slate-700 transition-colors"
           disabled={isSubmitting}
         >
-          {t("events.form.cancel")}
+          {t("events:form.cancel")}
         </button>
         <button
           type="submit"
           className="px-6 py-3 bg-cyan-500 text-white rounded-xl hover:bg-cyan-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={isSubmitting}
         >
-          {isSubmitting ? t("common.loading") : t("events.form.create")}
+          {isSubmitting ? t("common.loading") : t("events:form.create")}
         </button>
       </div>
     </form>

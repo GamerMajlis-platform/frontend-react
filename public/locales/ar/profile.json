@@ -1,0 +1,114 @@
+{
+  "bio": "نبذة",
+  "browser": {
+    "subtitle": "ابحث وتواصل مع لاعبين آخرين",
+    "suggested": "اللاعبون المقترحون",
+    "title": "تصفح اللاعبين"
+  },
+  "cancel": "إلغاء",
+  "changeAvatar": "تغيير صورة الملف",
+  "discord": {
+    "managedByOAuth": "يُدار من خلال OAuth ديسكورد"
+  },
+  "discordName": "اسم ديسكورد",
+  "displayName": "اسم العرض",
+  "edit": "تعديل الملف",
+  "editing": {
+    "addPreference": "إضافة تفضيل",
+    "addStat": "إضافة إحصائية",
+    "bold": "التنسيق:",
+    "characters": "{{count}}/500",
+    "remove": "إزالة"
+  },
+  "emailNotVerified": "لم يتم التحقق من البريد الإلكتروني",
+  "emailVerified": "تم التحقق من البريد الإلكتروني",
+  "gaming": {
+    "favoriteGames": "الألعاب المفضلة",
+    "favoriteGames.placeholder": "أدخل الألعاب مفصولة بفواصل",
+    "platforms": "منصات اللعب",
+    "platforms.placeholder": "PC، PlayStation، Xbox، Mobile، إلخ",
+    "playtime": "مدة اللعب",
+    "playtime.casual": "غير منتظم (1-5 ساعات/أسبوع)",
+    "playtime.hardcore": "مكثف (15+ ساعة/أسبوع)",
+    "playtime.regular": "منتظم (5-15 ساعة/أسبوع)",
+    "skillLevel": "مستوى المهارة",
+    "skillLevel.advanced": "متقدم",
+    "skillLevel.beginner": "مبتدئ",
+    "skillLevel.intermediate": "متوسط",
+    "skillLevel.professional": "محترف",
+    "statistics": "إحصائيات اللعب",
+    "stats": {
+      "achievements": "الإنجازات",
+      "addFirstGame": "أضف لعبتك الأولى",
+      "addGame": "إضافة لعبة",
+      "currentStreak": "السلسلة الحالية",
+      "favoriteGame": "اللعبة المفضلة",
+      "favoriteGame.placeholder": "أدخل لعبتك المفضلة",
+      "gameBreakdown": "إحصائيات الألعاب",
+      "gameName": "اسم اللعبة",
+      "games": "ألعاب",
+      "gamesPlayed": "ألعاب تم لعبها",
+      "hours": "ساعات",
+      "hoursPlayed": "الساعات",
+      "lastUpdated": "آخر تحديث",
+      "longestStreak": "أطول سلسلة",
+      "losses": "هزائم",
+      "noGames": "لا توجد إحصائيات ألعاب مسجلة بعد",
+      "notSet": "غير محدد",
+      "totalGames": "إجمالي الألعاب",
+      "totalHours": "إجمالي الساعات",
+      "unlocked": "تم فتحها",
+      "unnamedGame": "لعبة غير مسماة",
+      "winRate": "نسبة الفوز",
+      "wins": "انتصارات"
+    }
+  },
+  "label": "الملف الشخصي",
+  "level": "المستوى {{level}}",
+  "manage": "إدارة الملف",
+  "placeholders": {
+    "bio": "نبذة",
+    "discordName": "اسم المستخدم في ديسكورد",
+    "displayName": "أدخل اسم العرض",
+    "gamingPreferences": "تفضيلات اللعب",
+    "gamingStatistics": "إحصائيات اللعب",
+    "preferenceItem": "أضف تفضيل...",
+    "statName": "اسم الإحصائية (مثال: نسبة الفوز)"
+  },
+  "privacy": {
+    "allowDirectMessages": "السماح بالرسائل المباشرة",
+    "allowDirectMessages.description": "السماح للمستخدمين الآخرين بإرسال رسائل لك",
+    "showEmail": "إظهار البريد الإلكتروني",
+    "showEmail.description": "عرض بريدك الإلكتروني في ملفك العام",
+    "showGamingStats": "إظهار إحصائيات اللعب",
+    "showGamingStats.description": "عرض إحصائيات اللعب في ملفك",
+    "showOnlineStatus": "إظهار الحالة عند الاتصال",
+    "showOnlineStatus.description": "دع الآخرين يرون متى تكون متصلاً",
+    "visibility": "رؤية الملف",
+    "visibility.friends": "الأصدقاء فقط - فقط أصدقاؤك يمكنهم رؤية ملفك",
+    "visibility.private": "خاص - فقط أنت يمكنك رؤية ملفك",
+    "visibility.public": "عام - يمكن لأي شخص رؤية ملفك"
+  },
+  "removeAvatar": "إزالة صورة الملف",
+  "save": "حفظ الملف",
+  "search": {
+    "aria": "ابحث عن لاعبين",
+    "placeholder": "ابحث عن لاعبين..."
+  },
+  "sections": {
+    "basic": "معلومات أساسية",
+    "gaming": "تفضيلات اللعب",
+    "social": "روابط اجتماعية"
+  },
+  "social": {
+    "personalWebsite": "الموقع الشخصي"
+  },
+  "tabs": {
+    "about": "نبذة",
+    "manage": "إدارة",
+    "privacy": "الخصوصية",
+    "stats": "إحصائيات"
+  },
+  "uploadAvatar": "رفع صورة الملف",
+  "uploadPhoto": "رفع صورة"
+}

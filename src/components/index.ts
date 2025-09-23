@@ -15,8 +15,6 @@ export { ProgressBar } from "./ProgressBar";
 // Profile components
 export {
   ProfileSearch,
-  ProfileCard,
-  ProfileBrowser,
   BackendProfileHeader,
   AboutSection,
   TabBar,

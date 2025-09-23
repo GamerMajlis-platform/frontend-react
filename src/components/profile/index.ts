@@ -2,8 +2,8 @@
 export { default as AboutSection } from "./AboutSection";
 export { default as BackendProfileHeader } from "./BackendProfileHeader";
 export { default as TabBar } from "./TabBar";
+export { default as EnhancedProfileForm } from "./EnhancedProfileForm";
+export { default as GamingStatisticsPanel } from "./GamingStatisticsPanel";
 
-// Profile search and browser components
+// Profile search component
 export { default as ProfileSearch } from "./ProfileSearch";
-export { default as ProfileCard } from "./ProfileCard";
-export { default as ProfileBrowser } from "./ProfileBrowser";

@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { memo } from "react";
+import { Link } from "react-router-dom";
 
 function Footer() {
   const { t } = useTranslation();
@@ -14,20 +15,23 @@ function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Enhanced Brand Section */}
           <div className="sm:col-span-2 lg:col-span-1">
-            <div className="flex items-center gap-3 mb-4 group">
+            <Link
+              to="/"
+              className="flex items-center gap-3 mb-4 cursor-pointer"
+              aria-label="Home - GamerMajlis"
+            >
               <div className="relative">
                 <img
                   src="/brand/controller.png"
                   alt="GamerMajlis controller icon"
-                  className="h-[28px] sm:h-[34px] w-auto block drop-shadow-lg transform group-hover:scale-110 transition-transform duration-300"
+                  className="h-[28px] sm:h-[34px] w-auto block drop-shadow-lg"
                   draggable={false}
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-cyan-300/20 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
               <span className="text-white font-[var(--font-alice)] text-[20px] sm:text-[26px] bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
                 GamerMajlis
               </span>
-            </div>
+            </Link>
             <p className="text-slate-400 text-sm leading-[1.7] max-w-[400px] backdrop-blur-sm">
               {t("home.subtitle")}
             </p>
@@ -40,40 +44,40 @@ function Footer() {
             </h3>
             <ul className="list-none p-0 m-0 space-y-3">
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/"
                   className="group flex items-center gap-2 text-slate-400 no-underline text-sm hover:text-primary transition-all duration-300 transform hover:translate-x-1"
                 >
                   <div className="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover:bg-primary transition-colors duration-300" />
                   {t("nav.home")}
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/tournaments"
                   className="group flex items-center gap-2 text-slate-400 no-underline text-sm hover:text-primary transition-all duration-300 transform hover:translate-x-1"
                 >
                   <div className="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover:bg-primary transition-colors duration-300" />
                   {t("nav.tournaments")}
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/marketplace"
                   className="group flex items-center gap-2 text-slate-400 no-underline text-sm hover:text-primary transition-all duration-300 transform hover:translate-x-1"
                 >
                   <div className="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover:bg-primary transition-colors duration-300" />
                   {t("nav.marketplace")}
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/events"
                   className="group flex items-center gap-2 text-slate-400 no-underline text-sm hover:text-primary transition-all duration-300 transform hover:translate-x-1"
                 >
                   <div className="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover:bg-primary transition-colors duration-300" />
                   {t("nav.events")}
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -85,31 +89,31 @@ function Footer() {
             </h3>
             <ul className="list-none p-0 m-0 space-y-3">
               <li>
-                <a
-                  href="#"
+                <button
+                  type="button"
                   className="group flex items-center gap-2 text-slate-400 no-underline text-sm hover:text-cyan-300 transition-all duration-300 transform hover:translate-x-1"
                 >
                   <div className="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover:bg-cyan-300 transition-colors duration-300" />
                   {t("footer.forums")}
-                </a>
+                </button>
               </li>
               <li>
-                <a
-                  href="#"
+                <button
+                  type="button"
                   className="group flex items-center gap-2 text-slate-400 no-underline text-sm hover:text-cyan-300 transition-all duration-300 transform hover:translate-x-1"
                 >
                   <div className="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover:bg-cyan-300 transition-colors duration-300" />
                   {t("footer.support")}
-                </a>
+                </button>
               </li>
               <li>
-                <a
-                  href="#"
+                <button
+                  type="button"
                   className="group flex items-center gap-2 text-slate-400 no-underline text-sm hover:text-cyan-300 transition-all duration-300 transform hover:translate-x-1"
                 >
                   <div className="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover:bg-cyan-300 transition-colors duration-300" />
                   {t("footer.contact")}
-                </a>
+                </button>
               </li>
             </ul>
           </div>

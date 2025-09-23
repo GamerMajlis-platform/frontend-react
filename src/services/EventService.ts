@@ -170,6 +170,151 @@ class EventService {
   static async getTrendingEvents(limit = 10): Promise<EventTrendingResponse> {
     return await apiFetch(`${API_ENDPOINTS.events}/trending?limit=${limit}`);
   }
+
+  // ===== EVENT MANAGEMENT ENHANCEMENTS =====
+
+  /**
+   * F21: Check if event can be modified (not past events)
+   */
+  static canModifyEvent(event: {
+    startDateTime: string;
+    status: string;
+  }): boolean {
+    const now = new Date();
+    const eventStart = new Date(event.startDateTime);
+
+    // Cannot modify past events or completed events
+    return (
+      eventStart > now &&
+      event.status !== "COMPLETED" &&
+      event.status !== "CANCELLED"
+    );
+  }
+
+  /**
+   * F20: Validate event capacity constraints
+   */
+  static validateEventCapacity(
+    currentAttendees: number,
+    maxAttendees?: number,
+    newRegistrations = 1
+  ): { canRegister: boolean; reason?: string } {
+    if (!maxAttendees) {
+      return { canRegister: true }; // No capacity limit
+    }
+
+    if (currentAttendees + newRegistrations > maxAttendees) {
+      return {
+        canRegister: false,
+        reason: `Event capacity (${maxAttendees}) would be exceeded. Current: ${currentAttendees}`,
+      };
+    }
+
+    return { canRegister: true };
+  }
+
+  /**
+   * F22: Event reminder scheduling (placeholder for notification system)
+   */
+  static scheduleEventReminder(
+    eventId: number,
+    eventDateTime: string
+  ): {
+    reminderScheduled: boolean;
+    reminderTime?: string;
+  } {
+    const eventTime = new Date(eventDateTime).getTime();
+    const reminderTime = eventTime - 24 * 60 * 60 * 1000; // 24 hours before
+    const now = Date.now();
+
+    if (reminderTime <= now) {
+      return { reminderScheduled: false }; // Too late to schedule reminder
+    }
+
+    // In a real implementation, this would:
+    // 1. Schedule a background job/notification
+    // 2. Store reminder in database
+    // 3. Use push notifications or email service
+
+    console.log(
+      `Reminder scheduled for event ${eventId} at ${new Date(reminderTime)}`
+    );
+
+    return {
+      reminderScheduled: true,
+      reminderTime: new Date(reminderTime).toISOString(),
+    };
+  }
+
+  /**
+   * F23: Enhanced attendance tracking validation
+   */
+  static validateAttendanceTracking(attendanceData: {
+    eventId: number;
+    userId: number;
+    checkInTime: string;
+    eventStartTime: string;
+    eventEndTime?: string;
+  }): { isValid: boolean; reason?: string } {
+    const checkIn = new Date(attendanceData.checkInTime);
+    const eventStart = new Date(attendanceData.eventStartTime);
+    const eventEnd = attendanceData.eventEndTime
+      ? new Date(attendanceData.eventEndTime)
+      : null;
+
+    // Cannot check in too early (more than 1 hour before event)
+    const earlyCheckInLimit = eventStart.getTime() - 60 * 60 * 1000; // 1 hour before
+    if (checkIn.getTime() < earlyCheckInLimit) {
+      return {
+        isValid: false,
+        reason:
+          "Check-in is too early. Please wait until 1 hour before the event.",
+      };
+    }
+
+    // Cannot check in after event has ended
+    if (eventEnd && checkIn > eventEnd) {
+      return {
+        isValid: false,
+        reason: "Cannot check in after the event has ended.",
+      };
+    }
+
+    return { isValid: true };
+  }
+
+  /**
+   * Enhanced registration with capacity checking
+   */
+  static async registerForEventWithValidation(
+    eventId: number,
+    event: {
+      currentAttendees: number;
+      maxAttendees?: number;
+      startDateTime: string;
+    }
+  ): Promise<EventRegistrationResponse> {
+    // F20: Check capacity
+    const capacityCheck = this.validateEventCapacity(
+      event.currentAttendees,
+      event.maxAttendees
+    );
+
+    if (!capacityCheck.canRegister) {
+      throw new Error(capacityCheck.reason || "Event is at capacity");
+    }
+
+    // Check if event is in the future
+    const now = new Date();
+    const eventStart = new Date(event.startDateTime);
+
+    if (eventStart <= now) {
+      throw new Error("Cannot register for past events");
+    }
+
+    // Proceed with normal registration
+    return this.registerForEvent(eventId);
+  }
 }
 
 export default EventService;

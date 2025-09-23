@@ -1,14 +1,98 @@
 # GamerMajlis Frontend
 
-A modern React gaming platform built with TypeScript, Vite, and Tailwind CSS. Features responsive design, internationalization (English/Arabic with RTL support), and a lean, performance-optimized architecture.
+A modern React gaming platform built with TypeScript, Vite, and Tailwind CSS. Features Discord-only authentication, 24-hour session management, responsive design, and internationalization (English/Arabic with RTL support).
 
 ## 🚀 Tech Stack
 
 - **React 19** + **TypeScript** for modern component development
 - **Vite 5** for fast development and optimized builds
-- **Tailwind CSS 3.4** for utility-first styling
+- **Tailwind CSS 3.4** + **lucide-react** for modern UI with optimized icons
 - **react-i18next** for internationalization with English/Arabic support
 - **Spring Boot Backend Integration** at `localhost:8080/api`
+- **Discord OAuth** for passwordless authentication
+- **24-Hour Session Management** with automatic expiry
+
+## 🔑 Authentication & Session Management
+
+### Authentication Requirements
+
+- **Discord-Only Authentication**: No email/password login - only Discord OAuth
+- **No Guest Users**: All functionality requires authentication except home, login, signup pages
+- **24-Hour Session Timeout**: Sessions expire after 24 hours of inactivity
+- **React Router Navigation**: All navigation uses `useNavigate()` hook for SPA behavior
+- **Automatic Redirects**:
+  - Expired sessions redirect to `/` (home)
+  - Unauthorized access attempts redirect to `/` (home)
+  - Login/signup pages redirect authenticated users to `/profile`
+
+### Session Behavior & Refresh Persistence
+
+- Session validation happens every 5 minutes with activity tracking
+- Browser refresh maintains navigation state via React Router
+- Token stored in localStorage with automatic cleanup
+- Session expiry triggers cleanup and redirect to home
+
+## 🎯 Implementation Status Summary
+
+### ✅ FULLY IMPLEMENTED FEATURES
+
+#### **Tournament System**
+
+- Tournament name validation (3-50 characters)
+- Future date validation for tournament start dates
+- Tournament bracket auto-generation algorithms (elimination, round-robin, Swiss)
+- Complete tournament management service layer
+
+#### **Marketplace**
+
+- Product price validation (positive values only)
+- Enhanced product description validation (10-1000 characters)
+- Image compression for product uploads with quality control
+
+#### **Chat System**
+
+- Message length limits (1-2000 characters)
+- Real-time message delivery infrastructure with WebSocket service
+- Moderator message deletion capabilities
+
+#### **Event Management**
+
+- Event capacity validation and overflow prevention
+- Attendance tracking validation system
+- Complete event creation and management forms
+
+#### **Media Management**
+
+- File format validation (MP4, AVI, MOV, JPG, PNG, GIF)
+- File size limits (100MB videos, 10MB images)
+- Upload progress indicators with real-time tracking
+- Malicious file detection with security scanning
+- Automatic media compression with 30% minimum reduction
+
+#### **Profile Management**
+
+- Complete profile system with Discord integration
+- Display name validation with character limits
+- Profile picture upload/change/remove functionality
+- Gaming preferences with skill levels and platform selection
+- Gaming statistics tracking with game-specific breakdowns
+- Social media links integration (YouTube, Twitter, Instagram, Twitch, Steam)
+- Privacy controls for profile visibility and settings
+- Enhanced profile forms with sectioned interface
+
+### ⚠️ PARTIALLY IMPLEMENTED
+
+#### **Real-time Features**
+
+- WebSocket infrastructure ready for chat and notifications
+- Tournament bracket UI integration needed
+- Live event updates system partially implemented
+
+#### **Security & Optimization**
+
+- CVE vulnerability scanning for dependencies implemented
+- Additional security headers and CSRF protection needed
+- Performance monitoring and analytics integration pending
 
 ## 📁 Project Structure
 
@@ -16,86 +100,220 @@ A modern React gaming platform built with TypeScript, Vite, and Tailwind CSS. Fe
 src/
 ├── components/
 │   ├── shared/              # Reusable UI components
-│   │   ├── Header.tsx       # Main navigation with auth integration
-│   │   ├── Footer.tsx       # Site footer
-│   │   ├── InputField.tsx   # Unified form input with validation
+│   │   ├── Header.tsx       # Auth-aware navigation with lucide-react icons
+│   │   ├── InputField.tsx   # Form input with Eye/EyeOff password visibility
 │   │   ├── Card.tsx         # Product/tournament/event cards
 │   │   ├── SortBy.tsx       # Reusable sort dropdown
-│   │   ├── LanguageSwitcher.tsx # EN/AR language toggle
-│   │   └── ErrorBoundary.tsx # Error handling with fallback UI
-│   ├── profile/             # Profile-specific components
-│   │   ├── BackendProfileHeader.tsx # Profile header with backend integration
-│   │   ├── AboutSection.tsx # Profile bio section
-│   │   ├── StatsList.tsx    # Gaming stats display
+│   │   ├── Dropdown.tsx     # Enhanced dropdown with ChevronDown icon
+│   │   └── LanguageSwitcher.tsx # EN/AR language toggle
+│   ├── profile/             # Profile management
+│   │   ├── BackendProfileHeader.tsx # Profile header with social icons
+│   │   ├── EnhancedProfileForm.tsx # Complete profile editing
+│   │   ├── GamingStatisticsPanel.tsx # Gaming stats tracking
 │   │   └── TabBar.tsx       # Profile navigation tabs
-│   ├── settings/            # Settings page components
-│   │   ├── SettingRow.tsx   # Individual setting row
-│   │   ├── ToggleButton.tsx # Toggle switch
-│   │   └── Dropdown.tsx     # Settings dropdown
-│   ├── events/              # Event management components
-│   │   ├── CreateEventForm.tsx # Event creation form with validation
-│   │   ├── EventGrid.tsx    # Event display grid using shared Card
-│   │   └── index.ts         # Event component exports
-│   ├── discord/             # Discord OAuth integration components
-│   │   ├── DiscordLoginButton.tsx # Discord OAuth login
-│   │   ├── DiscordLinkButton.tsx # Account linking
-│   │   └── DiscordUserInfo.tsx # Discord account display
-│   └── chat/                # Real-time chat system components
+│   ├── discord/             # Discord OAuth integration
+│   │   ├── DiscordUserInfo.tsx # Discord account display
+│   │   └── DiscordLinkButton.tsx # Account linking
+│   ├── events/              # Event management
+│   │   ├── CreateEventForm.tsx # Event creation with validation
+│   │   └── EventGrid.tsx    # Event display grid
+│   ├── media/               # Media upload and validation
+│   │   ├── MediaUpload.tsx  # File upload with progress tracking
+│   │   └── MediaValidator.tsx # File validation and security
+│   └── chat/                # Real-time chat system
 │       ├── ChatRoom.tsx     # Main chat interface
-│       ├── ChatRoomList.tsx # Room browsing and selection
-│       ├── CreateRoomModal.tsx # Room creation modal
-│       ├── MessageList.tsx  # Message history with pagination
-│       ├── MessageInput.tsx # Message composer with file upload
-│       ├── MessageBubble.tsx # Individual message display
-│       ├── TypingIndicator.tsx # Real-time typing indicators
-│       ├── MemberList.tsx   # Room member management
-│       ├── OnlineUsersList.tsx # Online users sidebar
-│       └── InviteMemberModal.tsx # Member invitation modal
-├── pages/                   # Application pages
-│   ├── Home.tsx            # Landing page
-│   ├── Profile.tsx         # User profile with backend data
-│   ├── Settings.tsx        # User settings (simplified)
-│   ├── Login.tsx           # Authentication
-│   ├── Marketplace.tsx     # Product marketplace
-│   ├── Tournaments.tsx     # Tournament listings
-│   ├── Events.tsx          # Event management with create/register/search
-│   └── Messages.tsx        # Messaging interface
-├── services/               # Backend API integration
-│   ├── AuthService.ts      # Authentication with JWT
-│   ├── ProfileService.ts   # Profile management
-│   ├── EventService.ts     # Event management (11 API endpoints)
-│   ├── DiscordService.ts   # Discord OAuth integration (6 API endpoints)
-│   ├── ChatService.ts      # Chat system (14 API endpoints)
-│   └── SessionService.ts   # Session/token management
+│       └── MessageList.tsx  # Message history
+├── pages/
+│   ├── Profile.tsx          # Profile page with social icons under Discord username
+│   ├── Events.tsx           # Event browsing and management
+│   ├── Tournaments.tsx      # Tournament system
+│   ├── Marketplace.tsx      # Product marketplace
+│   ├── Chat.tsx            # Chat system
+│   ├── AuthSuccess.tsx     # OAuth success handler (React Router)
+│   └── DiscordCallback.tsx # Discord OAuth callback (React Router)
+├── services/
+│   ├── AuthService.ts      # Authentication management
+│   ├── SessionService.ts   # 24-hour session handling
+│   ├── DiscordService.ts   # Discord OAuth integration
+│   ├── MediaService.ts     # Media upload and validation
+│   ├── EventService.ts     # Event management
+│   ├── TournamentService.ts # Tournament operations
+│   └── WebSocketService.ts # Real-time communication
+├── hooks/
+│   ├── useApi.ts           # API integration hook
+│   ├── useFormValidation.ts # Form validation utilities
+│   ├── useProfile.ts       # Profile management
+│   └── useLocalStorage.ts  # Persistent state management
+└── types/
+    ├── auth.ts             # Authentication types
+    ├── events.ts           # Event system types
+    ├── tournaments.ts      # Tournament types
+    ├── media.ts            # Media handling types
+    └── ui.ts               # UI component types
+```
+
+## 🔧 Technical Improvements Made
+
+### Icon Optimization
+
+- Replaced verbose SVG code with **lucide-react** icons throughout the application
+- Standardized icon usage in: Home.tsx (tabs), InputField.tsx (password visibility), Dropdown.tsx (chevrons)
+- Reduced bundle size and improved consistency
+
+### Navigation Enhancement
+
+- Migrated from `window.location.href` to React Router `useNavigate()` hook
+- Improved SPA behavior with proper state management
+- Enhanced OAuth callback handling with state preservation
+
+### Profile System Enhancement
+
+- **Social Media Integration**: Social icons display under Discord username in profile header
+- **RTL/LTR Support**: Proper right-to-left layout for Arabic language
+- **Complete Profile Management**: Enhanced forms, gaming statistics, privacy controls
+
+### Security & Validation
+
+- Comprehensive file upload validation with malicious file detection
+- Form validation for all user inputs with proper error handling
+- CVE vulnerability scanning for project dependencies
+
+## 🏗️ Backend Integration Requirements
+
+### API Endpoints Expected
+
+- `POST /auth/discord` - Discord OAuth initiation
+- `GET /auth/discord/callback` - OAuth callback handling
+- `POST /profile/me/profile-picture` - Profile image upload
+- `GET /events` - Event listing with filtering
+- `POST /tournaments` - Tournament creation
+- `WebSocket /chat` - Real-time chat communication
+
+### Known Backend Issues
+
+- Discord OAuth "authorization_request_not_found" error needs backend investigation
+- Profile image upload returns 500 errors - backend file processing service needed
+- General API 500 errors require backend server log review
+
+## 🚀 Getting Started
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Run tests
+npm test
+
+# Lint code
+npm run lint
+```
+
+## 📋 Development Guidelines
+
+### Authentication Testing
+
+- Use Discord OAuth for all user authentication
+- Test session timeout after 24 hours
+- Verify redirect behavior for unauthorized access
+
+### Profile Management Testing
+
+- Verify social icons display under Discord username in profile main section
+- Test RTL/LTR layout switching for Arabic/English
+- Validate profile picture upload functionality
+
+### Navigation Testing
+
+- Ensure all navigation uses React Router (no window.location.href)
+- Test browser refresh persistence across all pages
+- Verify OAuth callback navigation works correctly
+
+### Media Upload Testing
+
+- Test file format validation (MP4, AVI, MOV, JPG, PNG, GIF)
+- Verify file size limits (100MB videos, 10MB images)
+- Test malicious file detection
+- Validate compression requirements (30% minimum reduction)
+
+## 🔍 Debugging Guide
+
+### Session Issues
+
+- Check localStorage for `gamerMajlis_auth` token
+- Verify session validation in browser network tab
+- Check console for session timeout warnings
+
+### OAuth Issues
+
+- Verify Discord OAuth configuration in backend
+- Check OAuth state storage and retrieval
+- Monitor OAuth callback URL parameters
+
+### Profile Issues
+
+- Verify Discord username integration
+- Check social links parsing from backend user data
+- Test profile picture upload with backend logs
+
+This project implements a comprehensive gaming platform with modern React architecture, proper authentication flows, and extensive validation systems.
+│ ├── MessageInput.tsx # Message composer with file upload
+│ ├── MessageBubble.tsx # Individual message display
+│ ├── TypingIndicator.tsx # Real-time typing indicators
+│ ├── MemberList.tsx # Room member management
+│ ├── OnlineUsersList.tsx # Online users sidebar
+│ └── InviteMemberModal.tsx # Member invitation modal
+├── pages/ # Application pages
+│ ├── Home.tsx # Landing page
+│ ├── Profile.tsx # User profile with backend data
+│ ├── Settings.tsx # User settings (simplified)
+│ ├── Login.tsx # Authentication
+│ ├── Marketplace.tsx # Product marketplace
+│ ├── Tournaments.tsx # Tournament listings
+│ ├── Events.tsx # Event management with create/register/search
+│ └── Messages.tsx # Messaging interface
+├── services/ # Backend API integration
+│ ├── AuthService.ts # Authentication with JWT
+│ ├── ProfileService.ts # Profile management
+│ ├── EventService.ts # Event management (11 API endpoints)
+│ ├── DiscordService.ts # Discord OAuth integration (6 API endpoints)
+│ ├── ChatService.ts # Chat system (14 API endpoints)
+│ └── SessionService.ts # Session/token management
 ├── context/
-│   ├── AppContext.tsx      # Global state management
-│   └── useAppContext.ts    # Context hook
-├── hooks/                  # Custom reusable hooks
-│   ├── useFormValidation.ts # Form validation logic
-│   ├── useLocalStorage.ts  # Type-safe localStorage
-│   ├── useDebounce.ts      # Value debouncing
-│   ├── useClickOutside.ts  # Click detection
-│   └── usePreferences.ts   # User preferences sync
-├── types/                  # TypeScript definitions
-│   ├── auth.ts            # User and auth types
-│   ├── events.ts          # Event types and interfaces
-│   ├── chat.ts            # Chat system types and interfaces
-│   ├── discord.ts         # Discord integration types
-│   ├── common.ts          # Shared types
-│   └── ui.ts              # Component prop types
+│ ├── AppContext.tsx # Global state management
+│ └── useAppContext.ts # Context hook
+├── hooks/ # Custom reusable hooks
+│ ├── useFormValidation.ts # Form validation logic
+│ ├── useLocalStorage.ts # Type-safe localStorage
+│ ├── useDebounce.ts # Value debouncing
+│ ├── useClickOutside.ts # Click detection
+│ └── usePreferences.ts # User preferences sync
+├── types/ # TypeScript definitions
+│ ├── auth.ts # User and auth types
+│ ├── events.ts # Event types and interfaces
+│ ├── chat.ts # Chat system types and interfaces
+│ ├── discord.ts # Discord integration types
+│ ├── common.ts # Shared types
+│ └── ui.ts # Component prop types
 ├── config/
-│   └── constants.ts       # App constants and API endpoints
+│ └── constants.ts # App constants and API endpoints
 ├── lib/
-│   ├── api.ts            # API client with auth
-│   └── security.ts       # Security utilities
+│ ├── api.ts # API client with auth
+│ └── security.ts # Security utilities
 └── i18n/
-    └── config.ts         # Internationalization setup
+└── config.ts # Internationalization setup
 
 public/
-└── locales/              # Translation files
-    ├── en/translation.json # English translations
-    └── ar/translation.json # Arabic translations
-```
+└── locales/ # Translation files
+├── en/translation.json # English translations
+└── ar/translation.json # Arabic translations
+
+````
 
 ## ⚡ Key Features
 
@@ -146,7 +364,7 @@ npm run build
 
 # Lint code
 npm run lint
-```
+````
 
 ### Backend Requirements
 
@@ -198,6 +416,84 @@ DELETE /api/chat/messages/{id} # Delete message
 POST /api/chat/rooms/{id}/members/{userId} # Add member
 DELETE /api/chat/rooms/{id}/members/{userId} # Remove member
 GET  /api/chat/rooms/{id}/members # Get room members
+
+## 🧭 Routing
+
+The application now uses `react-router-dom` (BrowserRouter) instead of hash-based (`window.location.hash`) navigation.
+
+### Added Routes
+
+```
+
+/ -> Home
+/profile -> Current user profile
+/profile/:id -> Other user profile
+/tournaments -> Tournaments
+/events -> Events
+/messages -> Legacy redirect page (auto forwards to /chat)
+/chat -> Chat system
+/marketplace -> Marketplace
+/signup -> Signup
+/login -> Login
+/verify-email -> Email verification status page
+/discord-callback -> Discord OAuth callback
+/auth/success -> Auth success token exchange
+/wishlist -> Wishlist
+/settings -> Settings
+/\* -> 404 NotFound
+
+```
+
+### Migration Notes
+
+- All previous `window.location.hash = "#section"` patterns replaced with `useNavigate()` calls.
+- `/#home`, `/#login` etc. fragments removed in favor of clean paths (`/`, `/login`).
+- Dynamic profile navigation supports `navigate('/profile/:id')` based on user selection.
+- Added a `NotFound` fallback route (`*`).
+
+### SPA Fallback (Production Deployment)
+
+Because BrowserRouter relies on the server returning `index.html` for unknown paths, configure a rewrite rule:
+
+Nginx example:
+```
+
+location / {
+try_files $uri /index.html;
+}
+
+```
+
+Apache (.htaccess):
+```
+
+RewriteEngine On
+RewriteBase /
+RewriteRule ^index\.html$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.html [L]
+
+```
+
+Netlify `_redirects` file:
+```
+
+/\* /index.html 200
+
+```
+
+Vercel (`vercel.json`):
+```
+
+{
+"rewrites": [ { "source": "/(.*)", "destination": "/index.html" } ]
+}
+
+```
+
+Without these, direct refreshing on nested routes (e.g. `/profile/123`) will 404 at the server layer.
+
 POST /api/chat/direct         # Start direct message
 GET  /api/chat/online-users   # Get online users
 POST /api/chat/typing         # Send typing indicator

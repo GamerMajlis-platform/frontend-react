@@ -1,0 +1,160 @@
+{
+  "actions": {
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "register": "Register",
+    "share": "Share",
+    "unregister": "Unregister",
+    "viewDetails": "View Details"
+  },
+  "card": {
+    "closed": "Closed",
+    "entryFee": "Entry Fee",
+    "free": "Free",
+    "gameMode": "Mode",
+    "inDays": "In {{count}} days",
+    "open": "Open",
+    "participants": "Participants",
+    "register": "Register",
+    "registration": "Registration",
+    "rules": "Rules",
+    "starts": "Starts",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "type": "Type",
+    "views": "Views"
+  },
+  "categories": {
+    "ongoing": "Ongoing",
+    "past": "Past",
+    "upcoming": "Upcoming"
+  },
+  "create": {
+    "button": "Create Tournament",
+    "error": "Failed to create tournament",
+    "form": {
+      "currency": "Currency",
+      "currencyOptions": {
+        "USD": "USD ($)"
+      },
+      "description": "Description",
+      "descriptionPlaceholder": "Describe your tournament",
+      "endDate": "End Date",
+      "endDatePlaceholder": "mm/dd/yyyy --:-- --",
+      "entryFee": "Entry Fee",
+      "entryFeePlaceholder": "Entry fee amount",
+      "gameMode": "Game Mode",
+      "gameModeOptions": {
+        "competitive": "Competitive"
+      },
+      "gameModePlaceholder": "Tournament game mode",
+      "gameTitle": "Game",
+      "gameTitlePlaceholder": "Select the game",
+      "isPublic": "Public Event",
+      "location": "Location",
+      "locationPlaceholder": "Tournament location",
+      "maxParticipants": "Max Participants",
+      "maxParticipantsDefault": "16",
+      "maxParticipantsPlaceholder": "Maximum number of participants",
+      "name": "Tournament Name",
+      "namePlaceholder": "Enter tournament name",
+      "prizePool": "Prize Pool",
+      "prizePoolPlaceholder": "Total prize pool",
+      "registrationDeadline": "Registration Deadline",
+      "registrationDeadlinePlaceholder": "mm/dd/yyyy --:-- --",
+      "requiresApproval": "Requires Approval",
+      "rules": "Rules",
+      "rulesPlaceholder": "Tournament rules and guidelines",
+      "startDate": "Start Date",
+      "startDatePlaceholder": "mm/dd/yyyy --:-- --",
+      "status": "Status",
+      "tournamentType": "Tournament Type"
+    },
+    "success": "Tournament created successfully",
+    "title": "Create Tournament",
+    "types": {
+      "BRACKET": "Bracket",
+      "DOUBLE_ELIMINATION": "Double Elimination",
+      "elimination": "Elimination",
+      "LEAGUE": "League",
+      "ROUND_ROBIN": "Round Robin",
+      "SINGLE_ELIMINATION": "Single Elimination",
+      "SWISS": "Swiss System"
+    },
+    "validation": {
+      "descriptionMinLength": "Description must be at least 10 characters",
+      "descriptionRequired": "Description is required",
+      "endDateAfterStart": "End date must be after start date",
+      "endDateRequired": "End date is required",
+      "entryFeeMin": "Entry fee must be 0 or more",
+      "gameTitleRequired": "Game selection is required",
+      "maxParticipantsMax": "Cannot exceed 1000 participants",
+      "maxParticipantsMin": "At least 2 participants required",
+      "maxParticipantsRequired": "Maximum participants is required",
+      "nameMaxLength": "Tournament name must be less than 100 characters",
+      "nameMinLength": "Tournament name must be at least 3 characters",
+      "nameRequired": "Tournament name is required",
+      "prizePoolMin": "Prize pool must be 0 or more",
+      "registrationDeadlineBeforeStart": "Registration deadline must be before start date",
+      "registrationDeadlineRequired": "Registration deadline is required",
+      "startDateRequired": "Start date is required"
+    }
+  },
+  "details": {
+    "bracket": "Bracket",
+    "contact": "Contact",
+    "information": "Information",
+    "organizer": "Organizer",
+    "overview": "Overview",
+    "participants": "Participants",
+    "prizes": "Prizes",
+    "rules": "Rules",
+    "schedule": "Schedule",
+    "title": "Tournament Details"
+  },
+  "empty": {
+    "description": "No tournaments match your criteria.",
+    "title": "No Tournaments"
+  },
+  "error": {
+    "loadFailed": "Failed to load tournaments. Please try again.",
+    "title": "Error loading tournaments"
+  },
+  "noMatches": "Try adjusting your search or filters.",
+  "registration": {
+    "alreadyRegistered": "You are already registered",
+    "confirmUnregister": "Are you sure you want to unregister?",
+    "error": "Failed to register for the tournament",
+    "registrationClosed": "Registration closed",
+    "success": "Successfully registered for the tournament",
+    "title": "Tournament Registration",
+    "tournamentFull": "Tournament is full",
+    "unregisterError": "Failed to unregister",
+    "unregisterSuccess": "Unregistered successfully"
+  },
+  "searchPlaceholder": "Search tournaments or organizers...",
+  "sort": {
+    "dateLatest": "Start Date: Latest",
+    "dateSoonest": "Start Date: Soonest",
+    "participantsLeast": "Participants: Least",
+    "participantsMost": "Participants: Most",
+    "placeholder": "Sort by",
+    "prizeHighest": "Prize: Highest",
+    "prizeLowest": "Prize: Lowest"
+  },
+  "status": {
+    "cancelled": "Cancelled",
+    "completed": "Completed",
+    "inProgress": "In Progress",
+    "registrationClosed": "Registration Closed",
+    "registrationOpen": "Registration Open",
+    "upcoming": "Upcoming"
+  },
+  "ui": {
+    "dropdownCaret": "▼",
+    "no": "No",
+    "noTournaments": "No tournaments",
+    "searchPlaceholder": "Search tournaments or organizers...",
+    "sortLabel": "Sort By"
+  }
+}

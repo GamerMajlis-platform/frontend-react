@@ -18,7 +18,7 @@ import type {
 export class DiscordService {
   private static readonly DISCORD_CONFIG: DiscordOAuthConfig = {
     clientId: "1416218898063429724", // From API spec
-    redirectUri: "http://localhost:8080/api/auth/discord/callback", // Backend callback
+    redirectUri: "http://localhost:8080/api/login/oauth2/code/discord", // Backend callback
     scopes: ["identify", "email"],
   };
 
@@ -26,16 +26,25 @@ export class DiscordService {
 
   // Get the backend base URL from environment or default
   private static getBackendUrl(): string {
-    return import.meta.env.VITE_BACKEND_URL || "http://localhost:8080";
+    // Prefer explicit API base (with /api) if provided
+    const explicit = import.meta.env.VITE_API_BASE_URL as string | undefined;
+    if (explicit) {
+      return explicit.replace(/\/$/, "");
+    }
+    const base = import.meta.env.VITE_BACKEND_URL || "http://localhost:8080";
+    // Ensure it ends with /api
+    return base.endsWith("/api") ? base : `${base.replace(/\/$/, "")}/api`;
   }
 
   // Get the frontend base URL, ensuring we use port 3000 for OAuth consistency
   private static getFrontendUrl(): string {
-    const url = new URL(window.location.origin);
-    // Force port 3000 for OAuth consistency with backend expectations
-    url.port = "3000";
-    return url.toString().replace(/\/$/, ""); // Remove trailing slash
+    // Use actual origin; do not force port override (reduces mismatch issues)
+    return window.location.origin.replace(/\/$/, "");
   }
+
+  private static oauthInFlight = false;
+  private static oauthLastAt = 0;
+  private static readonly OAUTH_COOLDOWN_MS = 2000;
 
   /**
    * API #88: Initiate Discord OAuth
@@ -43,6 +52,16 @@ export class DiscordService {
    */
   static async initiateOAuth(returnUrl?: string): Promise<void> {
     try {
+      if (
+        this.oauthInFlight &&
+        Date.now() - this.oauthLastAt < this.OAUTH_COOLDOWN_MS
+      ) {
+        console.warn("Discord OAuth initiation suppressed: cooldown active");
+        return;
+      }
+      this.oauthInFlight = true;
+      this.oauthLastAt = Date.now();
+
       // Generate state for CSRF protection
       const state = this.generateState();
       const oauthState: DiscordOAuthState = {
@@ -55,14 +74,32 @@ export class DiscordService {
 
       // Redirect to backend OAuth endpoint which will handle Discord OAuth flow
       const frontendUrl = this.getFrontendUrl();
-      const backendOAuthUrl = `${this.getBackendUrl()}${
-        API_ENDPOINTS.auth.discord.login
-      }?state=${encodeURIComponent(state)}&return_url=${encodeURIComponent(
-        frontendUrl + (returnUrl || "/")
-      )}`;
+      const base = this.getBackendUrl();
+      const path = API_ENDPOINTS.auth.discord.login.startsWith("/")
+        ? API_ENDPOINTS.auth.discord.login
+        : `/${API_ENDPOINTS.auth.discord.login}`;
+      const targetReturn = frontendUrl + (returnUrl || "/");
+      const backendOAuthUrl = `${base}${path}?state=${encodeURIComponent(
+        state
+      )}&return_url=${encodeURIComponent(
+        targetReturn
+      )}&returnUrl=${encodeURIComponent(targetReturn)}`;
+
+      console.log("🔑 Discord OAuth state:", {
+        state,
+        targetReturn,
+        base,
+        path,
+      });
 
       console.log("🔗 Discord OAuth URL:", backendOAuthUrl);
       console.log("🏠 Frontend URL:", frontendUrl);
+      // In DiscordService.initiateOAuth - add more logging
+      console.log("🔍 OAuth Initiation Debug:", {
+        storedState: DiscordService.getStoredOAuthState(),
+        currentUrl: window.location.href,
+        backendUrl: this.getBackendUrl(),
+      });
 
       window.location.href = backendOAuthUrl;
     } catch (error) {
@@ -88,23 +125,40 @@ export class DiscordService {
 
       const oauthState: DiscordOAuthState = JSON.parse(storedStateData);
       if (oauthState.state !== state) {
+        console.error("OAuth state mismatch", {
+          stored: oauthState.state,
+          received: state,
+        });
         throw new Error("Invalid OAuth state");
       }
 
-      // Clear stored state
-      localStorage.removeItem(this.OAUTH_STATE_KEY);
-
       // Call backend callback endpoint
-      const response = await apiFetch<DiscordOAuthCallbackResponse>(
-        `${API_ENDPOINTS.auth.discord.callback}?code=${encodeURIComponent(
-          code
-        )}&state=${encodeURIComponent(state)}`
-      );
+      const url = `${
+        API_ENDPOINTS.auth.discord.callback
+      }?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state)}`;
+      const response = await apiFetch<DiscordOAuthCallbackResponse>(url);
 
+      // Success: clear stored state now
+      localStorage.removeItem(this.OAUTH_STATE_KEY);
+      this.oauthInFlight = false;
       return response;
     } catch (error) {
       console.error("Discord OAuth callback failed:", error);
+      this.oauthInFlight = false;
       throw new Error("Discord authentication failed");
+    }
+  }
+
+  /**
+   * Parse token in case backend redirected directly with ?token=... to current URL
+   */
+  static extractTokenFromLocation(): string | null {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get("token");
+      return token || null;
+    } catch {
+      return null;
     }
   }
 

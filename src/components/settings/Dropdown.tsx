@@ -1,3 +1,5 @@
+import { ChevronDown } from "lucide-react";
+
 // Settings-only dropdown
 export interface DropdownOption {
   value: string;
@@ -29,15 +31,12 @@ export default function Dropdown({
         onClick={() => onToggle(type)}
       >
         {selected}
-        <svg
-          className={`w-4 h-4 transition-transform duration-150 ${
+        <ChevronDown
+          size={16}
+          className={`transition-transform duration-150 ${
             isOpen ? "rotate-180" : "rotate-0"
           }`}
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-        </svg>
+        />
       </button>
       {isOpen && (
         <div className="absolute top-full right-0 mt-1 rounded-md shadow-lg z-10 min-w-[120px] bg-dark-secondary border border-slate-500">

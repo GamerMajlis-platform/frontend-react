@@ -35,6 +35,7 @@ export interface UserSettings {
   privacy: {
     profileVisibility: "public" | "friends" | "private";
     showOnlineStatus: boolean;
+    showGamingStats: boolean;
   };
   preferences: {
     language: string;
@@ -99,6 +100,7 @@ const defaultSettings: UserSettings = {
   privacy: {
     profileVisibility: "public",
     showOnlineStatus: true,
+    showGamingStats: true,
   },
   preferences: { language: "en" },
 };
@@ -279,15 +281,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     // Set up session event handlers
     cleanupExpiredHandler = SessionService.onSessionExpired(() => {
-      console.log("🔒 Session expired - logging out user");
       setUser(null);
       setIsAuthenticated(false);
-      // Redirect to login or show notification
-      window.location.href = "/login";
+      // Redirect to home instead of login for expired sessions
+      window.location.href = "/";
     });
 
     cleanupLogoutHandler = SessionService.onLogout(() => {
-      console.log("👋 User logged out - clearing auth state");
       setUser(null);
       setIsAuthenticated(false);
     });

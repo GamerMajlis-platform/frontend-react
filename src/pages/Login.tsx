@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { InputField } from "../components/shared";
 import { DiscordLoginButton } from "../components/discord";
@@ -8,6 +9,7 @@ import type { LoginFormData } from "../types/auth";
 
 export default function Login() {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const { login } = useAppContext();
   const isRtl = !!(i18n.language && i18n.language.startsWith("ar"));
 
@@ -24,7 +26,7 @@ export default function Login() {
   } = useFormValidation<LoginFormData>(
     { identifier: "", password: "", general: "" },
     {
-      identifier: commonValidationRules.email, // Accept email format for now
+      identifier: commonValidationRules.email,
       password: commonValidationRules.password,
     }
   );
@@ -49,21 +51,15 @@ export default function Login() {
     const success = await submit(async () => {
       try {
         await login(formData.identifier, formData.password);
-        // Navigate to home on success
-        window.location.hash = "#home";
+        navigate("/");
       } catch (err: unknown) {
-        // Map backend error messages into the form's general error
         let message = "Login failed. Please try again.";
         if (err instanceof Error && err.message) message = err.message;
-        // Set general form error so it's displayed
-        // `setError` comes from useFormValidation hook
         setError("general", message);
-        // Re-throw to let the submit wrapper know it failed
         throw err;
       }
     });
     if (!success) {
-      // `setError` may have been set in the submit handler; ensure a fallback
       setError(
         "general",
         (errors.general as string) || "Login failed. Please try again."
@@ -158,16 +154,13 @@ export default function Login() {
 
         <p className="w-full font-[Alice] font-normal text-base leading-5 text-center text-[#EEEEEE] mt-[18px]">
           {t("auth.dontHaveAccount")}{" "}
-          <a
+          <button
+            type="button"
+            onClick={() => navigate("/signup")}
             className="text-[#C4FFF9] underline cursor-pointer transition-opacity duration-200 hover:opacity-80"
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              window.location.hash = "#signup";
-            }}
           >
             {t("auth.signup")}
-          </a>
+          </button>
         </p>
       </div>
     </div>

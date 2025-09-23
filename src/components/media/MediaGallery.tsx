@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useDeepStable, useStableEmptyObject } from "../../hooks/useDeepStable";
 import { useTranslation } from "react-i18next";
 import { MediaService } from "../../services/MediaService";
 import { MediaPreview } from "./MediaPreview";
@@ -12,7 +13,7 @@ interface MediaGalleryProps {
 }
 
 export const MediaGallery: React.FC<MediaGalleryProps> = ({
-  filters = {},
+  filters,
   onMediaSelect,
   className = "",
   gridCols = "auto",
@@ -29,23 +30,34 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({
     hasMore: false,
   });
 
+  const inFlightRef = useRef(false);
+  const lastSignatureRef = useRef<string | null>(null);
+  const mountedRef = useRef(false);
+
+  const emptyObj = useStableEmptyObject<MediaFilters>();
+  const stableFilters = useDeepStable(filters ?? emptyObj);
+
   const loadMedia = useCallback(
     async (page = 0, append = false) => {
+      if (inFlightRef.current) return;
+      const signature = JSON.stringify({ stableFilters, page, append });
+      if (!append && lastSignatureRef.current === signature) return;
+      inFlightRef.current = true;
       try {
         setLoading(true);
         setError(null);
 
         const response = await MediaService.getMediaList({
-          ...filters,
+          ...stableFilters,
           page,
           size: 20,
         });
 
         if (response.success) {
-          const newMedia = append
-            ? [...media, ...response.media]
-            : response.media;
-          setMedia(newMedia);
+          lastSignatureRef.current = signature;
+          // Media list items do not include tags field; use response directly
+          const items = response.media;
+          setMedia((prev) => (append ? [...prev, ...items] : items));
           setPagination({
             currentPage: response.currentPage,
             totalPages: response.totalPages,
@@ -61,9 +73,10 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({
         );
       } finally {
         setLoading(false);
+        inFlightRef.current = false;
       }
     },
-    [filters, media, t]
+    [stableFilters, t]
   );
 
   const loadMore = () => {
@@ -73,8 +86,33 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({
   };
 
   useEffect(() => {
-    loadMedia();
+    if (!mountedRef.current) {
+      mountedRef.current = true;
+      loadMedia();
+    }
   }, [loadMedia]);
+
+  // React to filter changes
+  const lastFilterHashRef = useRef<string | null>(null);
+  useEffect(() => {
+    const hash = JSON.stringify(stableFilters);
+    if (
+      mountedRef.current &&
+      lastFilterHashRef.current !== null &&
+      lastFilterHashRef.current !== hash
+    ) {
+      lastSignatureRef.current = null;
+      setMedia([]);
+      setPagination({
+        currentPage: 0,
+        totalPages: 0,
+        totalElements: 0,
+        hasMore: false,
+      });
+      loadMedia(0, false);
+    }
+    lastFilterHashRef.current = hash;
+  }, [stableFilters, loadMedia]);
 
   const getGridClasses = () => {
     switch (gridCols) {

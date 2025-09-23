@@ -55,6 +55,17 @@ export default function Settings() {
         label: t("settings.sections.privacy.showOnlineStatus"),
         description: t("settings.sections.privacy.showOnlineStatus_desc"),
       },
+      {
+        key: "showGamingStats",
+        label: t(
+          "settings.sections.privacy.showGamingStats",
+          "Show Gaming Statistics"
+        ),
+        description: t(
+          "settings.sections.privacy.showGamingStats_desc",
+          "Display your gaming statistics on your profile"
+        ),
+      },
     ],
   };
 

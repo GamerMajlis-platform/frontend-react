@@ -38,10 +38,10 @@ export default function ProfileBrowser({
       {/* Header */}
       <div className="text-center">
         <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-          {t("profile.browser.title") || "Discover Gamers"}
+          {t("profile:browser.title") || "Discover Gamers"}
         </h2>
         <p className="text-slate-400">
-          {t("profile.browser.subtitle") ||
+          {t("profile:browser.subtitle") ||
             "Find and connect with fellow gamers"}
         </p>
       </div>

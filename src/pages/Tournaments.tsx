@@ -16,14 +16,14 @@ import { useIsMobile, useDebounce } from "../hooks";
 
 // Tournament sort options for SortBy component
 const tournamentSortOptions = [
-  { value: "date-soonest", labelKey: "tournaments.sort.dateSoonest" },
-  { value: "date-latest", labelKey: "tournaments.sort.dateLatest" },
-  { value: "prize-highest", labelKey: "tournaments.sort.prizeHighest" },
-  { value: "prize-lowest", labelKey: "tournaments.sort.prizeLowest" },
-  { value: "participants-most", labelKey: "tournaments.sort.participantsMost" },
+  { value: "date-soonest", labelKey: "tournaments:sort.dateSoonest" },
+  { value: "date-latest", labelKey: "tournaments:sort.dateLatest" },
+  { value: "prize-highest", labelKey: "tournaments:sort.prizeHighest" },
+  { value: "prize-lowest", labelKey: "tournaments:sort.prizeLowest" },
+  { value: "participants-most", labelKey: "tournaments:sort.participantsMost" },
   {
     value: "participants-least",
-    labelKey: "tournaments.sort.participantsLeast",
+    labelKey: "tournaments:sort.participantsLeast",
   },
 ];
 
@@ -75,7 +75,7 @@ export default function Tournaments() {
         setTournaments(data.tournaments);
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : t("tournaments.error.loadFailed")
+          err instanceof Error ? err.message : t("tournaments:error.loadFailed")
         );
       } finally {
         setLoading(false);
@@ -136,43 +136,14 @@ export default function Tournaments() {
       <BackgroundDecor />
 
       <div className="relative z-10 mx-auto max-w-[1440px] px-4 sm:px-6 max-width-container">
-        {/* Page Header */}
-        <header className="mb-6 sm:mb-8 flex w-full items-center justify-between py-4 sm:py-6 tournaments-header">
-          <h1 className="font-alice text-[32px] sm:text-[40px] lg:text-[56px] leading-tight text-white tournaments-title">
+        {/* Page Header - Centered like reference */}
+        <header className="mb-6 sm:mb-8 flex w-full items-center justify-center py-4 sm:py-6 tournaments-header">
+          <h1 className="font-alice text-[32px] sm:text-[40px] lg:text-[56px] leading-tight text-white tournaments-title text-center">
             {t("nav.tournaments")}
           </h1>
-          <button
-            onClick={() => setShowCreateForm(true)}
-            className="bg-primary hover:bg-primary-hover text-dark font-semibold py-2 px-4 rounded-lg transition-colors"
-          >
-            {t("tournaments.create.button")}
-          </button>
         </header>
 
-        {/* Create Tournament Form Modal */}
-        {showCreateForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-dark-secondary rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold text-white">
-                  {t("tournaments.create.title")}
-                </h2>
-                <button
-                  onClick={() => setShowCreateForm(false)}
-                  className="text-gray-400 hover:text-white"
-                >
-                  ×
-                </button>
-              </div>
-              <CreateTournamentForm
-                onSuccess={handleTournamentCreated}
-                onCancel={() => setShowCreateForm(false)}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* Category Filter */}
+        {/* Category Filter - Moved below header like reference */}
         <CategoryButtons
           category={category}
           onCategoryChange={setCategory}
@@ -191,7 +162,7 @@ export default function Tournaments() {
               placeholder={
                 isMobile
                   ? t("common.search")
-                  : t("tournaments.searchPlaceholder")
+                  : t("tournaments:searchPlaceholder")
               }
               className={`
                 h-12 w-full flex-1 rounded-xl border border-slate-600
@@ -222,11 +193,45 @@ export default function Tournaments() {
                 options={tournamentSortOptions}
                 value={sortBy}
                 onChange={(v) => setSortBy(v as TournamentSortOption)}
-                placeholderKey={"tournaments.sort.placeholder"}
+                placeholderKey={"tournaments:sort.placeholder"}
               />
             </div>
           </div>
+
+          {/* Create Tournament Button - Moved under search bar like reference */}
+          <div className="flex justify-center">
+            <button
+              className="rounded-xl bg-cyan-500 px-6 py-3 text-white font-medium hover:bg-cyan-600 transition-colors"
+              onClick={() => setShowCreateForm(true)}
+              type="button"
+            >
+              {t("tournaments:create.button")}
+            </button>
+          </div>
         </section>
+
+        {/* Create Tournament Form Modal */}
+        {showCreateForm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-dark-secondary rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold text-white">
+                  {t("tournaments:create.title")}
+                </h2>
+                <button
+                  onClick={() => setShowCreateForm(false)}
+                  className="text-gray-400 hover:text-white"
+                >
+                  ×
+                </button>
+              </div>
+              <CreateTournamentForm
+                onSuccess={handleTournamentCreated}
+                onCancel={() => setShowCreateForm(false)}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Tournament Grid */}
         <TournamentGrid

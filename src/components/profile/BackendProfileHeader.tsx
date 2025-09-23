@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Youtube, Twitter, Instagram, Twitch, GamepadIcon } from "lucide-react";
 import { useAppContext } from "../../context/useAppContext";
 import { useProfile } from "../../hooks/useProfile";
 import { DiscordUserInfo } from "../discord/DiscordUserInfo";
@@ -87,6 +88,88 @@ export default function BackendProfileHeader(props: BackendProfileHeaderProps) {
   const displayName = user.displayName || "User";
   const profileImageUrl = avatarUrl || user.profilePictureUrl || null;
 
+  // Function to render social media icons
+  const renderSocialIcons = (socialLinks: Record<string, unknown>) => {
+    const icons = [];
+
+    if (socialLinks.youtube && typeof socialLinks.youtube === "string") {
+      icons.push(
+        <a
+          key="youtube"
+          href={socialLinks.youtube}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-red-500 hover:text-red-600 transition-colors"
+          title="YouTube"
+        >
+          <Youtube size={16} />
+        </a>
+      );
+    }
+
+    if (socialLinks.twitter && typeof socialLinks.twitter === "string") {
+      icons.push(
+        <a
+          key="twitter"
+          href={socialLinks.twitter}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-400 hover:text-blue-500 transition-colors"
+          title="Twitter/X"
+        >
+          <Twitter size={16} />
+        </a>
+      );
+    }
+
+    if (socialLinks.instagram && typeof socialLinks.instagram === "string") {
+      icons.push(
+        <a
+          key="instagram"
+          href={socialLinks.instagram}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-pink-500 hover:text-pink-600 transition-colors"
+          title="Instagram"
+        >
+          <Instagram size={16} />
+        </a>
+      );
+    }
+
+    if (socialLinks.twitch && typeof socialLinks.twitch === "string") {
+      icons.push(
+        <a
+          key="twitch"
+          href={socialLinks.twitch}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-purple-500 hover:text-purple-600 transition-colors"
+          title="Twitch"
+        >
+          <Twitch size={16} />
+        </a>
+      );
+    }
+
+    if (socialLinks.steam && typeof socialLinks.steam === "string") {
+      icons.push(
+        <a
+          key="steam"
+          href={socialLinks.steam}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-slate-400 hover:text-slate-300 transition-colors"
+          title="Steam"
+        >
+          <GamepadIcon size={16} />
+        </a>
+      );
+    }
+
+    return icons;
+  };
+
   return (
     <div
       className={`grid grid-cols-1 lg:grid-cols-[auto_1fr_auto] gap-6 lg:gap-8 items-center justify-items-center ${
@@ -119,14 +202,14 @@ export default function BackendProfileHeader(props: BackendProfileHeaderProps) {
               value={displayName}
               onChange={(e) => props.onChange("displayName", e.target.value)}
               className="bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-white text-xl font-semibold w-full max-w-md"
-              placeholder={t("profile.displayName")}
+              placeholder={t("profile:displayName")}
               dir={props.isRTL ? "rtl" : "ltr"}
             />
             <textarea
               value={user.bio || ""}
               onChange={(e) => props.onChange("bio", e.target.value)}
               className="bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-white w-full max-w-md resize-none"
-              placeholder={t("profile.bio")}
+              placeholder={t("profile:bio")}
               rows={3}
               dir={props.isRTL ? "rtl" : "ltr"}
             />
@@ -150,17 +233,38 @@ export default function BackendProfileHeader(props: BackendProfileHeaderProps) {
           </>
         )}
 
-        {/* Discord Integration Section */}
-        <div className="mt-4">
+        {/* Discord Integration Section (RTL-aware, stacked beneath display name) */}
+        <div
+          className={`mt-2 w-full ${
+            props.isRTL ? "lg:text-right" : "lg:text-left"
+          } text-center`}
+          dir={props.isRTL ? "rtl" : "ltr"}
+        >
           {user.discordUsername ? (
-            <DiscordUserInfo
-              className={`${
+            <div
+              className={`inline-flex ${
                 props.isRTL ? "lg:justify-end" : "lg:justify-start"
               } justify-center`}
-            />
+            >
+              <div className="space-y-2">
+                <DiscordUserInfo />
+                {/* Social Media Icons */}
+                {user.parsedSocialLinks && (
+                  <div
+                    className={`flex items-center gap-3 ${
+                      props.isRTL
+                        ? "flex-row-reverse justify-end"
+                        : "flex-row justify-start"
+                    }`}
+                  >
+                    {renderSocialIcons(user.parsedSocialLinks)}
+                  </div>
+                )}
+              </div>
+            </div>
           ) : (
             <div
-              className={`flex items-center gap-2 ${
+              className={`inline-flex ${
                 props.isRTL ? "lg:justify-end" : "lg:justify-start"
               } justify-center`}
             >
@@ -169,7 +273,6 @@ export default function BackendProfileHeader(props: BackendProfileHeaderProps) {
                 size="sm"
                 onLink={(discordUser) => {
                   console.log("Discord account linked:", discordUser);
-                  // User context will be updated automatically
                 }}
                 onError={(error) => {
                   console.error("Discord linking error:", error);
@@ -279,7 +382,7 @@ function BackendAvatarPicker({
           disabled={uploading}
           className="w-8 h-8 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-full flex items-center justify-center text-white transition-colors"
           title={
-            hasAvatar ? t("profile.changeAvatar") : t("profile.uploadAvatar")
+            hasAvatar ? t("profile:changeAvatar") : t("profile:uploadAvatar")
           }
         >
           <svg
@@ -308,7 +411,7 @@ function BackendAvatarPicker({
             onClick={onRemove}
             disabled={uploading}
             className="w-8 h-8 bg-red-600 hover:bg-red-700 disabled:opacity-50 rounded-full flex items-center justify-center text-white transition-colors"
-            title={t("profile.removeAvatar")}
+            title={t("profile:removeAvatar")}
           >
             <svg
               className="w-4 h-4"

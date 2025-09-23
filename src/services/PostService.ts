@@ -61,10 +61,20 @@ export class PostService {
       formData.append("visibility", request.visibility);
     }
 
-    return await apiFetch<PostCreateResponse>("/posts", {
+    const response = await apiFetch<PostCreateResponse>("/posts", {
       method: "POST",
       body: formData,
+      useFormData: true,
     });
+    if (
+      response &&
+      typeof response === "object" &&
+      (response as PostCreateResponse).post
+    ) {
+      const r = response as PostCreateResponse;
+      r.post = this.normalizePost(r.post);
+    }
+    return response;
   }
 
   /**
@@ -146,10 +156,20 @@ export class PostService {
       formData.append("visibility", request.visibility);
     }
 
-    return await apiFetch<PostResponse>(`/posts/${postId}`, {
+    const response = await apiFetch<PostResponse>(`/posts/${postId}`, {
       method: "PUT",
       body: formData,
+      useFormData: true,
     });
+    if (
+      response &&
+      typeof response === "object" &&
+      (response as PostResponse).post
+    ) {
+      const r = response as PostResponse;
+      r.post = this.normalizePost(r.post);
+    }
+    return response;
   }
 
   /**
@@ -192,7 +212,42 @@ export class PostService {
     return await apiFetch<CommentResponse>(`/posts/${postId}/comments`, {
       method: "POST",
       body: formData,
+      useFormData: true,
     });
+  }
+
+  /**
+   * Normalize backend stringified JSON arrays for tags/hashtags into string[]
+   */
+  static normalizeArrayField(field: unknown): string[] {
+    if (Array.isArray(field)) return field as string[];
+    if (typeof field === "string") {
+      try {
+        const parsed = JSON.parse(field);
+        return Array.isArray(parsed) ? (parsed as string[]) : [];
+      } catch {
+        // Fallback: attempt to split comma separated string
+        if (field.includes("[")) return [];
+        return field
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+      }
+    }
+    return [];
+  }
+
+  /**
+   * Utility to normalize a Post object structure (mutates a shallow clone)
+   */
+  static normalizePost<T extends { tags?: unknown; hashtags?: unknown }>(
+    post: T
+  ): T & { tags: string[]; hashtags: string[] } {
+    return {
+      ...(post as T),
+      tags: this.normalizeArrayField(post.tags),
+      hashtags: this.normalizeArrayField(post.hashtags),
+    };
   }
 
   /**

@@ -53,7 +53,7 @@ function AboutSection(props: AboutSectionProps) {
         } whitespace-pre-wrap`}
       >
         {props.bio ||
-          (t("profile.placeholders.bio") as string) ||
+          (t("profile:placeholders.bio") as string) ||
           "Tell others about yourself..."}
       </div>
     );
@@ -62,7 +62,7 @@ function AboutSection(props: AboutSectionProps) {
   return (
     <div className="space-y-6">
       <h2 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6">
-        {t("profile.tabs.about")}
+        {t("profile:tabs.about")}
       </h2>
       <div className="space-y-4">
         <div className="flex gap-2">
@@ -87,7 +87,7 @@ function AboutSection(props: AboutSectionProps) {
             autoSizeBio();
           }}
           placeholder={
-            (t("profile.placeholders.bio") as string) ||
+            (t("profile:placeholders.bio") as string) ||
             "Tell others about yourself..."
           }
           className={`w-full min-h-[120px] bg-slate-700/50 border border-slate-600 rounded-xl p-4 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary resize-none transition-all duration-300 ${

@@ -2,6 +2,7 @@
 import { apiFetch, createFormData } from "../lib/api";
 import { API_ENDPOINTS, STORAGE_KEYS } from "../config/constants";
 import { AuthService } from "./AuthService";
+import { MediaService } from "./MediaService";
 import type {
   User,
   ProfileResponse,
@@ -133,7 +134,7 @@ export class ProfileService {
   }
 
   /**
-   * Upload profile picture
+   * Upload profile picture with T12 validation
    */
   static async uploadProfilePicture(file: File): Promise<string> {
     try {
@@ -165,6 +166,20 @@ export class ProfileService {
       const maxSize = 10 * 1024 * 1024; // 10MB in bytes
       if (file.size > maxSize) {
         throw new Error("File is too large. Maximum size is 10MB.");
+      }
+
+      // T12: Validate square aspect ratio
+      const aspectRatioValidation = await MediaService.validateProfilePicture(
+        file
+      );
+      if (!aspectRatioValidation.isValid) {
+        throw new Error(aspectRatioValidation.error);
+      }
+
+      // T9: Check for malicious files
+      const securityCheck = await MediaService.detectMaliciousFile(file);
+      if (!securityCheck.isSafe) {
+        throw new Error(securityCheck.reason || "File failed security check");
       }
 
       const formData = new FormData();

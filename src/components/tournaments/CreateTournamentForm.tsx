@@ -48,83 +48,83 @@ const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
     const newErrors: TournamentFormErrors = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = t("tournaments.validation.nameRequired");
+      newErrors.name = t("tournaments:validation.nameRequired");
     } else if (formData.name.length < 3) {
-      newErrors.name = t("tournaments.validation.nameMinLength");
+      newErrors.name = t("tournaments:validation.nameMinLength");
     } else if (formData.name.length > 100) {
-      newErrors.name = t("tournaments.validation.nameMaxLength");
+      newErrors.name = t("tournaments:validation.nameMaxLength");
     }
 
     if (!formData.description.trim()) {
-      newErrors.description = t("tournaments.validation.descriptionRequired");
+      newErrors.description = t("tournaments:validation.descriptionRequired");
     } else if (formData.description.length < 10) {
-      newErrors.description = t("tournaments.validation.descriptionMinLength");
+      newErrors.description = t("tournaments:validation.descriptionMinLength");
     }
 
     if (!formData.gameTitle.trim()) {
-      newErrors.gameTitle = t("tournaments.validation.gameTitleRequired");
+      newErrors.gameTitle = t("tournaments:validation.gameTitleRequired");
     }
 
     if (!formData.gameMode.trim()) {
-      newErrors.gameMode = t("tournaments.validation.gameModeRequired");
+      newErrors.gameMode = t("tournaments:validation.gameModeRequired");
     }
 
     if (formData.maxParticipants < 2) {
       newErrors.maxParticipants = t(
-        "tournaments.validation.maxParticipantsMin"
+        "tournaments:validation.maxParticipantsMin"
       );
     } else if (formData.maxParticipants > 1000) {
       newErrors.maxParticipants = t(
-        "tournaments.validation.maxParticipantsMax"
+        "tournaments:validation.maxParticipantsMax"
       );
     }
 
     if (formData.entryFee < 0) {
-      newErrors.entryFee = t("tournaments.validation.entryFeeMin");
+      newErrors.entryFee = t("tournaments:validation.entryFeeMin");
     }
 
     if (formData.prizePool < 0) {
-      newErrors.prizePool = t("tournaments.validation.prizePoolMin");
+      newErrors.prizePool = t("tournaments:validation.prizePoolMin");
     }
 
     if (!formData.startDate) {
-      newErrors.startDate = t("tournaments.validation.startDateRequired");
+      newErrors.startDate = t("tournaments:validation.startDateRequired");
     } else {
       const startDate = new Date(formData.startDate);
       const now = new Date();
       if (startDate <= now) {
-        newErrors.startDate = t("tournaments.validation.startDateFuture");
+        newErrors.startDate = t("tournaments:validation.startDateFuture");
       }
     }
 
     if (!formData.endDate) {
-      newErrors.endDate = t("tournaments.validation.endDateRequired");
+      newErrors.endDate = t("tournaments:validation.endDateRequired");
     } else if (formData.startDate) {
       const startDate = new Date(formData.startDate);
       const endDate = new Date(formData.endDate);
       if (endDate <= startDate) {
-        newErrors.endDate = t("tournaments.validation.endDateAfterStart");
+        newErrors.endDate = t("tournaments:validation.endDateAfterStart");
       }
     }
 
     if (!formData.registrationDeadline) {
       newErrors.registrationDeadline = t(
-        "tournaments.validation.registrationDeadlineRequired"
+        "tournaments:validation.registrationDeadlineRequired"
       );
     } else if (formData.startDate) {
       const deadline = new Date(formData.registrationDeadline);
       const startDate = new Date(formData.startDate);
       if (deadline >= startDate) {
         newErrors.registrationDeadline = t(
-          "tournaments.validation.registrationDeadlineBeforeStart"
+          "tournaments:validation.registrationDeadlineBeforeStart"
         );
       }
     }
 
     if (!formData.rules.trim()) {
-      newErrors.rules = t("tournaments.validation.rulesRequired");
+      newErrors.rules = t("tournaments:validation.rulesRequired");
     } else if (formData.rules.length < 10) {
-      newErrors.rules = t("tournaments.validation.rulesMinLength");
+      newErrors.rules = t("tournaments:validation.rulesMinLength");
     }
 
     setErrors(newErrors);
@@ -175,20 +175,20 @@ const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
   };
 
   const tournamentTypes: Array<{ value: TournamentType; label: string }> = [
-    { value: "ELIMINATION", label: t("tournaments.types.elimination") },
-    { value: "ROUND_ROBIN", label: t("tournaments.types.roundRobin") },
-    { value: "SWISS", label: t("tournaments.types.swiss") },
-    { value: "BRACKET", label: t("tournaments.types.bracket") },
+    { value: "ELIMINATION", label: t("tournaments:types.elimination") },
+    { value: "ROUND_ROBIN", label: t("tournaments:types.roundRobin") },
+    { value: "SWISS", label: t("tournaments:types.swiss") },
+    { value: "BRACKET", label: t("tournaments:types.bracket") },
   ];
 
   const statusOptions: Array<{ value: TournamentStatus; label: string }> = [
     {
       value: "REGISTRATION_OPEN",
-      label: t("tournaments.status.registrationOpen"),
+      label: t("tournaments:status.registrationOpen"),
     },
     {
       value: "REGISTRATION_CLOSED",
-      label: t("tournaments.status.registrationClosed"),
+      label: t("tournaments:status.registrationClosed"),
     },
   ];
 
@@ -226,7 +226,7 @@ const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
     <div className="bg-dark-secondary rounded-lg p-6 max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-white">
-          {t("tournaments.create.title")}
+          {t("tournaments:create.title")}
         </h2>
         <button
           onClick={onCancel}
@@ -255,7 +255,7 @@ const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
           <div className="lg:col-span-2">
             <FormField
               id="tournament-name"
-              label={t("tournaments.form.name")}
+              label={t("tournaments:form.name")}
               error={errors.name}
               required
             >
@@ -274,7 +274,7 @@ const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
           <div className="lg:col-span-2">
             <FormField
               id="tournament-description"
-              label={t("tournaments.form.description")}
+              label={t("tournaments:form.description")}
               error={errors.description}
               required
             >
@@ -286,7 +286,7 @@ const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
                 }
                 className={`${inputClassName} resize-none`}
                 rows={4}
-                placeholder={t("tournaments.form.descriptionPlaceholder")}
+                placeholder={t("tournaments:form.descriptionPlaceholder")}
                 maxLength={1000}
                 required
               />
@@ -295,7 +295,7 @@ const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
 
           <FormField
             id="tournament-gameTitle"
-            label={t("tournaments.form.gameTitle")}
+            label={t("tournaments:form.gameTitle")}
             error={errors.gameTitle}
             required
           >
@@ -305,14 +305,14 @@ const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
               value={formData.gameTitle}
               onChange={(e) => handleInputChange("gameTitle", e.target.value)}
               className={inputClassName}
-              placeholder={t("tournaments.form.gameTitlePlaceholder")}
+              placeholder={t("tournaments:form.gameTitlePlaceholder")}
               required
             />
           </FormField>
 
           <FormField
             id="tournament-gameMode"
-            label={t("tournaments.form.gameMode")}
+            label={t("tournaments:form.gameMode")}
             error={errors.gameMode}
           >
             <input
@@ -321,13 +321,13 @@ const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
               value={formData.gameMode}
               onChange={(e) => handleInputChange("gameMode", e.target.value)}
               className={inputClassName}
-              placeholder={t("tournaments.form.gameModePlaceholder")}
+              placeholder={t("tournaments:form.gameModePlaceholder")}
             />
           </FormField>
 
           <FormField
             id="tournament-type"
-            label={t("tournaments.form.tournamentType")}
+            label={t("tournaments:form.tournamentType")}
             required
           >
             <select
@@ -351,7 +351,7 @@ const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
 
           <FormField
             id="tournament-maxParticipants"
-            label={t("tournaments.form.maxParticipants")}
+            label={t("tournaments:form.maxParticipants")}
             error={errors.maxParticipants}
             required
           >
@@ -377,7 +377,7 @@ const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <FormField
             id="tournament-entryFee"
-            label={t("tournaments.form.entryFee")}
+            label={t("tournaments:form.entryFee")}
             error={errors.entryFee}
           >
             <input
@@ -395,7 +395,7 @@ const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
 
           <FormField
             id="tournament-prizePool"
-            label={t("tournaments.form.prizePool")}
+            label={t("tournaments:form.prizePool")}
             error={errors.prizePool}
           >
             <input
@@ -413,7 +413,7 @@ const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
 
           <FormField
             id="tournament-currency"
-            label={t("tournaments.form.currency")}
+            label={t("tournaments:form.currency")}
           >
             <select
               id="tournament-currency"
@@ -434,7 +434,7 @@ const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <FormField
             id="tournament-startDate"
-            label={t("tournaments.form.startDate")}
+            label={t("tournaments:form.startDate")}
             error={errors.startDate}
             required
           >
@@ -450,7 +450,7 @@ const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
 
           <FormField
             id="tournament-endDate"
-            label={t("tournaments.form.endDate")}
+            label={t("tournaments:form.endDate")}
             error={errors.endDate}
             required
           >
@@ -466,7 +466,7 @@ const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
 
           <FormField
             id="tournament-registrationDeadline"
-            label={t("tournaments.form.registrationDeadline")}
+            label={t("tournaments:form.registrationDeadline")}
             error={errors.registrationDeadline}
             required
           >
@@ -486,7 +486,7 @@ const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
         {/* Rules */}
         <FormField
           id="tournament-rules"
-          label={t("tournaments.form.rules")}
+          label={t("tournaments:form.rules")}
           error={errors.rules}
           required
         >
@@ -496,7 +496,7 @@ const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
             onChange={(e) => handleInputChange("rules", e.target.value)}
             className={`${inputClassName} resize-none`}
             rows={4}
-            placeholder={t("tournaments.form.rulesPlaceholder")}
+            placeholder={t("tournaments:form.rulesPlaceholder")}
             maxLength={2000}
             required
           />
@@ -506,7 +506,7 @@ const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <FormField
             id="tournament-status"
-            label={t("tournaments.form.status")}
+            label={t("tournaments:form.status")}
           >
             <select
               id="tournament-status"
@@ -539,7 +539,7 @@ const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
                 htmlFor="tournament-isPublic"
                 className="ml-2 text-sm text-text-secondary"
               >
-                {t("tournaments.form.isPublic")}
+                {t("tournaments:form.isPublic")}
               </label>
             </div>
 
@@ -557,7 +557,7 @@ const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
                 htmlFor="tournament-requiresApproval"
                 className="ml-2 text-sm text-text-secondary"
               >
-                {t("tournaments.form.requiresApproval")}
+                {t("tournaments:form.requiresApproval")}
               </label>
             </div>
           </div>
@@ -570,7 +570,7 @@ const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
             disabled={loading}
             className="flex-1 bg-primary hover:bg-primary-hover text-dark font-semibold py-3 px-6 rounded-lg transition-colors disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed"
           >
-            {loading ? t("common.creating") : t("tournaments.create.submit")}
+            {loading ? t("common.creating") : t("tournaments:create.submit")}
           </button>
 
           <button

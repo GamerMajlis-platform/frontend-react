@@ -221,6 +221,7 @@
       "errorDescription": "حدثت مشكلة في مصادقة Discord.",
       "processing": "جارٍ المصادقة مع Discord",
       "processingDescription": "يرجى الانتظار بينما نتحقق من حساب Discord الخاص بك...",
+      "retry": "أعد تسجيل الدخول عبر Discord",
       "success": "تمت المصادقة بنجاح!",
       "successDescription": "تمت مصادقتك بنجاح. جارٍ إعادة التوجيه..."
     },
@@ -252,284 +253,6 @@
     "rateLimited": "عدد كبير من الطلبات. يرجى الانتظار والمحاولة مرة أخرى",
     "serverError": "حدث خطأ ما. يرجى المحاولة مرة أخرى لاحقاً",
     "validationFailed": "يرجى التحقق من البيانات والمحاولة مرة أخرى"
-  },
-  "events": {
-    "attendanceStatuses": {
-      "CANCELLED": "ملغي",
-      "CHECKED_IN": "حاضر",
-      "NO_SHOW": "غائب",
-      "REGISTERED": "مسجل"
-    },
-    "attendees": {
-      "checkedIn": "حاضر",
-      "empty": "لا يوجد مشاركون بعد",
-      "emptyDescription": "كن أول من يسجل في هذه الفعالية!",
-      "loadMore": "تحميل المزيد",
-      "noShow": "غائب",
-      "registered": "مسجل",
-      "title": "مشاركو الفعالية",
-      "total": "إجمالي المشاركين"
-    },
-    "categories": {
-      "all": "جميع الفعاليات",
-      "my-events": "فعالياتي",
-      "ongoing": "جارية",
-      "past": "منتهية",
-      "upcoming": "قادمة"
-    },
-    "checkIn": "تسجيل الحضور",
-    "closeCreate": "إلغاء",
-    "create": "إنشاء فعالية",
-    "createEvent": "إنشاء فعالية جديدة",
-    "delete": "حذف الفعالية",
-    "details": {
-      "address": "العنوان",
-      "ageRestriction": "الحد الأدنى للعمر",
-      "attendees": "المشاركون",
-      "competitive": "تنافسية",
-      "endTime": "وقت النهاية",
-      "entryFee": "رسوم الاشتراك",
-      "free": "مجاني",
-      "gameCategory": "الفئة",
-      "gameTitle": "اللعبة",
-      "interestedCount": "مهتم",
-      "location": "الموقع",
-      "noRequirements": "لا توجد متطلبات خاصة",
-      "organizer": "المنظم",
-      "registrationDeadline": "آخر موعد للتسجيل",
-      "requirements": "المتطلبات",
-      "startTime": "وقت البداية",
-      "status": "الحالة",
-      "unlimited": "غير محدود",
-      "venue": "المكان",
-      "viewCount": "مشاهدة",
-      "virtualPlatform": "المنصة",
-      "yearsAndUp": "سنة فأكثر"
-    },
-    "edit": "تعديل الفعالية",
-    "featured": "الفعاليات المميزة",
-    "filters": {
-      "all": "جميع الفعاليات",
-      "apply": "تطبيق الفلاتر",
-      "clear": "مسح الفلاتر",
-      "eventType": "نوع الفعالية",
-      "gameCategory": "فئة اللعبة",
-      "locationType": "الموقع",
-      "myEvents": "فعالياتي فقط",
-      "upcoming": "القادمة فقط"
-    },
-    "form": {
-      "ageRestriction": "الحد الأدنى للعمر",
-      "cancel": "إلغاء",
-      "competitive": "فعالية تنافسية",
-      "create": "إنشاء الفعالية",
-      "description": "الوصف",
-      "endDateTime": "تاريخ ووقت النهاية (اختياري)",
-      "entryFee": "رسوم الاشتراك",
-      "eventType": "نوع الفعالية",
-      "gameCategory": "فئة اللعبة",
-      "gameTitle": "اسم اللعبة",
-      "isPublic": "فعالية عامة",
-      "locationType": "نوع الموقع",
-      "maxAttendees": "أقصى عدد مشاركين",
-      "physicalAddress": "العنوان الفعلي",
-      "physicalVenue": "اسم المكان",
-      "placeholders": {
-        "ageRestriction": "١٦",
-        "description": "صف فعاليتك...",
-        "entryFee": "١٠.٠٠",
-        "gameTitle": "فالورانت، ليق أوف ليجيندز، إلخ.",
-        "maxAttendees": "١٠٠",
-        "physicalAddress": "١٢٣ شارع الرئيسي، المدينة، المنطقة",
-        "physicalVenue": "صالة الألعاب، المركز المجتمعي، إلخ.",
-        "registrationRequirements": "يجب أن يكون العمر ١٦+ سنة...",
-        "title": "أدخل عنوان الفعالية...",
-        "virtualLink": "https://discord.gg/...",
-        "virtualPlatform": "ديسكورد، زووم، إلخ."
-      },
-      "registrationDeadline": "آخر موعد للتسجيل",
-      "registrationRequirements": "متطلبات التسجيل",
-      "requiresRegistration": "يتطلب تسجيل",
-      "save": "حفظ التغييرات",
-      "startDateTime": "تاريخ ووقت البداية",
-      "title": "عنوان الفعالية",
-      "update": "تحديث الفعالية",
-      "virtualLink": "رابط الفعالية الافتراضية",
-      "virtualPlatform": "منصة الفعالية الافتراضية"
-    },
-    "gameCategories": {
-      "FIGHTING": "قتال",
-      "FPS": "إطلاق نار",
-      "MOBA": "موبا",
-      "OTHER": "أخرى",
-      "RACING": "سباق",
-      "RPG": "لعبة أدوار",
-      "SPORTS": "رياضة",
-      "STRATEGY": "استراتيجية"
-    },
-    "locationTypes": {
-      "HYBRID": "مختلط",
-      "PHYSICAL": "حضوري",
-      "VIRTUAL": "افتراضي"
-    },
-
-    "messages": {
-      "attendeesError": "فشل في تحميل المشاركين. يرجى المحاولة مرة أخرى.",
-      "autoRedirect": "جارٍ إعادة التوجيه إلى نظام الدردشة الجديد...",
-      "checkInError": "فشل في تسجيل الحضور. يرجى المحاولة مرة أخرى.",
-      "checkInSuccess": "تم تسجيل الحضور بنجاح!",
-      "createError": "فشل في إنشاء الفعالية. يرجى المحاولة مرة أخرى.",
-      "createSuccess": "تم إنشاء الفعالية بنجاح!",
-      "deleteConfirm": "هل أنت متأكد من حذف هذه الفعالية؟ لا يمكن التراجع عن هذا الإجراء.",
-      "deleteError": "فشل في حذف الفعالية. يرجى المحاولة مرة أخرى.",
-      "deleteSuccess": "تم حذف الفعالية بنجاح!",
-      "eventFull": "هذه الفعالية ممتلئة",
-      "eventNotFound": "الفعالية غير موجودة",
-      "goToChat": "اذهب إلى الدردشة الآن",
-      "loadError": "فشل في تحميل الفعاليات. يرجى المحاولة مرة أخرى.",
-      "redirectDescription": "تم ترقية نظام الرسائل إلى نظام محادثة متكامل بالغرف، والرسائل المباشرة، وميزات الزمن الحقيقي.",
-      "redirecting": "تم تحديث نظام الرسائل",
-      "registerError": "فشل في التسجيل للفعالية. يرجى المحاولة مرة أخرى.",
-      "registerSuccess": "تم التسجيل في الفعالية بنجاح!",
-      "registrationClosed": "انتهى التسجيل لهذه الفعالية",
-      "searchError": "فشل في البحث عن الفعاليات. يرجى المحاولة مرة أخرى.",
-      "unauthorized": "غير مخول لك القيام بهذا الإجراء",
-      "unregisterConfirm": "هل أنت متأكد من إلغاء التسجيل من هذه الفعالية؟",
-      "unregisterError": "فشل في إلغاء التسجيل من الفعالية. يرجى المحاولة مرة أخرى.",
-      "unregisterSuccess": "تم إلغاء التسجيل من الفعالية بنجاح!",
-      "updateError": "فشل في تحديث الفعالية. يرجى المحاولة مرة أخرى.",
-      "updateSuccess": "تم تحديث الفعالية بنجاح!"
-    },
-    "noMatches": "جرّب تعديل البحث أو الفلاتر.",
-
-    "recommended": "مقترحة لك",
-    "register": "تسجيل",
-    "report": "الإبلاغ عن الفعالية",
-    "searchPlaceholder": "ابحث عن الفعاليات أو المنظمين...",
-    "share": "مشاركة الفعالية",
-    "sort": {
-      "attendees-least": "المشاركين: الأقل",
-      "attendees-most": "المشاركين: الأكثر",
-      "created-latest": "الإنشاء: الأحدث",
-      "created-oldest": "الإنشاء: الأقدم",
-      "date-latest": "التاريخ: الأبعد",
-      "date-soonest": "التاريخ: الأقرب",
-      "name": "الاسم أ-ي",
-      "organizer": "المنظم أ-ي",
-      "placeholder": "ترتيب حسب"
-    },
-    "statuses": {
-      "CANCELLED": "ملغية",
-      "COMPLETED": "منتهية",
-      "DRAFT": "مسودة",
-      "LIVE": "مباشر",
-      "REGISTRATION_CLOSED": "التسجيل مغلق",
-      "REGISTRATION_OPEN": "التسجيل مفتوح"
-    },
-    "trending": "الفعاليات الشائعة",
-    "types": {
-      "COMMUNITY_GATHERING": "تجمع مجتمعي",
-      "TOURNAMENT": "بطولة"
-    },
-    "unregister": "إلغاء التسجيل",
-    "validation": {
-      "ageRestrictionRange": "الحد الأدنى للعمر يجب أن يكون بين ١ و ٩٩",
-      "descriptionMaxLength": "الوصف لا يمكن أن يتجاوز ١٠٠٠ حرف",
-      "endDateTimeAfterStart": "تاريخ النهاية يجب أن يكون بعد تاريخ البداية",
-      "entryFeeMax": "رسوم الاشتراك لا يمكن أن تتجاوز ١٠٠٠٠",
-      "entryFeePositive": "رسوم الاشتراك يجب أن تكون ٠ أو أكثر",
-      "maxAttendeesMax": "أقصى عدد مشاركين لا يمكن أن يتجاوز ١٠٠٠٠",
-      "maxAttendeesPositive": "أقصى عدد مشاركين يجب أن يكون رقم موجب",
-      "physicalAddressRequired": "العنوان الفعلي مطلوب للفعاليات الحضورية",
-      "physicalVenueRequired": "اسم المكان مطلوب للفعاليات الحضورية",
-      "registrationDeadlineBeforeStart": "آخر موعد للتسجيل يجب أن يكون قبل بداية الفعالية",
-      "startDateTimeFuture": "تاريخ البداية يجب أن يكون في المستقبل",
-      "startDateTimeRequired": "تاريخ ووقت البداية مطلوب",
-      "titleMaxLength": "العنوان لا يمكن أن يتجاوز ١٠٠ حرف",
-      "titleMinLength": "العنوان يجب أن يكون ٣ أحرف على الأقل",
-      "titleRequired": "عنوان الفعالية مطلوب",
-      "virtualLinkRequired": "رابط الفعالية الافتراضية مطلوب للفعاليات الافتراضية",
-      "virtualLinkValid": "يرجى إدخال رابط صحيح"
-    },
-    "viewAttendees": "عرض المشاركين",
-    "viewDetails": "عرض التفاصيل"
-  },
-  "media": {
-    "gallery": {
-      "loadError": "فشل في تحميل الوسائط",
-      "loadMore": "تحميل المزيد",
-      "noMedia": "لا توجد وسائط",
-      "noMediaDescription": "ارفع بعض محتوى الألعاب للبدء!",
-      "showing": "عرض {{count}} من {{total}} عنصر"
-    },
-    "preview": {
-      "moreTags": "المزيد من العلامات",
-      "videoNotSupported": "متصفحك لا يدعم تشغيل الفيديو."
-    },
-    "upload": {
-      "clickToUpload": "انقر للرفع",
-      "description": "الوصف",
-      "descriptionPlaceholder": "اوصف وسائطك...",
-      "fileSize": "حجم الملف",
-      "gameCategory": "فئة اللعبة",
-      "orDragAndDrop": "أو اسحب وأفلت",
-      "private": "خاص",
-      "public": "عام",
-      "selectCategory": "اختر فئة",
-      "selectedFile": "الملف المحدد",
-      "supportedFormats": "MP4، AVI، MOV، JPG، PNG، GIF حتى 100 ميجابايت",
-      "tags": "العلامات",
-      "tagsHelp": "افصل العلامات بفواصل",
-      "tagsPlaceholder": "ألعاب، لقطة مميزة، مضحك",
-      "title": "العنوان",
-      "titlePlaceholder": "أدخل عنوان الوسائط",
-      "upload": "رفع الوسائط",
-      "uploadDetails": "تفاصيل الرفع",
-      "uploading": "جاري الرفع...",
-      "visibility": "الخصوصية"
-    }
-  },
-  "posts": {
-    "copyLink": "نسخ الرابط",
-    "create": {
-      "content": "المحتوى",
-      "contentPlaceholder": "شارك أفكارك وتجاربك أو اطرح أسئلة...",
-      "createError": "فشل في إنشاء المنشور. يرجى المحاولة مرة أخرى.",
-      "gameCategory": "فئة اللعبة",
-      "gameTitle": "اسم اللعبة",
-      "gameTitlePlaceholder": "مثل: فالورانت، ليج أوف ليجندز",
-      "hashtags": "الهاشتاغ",
-      "hashtagsHelp": "يتم اكتشافها تلقائياً من المحتوى أو أضف يدوياً",
-      "hashtagsPlaceholder": "ألعاب، رياضة_إلكترونية، مجتمع",
-      "platform": "منصة اللعب",
-      "postTitle": "عنوان المنشور",
-      "private": "خاص",
-      "public": "عام",
-      "publish": "نشر المنشور",
-      "publishing": "جاري النشر...",
-      "requiredFields": "يرجى ملء جميع الحقول المطلوبة.",
-      "selectCategory": "اختر فئة",
-      "selectPlatform": "اختر المنصة",
-      "subtitle": "شارك تجاربك في الألعاب مع المجتمع",
-      "successMessage": "تم إنشاء المنشور بنجاح!",
-      "tags": "العلامات",
-      "tagsHelp": "افصل العلامات بفواصل",
-      "tagsPlaceholder": "ألعاب، تنافسي، استراتيجية",
-      "title": "إنشاء منشور جديد",
-      "titlePlaceholder": "ما هي قصتك في اللعب؟",
-      "visibility": "الخصوصية"
-    },
-    "delete": "حذف المنشور",
-    "feed": {
-      "confirmDelete": "هل أنت متأكد من حذف هذا المنشور؟",
-      "loadError": "فشل في تحميل المنشورات",
-      "loadMore": "تحميل المزيد",
-      "noPosts": "لا توجد منشورات بعد",
-      "noPostsDescription": "كن أول من يشارك شيئاً مع المجتمع!",
-      "showing": "عرض {{count}} من {{total}} منشور"
-    },
-    "menu": "خيارات المنشور",
-    "share": "مشاركة"
   },
   "footer": {
     "allRightsReserved": "© 2025 جيمر مجلس. جميع الحقوق محفوظة.",
@@ -577,6 +300,41 @@
     "subtitle": "اكتشف معدات ألعاب مميزة من بائعين موثوقين حول العالم",
     "title": "متجر الألعاب"
   },
+  "media": {
+    "gallery": {
+      "loadError": "فشل في تحميل الوسائط",
+      "loadMore": "تحميل المزيد",
+      "noMedia": "لا توجد وسائط",
+      "noMediaDescription": "ارفع بعض محتوى الألعاب للبدء!",
+      "showing": "عرض {{count}} من {{total}} عنصر"
+    },
+    "preview": {
+      "moreTags": "المزيد من العلامات",
+      "videoNotSupported": "متصفحك لا يدعم تشغيل الفيديو."
+    },
+    "upload": {
+      "clickToUpload": "انقر للرفع",
+      "description": "الوصف",
+      "descriptionPlaceholder": "اوصف وسائطك...",
+      "fileSize": "حجم الملف",
+      "gameCategory": "فئة اللعبة",
+      "orDragAndDrop": "أو اسحب وأفلت",
+      "private": "خاص",
+      "public": "عام",
+      "selectCategory": "اختر فئة",
+      "selectedFile": "الملف المحدد",
+      "supportedFormats": "MP4، AVI، MOV، JPG، PNG، GIF حتى 100 ميجابايت",
+      "tags": "العلامات",
+      "tagsHelp": "افصل العلامات بفواصل",
+      "tagsPlaceholder": "ألعاب، لقطة مميزة، مضحك",
+      "title": "العنوان",
+      "titlePlaceholder": "أدخل عنوان الوسائط",
+      "upload": "رفع الوسائط",
+      "uploadDetails": "تفاصيل الرفع",
+      "uploading": "جاري الرفع...",
+      "visibility": "الخصوصية"
+    }
+  },
   "nav": {
     "events": "الفعاليات",
     "home": "الرئيسية",
@@ -593,6 +351,48 @@
     "messages": "الرسائل",
     "profile": "الملف الشخصي",
     "tournaments": "البطولات"
+  },
+  "posts": {
+    "copyLink": "نسخ الرابط",
+    "create": {
+      "content": "المحتوى",
+      "contentPlaceholder": "شارك أفكارك وتجاربك أو اطرح أسئلة...",
+      "createError": "فشل في إنشاء المنشور. يرجى المحاولة مرة أخرى.",
+      "gameCategory": "فئة اللعبة",
+      "gameTitle": "اسم اللعبة",
+      "gameTitlePlaceholder": "مثل: فالورانت، ليج أوف ليجندز",
+      "hashtags": "الهاشتاغ",
+      "hashtagsHelp": "يتم اكتشافها تلقائياً من المحتوى أو أضف يدوياً",
+      "hashtagsPlaceholder": "ألعاب، رياضة_إلكترونية، مجتمع",
+      "platform": "منصة اللعب",
+      "postTitle": "عنوان المنشور",
+      "private": "خاص",
+      "public": "عام",
+      "publish": "نشر المنشور",
+      "publishing": "جاري النشر...",
+      "requiredFields": "يرجى ملء جميع الحقول المطلوبة.",
+      "selectCategory": "اختر فئة",
+      "selectPlatform": "اختر المنصة",
+      "subtitle": "شارك تجاربك في الألعاب مع المجتمع",
+      "successMessage": "تم إنشاء المنشور بنجاح!",
+      "tags": "العلامات",
+      "tagsHelp": "افصل العلامات بفواصل",
+      "tagsPlaceholder": "ألعاب، تنافسي، استراتيجية",
+      "title": "إنشاء منشور جديد",
+      "titlePlaceholder": "ما هي قصتك في اللعب؟",
+      "visibility": "الخصوصية"
+    },
+    "delete": "حذف المنشور",
+    "feed": {
+      "confirmDelete": "هل أنت متأكد من حذف هذا المنشور؟",
+      "loadError": "فشل في تحميل المنشورات",
+      "loadMore": "تحميل المزيد",
+      "noPosts": "لا توجد منشورات بعد",
+      "noPostsDescription": "كن أول من يشارك شيئاً مع المجتمع!",
+      "showing": "عرض {{count}} من {{total}} منشور"
+    },
+    "menu": "خيارات المنشور",
+    "share": "مشاركة"
   },
   "product": {
     "ascending": "تصاعدي",
@@ -644,51 +444,6 @@
     "sortBy": "ترتيب حسب",
     "validPriceRequired": "سعر صالح مطلوب"
   },
-  "profile": {
-    "bio": "نبذة",
-    "browser": {
-      "subtitle": "ابحث وتواصل مع لاعبين آخرين",
-      "suggested": "اللاعبون المقترحون",
-      "title": "تصفح اللاعبين"
-    },
-    "cancel": "إلغاء",
-    "changeAvatar": "تغيير صورة الملف",
-    "discordName": "اسم ديسكورد",
-    "displayName": "اسم العرض",
-    "edit": "تعديل الملف",
-    "editing": {
-      "addPreference": "إضافة تفضيل",
-      "addStat": "إضافة إحصائية",
-      "bold": "التنسيق:",
-      "characters": "{{count}}/500",
-      "remove": "إزالة"
-    },
-    "emailNotVerified": "لم يتم التحقق من البريد",
-    "emailVerified": "تم التحقق من البريد",
-    "level": "المستوى {{level}}",
-    "placeholders": {
-      "bio": "نبذة",
-      "discordName": "اسم المستخدم في ديسكورد",
-      "displayName": "أدخل اسم العرض",
-      "gamingPreferences": "تفضيلات اللعب",
-      "gamingStatistics": "إحصائيات اللعب",
-      "preferenceItem": "أضف تفضيل...",
-      "statName": "اسم الإحصائية (مثال: نسبة الفوز)"
-    },
-    "removeAvatar": "إزالة صورة الملف",
-    "save": "حفظ الملف",
-    "search": {
-      "aria": "ابحث عن لاعبين",
-      "placeholder": "ابحث عن لاعبين..."
-    },
-    "tabs": {
-      "about": "نبذة",
-      "preferences": "التفضيلات",
-      "stats": "الإحصائيات"
-    },
-    "uploadAvatar": "رفع صورة الملف",
-    "uploadPhoto": "رفع صورة"
-  },
   "settings": {
     "save": "حفظ التغييرات",
     "sections": {
@@ -729,170 +484,12 @@
   },
   "sort": {
     "name": "الاسم أ-ي",
+    "newest": "الأحدث",
+    "placeholder": "ترتيب حسب",
     "price_high": "السعر: من الأعلى للأقل",
     "price_low": "السعر: من الأقل للأعلى",
     "rating": "الأعلى تقييمًا",
     "reviews": "الأكثر مراجعات"
-  },
-  "tournaments": {
-    "actions": {
-      "cancel": "إلغاء",
-      "edit": "تعديل",
-      "register": "سجّل",
-      "share": "مشاركة",
-      "unregister": "إلغاء التسجيل",
-      "viewDetails": "عرض التفاصيل"
-    },
-    "card": {
-      "closed": "مغلق",
-      "entryFee": "رسوم المشاركة",
-      "free": "مجاني",
-      "gameMode": "النمط",
-      "inDays": "خلال {{count}} أيام",
-      "open": "مفتوح",
-      "participants": "المشاركون",
-      "register": "سجّل",
-      "registration": "التسجيل",
-      "rules": "القوانين",
-      "starts": "تبدأ",
-      "today": "اليوم",
-      "tomorrow": "غدًا",
-      "type": "النوع",
-      "views": "المشاهدات"
-    },
-    "categories": {
-      "ongoing": "جارية",
-      "past": "منتهية",
-      "upcoming": "قادمة"
-    },
-    "create": {
-      "button": "إنشاء بطولة",
-      "error": "فشل في إنشاء البطولة",
-      "form": {
-        "currency": "العملة",
-        "currencyOptions": {
-          "USD": "USD ($)"
-        },
-        "description": "الوصف",
-        "descriptionPlaceholder": "اوصف بطولتك",
-        "endDate": "تاريخ الانتهاء",
-        "endDatePlaceholder": "mm/dd/yyyy --:-- --",
-        "entryFee": "رسوم المشاركة",
-        "entryFeePlaceholder": "مبلغ رسوم المشاركة",
-        "gameMode": "نمط اللعب",
-        "gameModeOptions": {
-          "competitive": "تنافسية"
-        },
-        "gameModePlaceholder": "نمط لعب البطولة",
-        "gameTitle": "اللعبة",
-        "gameTitlePlaceholder": "اختر اللعبة",
-        "isPublic": "فعالية عامة",
-        "location": "المكان",
-        "locationPlaceholder": "مكان البطولة",
-        "maxParticipants": "الحد الأقصى للمشاركين",
-        "maxParticipantsDefault": "16",
-        "maxParticipantsPlaceholder": "الالعدد الأقصى للمشاركين",
-        "name": "اسم البطولة",
-        "namePlaceholder": "أدخل اسم البطولة",
-        "prizePool": "مجموع الجوائز",
-        "prizePoolPlaceholder": "إجمالي مجموع الجوائز",
-        "registrationDeadline": "موعد انتهاء التسجيل",
-        "registrationDeadlinePlaceholder": "mm/dd/yyyy --:-- --",
-        "requiresApproval": "يتطلب موافقة",
-        "rules": "القوانين",
-        "rulesPlaceholder": "قوانين وإرشادات البطولة",
-        "startDate": "تاريخ البدء",
-        "startDatePlaceholder": "mm/dd/yyyy --:-- --",
-        "status": "الحالة",
-        "tournamentType": "نوع البطولة"
-      },
-      "success": "تم إنشاء البطولة بنجاح",
-      "title": "إنشاء بطولة",
-      "types": {
-        "BRACKET": "قوسين",
-        "DOUBLE_ELIMINATION": "إقصاء مزدوج",
-        "elimination": "إقصاء",
-        "LEAGUE": "دوري",
-        "ROUND_ROBIN": "دوري شامل",
-        "SINGLE_ELIMINATION": "إقصاء مفرد",
-        "SWISS": "النظام السويسري"
-      },
-      "validation": {
-        "descriptionMinLength": "الوصف يجب أن يكون 10 أحرف على الأقل",
-        "descriptionRequired": "الوصف مطلوب",
-        "endDateAfterStart": "تاريخ الانتهاء يجب أن يكون بعد تاريخ البدء",
-        "endDateRequired": "تاريخ الانتهاء مطلوب",
-        "entryFeeMin": "رسوم المشاركة يجب أن تكون 0 أو أكثر",
-        "gameTitleRequired": "اختيار اللعبة مطلوب",
-        "maxParticipantsMax": "لا يمكن أن يتجاوز 1000 مشارك",
-        "maxParticipantsMin": "يجب أن يكون هناك مشاركان على الأقل",
-        "maxParticipantsRequired": "العدد الأقصى للمشاركين مطلوب",
-        "nameMaxLength": "اسم البطولة يجب أن يكون أقل من 100 حرف",
-        "nameMinLength": "اسم البطولة يجب أن يكون 3 أحرف على الأقل",
-        "nameRequired": "اسم البطولة مطلوب",
-        "prizePoolMin": "مجموع الجوائز يجب أن يكون 0 أو أكثر",
-        "registrationDeadlineBeforeStart": "موعد انتهاء التسجيل يجب أن يكون قبل تاريخ البدء",
-        "registrationDeadlineRequired": "موعد انتهاء التسجيل مطلوب",
-        "startDateRequired": "تاريخ البدء مطلوب"
-      }
-    },
-    "details": {
-      "bracket": "القوس",
-      "contact": "التواصل",
-      "information": "المعلومات",
-      "organizer": "المنظم",
-      "overview": "نظرة عامة",
-      "participants": "المشاركون",
-      "prizes": "الجوائز",
-      "rules": "القوانين",
-      "schedule": "الجدول",
-      "title": "تفاصيل البطولة"
-    },
-    "empty": {
-      "description": "لا توجد بطولات تطابق معاييرك.",
-      "title": "لا توجد بطولات"
-    },
-    "error": {
-      "loadFailed": "فشل في تحميل البطولات. يرجى المحاولة مرة أخرى.",
-      "title": "خطأ في تحميل البطولات"
-    },
-    "noMatches": "جرّب تعديل البحث أو الفلاتر.",
-    "registration": {
-      "alreadyRegistered": "أنت مسجل بالفعل",
-      "confirmUnregister": "هل أنت متأكد من إلغاء التسجيل؟",
-      "error": "فشل في التسجيل للبطولة",
-      "registrationClosed": "التسجيل مغلق",
-      "success": "تم التسجيل في البطولة بنجاح",
-      "title": "تسجيل البطولة",
-      "tournamentFull": "البطولة مكتملة",
-      "unregisterError": "فشل في إلغاء التسجيل",
-      "unregisterSuccess": "تم إلغاء التسجيل بنجاح"
-    },
-    "searchPlaceholder": "ابحث عن البطولات أو المنظمين...",
-    "sort": {
-      "dateLatest": "تاريخ البدء: الأبعد",
-      "dateSoonest": "تاريخ البدء: الأقرب",
-      "participantsLeast": "المشاركون: الأقل",
-      "participantsMost": "المشاركون: الأكثر",
-      "placeholder": "ترتيب حسب",
-      "prizeHighest": "الجائزة: الأعلى",
-      "prizeLowest": "الجائزة: الأقل"
-    },
-    "status": {
-      "cancelled": "ملغية",
-      "completed": "مكتملة",
-      "inProgress": "جارية",
-      "registrationClosed": "التسجيل مغلق",
-      "registrationOpen": "التسجيل مفتوح",
-      "upcoming": "قادمة"
-    },
-    "ui": {
-      "dropdownCaret": "▼",
-      "no": "لا",
-      "noTournaments": "لا توجد بطولات",
-      "searchPlaceholder": "ابحث عن البطولات أو المنظمين...",
-      "sortLabel": "ترتيب حسب"
-    }
   },
   "wishlist": {
     "added": "تمت الإضافة",

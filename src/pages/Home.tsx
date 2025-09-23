@@ -1,17 +1,17 @@
 import { useTranslation } from "react-i18next";
 import { BackgroundDecor } from "../components";
-import { PostFeed, CreatePost } from "../components/posts";
-import { MediaGallery, MediaUpload } from "../components/media";
+import { PostFeed } from "../components/posts";
+import { MediaGallery } from "../components/media";
+import { ContentCreation } from "../components/shared/ContentCreation";
 import { useAppContext } from "../context/useAppContext";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { MessageSquare, Image, Plus } from "lucide-react";
 
-interface HomeProps {
-  onNavigate?: (page: string) => void;
-}
-
-export default function Home({ onNavigate }: HomeProps) {
+export default function Home() {
   const { t } = useTranslation();
   const { isAuthenticated, user } = useAppContext();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"posts" | "media" | "create">(
     "posts"
   );
@@ -32,19 +32,7 @@ export default function Home({ onNavigate }: HomeProps) {
               }`}
             >
               <div className="flex items-center justify-center space-x-2">
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
-                  />
-                </svg>
+                <MessageSquare size={20} />
                 <span>{t("home.tabs.posts")}</span>
               </div>
             </button>
@@ -57,19 +45,7 @@ export default function Home({ onNavigate }: HomeProps) {
               }`}
             >
               <div className="flex items-center justify-center space-x-2">
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
-                  />
-                </svg>
+                <Image size={20} />
                 <span>{t("home.tabs.media")}</span>
               </div>
             </button>
@@ -82,19 +58,7 @@ export default function Home({ onNavigate }: HomeProps) {
               }`}
             >
               <div className="flex items-center justify-center space-x-2">
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  />
-                </svg>
+                <Plus size={20} />
                 <span>{t("home.tabs.create")}</span>
               </div>
             </button>
@@ -151,51 +115,20 @@ export default function Home({ onNavigate }: HomeProps) {
 
           {activeTab === "create" && (
             <div className="p-6">
-              <h2 className="text-2xl font-bold text-white mb-6 flex items-center space-x-2">
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  />
-                </svg>
-                <span>{t("home.content.createTitle")}</span>
-              </h2>
-
-              {/* Create Content Tabs */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-4">
-                    {t("home.content.createPost")}
-                  </h3>
-                  <CreatePost
-                    onPostCreated={(postId) => {
-                      console.log("Post created:", postId);
-                      setActiveTab("posts");
-                    }}
-                  />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-4">
-                    {t("home.content.uploadMedia")}
-                  </h3>
-                  <MediaUpload
-                    onUploadSuccess={(mediaId) => {
-                      console.log("Media uploaded:", mediaId);
-                      setActiveTab("media");
-                    }}
-                    onUploadError={(error) => {
-                      console.error("Upload error:", error);
-                    }}
-                  />
-                </div>
-              </div>
+              <ContentCreation
+                onPostCreated={(postId: number) => {
+                  console.log("Post created:", postId);
+                  setActiveTab("posts");
+                }}
+                onMediaUploaded={(mediaId: number) => {
+                  console.log("Media uploaded:", mediaId);
+                  setActiveTab("media");
+                }}
+                onError={(error: string) => {
+                  console.error("Content creation error:", error);
+                  // TODO: Show toast notification
+                }}
+              />
             </div>
           )}
         </div>
@@ -220,7 +153,7 @@ export default function Home({ onNavigate }: HomeProps) {
             className="flex w-[48%] sm:w-[200px] md:w-[220px] lg:w-[245px] h-[40px] sm:h-[46px] md:h-[50px] items-center justify-center gap-2 px-5 sm:px-8 md:px-10 lg:px-12 py-2.5 bg-[#6fffe9] rounded-[30px] hover:bg-[#5ee6d3] transition-colors duration-200 cursor-pointer"
             type="button"
             aria-label={t("home.joinCommunity")}
-            onClick={() => onNavigate?.("signup")}
+            onClick={() => navigate("/signup")}
           >
             <span className="relative w-fit mt-[-0.50px] [font-family:'Alice-Regular',Helvetica] font-normal text-black text-base sm:text-xl md:text-2xl text-center tracking-[0] leading-[normal] whitespace-nowrap">
               {t("home.joinCommunity")}
@@ -230,11 +163,11 @@ export default function Home({ onNavigate }: HomeProps) {
           <button
             className="flex w-[48%] sm:w-[200px] md:w-[220px] lg:w-[245px] h-[40px] sm:h-[46px] md:h-[50px] items-center justify-center gap-2 px-4 sm:px-[5px] py-2.5 rounded-[30px] border border-solid border-[#6fffe9] hover:bg-[#6fffe9] transition-colors duration-200 cursor-pointer group"
             type="button"
-            aria-label={t("nav.tournaments")}
-            onClick={() => onNavigate?.("tournaments")}
+            aria-label={t("auth.login")}
+            onClick={() => navigate("/login")}
           >
             <span className="relative w-fit mt-[-0.50px] [font-family:'Alice-Regular',Helvetica] font-normal text-[#eeeeee] text-base sm:text-xl md:text-2xl text-center tracking-[0] leading-[normal] whitespace-nowrap group-hover:text-black transition-colors duration-200">
-              {t("nav.tournaments")}
+              {t("auth.login", "Login")}
             </span>
           </button>
         </div>

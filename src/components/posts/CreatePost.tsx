@@ -286,7 +286,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({
               <option value="">{t("posts.create.selectCategory")}</option>
               {GAME_CATEGORIES.map((category) => (
                 <option key={category} value={category}>
-                  {t(`events.gameCategories.${category.toUpperCase()}`, {})}
+                  {t(`events:gameCategories.${category.toUpperCase()}`, {})}
                 </option>
               ))}
             </select>

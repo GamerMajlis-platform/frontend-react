@@ -27,7 +27,7 @@ export function CategoryButtons({
           }`}
           onClick={() => onCategoryChange(cat)}
         >
-          {t(`${translationPrefix}.categories.${cat}`)}
+          {t(`${translationPrefix}:categories.${cat}`)}
         </button>
       ))}
     </div>

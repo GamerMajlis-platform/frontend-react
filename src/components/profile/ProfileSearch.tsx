@@ -156,9 +156,9 @@ export default function ProfileSearch({
           onChange={handleInputChange}
           onFocus={handleFocus}
           onBlur={handleBlur}
-          placeholder={t("profile.search.placeholder")}
+          placeholder={t("profile:search.placeholder")}
           autoFocus={autoFocus}
-          aria-label={t("profile.search.aria") || "Search profiles"}
+          aria-label={t("profile:search.aria") || "Search profiles"}
           className={`w-full bg-slate-700/50 border border-slate-600/50 text-white placeholder-slate-400 focus:outline-none focus:border-primary/50 focus:bg-slate-700/80 transition-all ${
             compact
               ? `${isRTL ? "pl-10 pr-3" : "pr-10 pl-3"} h-10 rounded-lg text-sm`
@@ -323,7 +323,7 @@ export default function ProfileSearch({
         >
           <div className="p-2">
             <h3 className="text-sm font-semibold text-slate-300 px-3 py-2">
-              {t("profile.browser.suggested") || "Suggested Profiles"}
+              {t("profile:browser.suggested") || "Suggested Profiles"}
             </h3>
             <div className="space-y-1">
               {suggestions.map((suggestion) => (

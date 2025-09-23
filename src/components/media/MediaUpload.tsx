@@ -44,23 +44,38 @@ export const MediaUpload: React.FC<MediaUploadProps> = ({
     visibility: "PUBLIC" as "PUBLIC" | "PRIVATE",
   });
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Validate file
-    const validation = MediaService.validateFile(file);
-    if (!validation.isValid) {
-      onUploadError?.(validation.error || "Invalid file");
-      return;
-    }
+    try {
+      // T5-T6: Validate file format and size
+      const validation = MediaService.validateFile(file);
+      if (!validation.isValid) {
+        onUploadError?.(validation.error || "Invalid file");
+        return;
+      }
 
-    setSelectedFile(file);
-    setUploadData((prev) => ({
-      ...prev,
-      title: file.name.split(".")[0], // Default title from filename
-    }));
-    setShowUploadForm(true);
+      // T9: Check for malicious files
+      const securityCheck = await MediaService.detectMaliciousFile(file);
+      if (!securityCheck.isSafe) {
+        onUploadError?.(securityCheck.reason || "File failed security check");
+        return;
+      }
+
+      setSelectedFile(file);
+      setUploadData((prev) => ({
+        ...prev,
+        title: file.name.split(".")[0], // Default title from filename
+      }));
+      setShowUploadForm(true);
+    } catch (error) {
+      onUploadError?.(
+        error instanceof Error ? error.message : "File validation failed"
+      );
+    }
   };
 
   const handleUpload = async () => {
@@ -81,9 +96,27 @@ export const MediaUpload: React.FC<MediaUploadProps> = ({
         visibility: uploadData.visibility,
       };
 
-      const response = await MediaService.uploadMedia(uploadRequest);
+      // T8: Upload with progress indicator
+      const response = await MediaService.uploadMedia(
+        uploadRequest,
+        (progress) => {
+          setUploadProgress(progress);
+        }
+      );
 
       if (response.success) {
+        // T7: Verify compression requirements (minimum 30% reduction)
+        if (response.media.compressedSize && response.media.fileSize) {
+          const compressionRatio =
+            (response.media.fileSize - response.media.compressedSize) /
+            response.media.fileSize;
+          if (compressionRatio < 0.3) {
+            console.warn(
+              "Warning: File compression did not meet 30% reduction requirement"
+            );
+          }
+        }
+
         onUploadSuccess?.(response.media.id);
         resetForm();
       } else {

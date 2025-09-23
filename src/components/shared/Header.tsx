@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher, ProfileDropdown } from "../index";
 import ProfileSearch from "../profile/ProfileSearch";
@@ -30,6 +31,7 @@ export default function Header({
   const profileMenuRef = useClickOutside<HTMLDivElement>(() =>
     setIsProfileMenuOpen(false)
   );
+  const navigate = useNavigate();
 
   // Close on Escape only (no scroll lock needed for dropdown)
   useEffect(() => {
@@ -58,12 +60,15 @@ export default function Header({
 
       {/* Mobile Header */}
       <div className="md:hidden flex justify-between items-center pl-4 pr-4 py-4 h-[80px] relative z-10">
-        {/* Enhanced Logo */}
+        {/* Enhanced Logo (mobile) */}
         <div className="flex-none">
-          <div className="flex items-center gap-2 group">
+          <Link
+            to="/"
+            onClick={() => onSectionChange?.("home")}
+            className="flex items-center gap-2 cursor-pointer"
+          >
             <span className="text-white text-[18px] tracking-wider font-[var(--font-alice)] bg-gradient-to-r from-white via-primary/80 to-white bg-clip-text text-transparent drop-shadow-lg relative">
               GamerMajlis
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm" />
             </span>
             <div className="relative">
               <img
@@ -73,7 +78,7 @@ export default function Header({
                 draggable={false}
               />
             </div>
-          </div>
+          </Link>
         </div>
 
         {/* Mobile Controls */}
@@ -217,7 +222,7 @@ export default function Header({
                 } catch {
                   // logout errors are non-fatal for UI; handled upstream if necessary
                 }
-                window.location.hash = "#home";
+                navigate("/");
               }}
               className="w-full flex items-center px-4 py-2 text-sm text-red-400 hover:bg-red-500/10"
             >
@@ -274,10 +279,13 @@ export default function Header({
       <div className="hidden md:block relative w-full h-[64px] sm:h-[72px] md:h-[88px] px-4 sm:px-6">
         {/* Left: Enhanced Logo with custom text styling */}
         <div className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10">
-          <div className="flex items-center gap-3 group transform hover:scale-105 transition-transform duration-300">
+          <Link
+            to="/"
+            onClick={() => onSectionChange?.("home")}
+            className="flex items-center gap-3 cursor-pointer"
+          >
             <span className="text-white text-[20px] sm:text-[22px] md:text-[24px] tracking-wider font-[var(--font-alice)] bg-gradient-to-r from-white via-primary/80 to-white bg-clip-text text-transparent drop-shadow-lg relative">
               GamerMajlis
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm" />
             </span>
             <div className="relative">
               <img
@@ -287,15 +295,15 @@ export default function Header({
                 draggable={false}
               />
             </div>
-          </div>
+          </Link>
         </div>
 
         {/* Desktop Navigation with clearer frame for evaluation */}
         <nav className="hidden md:flex items-center gap-6 lg:gap-8 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-900/60 backdrop-blur-md rounded-full px-6 py-2 border-2 border-cyan-300/40 shadow-lg">
           {navigationItems.map((item) => (
-            <a
+            <Link
               key={item.key}
-              href="#"
+              to={item.key === "home" ? "/" : `/${item.key}`}
               className={`font-semibold text-lg lg:text-xl px-3 lg:px-4 py-2 rounded-full tracking-wide transition-all duration-300 transform hover:scale-105 ${
                 activeSection === item.key
                   ? "bg-gradient-to-r from-primary to-cyan-300 text-slate-900 shadow-glow"
@@ -307,7 +315,7 @@ export default function Header({
               }}
             >
               {t(item.translationKey)}
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -386,18 +394,17 @@ export default function Header({
             }`}
           >
             {navigationItems.map((item) => (
-              <a
+              <button
                 key={item.key}
-                href="#"
-                className={`group flex items-center gap-3 font-medium text-lg transition-colors hover:bg-white/10 rounded-md px-2 py-2 cursor-pointer ${
+                type="button"
+                className={`group text-left flex items-center gap-3 font-medium text-lg transition-colors hover:bg-white/10 rounded-md px-2 py-2 cursor-pointer ${
                   i18n.dir() === "rtl" ? "flex-row-reverse" : ""
                 } ${
                   activeSection === item.key
                     ? "text-white"
                     : "text-slate-300 hover:text-white"
                 }`}
-                onClick={(e) => {
-                  e.preventDefault();
+                onClick={() => {
                   onSectionChange?.(item.key);
                   setIsMobileMenuOpen(false);
                   menuButtonRef.current?.focus();
@@ -411,7 +418,7 @@ export default function Header({
                   }`}
                 />
                 {t(item.translationKey)}
-              </a>
+              </button>
             ))}
 
             {/* Messages */}

@@ -256,4 +256,14 @@ export const commonValidationRules = {
     message:
       "Username must be 3-20 characters and contain only letters, numbers, hyphens, and underscores",
   },
+  displayName: {
+    required: true,
+    minLength: 3,
+    maxLength: 30,
+    message: "Display name must be 3-30 characters",
+  },
+  bio: {
+    maxLength: 500,
+    message: "Bio must not exceed 500 characters",
+  },
 } as const;

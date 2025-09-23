@@ -3,10 +3,12 @@ import EmptyState from "../states/EmptyState";
 import { useAppContext } from "../context/useAppContext";
 import type { WishlistItem } from "../context/AppContext";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 export default function Wishlist() {
   const { wishlist } = useAppContext();
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   return (
     <main
@@ -76,9 +78,7 @@ export default function Wishlist() {
               title={t("wishlist.emptyTitle")}
               description={t("wishlist.emptyDesc")}
               actionLabel={t("wishlist.browseMarketplace")}
-              onAction={() => {
-                window.location.hash = "#marketplace";
-              }}
+              onAction={() => navigate("/marketplace")}
             />
           )}
         </section>

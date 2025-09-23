@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { InputField } from "../components/shared";
 import { DiscordLoginButton } from "../components/discord";
@@ -8,6 +9,7 @@ import type { SignupFormData } from "../types/auth";
 
 export default function Signup() {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const { register } = useAppContext();
   const isRtl = !!(i18n.language && i18n.language.startsWith("ar"));
 
@@ -79,9 +81,8 @@ export default function Signup() {
         formData.email,
         formData.password
       );
-      // Show success message and redirect to login instead of home
-      alert(message); // TODO: Replace with proper notification system
-      window.location.hash = "#login";
+      alert(message);
+      navigate("/login");
     });
     if (!success) {
       setError("general", "Signup failed. Please try again.");
@@ -199,16 +200,13 @@ export default function Signup() {
 
         <p className="w-full font-[Alice] font-normal text-base leading-5 text-center text-[#EEEEEE] mt-[18px]">
           {t("auth.alreadyHaveAccount")}{" "}
-          <a
+          <button
+            type="button"
+            onClick={() => navigate("/login")}
             className="text-[#C4FFF9] underline cursor-pointer transition-opacity duration-200 hover:opacity-80"
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              window.location.hash = "#login";
-            }}
           >
             {t("auth.login")}
-          </a>
+          </button>
         </p>
       </div>
     </div>

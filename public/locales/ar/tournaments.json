@@ -1,0 +1,160 @@
+{
+  "actions": {
+    "cancel": "إلغاء",
+    "edit": "تعديل",
+    "register": "سجّل",
+    "share": "مشاركة",
+    "unregister": "إلغاء التسجيل",
+    "viewDetails": "عرض التفاصيل"
+  },
+  "card": {
+    "closed": "مغلق",
+    "entryFee": "رسوم المشاركة",
+    "free": "مجاني",
+    "gameMode": "النمط",
+    "inDays": "خلال {{count}} أيام",
+    "open": "مفتوح",
+    "participants": "المشاركون",
+    "register": "سجّل",
+    "registration": "التسجيل",
+    "rules": "القوانين",
+    "starts": "تبدأ",
+    "today": "اليوم",
+    "tomorrow": "غدًا",
+    "type": "النوع",
+    "views": "المشاهدات"
+  },
+  "categories": {
+    "ongoing": "جارية",
+    "past": "منتهية",
+    "upcoming": "قادمة"
+  },
+  "create": {
+    "button": "إنشاء بطولة",
+    "error": "فشل في إنشاء البطولة",
+    "form": {
+      "currency": "العملة",
+      "currencyOptions": {
+        "USD": "USD ($)"
+      },
+      "description": "الوصف",
+      "descriptionPlaceholder": "اوصف بطولتك",
+      "endDate": "تاريخ الانتهاء",
+      "endDatePlaceholder": "mm/dd/yyyy --:-- --",
+      "entryFee": "رسوم المشاركة",
+      "entryFeePlaceholder": "مبلغ رسوم المشاركة",
+      "gameMode": "نمط اللعب",
+      "gameModeOptions": {
+        "competitive": "تنافسية"
+      },
+      "gameModePlaceholder": "نمط لعب البطولة",
+      "gameTitle": "اللعبة",
+      "gameTitlePlaceholder": "اختر اللعبة",
+      "isPublic": "فعالية عامة",
+      "location": "المكان",
+      "locationPlaceholder": "مكان البطولة",
+      "maxParticipants": "الحد الأقصى للمشاركين",
+      "maxParticipantsDefault": "16",
+      "maxParticipantsPlaceholder": "الالعدد الأقصى للمشاركين",
+      "name": "اسم البطولة",
+      "namePlaceholder": "أدخل اسم البطولة",
+      "prizePool": "مجموع الجوائز",
+      "prizePoolPlaceholder": "إجمالي مجموع الجوائز",
+      "registrationDeadline": "موعد انتهاء التسجيل",
+      "registrationDeadlinePlaceholder": "mm/dd/yyyy --:-- --",
+      "requiresApproval": "يتطلب موافقة",
+      "rules": "القوانين",
+      "rulesPlaceholder": "قوانين وإرشادات البطولة",
+      "startDate": "تاريخ البدء",
+      "startDatePlaceholder": "mm/dd/yyyy --:-- --",
+      "status": "الحالة",
+      "tournamentType": "نوع البطولة"
+    },
+    "success": "تم إنشاء البطولة بنجاح",
+    "title": "إنشاء بطولة",
+    "types": {
+      "BRACKET": "قوسين",
+      "DOUBLE_ELIMINATION": "إقصاء مزدوج",
+      "elimination": "إقصاء",
+      "LEAGUE": "دوري",
+      "ROUND_ROBIN": "دوري شامل",
+      "SINGLE_ELIMINATION": "إقصاء مفرد",
+      "SWISS": "النظام السويسري"
+    },
+    "validation": {
+      "descriptionMinLength": "الوصف يجب أن يكون 10 أحرف على الأقل",
+      "descriptionRequired": "الوصف مطلوب",
+      "endDateAfterStart": "تاريخ الانتهاء يجب أن يكون بعد تاريخ البدء",
+      "endDateRequired": "تاريخ الانتهاء مطلوب",
+      "entryFeeMin": "رسوم المشاركة يجب أن تكون 0 أو أكثر",
+      "gameTitleRequired": "اختيار اللعبة مطلوب",
+      "maxParticipantsMax": "لا يمكن أن يتجاوز 1000 مشارك",
+      "maxParticipantsMin": "يجب أن يكون هناك مشاركان على الأقل",
+      "maxParticipantsRequired": "العدد الأقصى للمشاركين مطلوب",
+      "nameMaxLength": "اسم البطولة يجب أن يكون أقل من 100 حرف",
+      "nameMinLength": "اسم البطولة يجب أن يكون 3 أحرف على الأقل",
+      "nameRequired": "اسم البطولة مطلوب",
+      "prizePoolMin": "مجموع الجوائز يجب أن يكون 0 أو أكثر",
+      "registrationDeadlineBeforeStart": "موعد انتهاء التسجيل يجب أن يكون قبل تاريخ البدء",
+      "registrationDeadlineRequired": "موعد انتهاء التسجيل مطلوب",
+      "startDateRequired": "تاريخ البدء مطلوب"
+    }
+  },
+  "details": {
+    "bracket": "القوس",
+    "contact": "التواصل",
+    "information": "المعلومات",
+    "organizer": "المنظم",
+    "overview": "نظرة عامة",
+    "participants": "المشاركون",
+    "prizes": "الجوائز",
+    "rules": "القوانين",
+    "schedule": "الجدول",
+    "title": "تفاصيل البطولة"
+  },
+  "empty": {
+    "description": "لا توجد بطولات تطابق معاييرك.",
+    "title": "لا توجد بطولات"
+  },
+  "error": {
+    "loadFailed": "فشل في تحميل البطولات. يرجى المحاولة مرة أخرى.",
+    "title": "خطأ في تحميل البطولات"
+  },
+  "noMatches": "جرّب تعديل البحث أو الفلاتر.",
+  "registration": {
+    "alreadyRegistered": "أنت مسجل بالفعل",
+    "confirmUnregister": "هل أنت متأكد من إلغاء التسجيل؟",
+    "error": "فشل في التسجيل للبطولة",
+    "registrationClosed": "التسجيل مغلق",
+    "success": "تم التسجيل في البطولة بنجاح",
+    "title": "تسجيل البطولة",
+    "tournamentFull": "البطولة مكتملة",
+    "unregisterError": "فشل في إلغاء التسجيل",
+    "unregisterSuccess": "تم إلغاء التسجيل بنجاح"
+  },
+  "searchPlaceholder": "ابحث عن البطولات أو المنظمين...",
+  "sort": {
+    "dateLatest": "تاريخ البدء: الأبعد",
+    "dateSoonest": "تاريخ البدء: الأقرب",
+    "participantsLeast": "المشاركون: الأقل",
+    "participantsMost": "المشاركون: الأكثر",
+    "placeholder": "ترتيب حسب",
+    "prizeHighest": "الجائزة: الأعلى",
+    "prizeLowest": "الجائزة: الأقل"
+  },
+  "status": {
+    "cancelled": "ملغية",
+    "completed": "مكتملة",
+    "inProgress": "جارية",
+    "registrationClosed": "التسجيل مغلق",
+    "registrationOpen": "التسجيل مفتوح",
+    "upcoming": "قادمة"
+  },
+  "ui": {
+    "dropdownCaret": "▼",
+    "no": "لا",
+    "noTournaments": "لا توجد بطولات",
+    "searchPlaceholder": "ابحث عن البطولات أو المنظمين...",
+    "sortLabel": "ترتيب حسب"
+  }
+}

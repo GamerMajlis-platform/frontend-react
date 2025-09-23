@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useDeepStable, useStableEmptyObject } from "../../hooks/useDeepStable";
 import { useTranslation } from "react-i18next";
 import { PostService } from "../../services/PostService";
 import { PostCard } from "./PostCard";
@@ -12,7 +13,7 @@ interface PostFeedProps {
 }
 
 export const PostFeed: React.FC<PostFeedProps> = ({
-  filters = {},
+  filters,
   currentUserId,
   onPostClick,
   className = "",
@@ -29,23 +30,48 @@ export const PostFeed: React.FC<PostFeedProps> = ({
     hasMore: false,
   });
 
+  const inFlightRef = useRef(false);
+  const lastSignatureRef = useRef<string | null>(null);
+  const mountedRef = useRef(false);
+
+  // Stabilize filters to prevent infinite loop when parent recreates object literal
+  const emptyObj = useStableEmptyObject<PostFilters>();
+  const stableFilters = useDeepStable(filters ?? emptyObj);
   const loadPosts = useCallback(
     async (page = 0, append = false) => {
+      if (inFlightRef.current) return; // Prevent overlapping requests
+      const signature = JSON.stringify({ stableFilters, page, append });
+      if (!append && lastSignatureRef.current === signature) {
+        return; // avoid identical refetch loop
+      }
+      inFlightRef.current = true;
       try {
         setLoading(true);
         setError(null);
 
         const response = await PostService.getPostsFeed({
-          ...filters,
+          ...stableFilters,
           page,
           size: 10,
         });
 
         if (response.success) {
-          const newPosts = append
-            ? [...posts, ...response.posts]
-            : response.posts;
-          setPosts(newPosts);
+          lastSignatureRef.current = signature;
+          interface Normalizable {
+            tags?: unknown;
+            hashtags?: unknown;
+          }
+          const normalized: PostListItem[] = response.posts.map((p) => {
+            const norm = PostService.normalizePost(
+              p as PostListItem & Normalizable
+            );
+            return {
+              ...p,
+              tags: norm.tags,
+              hashtags: norm.hashtags,
+            } as PostListItem;
+          });
+          setPosts((prev) => (append ? [...prev, ...normalized] : normalized));
           setPagination({
             currentPage: response.currentPage,
             totalPages: response.totalPages,
@@ -61,9 +87,10 @@ export const PostFeed: React.FC<PostFeedProps> = ({
         );
       } finally {
         setLoading(false);
+        inFlightRef.current = false;
       }
     },
-    [filters, posts, t]
+    [stableFilters, t]
   );
 
   const loadMore = () => {
@@ -110,9 +137,36 @@ export const PostFeed: React.FC<PostFeedProps> = ({
     }
   };
 
+  // Initial load once
   useEffect(() => {
-    loadPosts();
+    if (!mountedRef.current) {
+      mountedRef.current = true;
+      loadPosts();
+    }
   }, [loadPosts]);
+
+  // React to deep filter changes (reset feed)
+  const lastFilterHashRef = useRef<string | null>(null);
+  useEffect(() => {
+    const hash = JSON.stringify(stableFilters);
+    if (
+      mountedRef.current &&
+      lastFilterHashRef.current !== null &&
+      lastFilterHashRef.current !== hash
+    ) {
+      // Reset state & refetch with new filters
+      lastSignatureRef.current = null;
+      setPosts([]);
+      setPagination({
+        currentPage: 0,
+        totalPages: 0,
+        totalElements: 0,
+        hasMore: false,
+      });
+      loadPosts(0, false);
+    }
+    lastFilterHashRef.current = hash;
+  }, [stableFilters, loadPosts]);
 
   if (loading && posts.length === 0) {
     return (

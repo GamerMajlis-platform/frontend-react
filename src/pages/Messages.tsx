@@ -1,17 +1,18 @@
 import { useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 export default function MessagesPage() {
   const { t } = useTranslation();
 
+  const navigate = useNavigate();
   useEffect(() => {
     // Auto-redirect to chat system after a brief message
     const timer = setTimeout(() => {
-      window.location.hash = "/chat";
+      navigate("/chat");
     }, 2000);
-
     return () => clearTimeout(timer);
-  }, []);
+  }, [navigate]);
 
   return (
     <main className="min-h-screen p-6 flex items-center justify-center">
@@ -30,12 +31,12 @@ export default function MessagesPage() {
           {t("messages.autoRedirect", "Redirecting to the new chat system...")}
         </p>
         <div className="mt-6">
-          <a
-            href="#/chat"
+          <Link
+            to="/chat"
             className="inline-block px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
           >
             {t("messages.goToChat", "Go to Chat Now")}
-          </a>
+          </Link>
         </div>
       </div>
     </main>

@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../context/useAppContext";
 import { useTranslation } from "react-i18next";
 import { useClickOutside } from "../hooks";
+import { DiscordService } from "../services/DiscordService";
 
 interface ProfileDropdownProps {
   onSectionChange?: (section: string) => void;
@@ -15,6 +17,34 @@ export default function ProfileDropdown({
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useClickOutside<HTMLDivElement>(() => setIsOpen(false));
   const { wishlist, logout, user } = useAppContext();
+  const navigate = useNavigate();
+  const [discordUser, setDiscordUser] = useState<null | {
+    username: string;
+    discriminator?: string;
+  }>(null);
+  const [discordLoading, setDiscordLoading] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    if (user) {
+      setDiscordLoading(true);
+      DiscordService.getUserInfo()
+        .then((res) => {
+          if (mounted && res.success && res.discordUser) {
+            setDiscordUser({
+              username: res.discordUser.username,
+              discriminator: res.discordUser.discriminator,
+            });
+          }
+        })
+        .finally(() => mounted && setDiscordLoading(false));
+    } else {
+      setDiscordUser(null);
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [user]);
 
   const displayUser = user
     ? { name: user.displayName, email: user.email }
@@ -27,7 +57,7 @@ export default function ProfileDropdown({
     } catch {
       // logout errors are handled by the auth service; UI can continue
     }
-    window.location.hash = "#home";
+    navigate("/");
   };
 
   const { t, i18n } = useTranslation();
@@ -102,9 +132,43 @@ export default function ProfileDropdown({
                   border border-gray-100 py-3 z-[1000] grid gap-2 animate-in fade-in-10 max-h-[60vh] overflow-auto"
           >
             {/* User Info */}
-            <div className="px-4 pb-2 border-b text-sm text-gray-700">
-              <p className="font-semibold text-[#1C2541]">{displayUser.name}</p>
-              <p className="text-gray-500">{displayUser.email}</p>
+            <div
+              className="px-4 pb-2 border-b text-sm text-gray-700 space-y-0.5"
+              dir={isRTL ? "rtl" : "ltr"}
+            >
+              <p className="font-semibold text-[#1C2541] break-all">
+                {displayUser.name}
+              </p>
+              <p className="text-gray-500 break-all">{displayUser.email}</p>
+              <div
+                className="mt-1 text-xs flex items-center gap-2 flex-wrap"
+                dir={isRTL ? "rtl" : "ltr"}
+              >
+                {discordLoading ? (
+                  <span className="text-gray-400 animate-pulse">Discord…</span>
+                ) : discordUser ? (
+                  <span className="inline-flex items-center gap-1 bg-[#5865F2]/10 text-[#5865F2] px-2 py-0.5 rounded-md font-medium">
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="w-4 h-4"
+                      fill="currentColor"
+                    >
+                      <path d="M20.317 4.37a19.79 19.79 0 00-4.885-1.516.07.07 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028 14.09 14.09 0 001.226-1.994.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z" />
+                    </svg>
+                    {discordUser.username}
+                    {discordUser.discriminator
+                      ? `#${discordUser.discriminator}`
+                      : ""}
+                  </span>
+                ) : (
+                  <button
+                    onClick={() => DiscordService.initiateOAuth("/")}
+                    className="inline-flex items-center gap-1 text-[#5865F2] hover:text-[#4752C4] transition-colors"
+                  >
+                    <span>Link Discord</span>
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Menu Items */}

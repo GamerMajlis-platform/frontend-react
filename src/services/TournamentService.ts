@@ -320,6 +320,220 @@ class TournamentService {
       return false;
     }
   }
+
+  // ===== TOURNAMENT BRACKET GENERATION (T16) =====
+
+  /**
+   * T16: Generate tournament brackets automatically
+   */
+  static generateBracket(
+    participants: TournamentParticipation[],
+    tournamentType: string
+  ) {
+    switch (tournamentType) {
+      case "ELIMINATION":
+        return this.generateEliminationBracket(participants);
+      case "ROUND_ROBIN":
+        return this.generateRoundRobinSchedule(participants);
+      case "SWISS":
+        return this.generateSwissSchedule(participants);
+      case "BRACKET":
+        return this.generateStandardBracket(participants);
+      default:
+        throw new Error(`Unsupported tournament type: ${tournamentType}`);
+    }
+  }
+
+  /**
+   * Generate single/double elimination bracket
+   */
+  private static generateEliminationBracket(
+    participants: TournamentParticipation[]
+  ) {
+    const participantCount = participants.length;
+    const rounds = Math.ceil(Math.log2(participantCount));
+    const bracket: any[][] = [];
+
+    // Seed participants (1 vs lowest, 2 vs second lowest, etc.)
+    const seededParticipants = this.seedParticipants(participants);
+
+    // Create first round matches
+    const firstRound: any[] = [];
+    for (let i = 0; i < seededParticipants.length; i += 2) {
+      if (seededParticipants[i + 1]) {
+        firstRound.push({
+          matchId: `R1-M${Math.floor(i / 2) + 1}`,
+          round: 1,
+          participant1: seededParticipants[i],
+          participant2: seededParticipants[i + 1],
+          winner: null,
+          status: "PENDING",
+        });
+      } else {
+        // Bye for odd number of participants
+        firstRound.push({
+          matchId: `R1-M${Math.floor(i / 2) + 1}`,
+          round: 1,
+          participant1: seededParticipants[i],
+          participant2: null,
+          winner: seededParticipants[i],
+          status: "BYE",
+        });
+      }
+    }
+
+    bracket.push(firstRound);
+
+    // Generate subsequent rounds
+    for (let round = 2; round <= rounds; round++) {
+      const previousRound: any[] = bracket[round - 2];
+      const currentRound: any[] = [];
+
+      for (let i = 0; i < previousRound.length; i += 2) {
+        if (previousRound[i + 1]) {
+          currentRound.push({
+            matchId: `R${round}-M${Math.floor(i / 2) + 1}`,
+            round,
+            participant1: null, // Will be filled by winners
+            participant2: null,
+            winner: null,
+            status: "WAITING",
+            dependsOn: [previousRound[i].matchId, previousRound[i + 1].matchId],
+          });
+        }
+      }
+
+      if (currentRound.length > 0) {
+        bracket.push(currentRound);
+      }
+    }
+
+    return {
+      type: "ELIMINATION",
+      rounds: rounds,
+      bracket,
+      totalMatches: bracket.reduce((sum, round) => sum + round.length, 0),
+    };
+  }
+
+  /**
+   * Generate round robin schedule
+   */
+  private static generateRoundRobinSchedule(
+    participants: TournamentParticipation[]
+  ) {
+    const schedule = [];
+    const n = participants.length;
+
+    // Each participant plays every other participant once
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        schedule.push({
+          matchId: `RR-${i + 1}v${j + 1}`,
+          round: Math.floor(schedule.length / (n / 2)) + 1,
+          participant1: participants[i],
+          participant2: participants[j],
+          winner: null,
+          status: "PENDING",
+        });
+      }
+    }
+
+    return {
+      type: "ROUND_ROBIN",
+      totalRounds: n - 1,
+      schedule,
+      totalMatches: schedule.length,
+    };
+  }
+
+  /**
+   * Generate Swiss system schedule
+   */
+  private static generateSwissSchedule(
+    participants: TournamentParticipation[]
+  ) {
+    const rounds = Math.ceil(Math.log2(participants.length));
+    const schedule = [];
+
+    // First round: random pairing
+    const shuffled = [...participants].sort(() => Math.random() - 0.5);
+
+    for (let i = 0; i < shuffled.length; i += 2) {
+      if (shuffled[i + 1]) {
+        schedule.push({
+          matchId: `SW-R1-${Math.floor(i / 2) + 1}`,
+          round: 1,
+          participant1: shuffled[i],
+          participant2: shuffled[i + 1],
+          winner: null,
+          status: "PENDING",
+        });
+      }
+    }
+
+    return {
+      type: "SWISS",
+      totalRounds: rounds,
+      currentRound: 1,
+      schedule,
+      note: "Subsequent rounds will be generated based on scores",
+    };
+  }
+
+  /**
+   * Generate standard bracket (similar to elimination but with specific seeding)
+   */
+  private static generateStandardBracket(
+    participants: TournamentParticipation[]
+  ) {
+    return this.generateEliminationBracket(participants);
+  }
+
+  /**
+   * Seed participants for bracket (1 vs lowest ranked, 2 vs second lowest, etc.)
+   */
+  private static seedParticipants(participants: TournamentParticipation[]) {
+    // Sort by registration time or ranking (if available)
+    const sorted = participants.sort((a, b) => {
+      // Primary sort: wins (descending)
+      if (a.wins !== b.wins) return b.wins - a.wins;
+      // Secondary sort: registration time (ascending)
+      return (
+        new Date(a.registeredAt).getTime() - new Date(b.registeredAt).getTime()
+      );
+    });
+
+    return sorted;
+  }
+
+  /**
+   * F8: Check if tournament can be modified (before start)
+   */
+  static canModifyTournament(tournament: Tournament): boolean {
+    const now = new Date();
+    const startDate = new Date(tournament.startDate);
+
+    return (
+      startDate > now &&
+      tournament.status !== "IN_PROGRESS" &&
+      tournament.status !== "COMPLETED"
+    );
+  }
+
+  /**
+   * F9: Check if participant can withdraw (before tournament starts)
+   */
+  static canWithdrawFromTournament(tournament: Tournament): boolean {
+    const now = new Date();
+    const startDate = new Date(tournament.startDate);
+
+    return (
+      startDate > now &&
+      tournament.status !== "IN_PROGRESS" &&
+      tournament.status !== "COMPLETED"
+    );
+  }
 }
 
 export default TournamentService;

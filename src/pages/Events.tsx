@@ -157,14 +157,14 @@ export default function Events() {
 
   // Sort options for the dropdown
   const eventSortOptions: Array<{ value: EventSortOption; label: string }> = [
-    { value: "date-soonest", label: t("events.sort.date-soonest") },
-    { value: "date-latest", label: t("events.sort.date-latest") },
-    { value: "name", label: t("events.sort.name") },
-    { value: "organizer", label: t("events.sort.organizer") },
-    { value: "attendees-most", label: t("events.sort.attendees-most") },
-    { value: "attendees-least", label: t("events.sort.attendees-least") },
-    { value: "created-latest", label: t("events.sort.created-latest") },
-    { value: "created-oldest", label: t("events.sort.created-oldest") },
+    { value: "date-soonest", label: t("events:sort.date-soonest") },
+    { value: "date-latest", label: t("events:sort.date-latest") },
+    { value: "name", label: t("events:sort.name") },
+    { value: "organizer", label: t("events:sort.organizer") },
+    { value: "attendees-most", label: t("events:sort.attendees-most") },
+    { value: "attendees-least", label: t("events:sort.attendees-least") },
+    { value: "created-latest", label: t("events:sort.created-latest") },
+    { value: "created-oldest", label: t("events:sort.created-oldest") },
   ];
 
   return (
@@ -196,7 +196,7 @@ export default function Events() {
               type="text"
               ref={searchRef}
               placeholder={
-                isMobile ? t("common.search") : t("events.searchPlaceholder")
+                isMobile ? t("common.search") : t("events:searchPlaceholder")
               }
               className={`
                 h-12 w-full flex-1 rounded-xl border border-slate-600
@@ -228,7 +228,7 @@ export default function Events() {
                 options={eventSortOptions}
                 value={sortBy}
                 onChange={(v) => setSortBy(v as EventSortOption)}
-                placeholderKey="events.sort.placeholder"
+                placeholderKey="events:sort.placeholder"
               />
             </div>
           </div>
@@ -241,7 +241,7 @@ export default function Events() {
             onClick={() => setShowCreate(!showCreate)}
             type="button"
           >
-            {showCreate ? t("events.closeCreate") : t("events.create")}
+            {showCreate ? t("events:closeCreate") : t("events:create")}
           </button>
         </div>
 

@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 export default function EmailVerification() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [status, setStatus] = useState<"loading" | "success" | "error">(
     "loading"
   );
@@ -35,7 +37,7 @@ export default function EmailVerification() {
 
           // Redirect to login after 3 seconds
           setTimeout(() => {
-            window.location.hash = "#login";
+            navigate("/login");
           }, 3000);
         } else {
           setStatus("error");
@@ -49,7 +51,7 @@ export default function EmailVerification() {
     };
 
     verifyEmail();
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="w-full min-h-screen bg-[#0B132B] flex items-center justify-center relative px-4 sm:px-6">
@@ -113,7 +115,7 @@ export default function EmailVerification() {
             </h1>
             <p className="text-[#9CA3AF] text-center mb-6">{message}</p>
             <button
-              onClick={() => (window.location.hash = "#login")}
+              onClick={() => navigate("/login")}
               className="px-6 py-3 bg-[#C4FFF9] text-[#0B132B] rounded-lg font-semibold hover:bg-[#CFFFEF] transition-colors"
             >
               {t("auth.backToLogin")}

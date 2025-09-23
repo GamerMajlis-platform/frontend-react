@@ -5,13 +5,15 @@ import { useProfile } from "../hooks/useProfile";
 import TabBar from "../components/profile/TabBar";
 import AboutSection from "../components/profile/AboutSection";
 import BackendProfileHeader from "../components/profile/BackendProfileHeader";
+import EnhancedProfileForm from "../components/profile/EnhancedProfileForm";
+import GamingStatisticsPanel from "../components/profile/GamingStatisticsPanel";
 
-type TabKey = "about" | "preferences" | "stats";
+type TabKey = "about" | "manage" | "stats";
 
 export default function Profile() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const { user } = useAppContext();
-  const { updateProfile, updateGamingStats, clearError } = useProfile();
+  const { updateProfile, clearError } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>("about");
   const [editData, setEditData] = useState({
@@ -83,21 +85,10 @@ export default function Profile() {
     []
   );
 
-  const handleStatsUpdate = useCallback(
-    async (stats: Record<string, unknown>) => {
-      try {
-        await updateGamingStats(stats);
-      } catch (err) {
-        console.error("Failed to update gaming stats:", err);
-      }
-    },
-    [updateGamingStats]
-  );
-
-  // Parse JSON fields from backend user data
-  const parsedGamingPreferences = user?.parsedGamingPreferences || {};
-  const parsedSocialLinks = user?.parsedSocialLinks || {};
-  const parsedGamingStatistics = user?.parsedGamingStatistics || {};
+  // Parse JSON fields from backend user data - not needed for new enhanced components
+  // const parsedGamingPreferences = user?.parsedGamingPreferences || {};
+  // const parsedSocialLinks = user?.parsedSocialLinks || {};
+  // const parsedGamingStatistics = user?.parsedGamingStatistics || {};
 
   return (
     <main
@@ -140,117 +131,9 @@ export default function Profile() {
               />
             )}
 
-            {activeTab === "preferences" && (
-              <div className="space-y-6">
-                <h2 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6">
-                  {t("profile.tabs.preferences")}
-                </h2>
-                <div className="bg-slate-700/50 rounded-xl p-6">
-                  <h3 className="text-white text-lg font-semibold mb-4">
-                    Gaming Preferences
-                  </h3>
-                  {isEditing ? (
-                    <textarea
-                      value={editData.gamingPreferences}
-                      onChange={(e) =>
-                        handleInputChange("gamingPreferences", e.target.value)
-                      }
-                      className="w-full bg-slate-600/50 text-white rounded-lg p-3 min-h-[100px] border border-slate-500/50 focus:border-primary/50 focus:outline-none"
-                      placeholder="Enter gaming preferences as JSON"
-                    />
-                  ) : (
-                    <div className="text-slate-300">
-                      {Object.keys(parsedGamingPreferences).length > 0 ? (
-                        <pre className="text-sm whitespace-pre-wrap">
-                          {JSON.stringify(parsedGamingPreferences, null, 2)}
-                        </pre>
-                      ) : (
-                        <p>No gaming preferences set</p>
-                      )}
-                    </div>
-                  )}
-                </div>
-                <div className="bg-slate-700/50 rounded-xl p-6">
-                  <h3 className="text-white text-lg font-semibold mb-4">
-                    Social Links
-                  </h3>
-                  {isEditing ? (
-                    <textarea
-                      value={editData.socialLinks}
-                      onChange={(e) =>
-                        handleInputChange("socialLinks", e.target.value)
-                      }
-                      className="w-full bg-slate-600/50 text-white rounded-lg p-3 min-h-[100px] border border-slate-500/50 focus:border-primary/50 focus:outline-none"
-                      placeholder="Enter social links as JSON"
-                    />
-                  ) : (
-                    <div className="text-slate-300">
-                      {Object.keys(parsedSocialLinks).length > 0 ? (
-                        <pre className="text-sm whitespace-pre-wrap">
-                          {JSON.stringify(parsedSocialLinks, null, 2)}
-                        </pre>
-                      ) : (
-                        <p>No social links set</p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
+            {activeTab === "manage" && <EnhancedProfileForm />}
 
-            {activeTab === "stats" && (
-              <div className="space-y-6">
-                <h2 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6">
-                  {t("profile.tabs.stats")}
-                </h2>
-                <div className="bg-slate-700/50 rounded-xl p-6">
-                  <h3 className="text-white text-lg font-semibold mb-4">
-                    Gaming Statistics
-                  </h3>
-                  <div className="text-slate-300">
-                    {Object.keys(parsedGamingStatistics).length > 0 ? (
-                      <div className="space-y-4">
-                        <pre className="text-sm whitespace-pre-wrap bg-slate-600/30 rounded-lg p-4">
-                          {JSON.stringify(parsedGamingStatistics, null, 2)}
-                        </pre>
-                        {isEditing && (
-                          <button
-                            onClick={() =>
-                              handleStatsUpdate({
-                                ...parsedGamingStatistics,
-                                lastUpdated: new Date().toISOString(),
-                              })
-                            }
-                            className="px-4 py-2 bg-primary/80 hover:bg-primary text-white rounded-lg transition-colors"
-                          >
-                            Update Stats
-                          </button>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="space-y-4">
-                        <p>No gaming statistics recorded</p>
-                        {isEditing && (
-                          <button
-                            onClick={() =>
-                              handleStatsUpdate({
-                                totalGames: 0,
-                                winRate: 0,
-                                favoriteGame: "Not set",
-                                hoursPlayed: 0,
-                              })
-                            }
-                            className="px-4 py-2 bg-primary/80 hover:bg-primary text-white rounded-lg transition-colors"
-                          >
-                            Initialize Stats
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
+            {activeTab === "stats" && <GamingStatisticsPanel />}
           </div>
         </div>
       </div>

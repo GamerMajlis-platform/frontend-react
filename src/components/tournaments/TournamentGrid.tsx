@@ -60,7 +60,7 @@ const TournamentGrid: React.FC<TournamentGridProps> = ({
   if (error) {
     return (
       <EmptyState
-        title={t("tournaments.error.title")}
+        title={t("tournaments:error.title")}
         description={error}
         actionLabel={t("common.tryAgain")}
         onAction={() => window.location.reload()}
@@ -71,9 +71,9 @@ const TournamentGrid: React.FC<TournamentGridProps> = ({
   if (tournaments.length === 0) {
     return (
       <EmptyState
-        title={t("tournaments.empty.title")}
-        description={t("tournaments.empty.description")}
-        actionLabel={t("tournaments.create.button")}
+        title={t("tournaments:empty.title")}
+        description={t("tournaments:empty.description")}
+        actionLabel={t("tournaments:create.button")}
       />
     );
   }

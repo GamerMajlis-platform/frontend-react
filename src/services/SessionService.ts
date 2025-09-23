@@ -12,7 +12,11 @@ interface TokenValidationResponse extends BackendResponse {
 export class SessionService {
   private static readonly TOKEN_KEY = STORAGE_KEYS.auth;
   private static readonly REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
+  private static readonly SESSION_TIMEOUT = 24 * 60 * 60 * 1000; // 24 hours
+  private static readonly ACTIVITY_CHECK_INTERVAL = 60 * 1000; // 1 minute
   private static refreshTimer: number | null = null;
+  private static activityTimer: number | null = null;
+  private static lastActivity: number = Date.now();
 
   /**
    * Initialize session management - validate token and start refresh timer
@@ -21,24 +25,28 @@ export class SessionService {
     try {
       const token = this.getStoredToken();
       if (!token) {
-        console.log("🔑 No stored token found - user not logged in");
         return false;
       }
 
-      console.log("🔍 Validating stored token...");
+      // Check if session has expired due to inactivity
+      if (this.isSessionExpiredByInactivity()) {
+        this.clearSession();
+        return false;
+      }
+
       const isValid = await this.validateToken();
 
       if (isValid) {
-        console.log("✅ Session restored successfully");
         this.startTokenRefreshTimer();
+        this.startActivityMonitoring();
+        this.updateLastActivity();
         return true;
       } else {
-        console.log("❌ Stored token is invalid - clearing session");
         this.clearSession();
         return false;
       }
     } catch (error) {
-      console.error("❌ Session initialization failed:", error);
+      console.error("Session initialization failed:", error);
       this.clearSession();
       return false;
     }
@@ -131,9 +139,8 @@ export class SessionService {
   static storeToken(token: string): void {
     try {
       localStorage.setItem(this.TOKEN_KEY, token);
-      console.log("💾 Token stored successfully");
     } catch (error) {
-      console.error("❌ Failed to store token:", error);
+      console.error("Failed to store token:", error);
     }
   }
 
@@ -143,10 +150,15 @@ export class SessionService {
   static clearSession(): void {
     try {
       localStorage.removeItem(this.TOKEN_KEY);
+      localStorage.removeItem("lastActivity");
       this.stopTokenRefreshTimer();
-      console.log("🧹 Session cleared");
+
+      if (this.activityTimer) {
+        clearInterval(this.activityTimer);
+        this.activityTimer = null;
+      }
     } catch (error) {
-      console.error("❌ Failed to clear session:", error);
+      console.error("Failed to clear session:", error);
     }
   }
 
@@ -206,6 +218,66 @@ export class SessionService {
     return () => {
       window.removeEventListener("session:logout", callback);
     };
+  }
+
+  /**
+   * Check if session has expired due to 24-hour inactivity
+   */
+  private static isSessionExpiredByInactivity(): boolean {
+    const lastActivityTime = localStorage.getItem("lastActivity");
+    if (!lastActivityTime) {
+      return false; // No activity recorded, assume fresh session
+    }
+
+    const timeSinceLastActivity = Date.now() - parseInt(lastActivityTime, 10);
+    return timeSinceLastActivity > this.SESSION_TIMEOUT;
+  }
+
+  /**
+   * Update last activity timestamp
+   */
+  private static updateLastActivity(): void {
+    this.lastActivity = Date.now();
+    localStorage.setItem("lastActivity", this.lastActivity.toString());
+  }
+
+  /**
+   * Start monitoring user activity for 24-hour timeout
+   */
+  private static startActivityMonitoring(): void {
+    // Clear existing timer
+    if (this.activityTimer) {
+      clearInterval(this.activityTimer);
+    }
+
+    // Update activity on user interactions
+    const updateActivity = () => this.updateLastActivity();
+
+    // Listen to various user activity events
+    const events = [
+      "mousedown",
+      "mousemove",
+      "keypress",
+      "scroll",
+      "touchstart",
+      "click",
+    ];
+    events.forEach((event) => {
+      document.addEventListener(event, updateActivity, { passive: true });
+    });
+
+    // Check for session timeout periodically
+    this.activityTimer = setInterval(() => {
+      if (this.isSessionExpiredByInactivity()) {
+        console.error("Session expired due to 24-hour inactivity");
+        // Remove activity listeners
+        events.forEach((event) => {
+          document.removeEventListener(event, updateActivity);
+        });
+        this.clearSession();
+        window.dispatchEvent(new CustomEvent("session:expired"));
+      }
+    }, this.ACTIVITY_CHECK_INTERVAL);
   }
 }
 

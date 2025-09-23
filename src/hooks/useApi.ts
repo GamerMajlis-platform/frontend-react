@@ -98,8 +98,11 @@ export function useApi<T = unknown>(initialData: T | null = null) {
           const errorMessage =
             error instanceof Error ? error.message : "An error occurred";
 
-          // If this was the last attempt, set error state
+          // If this was the last attempt, log error and set error state
           if (attempt >= maxAttempts) {
+            console.error(
+              `API request failed after ${attempt} attempt(s): ${errorMessage}`
+            );
             setState({
               data: null,
               loading: false,
@@ -108,6 +111,11 @@ export function useApi<T = unknown>(initialData: T | null = null) {
             onError?.(errorMessage);
             return null;
           }
+
+          // Log a concise warning before retrying
+          console.warn(
+            `API request attempt ${attempt}/${maxAttempts} failed: ${errorMessage}. Retrying in ${retryDelay}ms...`
+          );
 
           // Wait before retry
           await new Promise((resolve) => setTimeout(resolve, retryDelay));
@@ -156,11 +164,19 @@ export function useApi<T = unknown>(initialData: T | null = null) {
           const errorMessage =
             error instanceof Error ? error.message : "An error occurred";
 
-          // If this was the last attempt, call error handler
+          // If this was the last attempt, log error and call error handler
           if (attempt >= maxAttempts) {
+            console.error(
+              `API fire-and-forget request failed after ${attempt} attempt(s): ${errorMessage}`
+            );
             onError?.(errorMessage);
             return null;
           }
+
+          // Log a concise warning before retrying
+          console.warn(
+            `API fire-and-forget request attempt ${attempt}/${maxAttempts} failed: ${errorMessage}. Retrying in ${retryDelay}ms...`
+          );
 
           // Wait before retry
           await new Promise((resolve) => setTimeout(resolve, retryDelay));
@@ -267,12 +283,20 @@ export function useMultipleApi() {
           attempt++;
           const errorMessage =
             error instanceof Error ? error.message : "An error occurred";
-
+          // If this was the last attempt, log error and set state
           if (attempt >= maxAttempts) {
+            console.error(
+              `API request [${key}] failed after ${attempt} attempt(s): ${errorMessage}`
+            );
             setState(key, { data: null, loading: false, error: errorMessage });
             onError?.(errorMessage);
             return null;
           }
+
+          // Warn before retry
+          console.warn(
+            `API request [${key}] attempt ${attempt}/${maxAttempts} failed: ${errorMessage}. Retrying in ${retryDelay}ms...`
+          );
 
           await new Promise((resolve) => setTimeout(resolve, retryDelay));
         }

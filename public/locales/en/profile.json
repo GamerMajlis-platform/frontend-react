@@ -1,0 +1,114 @@
+{
+  "bio": "Bio",
+  "browser": {
+    "subtitle": "Search and connect with other players",
+    "suggested": "Suggested Players",
+    "title": "Browse Players"
+  },
+  "cancel": "Cancel",
+  "changeAvatar": "Change Avatar",
+  "discord": {
+    "managedByOAuth": "Managed through Discord OAuth"
+  },
+  "discordName": "Discord Name",
+  "displayName": "Display Name",
+  "edit": "Edit Profile",
+  "editing": {
+    "addPreference": "Add Preference",
+    "addStat": "Add Stat",
+    "bold": "Formatting:",
+    "characters": "{{count}}/500",
+    "remove": "Remove"
+  },
+  "emailNotVerified": "Email not verified",
+  "emailVerified": "Email verified",
+  "gaming": {
+    "favoriteGames": "Favorite Games",
+    "favoriteGames.placeholder": "Enter games separated by commas",
+    "platforms": "Gaming Platforms",
+    "platforms.placeholder": "PC, PlayStation, Xbox, Mobile, etc.",
+    "playtime": "Play Time",
+    "playtime.casual": "Casual (1-5 hours/week)",
+    "playtime.hardcore": "Hardcore (15+ hours/week)",
+    "playtime.regular": "Regular (5-15 hours/week)",
+    "skillLevel": "Skill Level",
+    "skillLevel.advanced": "Advanced",
+    "skillLevel.beginner": "Beginner",
+    "skillLevel.intermediate": "Intermediate",
+    "skillLevel.professional": "Professional",
+    "statistics": "Gaming Statistics",
+    "stats": {
+      "achievements": "Achievements",
+      "addFirstGame": "Add Your First Game",
+      "addGame": "Add Game",
+      "currentStreak": "Current Streak",
+      "favoriteGame": "Favorite Game",
+      "favoriteGame.placeholder": "Enter your favorite game",
+      "gameBreakdown": "Game Statistics",
+      "gameName": "Game Name",
+      "games": "games",
+      "gamesPlayed": "games played",
+      "hours": "hours",
+      "hoursPlayed": "Hours",
+      "lastUpdated": "Last updated",
+      "longestStreak": "Longest Streak",
+      "losses": "Losses",
+      "noGames": "No game statistics recorded yet",
+      "notSet": "Not set",
+      "totalGames": "Total Games",
+      "totalHours": "Total Hours",
+      "unlocked": "unlocked",
+      "unnamedGame": "Unnamed Game",
+      "winRate": "Win Rate",
+      "wins": "Wins"
+    }
+  },
+  "label": "Profile",
+  "level": "Level {{level}}",
+  "manage": "Manage Profile",
+  "placeholders": {
+    "bio": "Bio",
+    "discordName": "Discord Username",
+    "displayName": "Enter display name",
+    "gamingPreferences": "Gaming Preferences",
+    "gamingStatistics": "Gaming Statistics",
+    "preferenceItem": "Add preference...",
+    "statName": "Stat name (e.g., Win rate)"
+  },
+  "privacy": {
+    "allowDirectMessages": "Allow Direct Messages",
+    "allowDirectMessages.description": "Allow other users to send you messages",
+    "showEmail": "Show Email Address",
+    "showEmail.description": "Display your email on your public profile",
+    "showGamingStats": "Show Gaming Statistics",
+    "showGamingStats.description": "Display your gaming stats on your profile",
+    "showOnlineStatus": "Show Online Status",
+    "showOnlineStatus.description": "Let others see when you're online",
+    "visibility": "Profile Visibility",
+    "visibility.friends": "Friends Only - Only friends can see your profile",
+    "visibility.private": "Private - Only you can see your profile",
+    "visibility.public": "Public - Anyone can see your profile"
+  },
+  "removeAvatar": "Remove Avatar",
+  "save": "Save Profile",
+  "search": {
+    "aria": "Search for players",
+    "placeholder": "find players"
+  },
+  "sections": {
+    "basic": "Basic Information",
+    "gaming": "Gaming Preferences",
+    "social": "Social Links"
+  },
+  "social": {
+    "personalWebsite": "Personal Website"
+  },
+  "tabs": {
+    "about": "About",
+    "manage": "Manage",
+    "privacy": "Privacy",
+    "stats": "Statistics"
+  },
+  "uploadAvatar": "Upload Avatar",
+  "uploadPhoto": "Upload Photo"
+}
