@@ -197,6 +197,10 @@ function CreateProductForm({
             <span className="text-xs text-gray-500 ml-2">
               ({formData.description.length}/1000 characters)
             </span>
+            <span className="text-xs text-gray-500 ml-2">
+              {" "}
+              ({t("common.optional")})
+            </span>
           </label>
           <textarea
             value={formData.description}
@@ -229,6 +233,10 @@ function CreateProductForm({
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
               {t("product.category", "Category")}
+              <span className="text-xs text-gray-500 ml-2">
+                {" "}
+                ({t("common.optional")})
+              </span>
             </label>
             <select
               value={formData.category}
@@ -259,6 +267,10 @@ function CreateProductForm({
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
               {t("product.condition", "Condition")}
+              <span className="text-xs text-gray-500 ml-2">
+                {" "}
+                ({t("common.optional")})
+              </span>
             </label>
             <select
               value={formData.condition}
@@ -287,6 +299,10 @@ function CreateProductForm({
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">
             {t("product.image", "Product Image")}
+            <span className="text-xs text-gray-500 ml-2">
+              {" "}
+              ({t("common.optional")})
+            </span>
           </label>
           <input
             type="file"

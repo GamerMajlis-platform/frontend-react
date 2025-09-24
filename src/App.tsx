@@ -3,7 +3,6 @@ import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AppProvider } from "./context/AppContext";
 import { useAppContext } from "./context/useAppContext";
-import "./App.css";
 
 // Components
 import { Header, Footer } from "./components";
@@ -51,7 +50,7 @@ type PageType =
 
 function AppContent() {
   const { i18n } = useTranslation();
-  const { isAuthenticated } = useAppContext();
+  const { isAuthenticated, sessionInitialized } = useAppContext();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -145,11 +144,13 @@ function AppContent() {
 
   // Redirect unauthorized users trying to access protected pages
   useEffect(() => {
-    if (requiresAuth && !isAuthenticated && i18nReady) {
+    // Wait until both i18n and session initialization are complete to avoid
+    // a redirect race during page reload where auth state may be restored.
+    if (requiresAuth && !isAuthenticated && i18nReady && sessionInitialized) {
       console.log("🚫 Unauthorized access attempt, redirecting to home");
       navigate("/");
     }
-  }, [requiresAuth, isAuthenticated, i18nReady, navigate]);
+  }, [requiresAuth, isAuthenticated, i18nReady, sessionInitialized, navigate]);
 
   return (
     <>

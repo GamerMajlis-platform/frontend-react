@@ -142,7 +142,13 @@ export default function EnhancedProfileForm() {
           fill="none"
           aria-hidden="true"
         >
-          <path d="M6 8l4 4 4-4" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+          <path
+            d="M6 8l4 4 4-4"
+            stroke="currentColor"
+            strokeWidth={1.5}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
       </button>
       {isOpen && <div className="p-6 bg-slate-800/30">{children}</div>}

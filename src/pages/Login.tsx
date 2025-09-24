@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { InputField } from "../components/shared";
 import { DiscordLoginButton } from "../components/discord";
@@ -10,6 +10,7 @@ import type { LoginFormData } from "../types/auth";
 export default function Login() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAppContext();
   const isRtl = !!(i18n.language && i18n.language.startsWith("ar"));
 
@@ -21,7 +22,6 @@ export default function Login() {
     isValid,
     handleChange,
     handleBlur,
-    submit,
     setError,
   } = useFormValidation<LoginFormData>(
     { identifier: "", password: "", general: "" },
@@ -48,21 +48,23 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const success = await submit(async () => {
-      try {
-        await login(formData.identifier, formData.password);
-        navigate("/");
-      } catch (err: unknown) {
-        let message = "Login failed. Please try again.";
-        if (err instanceof Error && err.message) message = err.message;
-        setError("general", message);
-        throw err;
-      }
-    });
-    if (!success) {
+    if (isSubmitDisabled) return;
+
+    try {
+      // Basic input sanitization
+      const identifier = formData.identifier.trim();
+      const password = formData.password.trim();
+
+      await login(identifier, password);
+      // If a redirect target was provided (protected route), navigate there.
+      // Otherwise, go to home. Previously we always sent users to /profile.
+      const state = location.state as { from?: string } | undefined;
+      const redirectTo = state?.from ?? "/";
+      navigate(redirectTo, { replace: true });
+    } catch (error) {
       setError(
         "general",
-        (errors.general as string) || "Login failed. Please try again."
+        error instanceof Error ? error.message : "Login failed"
       );
     }
   };

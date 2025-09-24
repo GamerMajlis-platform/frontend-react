@@ -1,6 +1,12 @@
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Youtube, Twitter, Instagram, Twitch, GamepadIcon } from "lucide-react";
+import {
+  Youtube,
+  Twitter,
+  Instagram,
+  Twitch,
+  GamepadIcon,
+} from "../../lib/icons";
 import { useAppContext } from "../../context/useAppContext";
 import { useProfile } from "../../hooks/useProfile";
 import { DiscordUserInfo } from "../discord/DiscordUserInfo";
@@ -240,46 +246,40 @@ export default function BackendProfileHeader(props: BackendProfileHeaderProps) {
           } text-center`}
           dir={props.isRTL ? "rtl" : "ltr"}
         >
-          {user.discordUsername ? (
-            <div
-              className={`inline-flex ${
-                props.isRTL ? "lg:justify-end" : "lg:justify-start"
-              } justify-center`}
-            >
-              <div className="space-y-2">
+          <div
+            className={`inline-flex ${
+              props.isRTL ? "lg:justify-end" : "lg:justify-start"
+            } justify-center`}
+          >
+            <div className="space-y-2">
+              {user.discordUsername ? (
                 <DiscordUserInfo />
-                {/* Social Media Icons */}
-                {user.parsedSocialLinks && (
-                  <div
-                    className={`flex items-center gap-3 ${
-                      props.isRTL
-                        ? "flex-row-reverse justify-end"
-                        : "flex-row justify-start"
-                    }`}
-                  >
-                    {renderSocialIcons(user.parsedSocialLinks)}
-                  </div>
-                )}
-              </div>
+              ) : (
+                <DiscordLinkButton
+                  variant="outline"
+                  size="sm"
+                  onLink={(discordUser) => {
+                    console.log("Discord account linked:", discordUser);
+                  }}
+                  onError={(error) => {
+                    console.error("Discord linking error:", error);
+                  }}
+                />
+              )}
+              {/* Social Media Icons: always show when present */}
+              {user.parsedSocialLinks && (
+                <div
+                  className={`flex items-center gap-3 ${
+                    props.isRTL
+                      ? "flex-row-reverse justify-end"
+                      : "flex-row justify-start"
+                  }`}
+                >
+                  {renderSocialIcons(user.parsedSocialLinks)}
+                </div>
+              )}
             </div>
-          ) : (
-            <div
-              className={`inline-flex ${
-                props.isRTL ? "lg:justify-end" : "lg:justify-start"
-              } justify-center`}
-            >
-              <DiscordLinkButton
-                variant="outline"
-                size="sm"
-                onLink={(discordUser) => {
-                  console.log("Discord account linked:", discordUser);
-                }}
-                onError={(error) => {
-                  console.error("Discord linking error:", error);
-                }}
-              />
-            </div>
-          )}
+          </div>
         </div>
 
         {/* Email verification status removed from profile display */}

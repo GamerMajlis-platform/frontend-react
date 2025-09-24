@@ -68,6 +68,7 @@
       "startDate": "Start Date",
       "startDatePlaceholder": "mm/dd/yyyy --:-- --",
       "status": "Status",
+      "submit": "Create Tournament",
       "tournamentType": "Tournament Type"
     },
     "success": "Tournament created successfully",

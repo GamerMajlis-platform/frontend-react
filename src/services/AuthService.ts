@@ -152,19 +152,14 @@ export class AuthService {
   }
 
   /**
-   * Store authentication data in localStorage
+   * Store authentication data using secure storage
    */
   private static storeAuthData(data: LoginResponse): void {
     try {
       localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(data.user));
-      // Persist token via SessionService so timer/storage is consistent
+      // Always use SessionService for consistent token management
       if (data.token) {
-        try {
-          SessionService.storeToken(data.token);
-        } catch {
-          // Fallback to direct storage if SessionService unavailable
-          localStorage.setItem(STORAGE_KEYS.auth, data.token);
-        }
+        SessionService.storeToken(data.token);
       }
     } catch {
       console.warn("Failed to persist auth data");
@@ -176,7 +171,7 @@ export class AuthService {
    */
   private static clearAuthData(): void {
     try {
-      localStorage.removeItem(STORAGE_KEYS.auth);
+      SessionService.clearSession();
       localStorage.removeItem(STORAGE_KEYS.user);
     } catch {
       console.warn("Failed to clear auth data");
@@ -184,14 +179,10 @@ export class AuthService {
   }
 
   /**
-   * Get stored token
+   * Get stored token via SessionService
    */
   static getStoredToken(): string | null {
-    try {
-      return localStorage.getItem(STORAGE_KEYS.auth);
-    } catch {
-      return null;
-    }
+    return SessionService.getStoredToken();
   }
 
   /**
@@ -221,36 +212,5 @@ export class AuthService {
     const token = this.getStoredToken();
     const user = this.getStoredUser();
     return !!(token && user);
-  }
-
-  /**
-   * Make authenticated API requests (deprecated - use apiFetch instead)
-   */
-  static async authenticatedFetch(
-    url: string,
-    options: RequestInit = {}
-  ): Promise<Response> {
-    const token = this.getStoredToken();
-
-    const response = await fetch(url, {
-      ...options,
-      headers: {
-        ...options.headers,
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    // Handle token expiration
-    if (response.status === 401) {
-      this.clearAuthData();
-      // Redirect to login using a safe method instead of hash manipulation
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(new CustomEvent("auth-redirect-login"));
-      }
-      throw new Error("Session expired. Please login again.");
-    }
-
-    return response;
   }
 }

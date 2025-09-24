@@ -89,6 +89,10 @@
     "visibility.private": "Private - Only you can see your profile",
     "visibility.public": "Public - Anyone can see your profile"
   },
+  "visibility": {
+    "viewer_hide_stats": "You have disabled viewing gaming statistics in your settings",
+    "hidden_stats_by_user": "{{username}} has hidden his/her game statistics"
+  },
   "removeAvatar": "Remove Avatar",
   "save": "Save Profile",
   "search": {

@@ -107,24 +107,24 @@ export class ProfileService {
       });
 
       if (data.success && data.user) {
-        // Update localStorage with new user data using unified storage key
+        // Parse JSON fields and persist parsed user to localStorage
+        const parsed = this.parseUserJsonFields(data.user);
         try {
           const storedUser = localStorage.getItem(STORAGE_KEYS.user);
           if (storedUser) {
             const currentUser = JSON.parse(storedUser);
-            const updatedUser = { ...currentUser, ...data.user };
+            const updatedUser = { ...currentUser, ...parsed };
             localStorage.setItem(
               STORAGE_KEYS.user,
               JSON.stringify(updatedUser)
             );
           } else {
-            // Ensure user is stored if not present
-            localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(data.user));
+            localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(parsed));
           }
         } catch (err) {
           console.warn("Failed to update stored user data:", err);
         }
-        return data.user;
+        return parsed as User;
       }
       throw new Error(data.message || "Failed to update profile");
     } catch (err) {
@@ -365,7 +365,53 @@ export class ProfileService {
       parsedGamingPreferences: parseJsonField(user.gamingPreferences),
       parsedSocialLinks: parseJsonField(user.socialLinks),
       parsedGamingStatistics: parseJsonField(user.gamingStatistics),
-      parsedPrivacySettings: parseJsonField(user.privacySettings),
+      // Normalize privacy settings keys: different backends may use
+      // `profileVisibility` (string) or `profileVisible` (boolean) or `visibility`.
+      // Also accept a few alternate keys for visibility of socials/stats.
+      parsedPrivacySettings: (() => {
+        const raw = parseJsonField(user.privacySettings) as Record<
+          string,
+          unknown
+        >;
+        const normalized: Record<string, unknown> = { ...raw };
+
+        // Normalize profile visibility into a string: 'public' | 'friends' | 'private'
+        if (typeof raw["profileVisibility"] === "string") {
+          normalized["profileVisibility"] = raw["profileVisibility"];
+        } else if (typeof raw["visibility"] === "string") {
+          normalized["profileVisibility"] = raw["visibility"];
+        } else if (typeof raw["profileVisible"] === "boolean") {
+          // older shape: profileVisible: true/false
+          normalized["profileVisibility"] = raw["profileVisible"]
+            ? "public"
+            : "private";
+        }
+
+        // Normalize gaming stats visibility to boolean `showGamingStats`
+        if (typeof raw["showGamingStats"] === "boolean") {
+          normalized["showGamingStats"] = raw["showGamingStats"];
+        } else if (typeof raw["gamingStatsVisible"] === "boolean") {
+          normalized["showGamingStats"] = raw["gamingStatsVisible"];
+        } else if (typeof raw["showGamingStatistics"] === "boolean") {
+          normalized["showGamingStats"] = raw["showGamingStatistics"];
+        }
+
+        // Normalize social links visibility to boolean `showSocialLinks`
+        if (typeof raw["showSocialLinks"] === "boolean") {
+          normalized["showSocialLinks"] = raw["showSocialLinks"];
+        } else if (typeof raw["socialLinksVisible"] === "boolean") {
+          normalized["showSocialLinks"] = raw["socialLinksVisible"];
+        }
+
+        // Normalize online status visibility to boolean `showOnlineStatus`
+        if (typeof raw["showOnlineStatus"] === "boolean") {
+          normalized["showOnlineStatus"] = raw["showOnlineStatus"];
+        } else if (typeof raw["onlineStatusVisible"] === "boolean") {
+          normalized["showOnlineStatus"] = raw["onlineStatusVisible"];
+        }
+
+        return normalized;
+      })(),
     };
   }
 }

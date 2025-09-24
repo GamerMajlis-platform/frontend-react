@@ -209,7 +209,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({
         {/* Post Title */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {t("posts.create.postTitle")} *
+            {t("posts.create.postTitle")}
           </label>
           <input
             type="text"
@@ -230,7 +230,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({
         {/* Post Content */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {t("posts.create.content")} *
+            {t("posts.create.content")}
           </label>
           <textarea
             value={postData.content}
@@ -255,6 +255,10 @@ export const CreatePost: React.FC<CreatePostProps> = ({
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               {t("posts.create.gameTitle")}
+              <span className="text-xs text-gray-500">
+                {" "}
+                ({t("common.optional")})
+              </span>
             </label>
             <input
               type="text"
@@ -271,6 +275,10 @@ export const CreatePost: React.FC<CreatePostProps> = ({
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               {t("posts.create.gameCategory")}
+              <span className="text-xs text-gray-500">
+                {" "}
+                ({t("common.optional")})
+              </span>
             </label>
             <select
               value={postData.gameCategory}
@@ -299,6 +307,10 @@ export const CreatePost: React.FC<CreatePostProps> = ({
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               {t("posts.create.platform")}
+              <span className="text-xs text-gray-500">
+                {" "}
+                ({t("common.optional")})
+              </span>
             </label>
             <select
               value={postData.platform}
@@ -324,6 +336,10 @@ export const CreatePost: React.FC<CreatePostProps> = ({
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               {t("posts.create.visibility")}
+              <span className="text-xs text-gray-500">
+                {" "}
+                ({t("common.optional")})
+              </span>
             </label>
             <select
               value={postData.visibility}
@@ -348,6 +364,10 @@ export const CreatePost: React.FC<CreatePostProps> = ({
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               {t("posts.create.tags")}
+              <span className="text-xs text-gray-500">
+                {" "}
+                ({t("common.optional")})
+              </span>
             </label>
             <input
               type="text"
@@ -367,6 +387,10 @@ export const CreatePost: React.FC<CreatePostProps> = ({
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               {t("posts.create.hashtags")}
+              <span className="text-xs text-gray-500">
+                {" "}
+                ({t("common.optional")})
+              </span>
             </label>
             <input
               type="text"

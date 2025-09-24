@@ -6,7 +6,7 @@ import { ContentCreation } from "../components/shared/ContentCreation";
 import { useAppContext } from "../context/useAppContext";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MessageSquare, Image, Plus } from "lucide-react";
+import { MessageSquare, Image, Plus } from "../lib/icons";
 
 export default function Home() {
   const { t } = useTranslation();

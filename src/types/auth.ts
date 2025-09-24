@@ -32,6 +32,9 @@ export interface User {
   parsedSocialLinks?: Record<string, unknown>;
   parsedGamingStatistics?: Record<string, unknown>;
   parsedPrivacySettings?: Record<string, unknown>;
+  // Real-time status fields (may be populated by WebSocket or API)
+  isOnline?: boolean;
+  lastSeen?: string;
 }
 
 export interface AuthState {

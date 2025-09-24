@@ -17,6 +17,5 @@ export {
   ButtonLoader,
   ListLoader,
   MultipleSuspense,
-  withSuspense,
 } from "./SuspenseWrapper";
 export { CategoryButtons } from "./CategoryButtons";

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { STORAGE_KEYS } from "../config/constants";
+import { SecureStorage } from "../lib/security";
 import { useAppContext } from "../context/useAppContext";
 
 /**
@@ -17,7 +17,7 @@ export default function AuthSuccess() {
       const token = params.get("token");
       const ret = params.get("return") || "/";
       if (token) {
-        localStorage.setItem(STORAGE_KEYS.auth, token);
+        SecureStorage.setToken(token);
         refreshProfile().finally(() => {
           // Clean navigation with state preservation
           navigate(ret, { replace: true, state: { fromAuth: true } });

@@ -219,7 +219,7 @@ export const MediaUpload: React.FC<MediaUploadProps> = ({
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                {t("media.upload.title")} *
+                {t("media.upload.title")}
               </label>
               <input
                 type="text"
@@ -236,6 +236,10 @@ export const MediaUpload: React.FC<MediaUploadProps> = ({
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 {t("media.upload.description")}
+                <span className="text-xs text-gray-500">
+                  {" "}
+                  ({t("common.optional")})
+                </span>
               </label>
               <textarea
                 value={uploadData.description}
@@ -254,6 +258,10 @@ export const MediaUpload: React.FC<MediaUploadProps> = ({
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 {t("media.upload.tags")}
+                <span className="text-xs text-gray-500">
+                  {" "}
+                  ({t("common.optional")})
+                </span>
               </label>
               <input
                 type="text"
@@ -272,6 +280,10 @@ export const MediaUpload: React.FC<MediaUploadProps> = ({
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 {t("media.upload.gameCategory")}
+                <span className="text-xs text-gray-500">
+                  {" "}
+                  ({t("common.optional")})
+                </span>
               </label>
               <select
                 value={uploadData.gameCategory}
@@ -296,6 +308,10 @@ export const MediaUpload: React.FC<MediaUploadProps> = ({
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 {t("media.upload.visibility")}
+                <span className="text-xs text-gray-500">
+                  {" "}
+                  ({t("common.optional")})
+                </span>
               </label>
               <select
                 value={uploadData.visibility}

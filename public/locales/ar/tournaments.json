@@ -33,6 +33,7 @@
     "button": "إنشاء بطولة",
     "error": "فشل في إنشاء البطولة",
     "form": {
+      
       "currency": "العملة",
       "currencyOptions": {
         "USD": "USD ($)"
@@ -68,6 +69,7 @@
       "startDate": "تاريخ البدء",
       "startDatePlaceholder": "mm/dd/yyyy --:-- --",
       "status": "الحالة",
+      "submit": "إنشاء البطولة",
       "tournamentType": "نوع البطولة"
     },
     "success": "تم إنشاء البطولة بنجاح",

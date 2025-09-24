@@ -1,6 +1,6 @@
 import React, { useState, useId } from "react";
 import { useTranslation } from "react-i18next";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "../../lib/icons";
 
 interface InputFieldProps {
   name: string;

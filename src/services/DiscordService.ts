@@ -36,9 +36,10 @@ export class DiscordService {
     return base.endsWith("/api") ? base : `${base.replace(/\/$/, "")}/api`;
   }
 
-  // Get the frontend base URL, ensuring we use port 3000 for OAuth consistency
+  // Get the frontend base URL from the current window origin. This allows
+  // running the frontend on different ports (3000, 3001, etc.) without forcing
+  // a specific port in code; the backend must still accept the origin used.
   private static getFrontendUrl(): string {
-    // Use actual origin; do not force port override (reduces mismatch issues)
     return window.location.origin.replace(/\/$/, "");
   }
 

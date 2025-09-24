@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../../context/useAppContext";
 import { useProfile } from "../../hooks/useProfile";
+import type { User } from "../../types/auth";
 
 interface GameStat {
   game: string;
@@ -27,7 +28,7 @@ interface GamingStatistics {
   lastUpdated: string;
 }
 
-export default function GamingStatisticsPanel() {
+export default function GamingStatisticsPanel(props?: { viewUser?: User }) {
   const { t } = useTranslation();
   const { user } = useAppContext();
   const { updateGamingStats, isLoading } = useProfile();
@@ -45,12 +46,13 @@ export default function GamingStatisticsPanel() {
     lastUpdated: new Date().toISOString(),
   });
 
-  // Initialize from user data
+  // Initialize from user data or viewUser when provided
   useEffect(() => {
-    if (user?.parsedGamingStatistics) {
-      setStatistics((prev) => ({ ...prev, ...user.parsedGamingStatistics }));
+    const source = props?.viewUser ?? user;
+    if (source?.parsedGamingStatistics) {
+      setStatistics((prev) => ({ ...prev, ...source.parsedGamingStatistics }));
     }
-  }, [user]);
+  }, [user, props?.viewUser]);
 
   const handleSave = async () => {
     try {
@@ -231,12 +233,15 @@ export default function GamingStatisticsPanel() {
               </button>
             </>
           ) : (
-            <button
-              onClick={() => setIsEditing(true)}
-              className="px-4 py-2 bg-primary hover:bg-primary/80 text-white rounded-lg transition-colors"
-            >
-              {t("common.edit")}
-            </button>
+            // Hide edit button when viewing another user's stats
+            !props?.viewUser && (
+              <button
+                onClick={() => setIsEditing(true)}
+                className="px-4 py-2 bg-primary hover:bg-primary/80 text-white rounded-lg transition-colors"
+              >
+                {t("common.edit")}
+              </button>
+            )
           )}
         </div>
       </div>

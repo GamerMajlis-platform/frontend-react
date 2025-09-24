@@ -89,6 +89,10 @@
     "visibility.private": "خاص - فقط أنت يمكنك رؤية ملفك",
     "visibility.public": "عام - يمكن لأي شخص رؤية ملفك"
   },
+  "visibility": {
+    "viewer_hide_stats": "لقد عطلت عرض إحصائيات اللعب من إعداداتك",
+    "hidden_stats_by_user": "{{username}} أخفى إحصائيات اللعب الخاصة به"
+  },
   "removeAvatar": "إزالة صورة الملف",
   "save": "حفظ الملف",
   "search": {

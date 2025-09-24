@@ -87,7 +87,9 @@ export default function ProductGrid({
 
   if (!products || products.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 px-4">
+      // Ensure the empty state centers and spans the full grid width when
+      // ProductGrid is placed inside a CSS grid container.
+      <div className="col-span-full w-full flex flex-col items-center justify-center py-12 px-4">
         <div className="text-gray-400 mb-4">
           <svg
             className="w-12 h-12"
@@ -103,7 +105,7 @@ export default function ProductGrid({
             />
           </svg>
         </div>
-        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2 text-center">
           {t("product.noProducts")}
         </h3>
         <p className="text-gray-600 dark:text-gray-400 text-center max-w-md">

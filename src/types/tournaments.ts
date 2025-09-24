@@ -107,6 +107,15 @@ export interface Tournament {
 
 // ===== TOURNAMENT PARTICIPATION =====
 
+export interface TournamentMatch {
+  matchId: string;
+  round: number;
+  participant1: TournamentParticipation | null;
+  participant2: TournamentParticipation | null;
+  winner: TournamentParticipation | null;
+  status: "PENDING" | "IN_PROGRESS" | "COMPLETED";
+}
+
 export interface TournamentParticipation {
   id: number;
   tournament: {

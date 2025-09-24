@@ -210,27 +210,15 @@ export default function Tournaments() {
           </div>
         </section>
 
-        {/* Create Tournament Form Modal */}
+        {/* Create Tournament Form (inline, like Events) */}
         {showCreateForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-dark-secondary rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold text-white">
-                  {t("tournaments:create.title")}
-                </h2>
-                <button
-                  onClick={() => setShowCreateForm(false)}
-                  className="text-gray-400 hover:text-white"
-                >
-                  ×
-                </button>
-              </div>
+          <section className="max-w-[800px] mx-auto mb-12">
               <CreateTournamentForm
                 onSuccess={handleTournamentCreated}
                 onCancel={() => setShowCreateForm(false)}
               />
-            </div>
-          </div>
+            
+          </section>
         )}
 
         {/* Tournament Grid */}

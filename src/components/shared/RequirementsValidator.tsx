@@ -124,7 +124,7 @@ const RequirementsValidator: React.FC<RequirementsValidatorProps> = ({
           message: "Image compression implemented",
           details: "Automatic compression before upload with quality control",
         });
-      } catch (error) {
+      } catch {
         results.push({
           requirement: "T19: Product images must be compressed automatically",
           status: "warning",

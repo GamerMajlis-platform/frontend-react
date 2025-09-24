@@ -4,6 +4,7 @@
 import { apiFetch } from "../lib/api";
 import type {
   Tournament,
+  TournamentMatch,
   TournamentFilters,
   TournamentsListResponse,
   CreateTournamentRequest,
@@ -352,13 +353,13 @@ class TournamentService {
   ) {
     const participantCount = participants.length;
     const rounds = Math.ceil(Math.log2(participantCount));
-    const bracket: any[][] = [];
+    const bracket: TournamentMatch[][] = [];
 
     // Seed participants (1 vs lowest, 2 vs second lowest, etc.)
     const seededParticipants = this.seedParticipants(participants);
 
     // Create first round matches
-    const firstRound: any[] = [];
+    const firstRound: TournamentMatch[] = [];
     for (let i = 0; i < seededParticipants.length; i += 2) {
       if (seededParticipants[i + 1]) {
         firstRound.push({
@@ -377,7 +378,7 @@ class TournamentService {
           participant1: seededParticipants[i],
           participant2: null,
           winner: seededParticipants[i],
-          status: "BYE",
+          status: "COMPLETED" as const, // Bye means completed with automatic winner
         });
       }
     }
@@ -386,8 +387,8 @@ class TournamentService {
 
     // Generate subsequent rounds
     for (let round = 2; round <= rounds; round++) {
-      const previousRound: any[] = bracket[round - 2];
-      const currentRound: any[] = [];
+      const previousRound: TournamentMatch[] = bracket[round - 2];
+      const currentRound: TournamentMatch[] = [];
 
       for (let i = 0; i < previousRound.length; i += 2) {
         if (previousRound[i + 1]) {
@@ -397,8 +398,8 @@ class TournamentService {
             participant1: null, // Will be filled by winners
             participant2: null,
             winner: null,
-            status: "WAITING",
-            dependsOn: [previousRound[i].matchId, previousRound[i + 1].matchId],
+            status: "PENDING" as const,
+            // dependsOn can be tracked separately or in match management
           });
         }
       }

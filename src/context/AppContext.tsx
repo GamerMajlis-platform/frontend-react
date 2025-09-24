@@ -75,6 +75,7 @@ interface AppContextShape {
   // Authentication
   user: User | null;
   isAuthenticated: boolean;
+  sessionInitialized: boolean;
   login: (identifier: string, password: string) => Promise<void>;
   register: (
     displayName: string,
@@ -693,6 +694,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       // Authentication
       user,
       isAuthenticated,
+      sessionInitialized,
       login,
       register,
       logout,
@@ -724,6 +726,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       settings,
       user,
       isAuthenticated,
+      sessionInitialized,
       isInWishlist,
       addToWishlist,
       removeFromWishlist,

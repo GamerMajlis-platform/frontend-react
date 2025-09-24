@@ -366,6 +366,32 @@ npm run build
 npm run lint
 ````
 
+### Development server port configuration
+
+By default the dev server will attempt to start at port `3000`. If `3000` is already in use, Vite will automatically pick the next free port (e.g. `3001`, `3002`, ...). This lets you run multiple dev instances simultaneously without setting a port manually.
+
+If you need to force a specific port (for example, to test exact-origin OAuth flows), set the `VITE_DEV_PORT` environment variable before starting the server. When `VITE_DEV_PORT` is provided the dev server will fail to start if that port is unavailable (to avoid silent port changes during testing).
+
+Example (bash) — allow automatic incrementing (simply run multiple instances):
+
+```bash
+npm run dev
+```
+
+Example (bash) — force a specific port:
+
+```bash
+VITE_DEV_PORT=3000 npm run dev
+```
+
+Example (PowerShell) — force a specific port:
+
+```powershell
+$env:VITE_DEV_PORT=3000; npm run dev
+```
+
+When testing OAuth or other origin-sensitive flows on multiple ports, ensure your backend's allowed origins or redirect URIs include the ports you use (for example `http://localhost:3000` and `http://localhost:3001`).
+
 ### Backend Requirements
 
 The frontend expects a Spring Boot backend running at `localhost:8080/api` with these endpoints:

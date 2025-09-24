@@ -210,7 +210,8 @@
     "search": "Search",
     "select": "Select",
     "success": "Success",
-    "tryAgain": "Try again"
+    "tryAgain": "Try again",
+    "optional": "optional"
   },
   "conversations": {
     "composer": {
@@ -306,7 +307,7 @@
     "createProduct": "Create Product",
     "legacyView": "Legacy View",
     "modernView": "Modern View",
-    "noMatches": "Try adjusting your search or filters.",
+    "noMatches": "Try switching filters or come back later.",
     "noProducts": "No products",
     "searchPlaceholder": "Search for gaming gear or accessories...",
     "subtitle": "Discover premium gaming gear from trusted sellers worldwide",
@@ -445,7 +446,7 @@
     "nameRequired": "Product name is required",
     "noImage": "No Image",
     "noProducts": "No Products",
-    "noProductsDescription": "Try adjusting your search or filters",
+    "noProductsDescription": "Try switching filters or come back later",
     "popularity": "Popularity",
     "price": "Price",
     "pricePlaceholder": "0.00",

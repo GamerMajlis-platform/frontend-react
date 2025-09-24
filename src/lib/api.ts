@@ -1,5 +1,6 @@
 import { API_CONFIG, STORAGE_KEYS } from "../config/constants";
 import { ErrorHandler, RetryHandler } from "./errors";
+import { SecureStorage } from "./security";
 
 // Use the unified env var `VITE_API_BASE_URL` if set, otherwise fall back to constant
 const API_BASE = import.meta.env.VITE_API_BASE_URL || API_CONFIG.baseUrl;
@@ -26,9 +27,10 @@ export async function apiFetch<T = unknown>(
   path: string,
   options: ApiOptions = {}
 ): Promise<T> {
+  // Prefer secure token storage (sessionStorage) then fall back to legacy localStorage key
   const token =
     typeof window !== "undefined"
-      ? localStorage.getItem(STORAGE_KEYS.auth)
+      ? SecureStorage.getToken() || localStorage.getItem(STORAGE_KEYS.auth)
       : null;
 
   const { useFormData = false, retryOptions, ...fetchOptions } = options;

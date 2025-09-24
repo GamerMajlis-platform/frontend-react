@@ -198,7 +198,8 @@
     "search": "بحث",
     "select": "اختر",
     "success": "نجاح",
-    "tryAgain": "حاول مرة أخرى"
+    "tryAgain": "حاول مرة أخرى",
+    "optional": "اختياري"
   },
   "conversations": {
     "composer": {
@@ -294,7 +295,7 @@
     "createProduct": "إنشاء منتج",
     "legacyView": "العرض القديم",
     "modernView": "العرض الحديث",
-    "noMatches": "جرّب تعديل البحث أو الفلاتر.",
+    "noMatches": "جرّب تغيير الفلاتر أو عُد لاحقًا.",
     "noProducts": "لا توجد منتجات",
     "searchPlaceholder": "ابحث عن معدات أو إكسسوارات الألعاب...",
     "subtitle": "اكتشف معدات ألعاب مميزة من بائعين موثوقين حول العالم",
@@ -433,7 +434,7 @@
     "nameRequired": "اسم المنتج مطلوب",
     "noImage": "لا توجد صورة",
     "noProducts": "لا توجد منتجات",
-    "noProductsDescription": "جرب تعديل البحث أو الفلاتر",
+    "noProductsDescription": "جرّب تغيير الفلاتر أو عُد لاحقًا",
     "popularity": "الشعبية",
     "price": "السعر",
     "pricePlaceholder": "0.00",

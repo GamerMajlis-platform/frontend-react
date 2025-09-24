@@ -1,6 +1,7 @@
 // Session Management Service - Handles token validation and session lifecycle
 import { apiFetch } from "../lib/api";
 import { API_ENDPOINTS, STORAGE_KEYS } from "../config/constants";
+import { SecureStorage } from "../lib/security";
 import type { BackendResponse } from "../types/auth";
 
 interface TokenValidationResponse extends BackendResponse {
@@ -69,11 +70,14 @@ export class SessionService {
         }
       );
 
-      console.log("🔍 Token validation response:", {
-        valid: response.valid,
-        userId: response.userId,
-        username: response.username,
-      });
+      // Log validation response only in development
+      if (import.meta.env.DEV) {
+        console.log("🔍 Token validation response:", {
+          valid: response.valid,
+          userId: response.userId,
+          username: response.username,
+        });
+      }
 
       return response.valid === true;
     } catch (error) {
@@ -92,23 +96,29 @@ export class SessionService {
     }
 
     this.refreshTimer = setInterval(async () => {
-      console.log("🔄 Performing scheduled token validation...");
+      if (import.meta.env.DEV) {
+        console.log("🔄 Performing scheduled token validation...");
+      }
       const isValid = await this.validateToken();
 
       if (!isValid) {
-        console.log("❌ Token expired - logging user out");
+        if (import.meta.env.DEV) {
+          console.log("❌ Token expired - logging user out");
+        }
         // Trigger logout through event system
         window.dispatchEvent(new CustomEvent("session:expired"));
-      } else {
+      } else if (import.meta.env.DEV) {
         console.log("✅ Token still valid");
       }
     }, this.REFRESH_INTERVAL);
 
-    console.log(
-      `⏰ Token refresh timer started (${
-        this.REFRESH_INTERVAL / 1000
-      }s interval)`
-    );
+    if (import.meta.env.DEV) {
+      console.log(
+        `⏰ Token refresh timer started (${
+          this.REFRESH_INTERVAL / 1000
+        }s interval)`
+      );
+    }
   }
 
   /**
@@ -126,11 +136,7 @@ export class SessionService {
    * Get stored authentication token
    */
   static getStoredToken(): string | null {
-    try {
-      return localStorage.getItem(this.TOKEN_KEY);
-    } catch {
-      return null;
-    }
+    return SecureStorage.getToken();
   }
 
   /**
@@ -138,7 +144,7 @@ export class SessionService {
    */
   static storeToken(token: string): void {
     try {
-      localStorage.setItem(this.TOKEN_KEY, token);
+      SecureStorage.setToken(token);
     } catch (error) {
       console.error("Failed to store token:", error);
     }
@@ -149,7 +155,21 @@ export class SessionService {
    */
   static clearSession(): void {
     try {
+      // Remove token from both legacy localStorage key and SecureStorage
       localStorage.removeItem(this.TOKEN_KEY);
+      // SecureStorage may store the token under its own key (sessionStorage or localStorage)
+      try {
+        SecureStorage.removeToken();
+      } catch (e) {
+        // If removal fails, log and continue
+        console.warn("Failed to remove secure token:", e);
+      }
+      // Also remove stored user data to avoid stale user presence
+      try {
+        localStorage.removeItem(STORAGE_KEYS.user);
+      } catch {
+        // ignore storage errors
+      }
       localStorage.removeItem("lastActivity");
       this.stopTokenRefreshTimer();
 

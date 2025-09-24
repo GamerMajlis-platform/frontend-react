@@ -14,8 +14,9 @@ i18n
   .init({
     // Language settings
     fallbackLng: "en",
-    // Enable debug logs to show missing translation keys
-    debug: true,
+    // Disable i18next internal debug logs to avoid excessive console output.
+    // If you need verbose i18next logs temporarily, enable this manually.
+    debug: false,
     supportedLngs: ["en", "ar"],
     load: "languageOnly", // normalize en-US -> en
     nonExplicitSupportedLngs: true,
@@ -86,20 +87,24 @@ i18n.on("languageChanged", (lng) => {
 // an explicit saved language preference and apply it if different. This
 // ensures the app-level preferences (saved by AppContext) win on refresh.
 i18n.on("initialized", () => {
-  console.log("✅ i18n: Translations loaded successfully");
-  console.log("🌐 Current language:", i18n.language);
-  console.log("📚 Loaded resources:", Object.keys(i18n.store.data));
+  // Keep development-only informational logs. In production/CI we avoid
+  // writing these to the console to reduce noise.
+  if (import.meta.env.DEV) {
+    console.log("✅ i18n: Translations loaded successfully");
+    console.log("🌐 Current language:", i18n.language);
+    // console.log("📚 Loaded resources:", Object.keys(i18n.store.data));
+  }
 
   // Debug: Check if specific keys exist
-  const postsKeys = i18n.t("posts", { returnObjects: true });
-  console.log("🔍 Posts object:", postsKeys);
-  const feedKeys = i18n.t("posts.feed", { returnObjects: true });
-  console.log("🔍 Posts.feed object:", feedKeys);
-  console.log("🔍 Direct key test - noPosts:", i18n.t("posts.feed.noPosts"));
-  console.log(
-    "🔍 Direct key test - noPostsDescription:",
-    i18n.t("posts.feed.noPostsDescription")
-  );
+  // const postsKeys = i18n.t("posts", { returnObjects: true });
+  // console.log("🔍 Posts object:", postsKeys);
+  // const feedKeys = i18n.t("posts.feed", { returnObjects: true });
+  // console.log("🔍 Posts.feed object:", feedKeys);
+  // console.log("🔍 Direct key test - noPosts:", i18n.t("posts.feed.noPosts"));
+  // console.log(
+  //   "🔍 Direct key test - noPostsDescription:",
+  //   i18n.t("posts.feed.noPostsDescription")
+  // );
 
   try {
     if (typeof window === "undefined") return;
@@ -117,6 +122,9 @@ i18n.on("initialized", () => {
 
 // Enhanced missing translation key handling
 i18n.on("missingKey", (lngs, ns, key, fallbackValue) => {
+  // Only log missing-key details in development to avoid noisy output.
+  if (!import.meta.env.DEV) return;
+
   const languages = Array.isArray(lngs) ? lngs.join(", ") : lngs;
   const namespace = ns || "translation";
   const keyPath = `${namespace}:${key}`;
@@ -127,15 +135,13 @@ i18n.on("missingKey", (lngs, ns, key, fallbackValue) => {
   console.warn(`🔍 Check translation files: public/locales/*/translation.json`);
 
   // In development, also log the full context
-  if (import.meta.env.DEV) {
-    console.group(`🔧 [i18n DEBUG] Missing Key Details`);
-    console.log(`Key: ${key}`);
-    console.log(`Namespace: ${namespace}`);
-    console.log(`Languages checked: ${languages}`);
-    console.log(`Current language: ${i18n.language}`);
-    console.log(`Fallback language: ${i18n.options.fallbackLng}`);
-    console.groupEnd();
-  }
+  console.group(`🔧 [i18n DEBUG] Missing Key Details`);
+  console.log(`Key: ${key}`);
+  console.log(`Namespace: ${namespace}`);
+  console.log(`Languages checked: ${languages}`);
+  console.log(`Current language: ${i18n.language}`);
+  console.log(`Fallback language: ${i18n.options.fallbackLng}`);
+  console.groupEnd();
 });
 
 export default i18n;

@@ -223,7 +223,7 @@ export default function CreateEventForm({
           htmlFor="title"
           className="block text-sm font-medium text-white mb-2"
         >
-          {t("events:form.title")} *
+          {t("events:form.title")}
         </label>
         <input
           type="text"
@@ -245,6 +245,10 @@ export default function CreateEventForm({
           className="block text-sm font-medium text-white mb-2"
         >
           {t("events:form.description")}
+          <span className="text-xs text-white/60">
+            {" "}
+            ({t("common.optional")})
+          </span>
         </label>
         <textarea
           id="description"
@@ -265,7 +269,7 @@ export default function CreateEventForm({
             htmlFor="startDateTime"
             className="block text-sm font-medium text-white mb-2"
           >
-            {t("events:form.startDateTime")} *
+            {t("events:form.startDateTime")}
           </label>
           <input
             type="datetime-local"
@@ -284,6 +288,10 @@ export default function CreateEventForm({
             className="block text-sm font-medium text-white mb-2"
           >
             {t("events:form.endDateTime")}
+            <span className="text-xs text-white/60">
+              {" "}
+              ({t("common.optional")})
+            </span>
           </label>
           <input
             type="datetime-local"
@@ -305,6 +313,10 @@ export default function CreateEventForm({
             className="block text-sm font-medium text-white mb-2"
           >
             {t("events:form.eventType")}
+            <span className="text-xs text-white/60">
+              {" "}
+              ({t("common.optional")})
+            </span>
           </label>
           <select
             id="eventType"
@@ -327,6 +339,10 @@ export default function CreateEventForm({
             className="block text-sm font-medium text-white mb-2"
           >
             {t("events:form.locationType")}
+            <span className="text-xs text-white/60">
+              {" "}
+              ({t("common.optional")})
+            </span>
           </label>
           <select
             id="locationType"
