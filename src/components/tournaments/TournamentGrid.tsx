@@ -1,4 +1,3 @@
-import React from "react";
 import { useTranslation } from "react-i18next";
 import { Card } from "../shared";
 import EmptyState from "../../states/EmptyState";

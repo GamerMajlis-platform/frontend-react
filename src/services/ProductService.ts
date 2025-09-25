@@ -1,4 +1,4 @@
-import { apiFetch, createFormData } from "../lib/api";
+import { BaseService } from "../lib/baseService";
 import { API_ENDPOINTS } from "../config/constants";
 import type {
   Product,
@@ -20,7 +20,7 @@ import type {
  * ProductService - Handles all product/marketplace related API calls
  * Integrates with backend APIs for complete marketplace functionality
  */
-export class ProductService {
+export class ProductService extends BaseService {
   /**
    * Parse JSON string fields in product data for easier frontend handling
    */
@@ -101,16 +101,14 @@ export class ProductService {
    */
   static async createProduct(data: ProductFormData): Promise<ParsedProduct> {
     const prepared = this.prepareProductFormData(data);
-    const formData = createFormData(prepared);
-
-    const response = await apiFetch<ProductResponse>(
+    const formData = this.createFormData(prepared);
+    const response = await this.authenticatedRequest<ProductResponse>(
       API_ENDPOINTS.products.create,
       {
         method: "POST",
         body: formData,
       }
     );
-
     return this.parseProductJsonFields(response.product);
   }
 
@@ -133,7 +131,7 @@ export class ProductService {
       formData.append("setMainImage", "true");
     }
 
-    return await apiFetch<ProductImageUploadResponse>(
+    return await this.authenticatedRequest<ProductImageUploadResponse>(
       `${API_ENDPOINTS.products.uploadImages}/${productId}/images`,
       {
         method: "POST",
@@ -147,10 +145,9 @@ export class ProductService {
    * API: GET /api/products/{productId}
    */
   static async getProduct(productId: number): Promise<ParsedProduct> {
-    const response = await apiFetch<ProductResponse>(
+    const response = await this.requestWithRetry<ProductResponse>(
       `${API_ENDPOINTS.products.byId}/${productId}`
     );
-
     return this.parseProductJsonFields(response.product);
   }
 
@@ -183,7 +180,7 @@ export class ProductService {
       ? `${API_ENDPOINTS.products.list}?${queryParams.toString()}`
       : API_ENDPOINTS.products.list;
 
-    return await apiFetch<ProductListResponse>(url);
+    return await this.requestWithRetry<ProductListResponse>(url);
   }
 
   /**
@@ -207,16 +204,14 @@ export class ProductService {
       }
     });
 
-    const formData = createFormData(prepared);
-
-    const response = await apiFetch<ProductResponse>(
+    const formData = this.createFormData(prepared);
+    const response = await this.authenticatedRequest<ProductResponse>(
       `${API_ENDPOINTS.products.update}/${productId}`,
       {
         method: "PUT",
         body: formData,
       }
     );
-
     return this.parseProductJsonFields(response.product);
   }
 
@@ -227,12 +222,12 @@ export class ProductService {
   static async deleteProduct(
     productId: number
   ): Promise<{ success: boolean; message: string }> {
-    return await apiFetch<{ success: boolean; message: string }>(
-      `${API_ENDPOINTS.products.delete}/${productId}`,
-      {
-        method: "DELETE",
-      }
-    );
+    return await this.authenticatedRequest<{
+      success: boolean;
+      message: string;
+    }>(`${API_ENDPOINTS.products.delete}/${productId}`, {
+      method: "DELETE",
+    });
   }
 
   /**
@@ -254,9 +249,8 @@ export class ProductService {
       prepared.comment = comment;
     }
 
-    const formData = createFormData(prepared);
-
-    return await apiFetch(
+    const formData = this.createFormData(prepared);
+    return await this.authenticatedRequest(
       `${API_ENDPOINTS.products.addReview}/${productId}/reviews`,
       {
         method: "POST",
@@ -274,7 +268,7 @@ export class ProductService {
     page = 0,
     size = 10
   ): Promise<ProductReviewsResponse> {
-    return await apiFetch<ProductReviewsResponse>(
+    return await this.requestWithRetry<ProductReviewsResponse>(
       `${API_ENDPOINTS.products.getReviews}/${productId}/reviews?page=${page}&size=${size}`
     );
   }
@@ -286,7 +280,7 @@ export class ProductService {
   static async toggleWishlist(
     productId: number
   ): Promise<WishlistToggleResponse> {
-    return await apiFetch<WishlistToggleResponse>(
+    return await this.authenticatedRequest<WishlistToggleResponse>(
       `${API_ENDPOINTS.products.toggleWishlist}/${productId}/wishlist`,
       {
         method: "POST",
@@ -299,7 +293,7 @@ export class ProductService {
    * API: POST /api/products/{productId}/view
    */
   static async recordView(productId: number): Promise<ViewRecordResponse> {
-    return await apiFetch<ViewRecordResponse>(
+    return await this.requestWithRetry<ViewRecordResponse>(
       `${API_ENDPOINTS.products.recordView}/${productId}/view`,
       {
         method: "POST",
@@ -336,7 +330,7 @@ export class ProductService {
       ? `${API_ENDPOINTS.products.search}?${queryParams.toString()}`
       : API_ENDPOINTS.products.search;
 
-    return await apiFetch<ProductListResponse>(url);
+    return await this.requestWithRetry<ProductListResponse>(url);
   }
 
   /**
@@ -344,7 +338,7 @@ export class ProductService {
    * API: GET /api/products/categories
    */
   static async getCategories(): Promise<ProductCategoriesResponse> {
-    return await apiFetch<ProductCategoriesResponse>(
+    return await this.requestWithRetry<ProductCategoriesResponse>(
       API_ENDPOINTS.products.categories
     );
   }
@@ -354,7 +348,7 @@ export class ProductService {
    * API: GET /api/products/featured
    */
   static async getFeaturedProducts(limit = 10): Promise<ProductListResponse> {
-    return await apiFetch<ProductListResponse>(
+    return await this.requestWithRetry<ProductListResponse>(
       `${API_ENDPOINTS.products.featured}?limit=${limit}`
     );
   }

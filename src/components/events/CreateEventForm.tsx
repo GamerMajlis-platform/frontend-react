@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import type {
   CreateEventRequest,
   EventType,
@@ -45,6 +47,31 @@ export default function CreateEventForm({
   });
 
   const [errors, setErrors] = useState<EventFormErrors>({});
+
+  // Local Date states for datepickers
+  const parseToDate = (s?: string) => {
+    if (!s) return null;
+    const d = new Date(s);
+    return isNaN(d.getTime()) ? null : d;
+  };
+
+  const toLocalDateTimeString = (d: Date | null) => {
+    if (!d) return "";
+    const pad = (n: number) => n.toString().padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(
+      d.getDate()
+    )}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
+
+  const [startDate, setStartDate] = useState<Date | null>(
+    parseToDate(formData.startDateTime)
+  );
+  const [endDate, setEndDate] = useState<Date | null>(
+    parseToDate(formData.endDateTime)
+  );
+  const [registrationDate, setRegistrationDate] = useState<Date | null>(
+    parseToDate(formData.registrationDeadline)
+  );
 
   const validateForm = (): boolean => {
     const newErrors: EventFormErrors = {};
@@ -205,19 +232,31 @@ export default function CreateEventForm({
       onSubmit={handleSubmit}
       className="max-w-2xl mx-auto bg-[#1C2541] rounded-xl p-6 space-y-6"
     >
-      <div className="text-center">
-        <h2 className="text-2xl font-bold text-white mb-2">
-          {t("events:createEvent")}
+      <div className="flex items-center justify-between mb-2">
+        <h2 className="text-2xl font-bold text-white">
+          {t("events:form.create")}
         </h2>
+        <button
+          type="button"
+          onClick={onCancel}
+          aria-label={t("common.close")}
+          className="p-2 rounded-md hover:bg-slate-700"
+        >
+          <svg
+            className="w-6 h-6 text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
       </div>
-
-      {errors.general && (
-        <div className="p-4 bg-red-900/20 border border-red-500 rounded-lg">
-          <p className="text-red-400">{errors.general}</p>
-        </div>
-      )}
-
-      {/* Title */}
       <div>
         <label
           htmlFor="title"
@@ -271,12 +310,18 @@ export default function CreateEventForm({
           >
             {t("events:form.startDateTime")}
           </label>
-          <input
-            type="datetime-local"
-            id="startDateTime"
-            value={formData.startDateTime}
-            onChange={(e) => handleInputChange("startDateTime", e.target.value)}
-            className="w-full rounded-xl border border-slate-600 bg-[#0F172A] px-4 py-3 text-white focus:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300/20"
+          <DatePicker
+            selected={startDate}
+            onChange={(date: Date | null) => {
+              setStartDate(date);
+              handleInputChange("startDateTime", toLocalDateTimeString(date));
+            }}
+            showTimeSelect
+            timeIntervals={15}
+            timeFormat="HH:mm"
+            dateFormat="yyyy-MM-dd HH:mm"
+            placeholderText={t("events:form.startDateTime")}
+            className="w-full rounded-xl border border-slate-600 bg-[#0F172A] px-4 py-3 text-white"
             disabled={isSubmitting}
             required
           />
@@ -293,12 +338,18 @@ export default function CreateEventForm({
               ({t("common.optional")})
             </span>
           </label>
-          <input
-            type="datetime-local"
-            id="endDateTime"
-            value={formData.endDateTime}
-            onChange={(e) => handleInputChange("endDateTime", e.target.value)}
-            className="w-full rounded-xl border border-slate-600 bg-[#0F172A] px-4 py-3 text-white focus:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300/20"
+          <DatePicker
+            selected={endDate}
+            onChange={(date: Date | null) => {
+              setEndDate(date);
+              handleInputChange("endDateTime", toLocalDateTimeString(date));
+            }}
+            showTimeSelect
+            timeIntervals={15}
+            timeFormat="HH:mm"
+            dateFormat="yyyy-MM-dd HH:mm"
+            placeholderText={t("events:form.endDateTime")}
+            className="w-full rounded-xl border border-slate-600 bg-[#0F172A] px-4 py-3 text-white"
             disabled={isSubmitting}
           />
           {renderError("endDateTime")}
@@ -597,14 +648,21 @@ export default function CreateEventForm({
             >
               {t("events:form.registrationDeadline")}
             </label>
-            <input
-              type="datetime-local"
-              id="registrationDeadline"
-              value={formData.registrationDeadline}
-              onChange={(e) =>
-                handleInputChange("registrationDeadline", e.target.value)
-              }
-              className="w-full rounded-xl border border-slate-600 bg-[#0F172A] px-4 py-3 text-white focus:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300/20"
+            <DatePicker
+              selected={registrationDate}
+              onChange={(date: Date | null) => {
+                setRegistrationDate(date);
+                handleInputChange(
+                  "registrationDeadline",
+                  toLocalDateTimeString(date)
+                );
+              }}
+              showTimeSelect
+              timeIntervals={15}
+              timeFormat="HH:mm"
+              dateFormat="yyyy-MM-dd HH:mm"
+              placeholderText={t("events:form.registrationDeadline")}
+              className="w-full rounded-xl border border-slate-600 bg-[#0F172A] px-4 py-3 text-white"
               disabled={isSubmitting}
             />
             {renderError("registrationDeadline")}
@@ -636,50 +694,100 @@ export default function CreateEventForm({
       {/* Toggle Options */}
       <div className="space-y-4">
         <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="requiresRegistration"
-            checked={formData.requiresRegistration}
-            onChange={(e) =>
-              handleInputChange("requiresRegistration", e.target.checked)
-            }
-            className="h-4 w-4 text-cyan-300 focus:ring-cyan-300 border-slate-600 rounded bg-[#0F172A]"
-            disabled={isSubmitting}
-          />
-          <label
-            htmlFor="requiresRegistration"
-            className="ml-3 text-sm text-white"
-          >
+          <div className="relative">
+            <input
+              type="checkbox"
+              id="requiresRegistration"
+              checked={formData.requiresRegistration}
+              onChange={(e) =>
+                handleInputChange("requiresRegistration", e.target.checked)
+              }
+              aria-label={t("events:form.requiresRegistration")}
+              className="peer cursor-pointer h-4 w-4 rounded border border-slate-600 bg-[#0F172A] checked:bg-cyan-500 checked:border-transparent focus:outline-none"
+              disabled={isSubmitting}
+            />
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden
+              className="pointer-events-none absolute left-0 top-0 w-4 h-4 text-white opacity-0 peer-checked:opacity-100"
+              fill="none"
+              stroke="currentColor"
+            >
+              <path
+                strokeWidth={3}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </div>
+          <span className="ml-3 text-sm text-white">
             {t("events:form.requiresRegistration")}
-          </label>
+          </span>
         </div>
 
         <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="competitive"
-            checked={formData.competitive}
-            onChange={(e) => handleInputChange("competitive", e.target.checked)}
-            className="h-4 w-4 text-cyan-300 focus:ring-cyan-300 border-slate-600 rounded bg-[#0F172A]"
-            disabled={isSubmitting}
-          />
-          <label htmlFor="competitive" className="ml-3 text-sm text-white">
+          <div className="relative">
+            <input
+              type="checkbox"
+              id="competitive"
+              checked={formData.competitive}
+              onChange={(e) =>
+                handleInputChange("competitive", e.target.checked)
+              }
+              aria-label={t("events:form.competitive")}
+              className="peer cursor-pointer h-4 w-4 rounded border border-slate-600 bg-[#0F172A] checked:bg-cyan-500 checked:border-transparent focus:outline-none"
+              disabled={isSubmitting}
+            />
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden
+              className="pointer-events-none absolute left-0 top-0 w-4 h-4 text-white opacity-0 peer-checked:opacity-100"
+              fill="none"
+              stroke="currentColor"
+            >
+              <path
+                strokeWidth={3}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </div>
+          <span className="ml-3 text-sm text-white">
             {t("events:form.competitive")}
-          </label>
+          </span>
         </div>
 
         <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="isPublic"
-            checked={formData.isPublic}
-            onChange={(e) => handleInputChange("isPublic", e.target.checked)}
-            className="h-4 w-4 text-cyan-300 focus:ring-cyan-300 border-slate-600 rounded bg-[#0F172A]"
-            disabled={isSubmitting}
-          />
-          <label htmlFor="isPublic" className="ml-3 text-sm text-white">
+          <div className="relative">
+            <input
+              type="checkbox"
+              id="isPublic"
+              checked={formData.isPublic}
+              onChange={(e) => handleInputChange("isPublic", e.target.checked)}
+              aria-label={t("events:form.isPublic")}
+              className="peer cursor-pointer h-4 w-4 rounded border border-slate-600 bg-[#0F172A] checked:bg-cyan-500 checked:border-transparent focus:outline-none"
+              disabled={isSubmitting}
+            />
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden
+              className="pointer-events-none absolute left-0 top-0 w-4 h-4 text-white opacity-0 peer-checked:opacity-100"
+              fill="none"
+              stroke="currentColor"
+            >
+              <path
+                strokeWidth={3}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </div>
+          <span className="ml-3 text-sm text-white">
             {t("events:form.isPublic")}
-          </label>
+          </span>
         </div>
       </div>
 

@@ -11,26 +11,21 @@ import { useAppContext } from "../../context/useAppContext";
 import { useProfile } from "../../hooks/useProfile";
 import { DiscordUserInfo } from "../discord/DiscordUserInfo";
 import { DiscordLinkButton } from "../discord/DiscordLinkButton";
+import formatBio from "../../utils/formatMarkdown";
 
 interface BackendProfileHeaderProps {
-  isEditing: boolean;
+  isEditing?: boolean;
   isRTL: boolean;
   onChange: (field: "displayName" | "bio", value: string) => void;
-  onSave: () => void;
-  onCancel: () => void;
-  onEdit: () => void;
+  onSave?: () => void;
+  onCancel?: () => void;
+  onEdit?: () => void;
 }
 
 export default function BackendProfileHeader(props: BackendProfileHeaderProps) {
   const { user } = useAppContext();
-  const {
-    uploadProfilePicture,
-    removeProfilePicture,
-    isLoading,
-    error,
-    clearError,
-  } = useProfile();
-  const { t } = useTranslation();
+  const { uploadProfilePicture, removeProfilePicture, error, clearError } =
+    useProfile();
 
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -201,43 +196,22 @@ export default function BackendProfileHeader(props: BackendProfileHeaderProps) {
           props.isRTL ? "lg:text-right" : "lg:text-left"
         }`}
       >
-        {props.isEditing ? (
-          <>
-            <input
-              type="text"
-              value={displayName}
-              onChange={(e) => props.onChange("displayName", e.target.value)}
-              className="bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-white text-xl font-semibold w-full max-w-md"
-              placeholder={t("profile:displayName")}
+        {/* Header is display-only. Editing controls are provided in dedicated panels (Manage/Statistics). */}
+        <>
+          <h1
+            className="text-xl sm:text-2xl font-semibold text-white"
+            dir={props.isRTL ? "rtl" : "ltr"}
+          >
+            {displayName}
+          </h1>
+          {user.bio && (
+            <div
+              className="text-slate-300 text-sm"
               dir={props.isRTL ? "rtl" : "ltr"}
+              dangerouslySetInnerHTML={{ __html: formatBio(user.bio) }}
             />
-            <textarea
-              value={user.bio || ""}
-              onChange={(e) => props.onChange("bio", e.target.value)}
-              className="bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-white w-full max-w-md resize-none"
-              placeholder={t("profile:bio")}
-              rows={3}
-              dir={props.isRTL ? "rtl" : "ltr"}
-            />
-          </>
-        ) : (
-          <>
-            <h1
-              className="text-xl sm:text-2xl font-semibold text-white"
-              dir={props.isRTL ? "rtl" : "ltr"}
-            >
-              {displayName}
-            </h1>
-            {user.bio && (
-              <p
-                className="text-slate-300 text-sm"
-                dir={props.isRTL ? "rtl" : "ltr"}
-              >
-                {user.bio}
-              </p>
-            )}
-          </>
-        )}
+          )}
+        </>
 
         {/* Discord Integration Section (RTL-aware, stacked beneath display name) */}
         <div
@@ -285,34 +259,7 @@ export default function BackendProfileHeader(props: BackendProfileHeaderProps) {
         {/* Email verification status removed from profile display */}
       </div>
 
-      {/* Action Buttons */}
-      <div className="order-3 lg:order-3 flex gap-3">
-        {props.isEditing ? (
-          <>
-            <button
-              onClick={props.onSave}
-              disabled={isLoading}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white rounded-lg font-medium transition-colors"
-            >
-              {isLoading ? t("common.saving") : t("common.save")}
-            </button>
-            <button
-              onClick={props.onCancel}
-              disabled={isLoading}
-              className="px-4 py-2 bg-slate-600 hover:bg-slate-700 disabled:opacity-50 text-white rounded-lg font-medium transition-colors"
-            >
-              {t("common.cancel")}
-            </button>
-          </>
-        ) : (
-          <button
-            onClick={props.onEdit}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
-          >
-            {t("common.edit")}
-          </button>
-        )}
-      </div>
+      {/* Header is strictly display-only — no save/cancel or edit controls here. */}
 
       {/* Error Display */}
       {error && (

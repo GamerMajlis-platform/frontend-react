@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { DiscordService } from "../../services/DiscordService";
 import type { DiscordLinkButtonProps, DiscordUser } from "../../types";
@@ -21,7 +21,15 @@ export const DiscordLinkButton: React.FC<DiscordLinkButtonProps> = ({
   const [discordUser, setDiscordUser] = useState<DiscordUser | null>(null);
   const [isCheckingStatus, setIsCheckingStatus] = useState(true);
 
-  const checkLinkStatus = useCallback(async () => {
+  // Keep a stable ref to the onLink callback so we don't re-run the
+  // initial status check whenever a parent re-renders with a new
+  // inline function reference.
+  const onLinkRef = React.useRef(onLink);
+  React.useEffect(() => {
+    onLinkRef.current = onLink;
+  }, [onLink]);
+
+  const checkLinkStatus = async () => {
     try {
       setIsCheckingStatus(true);
       const response = await DiscordService.getUserInfo();
@@ -29,7 +37,7 @@ export const DiscordLinkButton: React.FC<DiscordLinkButtonProps> = ({
       if (response.success && response.discordUser) {
         setIsLinked(true);
         setDiscordUser(response.discordUser);
-        onLink?.(response.discordUser);
+        onLinkRef.current?.(response.discordUser);
       } else {
         setIsLinked(false);
         setDiscordUser(null);
@@ -40,11 +48,13 @@ export const DiscordLinkButton: React.FC<DiscordLinkButtonProps> = ({
     } finally {
       setIsCheckingStatus(false);
     }
-  }, [onLink]);
+  };
 
-  useEffect(() => {
+  // Run the check only on mount — don't re-run when parent passes a new
+  // inline callback reference, which caused excessive re-checking.
+  React.useEffect(() => {
     checkLinkStatus();
-  }, [checkLinkStatus]);
+  }, []);
 
   const getVariantClasses = () => {
     if (isLinked) {
@@ -78,7 +88,9 @@ export const DiscordLinkButton: React.FC<DiscordLinkButtonProps> = ({
     try {
       setIsLoading(true);
       // For linking, we need to initiate OAuth flow
-      await DiscordService.initiateOAuth(window.location.pathname);
+      await DiscordService.initiateOAuth(
+        `${window.location.origin}${window.location.pathname}`
+      );
     } catch (error) {
       console.error("Discord link failed:", error);
       const errorMessage =

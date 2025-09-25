@@ -33,7 +33,6 @@
     "button": "إنشاء بطولة",
     "error": "فشل في إنشاء البطولة",
     "form": {
-      
       "currency": "العملة",
       "currencyOptions": {
         "USD": "USD ($)"

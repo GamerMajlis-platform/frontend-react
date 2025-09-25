@@ -67,7 +67,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({
     setError(null);
 
     if (!postData.title.trim() || !postData.content.trim()) {
-      setError(t("posts.create.requiredFields"));
+      setError(t("posts:create.requiredFields"));
       return;
     }
 
@@ -104,12 +104,12 @@ export const CreatePost: React.FC<CreatePostProps> = ({
           setShowSuccess(false);
         }, 2000);
       } else {
-        setError(response.message || t("posts.create.createError"));
+        setError(response.message || t("posts:create.createError"));
       }
     } catch (error) {
       console.error("Failed to create post:", error);
       setError(
-        error instanceof Error ? error.message : t("posts.create.createError")
+        error instanceof Error ? error.message : t("posts:create.createError")
       );
     } finally {
       setIsSubmitting(false);
@@ -146,22 +146,22 @@ export const CreatePost: React.FC<CreatePostProps> = ({
 
   const containerClasses = isModal
     ? `create-post-modal ${className}`
-    : `create-post-form bg-white rounded-xl shadow-sm border border-gray-200 p-6 ${className}`;
+    : `create-post-form bg-[rgba(255,255,255,0.03)] rounded-xl shadow auth:shadow p-6 border border-[rgba(255,255,255,0.06)] ${className}`;
 
   return (
     <div className={containerClasses}>
       <div className="mb-4">
         <h2 className="text-xl font-semibold text-gray-900">
-          {t("posts.create.title")}
+          {t("posts:create.title")}
         </h2>
         <p className="text-gray-600 text-sm mt-1">
-          {t("posts.create.subtitle")}
+          {t("posts:create.subtitle")}
         </p>
       </div>
 
       {/* Success Message */}
       {showSuccess && (
-        <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+        <div className="mb-4 p-4 bg-[rgba(16,185,129,0.12)] border border-[rgba(16,185,129,0.18)] rounded-lg">
           <div className="flex items-center">
             <svg
               className="w-5 h-5 text-green-600 mr-2"
@@ -177,7 +177,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({
               />
             </svg>
             <p className="text-green-800 text-sm font-medium">
-              {t("posts.create.successMessage")}
+              {t("posts:create.successMessage")}
             </p>
           </div>
         </div>
@@ -185,7 +185,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({
 
       {/* Error Message */}
       {error && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+        <div className="mb-4 p-4 bg-[rgba(239,68,68,0.08)] border border-[rgba(239,68,68,0.16)] rounded-lg">
           <div className="flex items-center">
             <svg
               className="w-5 h-5 text-red-600 mr-2"
@@ -209,7 +209,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({
         {/* Post Title */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {t("posts.create.postTitle")}
+            {t("posts:create.postTitle")}
           </label>
           <input
             type="text"
@@ -217,8 +217,8 @@ export const CreatePost: React.FC<CreatePostProps> = ({
             onChange={(e) =>
               setPostData((prev) => ({ ...prev, title: e.target.value }))
             }
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6fffe9] focus:border-transparent"
-            placeholder={t("posts.create.titlePlaceholder")}
+            className="w-full px-4 py-3 bg-transparent border border-[rgba(255,255,255,0.06)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6fffe9] focus:border-transparent text-gray-100"
+            placeholder={t("posts:create.titlePlaceholder")}
             maxLength={200}
             required
           />
@@ -230,7 +230,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({
         {/* Post Content */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {t("posts.create.content")}
+            {t("posts:create.content")}
           </label>
           <textarea
             value={postData.content}
@@ -238,8 +238,8 @@ export const CreatePost: React.FC<CreatePostProps> = ({
               setPostData((prev) => ({ ...prev, content: e.target.value }));
               extractHashtags(e.target.value);
             }}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6fffe9] focus:border-transparent resize-none"
-            placeholder={t("posts.create.contentPlaceholder")}
+            className="w-full px-4 py-3 bg-transparent border border-[rgba(255,255,255,0.06)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6fffe9] focus:border-transparent resize-none text-gray-100"
+            placeholder={t("posts:create.contentPlaceholder")}
             rows={6}
             maxLength={2000}
             required
@@ -254,7 +254,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({
           {/* Game Title */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t("posts.create.gameTitle")}
+              {t("posts:create.gameTitle")}
               <span className="text-xs text-gray-500">
                 {" "}
                 ({t("common.optional")})
@@ -266,15 +266,15 @@ export const CreatePost: React.FC<CreatePostProps> = ({
               onChange={(e) =>
                 setPostData((prev) => ({ ...prev, gameTitle: e.target.value }))
               }
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6fffe9] focus:border-transparent"
-              placeholder={t("posts.create.gameTitlePlaceholder")}
+              className="w-full px-4 py-3 bg-transparent border border-[rgba(255,255,255,0.06)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6fffe9] focus:border-transparent text-gray-100"
+              placeholder={t("posts:create.gameTitlePlaceholder")}
             />
           </div>
 
           {/* Game Category */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t("posts.create.gameCategory")}
+              {t("posts:create.gameCategory")}
               <span className="text-xs text-gray-500">
                 {" "}
                 ({t("common.optional")})
@@ -288,10 +288,10 @@ export const CreatePost: React.FC<CreatePostProps> = ({
                   gameCategory: e.target.value as GameCategory,
                 }))
               }
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6fffe9] focus:border-transparent"
-              title={t("posts.create.gameCategory")}
+              className="w-full px-4 py-3 bg-transparent border border-[rgba(255,255,255,0.06)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6fffe9] focus:border-transparent text-gray-100"
+              title={t("posts:create.gameCategory")}
             >
-              <option value="">{t("posts.create.selectCategory")}</option>
+              <option value="">{t("posts:create.selectCategory")}</option>
               {GAME_CATEGORIES.map((category) => (
                 <option key={category} value={category}>
                   {t(`events:gameCategories.${category.toUpperCase()}`, {})}
@@ -306,7 +306,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({
           {/* Gaming Platform */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t("posts.create.platform")}
+              {t("posts:create.platform")}
               <span className="text-xs text-gray-500">
                 {" "}
                 ({t("common.optional")})
@@ -320,10 +320,10 @@ export const CreatePost: React.FC<CreatePostProps> = ({
                   platform: e.target.value as GamingPlatform,
                 }))
               }
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6fffe9] focus:border-transparent"
-              title={t("posts.create.platform")}
+              className="w-full px-4 py-3 bg-transparent border border-[rgba(255,255,255,0.06)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6fffe9] focus:border-transparent text-gray-100"
+              title={t("posts:create.platform")}
             >
-              <option value="">{t("posts.create.selectPlatform")}</option>
+              <option value="">{t("posts:create.selectPlatform")}</option>
               {GAMING_PLATFORMS.map((platform) => (
                 <option key={platform} value={platform}>
                   {platform}
@@ -335,7 +335,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({
           {/* Visibility */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t("posts.create.visibility")}
+              {t("posts:create.visibility")}
               <span className="text-xs text-gray-500">
                 {" "}
                 ({t("common.optional")})
@@ -349,11 +349,11 @@ export const CreatePost: React.FC<CreatePostProps> = ({
                   visibility: e.target.value as "PUBLIC" | "PRIVATE",
                 }))
               }
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6fffe9] focus:border-transparent"
-              title={t("posts.create.visibility")}
+              className="w-full px-4 py-3 bg-transparent border border-[rgba(255,255,255,0.06)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6fffe9] focus:border-transparent text-gray-100"
+              title={t("posts:create.visibility")}
             >
-              <option value="PUBLIC">{t("posts.create.public")}</option>
-              <option value="PRIVATE">{t("posts.create.private")}</option>
+              <option value="PUBLIC">{t("posts:create.public")}</option>
+              <option value="PRIVATE">{t("posts:create.private")}</option>
             </select>
           </div>
         </div>
@@ -363,7 +363,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({
           {/* Tags */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t("posts.create.tags")}
+              {t("posts:create.tags")}
               <span className="text-xs text-gray-500">
                 {" "}
                 ({t("common.optional")})
@@ -376,17 +376,17 @@ export const CreatePost: React.FC<CreatePostProps> = ({
                 setPostData((prev) => ({ ...prev, tags: e.target.value }))
               }
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6fffe9] focus:border-transparent"
-              placeholder={t("posts.create.tagsPlaceholder")}
+              placeholder={t("posts:create.tagsPlaceholder")}
             />
             <p className="text-xs text-gray-500 mt-1">
-              {t("posts.create.tagsHelp")}
+              {t("posts:create.tagsHelp")}
             </p>
           </div>
 
           {/* Hashtags */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t("posts.create.hashtags")}
+              {t("posts:create.hashtags")}
               <span className="text-xs text-gray-500">
                 {" "}
                 ({t("common.optional")})
@@ -399,10 +399,10 @@ export const CreatePost: React.FC<CreatePostProps> = ({
                 setPostData((prev) => ({ ...prev, hashtags: e.target.value }))
               }
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6fffe9] focus:border-transparent"
-              placeholder={t("posts.create.hashtagsPlaceholder")}
+              placeholder={t("posts:create.hashtagsPlaceholder")}
             />
             <p className="text-xs text-gray-500 mt-1">
-              {t("posts.create.hashtagsHelp")}
+              {t("posts:create.hashtagsHelp")}
             </p>
           </div>
         </div>
@@ -427,8 +427,8 @@ export const CreatePost: React.FC<CreatePostProps> = ({
             className="px-6 py-3 bg-[#6fffe9] text-black rounded-lg hover:bg-[#5ee6d3] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
           >
             {isSubmitting
-              ? t("posts.create.publishing")
-              : t("posts.create.publish")}
+              ? t("posts:create.publishing")
+              : t("posts:create.publish")}
           </button>
         </div>
       </form>

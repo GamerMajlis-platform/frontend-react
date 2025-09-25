@@ -294,27 +294,55 @@ export class ErrorHandler {
 }
 
 /**
- * Retry utility for failed requests
+ * Retry configuration options with idempotency awareness
+ */
+export interface RetryOptions {
+  maxAttempts?: number;
+  delay?: number;
+  backoffFactor?: number;
+  retryCondition?: (error: ApiError) => boolean;
+  /** Whether the operation is idempotent (safe to retry) */
+  isIdempotent?: boolean;
+  /** Custom idempotency key for operations that may be safely retried */
+  idempotencyKey?: string;
+}
+
+/**
+ * Enhanced retry utility for failed requests with idempotency awareness
  */
 export class RetryHandler {
   /**
-   * Retry a function with exponential backoff
+   * Retry a function with exponential backoff and idempotency awareness
    */
   static async retry<T>(
     fn: () => Promise<T>,
-    options: {
-      maxAttempts?: number;
-      delay?: number;
-      backoffFactor?: number;
-      retryCondition?: (error: ApiError) => boolean;
-    } = {}
+    options: RetryOptions = {}
   ): Promise<T> {
     const {
       maxAttempts = 3,
       delay = 1000,
       backoffFactor = 2,
+      isIdempotent = false, // Default to false for safety
       retryCondition = (error) => error.isServerError && !error.isAuthError,
     } = options;
+
+    // Enhanced retry condition that considers idempotency
+    const shouldRetry = (error: ApiError, attempt: number): boolean => {
+      // Don't retry on the last attempt
+      if (attempt >= maxAttempts) return false;
+
+      // Don't retry auth errors (they won't resolve by retrying)
+      if (error.isAuthError || error.isAuthorizationError) return false;
+
+      // For non-idempotent operations, only retry on network/server errors
+      // and avoid retrying client errors (4xx) except for timeouts
+      if (!isIdempotent) {
+        return error.isServerError || error.errorCode === "NETWORK_ERROR";
+      }
+
+      // For idempotent operations, use the custom retry condition
+      return retryCondition(error);
+    };
 
     let lastError: ApiError;
 
@@ -329,9 +357,36 @@ export class RetryHandler {
 
         lastError = apiError;
 
-        // Don't retry on the last attempt or if retry condition fails
-        if (attempt === maxAttempts || !retryCondition(apiError)) {
+        // Use enhanced retry condition
+        if (!shouldRetry(apiError, attempt)) {
+          if (import.meta.env.DEV) {
+            console.debug(
+              `🚫 Not retrying request (attempt ${attempt}/${maxAttempts}):`,
+              {
+                error: apiError.message,
+                errorCode: apiError.errorCode,
+                isIdempotent,
+                reason:
+                  attempt >= maxAttempts
+                    ? "max attempts reached"
+                    : "retry condition failed",
+              }
+            );
+          }
           throw apiError;
+        }
+
+        // Log retry attempt in development
+        if (import.meta.env.DEV) {
+          console.debug(
+            `🔄 Retrying request (attempt ${attempt}/${maxAttempts}):`,
+            {
+              error: apiError.message,
+              errorCode: apiError.errorCode,
+              isIdempotent,
+              waitTime: delay * Math.pow(backoffFactor, attempt - 1),
+            }
+          );
         }
 
         // Wait before retrying with exponential backoff
@@ -341,5 +396,31 @@ export class RetryHandler {
     }
 
     throw lastError!;
+  }
+
+  /**
+   * Determine if an HTTP method is naturally idempotent
+   */
+  static isMethodIdempotent(method: string): boolean {
+    const idempotentMethods = ["GET", "HEAD", "OPTIONS", "PUT", "DELETE"];
+    return idempotentMethods.includes(method.toUpperCase());
+  }
+
+  /**
+   * Create safe retry options for a given HTTP method
+   */
+  static createRetryOptions(
+    method: string,
+    customOptions: Partial<RetryOptions> = {}
+  ): RetryOptions {
+    const isIdempotent = this.isMethodIdempotent(method);
+
+    return {
+      maxAttempts: 3,
+      delay: 1000,
+      backoffFactor: 2,
+      isIdempotent,
+      ...customOptions,
+    };
   }
 }

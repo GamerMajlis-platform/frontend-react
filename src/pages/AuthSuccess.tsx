@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { SecureStorage } from "../lib/security";
+import { SecureStorage } from "../lib";
 import { useAppContext } from "../context/useAppContext";
 
 /**

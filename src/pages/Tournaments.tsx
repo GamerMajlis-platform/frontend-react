@@ -198,26 +198,27 @@ export default function Tournaments() {
             </div>
           </div>
 
-          {/* Create Tournament Button - Moved under search bar like reference */}
+          {/* Create Tournament Toggle - behaves like Events create toggle */}
           <div className="flex justify-center">
-            <button
-              className="rounded-xl bg-cyan-500 px-6 py-3 text-white font-medium hover:bg-cyan-600 transition-colors"
-              onClick={() => setShowCreateForm(true)}
-              type="button"
-            >
-              {t("tournaments:create.button")}
-            </button>
+            {!showCreateForm && (
+              <button
+                className="rounded-xl bg-cyan-500 px-6 py-3 text-white font-medium hover:bg-cyan-600 transition-colors"
+                onClick={() => setShowCreateForm(true)}
+                type="button"
+              >
+                {t("tournaments:create.button")}
+              </button>
+            )}
           </div>
         </section>
 
         {/* Create Tournament Form (inline, like Events) */}
         {showCreateForm && (
           <section className="max-w-[800px] mx-auto mb-12">
-              <CreateTournamentForm
-                onSuccess={handleTournamentCreated}
-                onCancel={() => setShowCreateForm(false)}
-              />
-            
+            <CreateTournamentForm
+              onSuccess={handleTournamentCreated}
+              onCancel={() => setShowCreateForm(false)}
+            />
           </section>
         )}
 

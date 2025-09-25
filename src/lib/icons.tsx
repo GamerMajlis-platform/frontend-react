@@ -1,7 +1,6 @@
 // Lightweight local icon components used across the app.
 // Replacing lucide-react imports with small local SVG components reduces Vite
 // module transform work (avoid pulling the whole icon package).
-import React from "react";
 
 type IconProps = React.SVGProps<SVGSVGElement> & { size?: number | string };
 

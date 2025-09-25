@@ -1,4 +1,4 @@
-import { apiFetch } from "../lib/api";
+import { BaseService } from "../lib/baseService";
 import { API_ENDPOINTS } from "../config/constants";
 import type {
   DiscordOAuthCallbackResponse,
@@ -15,7 +15,7 @@ import type {
  * Handles Discord OAuth, account linking, and user info management
  * Based on APIs #88-93
  */
-export class DiscordService {
+export class DiscordService extends BaseService {
   private static readonly DISCORD_CONFIG: DiscordOAuthConfig = {
     clientId: "1416218898063429724", // From API spec
     redirectUri: "http://localhost:8080/api/login/oauth2/code/discord", // Backend callback
@@ -137,7 +137,9 @@ export class DiscordService {
       const url = `${
         API_ENDPOINTS.auth.discord.callback
       }?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state)}`;
-      const response = await apiFetch<DiscordOAuthCallbackResponse>(url);
+      const response = (await this.requestWithRetry(
+        url
+      )) as DiscordOAuthCallbackResponse;
 
       // Success: clear stored state now
       localStorage.removeItem(this.OAUTH_STATE_KEY);
@@ -172,14 +174,10 @@ export class DiscordService {
       const formData = new FormData();
       formData.append("code", code);
 
-      return await apiFetch<DiscordLinkResponse>(
-        API_ENDPOINTS.auth.discord.link,
-        {
-          method: "POST",
-          body: formData,
-          useFormData: true,
-        }
-      );
+      return (await this.authenticatedRequest(API_ENDPOINTS.auth.discord.link, {
+        method: "POST",
+        body: formData,
+      })) as DiscordLinkResponse;
     } catch (error) {
       console.error("Discord account linking failed:", error);
       throw new Error("Failed to link Discord account");
@@ -192,12 +190,12 @@ export class DiscordService {
    */
   static async unlinkAccount(): Promise<DiscordUnlinkResponse> {
     try {
-      return await apiFetch<DiscordUnlinkResponse>(
+      return (await this.authenticatedRequest(
         API_ENDPOINTS.auth.discord.unlink,
         {
           method: "POST",
         }
-      );
+      )) as DiscordUnlinkResponse;
     } catch (error) {
       console.error("Discord account unlinking failed:", error);
       throw new Error("Failed to unlink Discord account");
@@ -210,9 +208,9 @@ export class DiscordService {
    */
   static async getUserInfo(): Promise<DiscordUserInfoResponse> {
     try {
-      return await apiFetch<DiscordUserInfoResponse>(
+      return (await this.authenticatedRequest(
         API_ENDPOINTS.auth.discord.userInfo
-      );
+      )) as DiscordUserInfoResponse;
     } catch (error) {
       console.error("Discord user info retrieval failed:", error);
       throw new Error("Failed to retrieve Discord user info");
@@ -225,12 +223,12 @@ export class DiscordService {
    */
   static async refreshToken(): Promise<DiscordRefreshResponse> {
     try {
-      return await apiFetch<DiscordRefreshResponse>(
+      return (await this.authenticatedRequest(
         API_ENDPOINTS.auth.discord.refresh,
         {
           method: "POST",
         }
-      );
+      )) as DiscordRefreshResponse;
     } catch (error) {
       console.error("Discord token refresh failed:", error);
       throw new Error("Failed to refresh Discord token");

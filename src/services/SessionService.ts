@@ -1,7 +1,7 @@
 // Session Management Service - Handles token validation and session lifecycle
-import { apiFetch } from "../lib/api";
-import { API_ENDPOINTS, STORAGE_KEYS } from "../config/constants";
-import { SecureStorage } from "../lib/security";
+import { BaseService } from "../lib/baseService";
+import { API_ENDPOINTS } from "../config/constants";
+import { SecureStorage, UserStorage } from "../lib";
 import type { BackendResponse } from "../types/auth";
 
 interface TokenValidationResponse extends BackendResponse {
@@ -10,8 +10,7 @@ interface TokenValidationResponse extends BackendResponse {
   username: string;
 }
 
-export class SessionService {
-  private static readonly TOKEN_KEY = STORAGE_KEYS.auth;
+export class SessionService extends BaseService {
   private static readonly REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
   private static readonly SESSION_TIMEOUT = 24 * 60 * 60 * 1000; // 24 hours
   private static readonly ACTIVITY_CHECK_INTERVAL = 60 * 1000; // 1 minute
@@ -24,6 +23,9 @@ export class SessionService {
    */
   static async initializeSession(): Promise<boolean> {
     try {
+      // Migrate legacy storage format if needed
+      UserStorage.migrateLegacyStorage();
+
       const token = this.getStoredToken();
       if (!token) {
         return false;
@@ -62,15 +64,10 @@ export class SessionService {
       if (!token) {
         return false;
       }
-
-      const response = await apiFetch<TokenValidationResponse>(
+      const response = await this.authenticatedRequest<TokenValidationResponse>(
         API_ENDPOINTS.auth.validateToken,
-        {
-          method: "GET",
-        }
+        { method: "GET" }
       );
-
-      // Log validation response only in development
       if (import.meta.env.DEV) {
         console.log("🔍 Token validation response:", {
           valid: response.valid,
@@ -78,10 +75,9 @@ export class SessionService {
           username: response.username,
         });
       }
-
       return response.valid === true;
     } catch (error) {
-      console.error("❌ Token validation failed:", error);
+      this.handleServiceError(error, "SessionService", "validateToken");
       return false;
     }
   }
@@ -136,7 +132,7 @@ export class SessionService {
    * Get stored authentication token
    */
   static getStoredToken(): string | null {
-    return SecureStorage.getToken();
+    return UserStorage.getStoredToken();
   }
 
   /**
@@ -155,22 +151,10 @@ export class SessionService {
    */
   static clearSession(): void {
     try {
-      // Remove token from both legacy localStorage key and SecureStorage
-      localStorage.removeItem(this.TOKEN_KEY);
-      // SecureStorage may store the token under its own key (sessionStorage or localStorage)
-      try {
-        SecureStorage.removeToken();
-      } catch (e) {
-        // If removal fails, log and continue
-        console.warn("Failed to remove secure token:", e);
-      }
-      // Also remove stored user data to avoid stale user presence
-      try {
-        localStorage.removeItem(STORAGE_KEYS.user);
-      } catch {
-        // ignore storage errors
-      }
-      localStorage.removeItem("lastActivity");
+      // Use UserStorage for atomic session clearing
+      UserStorage.clearUserSession();
+
+      // Stop timers
       this.stopTokenRefreshTimer();
 
       if (this.activityTimer) {
@@ -195,18 +179,17 @@ export class SessionService {
    */
   static async logout(): Promise<void> {
     try {
-      // Call backend logout endpoint
-      await apiFetch<BackendResponse>(API_ENDPOINTS.auth.logout, {
-        method: "POST",
-      });
-      console.log("✅ Backend logout successful");
+      await this.authenticatedRequest<BackendResponse>(
+        API_ENDPOINTS.auth.logout,
+        {
+          method: "POST",
+        }
+      );
+      this.logSuccess("SessionService", "logout");
     } catch (error) {
-      console.error("❌ Backend logout failed:", error);
-      // Continue with client-side logout even if backend fails
+      this.handleServiceError(error, "SessionService", "logout");
     } finally {
-      // Always clear local session
       this.clearSession();
-      // Trigger logout event
       window.dispatchEvent(new CustomEvent("session:logout"));
     }
   }

@@ -1,4 +1,4 @@
-import { apiFetch, createFormData } from "../lib/api";
+import { BaseService } from "../lib/baseService";
 import { API_ENDPOINTS } from "../config/constants";
 import type {
   EventFilters,
@@ -17,7 +17,7 @@ import type {
   EventTrendingResponse,
 } from "../types/events";
 
-class EventService {
+class EventService extends BaseService {
   // Get Events List - API: GET /api/events
   static async listEvents(
     filters: EventFilters = {}
@@ -43,12 +43,12 @@ class EventService {
       ? `${API_ENDPOINTS.events}?${queryString}`
       : API_ENDPOINTS.events;
 
-    return await apiFetch(url);
+    return await this.requestWithRetry(url);
   }
 
   // Get Event Details - API: GET /api/events/{eventId}
   static async getEvent(eventId: number): Promise<EventResponse> {
-    return await apiFetch(`${API_ENDPOINTS.events}/${eventId}`);
+    return await this.requestWithRetry(`${API_ENDPOINTS.events}/${eventId}`);
   }
 
   // Create Event - API: POST /api/events
@@ -69,8 +69,8 @@ class EventService {
       }
     });
 
-    const formData = createFormData(prepared);
-    return await apiFetch(API_ENDPOINTS.events, {
+    const formData = this.createFormData(prepared);
+    return await this.authenticatedRequest(API_ENDPOINTS.events, {
       method: "POST",
       body: formData,
     });
@@ -95,36 +95,48 @@ class EventService {
       }
     });
 
-    const formData = createFormData(prepared);
-    return await apiFetch(`${API_ENDPOINTS.events}/${eventId}`, {
-      method: "PUT",
-      body: formData,
-    });
+    const formData = this.createFormData(prepared);
+    return await this.authenticatedRequest(
+      `${API_ENDPOINTS.events}/${eventId}`,
+      {
+        method: "PUT",
+        body: formData,
+      }
+    );
   }
 
   // Delete Event - API: DELETE /api/events/{eventId}
   static async deleteEvent(eventId: number): Promise<EventDeleteResponse> {
-    return await apiFetch(`${API_ENDPOINTS.events}/${eventId}`, {
-      method: "DELETE",
-    });
+    return await this.authenticatedRequest(
+      `${API_ENDPOINTS.events}/${eventId}`,
+      {
+        method: "DELETE",
+      }
+    );
   }
 
   // Register for Event - API: POST /api/events/{eventId}/register
   static async registerForEvent(
     eventId: number
   ): Promise<EventRegistrationResponse> {
-    return await apiFetch(`${API_ENDPOINTS.events}/${eventId}/register`, {
-      method: "POST",
-    });
+    return await this.authenticatedRequest(
+      `${API_ENDPOINTS.events}/${eventId}/register`,
+      {
+        method: "POST",
+      }
+    );
   }
 
   // Unregister from Event - API: POST /api/events/{eventId}/unregister
   static async unregisterFromEvent(
     eventId: number
   ): Promise<EventUnregistrationResponse> {
-    return await apiFetch(`${API_ENDPOINTS.events}/${eventId}/unregister`, {
-      method: "POST",
-    });
+    return await this.authenticatedRequest(
+      `${API_ENDPOINTS.events}/${eventId}/unregister`,
+      {
+        method: "POST",
+      }
+    );
   }
 
   // Get Event Attendees - API: GET /api/events/{eventId}/attendees
@@ -133,16 +145,19 @@ class EventService {
     page = 0,
     size = 20
   ): Promise<EventAttendeesResponse> {
-    return await apiFetch(
+    return await this.requestWithRetry(
       `${API_ENDPOINTS.events}/${eventId}/attendees?page=${page}&size=${size}`
     );
   }
 
   // Check-in to Event - API: POST /api/events/{eventId}/check-in
   static async checkInToEvent(eventId: number): Promise<EventCheckInResponse> {
-    return await apiFetch(`${API_ENDPOINTS.events}/${eventId}/check-in`, {
-      method: "POST",
-    });
+    return await this.authenticatedRequest(
+      `${API_ENDPOINTS.events}/${eventId}/check-in`,
+      {
+        method: "POST",
+      }
+    );
   }
 
   // Search Events - API: GET /api/events/search
@@ -161,14 +176,16 @@ class EventService {
     if (filters.locationType)
       params.append("locationType", filters.locationType);
 
-    return await apiFetch(
+    return await this.requestWithRetry(
       `${API_ENDPOINTS.events}/search?${params.toString()}`
     );
   }
 
   // Get Trending Events - API: GET /api/events/trending
   static async getTrendingEvents(limit = 10): Promise<EventTrendingResponse> {
-    return await apiFetch(`${API_ENDPOINTS.events}/trending?limit=${limit}`);
+    return await this.requestWithRetry(
+      `${API_ENDPOINTS.events}/trending?limit=${limit}`
+    );
   }
 
   // ===== EVENT MANAGEMENT ENHANCEMENTS =====

@@ -1,4 +1,4 @@
-import { apiFetch } from "../lib/api";
+import { BaseService } from "../lib/baseService";
 import { API_ENDPOINTS } from "../config/constants";
 import {
   SUPPORTED_VIDEO_TYPES,
@@ -19,7 +19,7 @@ import type {
   MediaDeleteResponse,
 } from "../types";
 
-export class MediaService {
+export class MediaService extends BaseService {
   // Store uploaded file hashes for duplicate detection
   private static uploadedHashes = new Set<string>();
 
@@ -121,7 +121,7 @@ export class MediaService {
    * Get media details by ID
    */
   static async getMedia(mediaId: number): Promise<MediaResponse> {
-    return await apiFetch<MediaResponse>(
+    return await this.requestWithRetry<MediaResponse>(
       `${API_ENDPOINTS.media.byId}/${mediaId}`
     );
   }
@@ -158,7 +158,7 @@ export class MediaService {
       params.append("myMedia", filters.myMedia.toString());
     }
 
-    return await apiFetch<MediaListResponse>(
+    return await this.requestWithRetry<MediaListResponse>(
       `${API_ENDPOINTS.media.list}?${params.toString()}`
     );
   }
@@ -192,7 +192,7 @@ export class MediaService {
       formData.append("visibility", request.visibility);
     }
 
-    return await apiFetch<MediaResponse>(
+    return await this.authenticatedRequest<MediaResponse>(
       `${API_ENDPOINTS.media.update}/${mediaId}`,
       {
         method: "PUT",
@@ -206,7 +206,7 @@ export class MediaService {
    * Delete media
    */
   static async deleteMedia(mediaId: number): Promise<MediaDeleteResponse> {
-    return await apiFetch<MediaDeleteResponse>(
+    return await this.authenticatedRequest<MediaDeleteResponse>(
       `${API_ENDPOINTS.media.delete}/${mediaId}`,
       {
         method: "DELETE",
@@ -218,7 +218,7 @@ export class MediaService {
    * Increment media view count
    */
   static async incrementViewCount(mediaId: number): Promise<MediaViewResponse> {
-    return await apiFetch<MediaViewResponse>(
+    return await this.requestWithRetry<MediaViewResponse>(
       `${API_ENDPOINTS.media.view}/${mediaId}/view`,
       {
         method: "POST",
@@ -247,7 +247,7 @@ export class MediaService {
       params.append("type", filters.type);
     }
 
-    return await apiFetch<MediaListResponse>(
+    return await this.requestWithRetry<MediaListResponse>(
       `${API_ENDPOINTS.media.search}?${params.toString()}`
     );
   }
@@ -268,7 +268,7 @@ export class MediaService {
       params.append("days", filters.days.toString());
     }
 
-    return await apiFetch<MediaListResponse>(
+    return await this.requestWithRetry<MediaListResponse>(
       `${API_ENDPOINTS.media.trending}?${params.toString()}`
     );
   }

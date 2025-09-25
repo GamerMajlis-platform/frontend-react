@@ -1,4 +1,4 @@
-import { apiFetch } from "../lib/api";
+import { BaseService } from "../lib/baseService";
 import type {
   ChatRoom,
   ChatMessage,
@@ -22,31 +22,31 @@ import type {
   ChatMembersParams,
 } from "../types/chat";
 
-class ChatService {
+class ChatService extends BaseService {
   /**
    * API #60: Create Chat Room
    * Creates a new chat room with specified settings
    */
   async createRoom(data: CreateChatRoomData): Promise<ChatRoom> {
-    const formData = new FormData();
-    formData.append("name", data.name);
-
-    if (data.description) formData.append("description", data.description);
-    if (data.type) formData.append("type", data.type);
-    if (data.isPrivate !== undefined)
-      formData.append("isPrivate", data.isPrivate.toString());
-    if (data.maxMembers)
-      formData.append("maxMembers", data.maxMembers.toString());
-    if (data.gameTitle) formData.append("gameTitle", data.gameTitle);
-    if (data.tournamentId)
-      formData.append("tournamentId", data.tournamentId.toString());
-    if (data.eventId) formData.append("eventId", data.eventId.toString());
-
-    const response = await apiFetch<ChatRoomResponse>("/chat/rooms", {
-      method: "POST",
-      body: formData,
+    const formData = ChatService.createFormData({
+      name: data.name,
+      description: data.description ?? "",
+      type: data.type ?? "",
+      isPrivate: data.isPrivate !== undefined ? data.isPrivate.toString() : "",
+      maxMembers:
+        data.maxMembers !== undefined ? data.maxMembers.toString() : "",
+      gameTitle: data.gameTitle ?? "",
+      tournamentId:
+        data.tournamentId !== undefined ? data.tournamentId.toString() : "",
+      eventId: data.eventId !== undefined ? data.eventId.toString() : "",
     });
-
+    const response = await ChatService.authenticatedRequest<ChatRoomResponse>(
+      "/chat/rooms",
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
     return response.chatRoom;
   }
 
@@ -64,7 +64,7 @@ class ChatService {
     const url = `/chat/rooms${
       searchParams.toString() ? `?${searchParams.toString()}` : ""
     }`;
-    return await apiFetch<ChatRoomsResponse>(url, {
+    return await ChatService.authenticatedRequest<ChatRoomsResponse>(url, {
       method: "GET",
     });
   }
@@ -74,10 +74,12 @@ class ChatService {
    * Retrieves detailed information about a specific chat room
    */
   async getRoomDetails(roomId: number): Promise<ChatRoom> {
-    const response = await apiFetch<ChatRoomResponse>(`/chat/rooms/${roomId}`, {
-      method: "GET",
-    });
-
+    const response = await ChatService.authenticatedRequest<ChatRoomResponse>(
+      `/chat/rooms/${roomId}`,
+      {
+        method: "GET",
+      }
+    );
     return response.chatRoom;
   }
 
@@ -86,13 +88,12 @@ class ChatService {
    * Joins a chat room as a member
    */
   async joinRoom(roomId: number): Promise<ChatMember> {
-    const response = await apiFetch<ChatMemberResponse>(
+    const response = await ChatService.authenticatedRequest<ChatMemberResponse>(
       `/chat/rooms/${roomId}/join`,
       {
         method: "POST",
       }
     );
-
     return response.membership;
   }
 
@@ -101,9 +102,12 @@ class ChatService {
    * Leaves a chat room
    */
   async leaveRoom(roomId: number): Promise<void> {
-    await apiFetch<ChatApiResponse>(`/chat/rooms/${roomId}/leave`, {
-      method: "POST",
-    });
+    await ChatService.authenticatedRequest<ChatApiResponse>(
+      `/chat/rooms/${roomId}/leave`,
+      {
+        method: "POST",
+      }
+    );
   }
 
   /**
@@ -114,22 +118,23 @@ class ChatService {
     roomId: number,
     data: SendMessageData
   ): Promise<ChatMessage> {
-    const formData = new FormData();
-    formData.append("content", data.content);
-
-    if (data.messageType) formData.append("messageType", data.messageType);
-    if (data.replyToMessageId)
-      formData.append("replyToMessageId", data.replyToMessageId.toString());
-    if (data.file) formData.append("file", data.file);
-
-    const response = await apiFetch<ChatMessageResponse>(
-      `/chat/rooms/${roomId}/messages`,
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
-
+    const formData = ChatService.createFormData({
+      content: data.content,
+      messageType: data.messageType ?? "",
+      replyToMessageId:
+        data.replyToMessageId !== undefined
+          ? data.replyToMessageId.toString()
+          : "",
+      file: data.file ?? "",
+    });
+    const response =
+      await ChatService.authenticatedRequest<ChatMessageResponse>(
+        `/chat/rooms/${roomId}/messages`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
     return response.chatMessage;
   }
 
@@ -154,7 +159,7 @@ class ChatService {
     const url = `/chat/rooms/${roomId}/messages${
       searchParams.toString() ? `?${searchParams.toString()}` : ""
     }`;
-    return await apiFetch<ChatMessagesResponse>(url, {
+    return await ChatService.authenticatedRequest<ChatMessagesResponse>(url, {
       method: "GET",
     });
   }
@@ -164,9 +169,12 @@ class ChatService {
    * Deletes a specific message (must be sender or moderator)
    */
   async deleteMessage(messageId: number): Promise<void> {
-    await apiFetch<ChatApiResponse>(`/chat/messages/${messageId}`, {
-      method: "DELETE",
-    });
+    await ChatService.authenticatedRequest<ChatApiResponse>(
+      `/chat/messages/${messageId}`,
+      {
+        method: "DELETE",
+      }
+    );
   }
 
   /**
@@ -178,17 +186,16 @@ class ChatService {
     memberId: number,
     data: AddMemberData = {}
   ): Promise<ChatMember> {
-    const formData = new FormData();
-    if (data.role) formData.append("role", data.role);
-
-    const response = await apiFetch<ChatMemberResponse>(
+    const formData = ChatService.createFormData({
+      role: data.role ?? "",
+    });
+    const response = await ChatService.authenticatedRequest<ChatMemberResponse>(
       `/chat/rooms/${roomId}/members/${memberId}`,
       {
         method: "POST",
         body: formData,
       }
     );
-
     return response.membership;
   }
 
@@ -197,7 +204,7 @@ class ChatService {
    * Removes a member from a chat room (admin/moderator only)
    */
   async removeMember(roomId: number, memberId: number): Promise<void> {
-    await apiFetch<ChatApiResponse>(
+    await ChatService.authenticatedRequest<ChatApiResponse>(
       `/chat/rooms/${roomId}/members/${memberId}`,
       {
         method: "DELETE",
@@ -222,7 +229,7 @@ class ChatService {
     const url = `/chat/rooms/${roomId}/members${
       searchParams.toString() ? `?${searchParams.toString()}` : ""
     }`;
-    return await apiFetch<ChatMembersResponse>(url, {
+    return await ChatService.authenticatedRequest<ChatMembersResponse>(url, {
       method: "GET",
     });
   }
@@ -232,14 +239,16 @@ class ChatService {
    * Starts a direct message conversation with another user
    */
   async startDirectMessage(data: StartDirectMessageData): Promise<ChatRoom> {
-    const formData = new FormData();
-    formData.append("recipientId", data.recipientId.toString());
-
-    const response = await apiFetch<ChatRoomResponse>("/chat/direct", {
-      method: "POST",
-      body: formData,
+    const formData = ChatService.createFormData({
+      recipientId: data.recipientId.toString(),
     });
-
+    const response = await ChatService.authenticatedRequest<ChatRoomResponse>(
+      "/chat/direct",
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
     return response.chatRoom;
   }
 
@@ -248,10 +257,13 @@ class ChatService {
    * Retrieves list of currently online users
    */
   async getOnlineUsers(): Promise<OnlineUser[]> {
-    const response = await apiFetch<OnlineUsersResponse>("/chat/online-users", {
-      method: "GET",
-    });
-
+    const response =
+      await ChatService.authenticatedRequest<OnlineUsersResponse>(
+        "/chat/online-users",
+        {
+          method: "GET",
+        }
+      );
     return response.onlineUsers;
   }
 
@@ -263,14 +275,17 @@ class ChatService {
     roomId: number,
     isTyping: boolean = true
   ): Promise<TypingResponse> {
-    const formData = new FormData();
-    formData.append("roomId", roomId.toString());
-    formData.append("isTyping", isTyping.toString());
-
-    return await apiFetch<TypingResponse>("/chat/typing", {
-      method: "POST",
-      body: formData,
+    const formData = ChatService.createFormData({
+      roomId: roomId.toString(),
+      isTyping: isTyping.toString(),
     });
+    return await ChatService.authenticatedRequest<TypingResponse>(
+      "/chat/typing",
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
   }
 
   /**

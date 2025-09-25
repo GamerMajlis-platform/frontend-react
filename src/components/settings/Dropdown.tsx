@@ -39,7 +39,14 @@ export default function Dropdown({
         />
       </button>
       {isOpen && (
-        <div className="absolute top-full right-0 mt-1 rounded-md shadow-lg z-10 min-w-[120px] bg-dark-secondary border border-slate-500">
+        <div
+          className={`absolute top-full ${
+            typeof document !== "undefined" &&
+            document.documentElement.dir === "rtl"
+              ? "left-0"
+              : "right-0"
+          } mt-1 rounded-md shadow-lg z-10 min-w-[120px] bg-dark-secondary border border-slate-500`}
+        >
           {options.map((option) => (
             <button
               key={option.value}

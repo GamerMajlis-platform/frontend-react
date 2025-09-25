@@ -9,13 +9,23 @@ import type {
   TournamentStatus,
 } from "../../types/tournaments";
 
-const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
+import type { ReactNode } from "react";
+
+interface FormFieldProps {
+  id: string;
+  label: string;
+  error?: string;
+  required?: boolean;
+  children: ReactNode;
+}
+
+const CreateTournamentForm = ({
   onSubmit,
   onSuccess,
   onCancel,
-  loading = false,
+  loading: _loading = false,
   initialData = {},
-}) => {
+}: CreateTournamentFormProps) => {
   const { t } = useTranslation();
 
   // Form state
@@ -192,21 +202,14 @@ const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
     },
   ];
 
-  const currencyOptions = [
-    { value: "USD", label: "USD ($)" },
-    { value: "EUR", label: "EUR (€)" },
-    { value: "SAR", label: "SAR (﷼)" },
-    { value: "AED", label: "AED (د.إ)" },
-  ];
-
   // Helper component for consistent form fields
-  const FormField: React.FC<{
-    id: string;
-    label: string;
-    error?: string;
-    required?: boolean;
-    children: React.ReactNode;
-  }> = ({ id, label, error, required, children }) => (
+  const FormField = ({
+    id,
+    label,
+    error,
+    required,
+    children,
+  }: FormFieldProps) => (
     <div>
       <label
         htmlFor={id}
@@ -229,35 +232,35 @@ const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
 
   return (
     <div className="">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-white">
-          {t("tournaments:create.title")}
-        </h2>
-        <button
-          onClick={onCancel}
-          className="text-text-secondary hover:text-white transition-colors"
-          aria-label={t("common.close")}
-        >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-      </div>
-
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-4xl mx-auto bg-[#1C2541] rounded-xl p-6 space-y-6"
       >
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-white">
+            {t("tournaments:create.title")}
+          </h2>
+          <button
+            type="button"
+            onClick={onCancel}
+            className="text-text-secondary hover:text-white transition-colors"
+            aria-label={t("common.cancel")}
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
         {/* Basic Information */}
         <div className="space-y-6">
           <FormField
@@ -431,41 +434,88 @@ const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
           </FormField>
 
           <div className="flex flex-col gap-3">
-            <label className="flex items-center">
-              <input
-                id="tournament-isPublic"
-                type="checkbox"
-                checked={formData.isPublic}
-                onChange={(e) =>
-                  handleInputChange("isPublic", e.target.checked)
-                }
-                className="w-4 h-4 text-primary bg-dark border-gray-600 rounded focus:ring-primary focus:ring-2"
-              />
+            <div className="flex items-center">
+              <div className="relative">
+                <input
+                  id="tournament-isPublic"
+                  type="checkbox"
+                  checked={formData.isPublic}
+                  onChange={(e) =>
+                    handleInputChange("isPublic", e.target.checked)
+                  }
+                  aria-label={t("tournaments:create.form.isPublic")}
+                  className="peer cursor-pointer w-5 h-5 rounded-md border border-slate-600 bg-[#0F172A] checked:bg-cyan-500 checked:border-transparent focus:outline-none"
+                />
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden
+                  className="pointer-events-none absolute left-0 top-0 w-5 h-5 text-white opacity-0 peer-checked:opacity-100"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeWidth={3}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
               <span className="ml-2 text-sm text-white/80">
                 {t("tournaments:create.form.isPublic")}
               </span>
-            </label>
+            </div>
 
-            <label className="flex items-center">
-              <input
-                id="tournament-requiresApproval"
-                type="checkbox"
-                checked={formData.requiresApproval}
-                onChange={(e) =>
-                  handleInputChange("requiresApproval", e.target.checked)
-                }
-                className="w-4 h-4 text-primary bg-dark border-gray-600 rounded focus:ring-primary focus:ring-2"
-              />
+            <div className="flex items-center">
+              <div className="relative">
+                <input
+                  id="tournament-requiresApproval"
+                  type="checkbox"
+                  checked={formData.requiresApproval}
+                  onChange={(e) =>
+                    handleInputChange("requiresApproval", e.target.checked)
+                  }
+                  aria-label={t("tournaments:create.form.requiresApproval")}
+                  className="peer cursor-pointer w-5 h-5 rounded-md border border-slate-600 bg-[#0F172A] checked:bg-cyan-500 checked:border-transparent focus:outline-none"
+                />
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden
+                  className="pointer-events-none absolute left-0 top-0 w-5 h-5 text-white opacity-0 peer-checked:opacity-100"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeWidth={3}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
               <span className="ml-2 text-sm text-white/80">
                 {t("tournaments:create.form.requiresApproval")}
               </span>
-            </label>
+            </div>
           </div>
         </div>
 
         {/* Submit Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-600">
-          {/* buttons → unchanged */}
+          <button
+            type="submit"
+            className="flex-1 rounded-xl bg-cyan-500 px-6 py-3 text-white font-medium hover:bg-cyan-600 transition-colors"
+          >
+            {t("tournaments:create.button")}
+          </button>
+
+          <button
+            type="button"
+            onClick={onCancel}
+            className="flex-1 rounded-xl border border-slate-600 px-6 py-3 text-white/80 hover:text-white transition-colors"
+          >
+            {t("common.cancel")}
+          </button>
         </div>
       </form>
     </div>

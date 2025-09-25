@@ -1,0 +1,53 @@
+{
+  "comments": {
+    "add": "أضف تعليقًا...",
+    "label": "التعليقات",
+    "placeholder": "اكتب تعليقك هنا...",
+    "reply": "رد",
+    "replies": "الردود",
+    "viewReplies": "اظهار الردود",
+    "title": "التعليقات",
+    "replyingTo": "الرد على {{username}}"
+  },
+  "copyLink": "نسخ الرابط",
+  "create": {
+    "content": "المحتوى",
+    "contentPlaceholder": "شارك أفكارك وتجاربك أو اطرح أسئلة...",
+    "createError": "فشل في إنشاء المنشور. يرجى المحاولة مرة أخرى.",
+    "gameCategory": "فئة اللعبة",
+    "gameTitle": "اسم اللعبة",
+    "gameTitlePlaceholder": "مثل: فالورانت، ليج أوف ليجندز",
+    "hashtags": "الهاشتاغ",
+    "hashtagsHelp": "يتم اكتشافها تلقائياً من المحتوى أو أضف يدوياً",
+    "hashtagsPlaceholder": "ألعاب، رياضة_إلكترونية، مجتمع",
+    "platform": "منصة اللعب",
+    "postTitle": "عنوان المنشور",
+    "private": "خاص",
+    "public": "عام",
+    "publish": "نشر المنشور",
+    "publishing": "جاري النشر...",
+    "requiredFields": "يرجى ملء جميع الحقول المطلوبة.",
+    "selectCategory": "اختر فئة",
+    "selectPlatform": "اختر المنصة",
+    "subtitle": "شارك تجاربك في الألعاب مع المجتمع",
+    "successMessage": "تم إنشاء المنشور بنجاح!",
+    "tags": "العلامات",
+    "tagsHelp": "افصل العلامات بفواصل",
+    "tagsPlaceholder": "ألعاب، تنافسي، استراتيجية",
+    "title": "إنشاء منشور جديد",
+    "titlePlaceholder": "ما هي قصتك في اللعب؟",
+    "visibility": "الخصوصية"
+  },
+  "delete": "حذف المنشور",
+  "edit": "تعديل المنشور",
+  "feed": {
+    "confirmDelete": "هل أنت متأكد من حذف هذا المنشور؟",
+    "loadError": "فشل في تحميل المنشورات",
+    "loadMore": "تحميل المزيد",
+    "noPosts": "لا توجد منشورات بعد",
+    "noPostsDescription": "كن أول من يشارك شيئاً مع المجتمع!",
+    "showing": "عرض {{count}} من {{total}} منشور"
+  },
+  "menu": "خيارات المنشور",
+  "share": "مشاركة"
+}

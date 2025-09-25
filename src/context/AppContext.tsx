@@ -9,10 +9,10 @@ import { AuthService } from "../services/AuthService";
 import { ProfileService } from "../services/ProfileService";
 import EventService from "../services/EventService";
 import TournamentService from "../services/TournamentService";
-import { apiFetch } from "../lib/api";
+import { apiFetch, ApiError } from "../lib";
 import { API_ENDPOINTS } from "../config/constants";
 import { SessionService } from "../services/SessionService";
-import { STORAGE_KEYS } from "../config/constants";
+import { NavigationService, UserStorage } from "../lib";
 import type { User, UpdateProfileData } from "../types/auth";
 import { useLocalStorage } from "../hooks";
 
@@ -252,14 +252,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 } catch (e) {
                   console.warn("Failed to initialize wishlist from server:", e);
                 }
-                try {
-                  localStorage.setItem(
-                    STORAGE_KEYS.user,
-                    JSON.stringify(fresh)
-                  );
-                } catch {
-                  // ignore storage errors
-                }
+                // UserStorage.updateStoredUser is already called by getMyProfile
+                // No need to manually update storage here
                 console.log(
                   "🔄 Profile refreshed from server for user:",
                   fresh.email
@@ -284,13 +278,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     cleanupExpiredHandler = SessionService.onSessionExpired(() => {
       setUser(null);
       setIsAuthenticated(false);
-      // Redirect to home instead of login for expired sessions
-      window.location.href = "/";
+      // Use NavigationService for consistent SPA navigation
+      NavigationService.navigateToHome();
     });
 
     cleanupLogoutHandler = SessionService.onLogout(() => {
       setUser(null);
       setIsAuthenticated(false);
+      // Navigate to home on logout for consistent UX
+      NavigationService.navigateToHome();
     });
 
     initializeSession();
@@ -308,13 +304,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     // Only run if session management hasn't initialized yet
     if (!sessionInitialized) return;
 
-    // Initialize authentication state from localStorage (fallback)
+    // Initialize authentication state from storage (fallback)
     try {
-      const storedUser = AuthService.getStoredUser();
-      const storedToken = AuthService.getStoredToken();
-      if (storedUser && storedToken && !user) {
-        setUser(storedUser);
-        setIsAuthenticated(true);
+      if (UserStorage.hasValidSession() && !user) {
+        const storedUser = UserStorage.getStoredUser();
+        if (storedUser) {
+          setUser(storedUser);
+          setIsAuthenticated(true);
+        }
       }
     } catch {
       // ignore auth initialization errors
@@ -420,33 +417,52 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           },
         };
 
-        // Persist settings to server using profile update (privacy/preferences stored in profile)
-        (async () => {
-          try {
-            // Map our settings shape to profile fields expected by the API
-            const profileUpdate: Partial<
-              import("../types/auth").UpdateProfileData
-            > = {};
-            if (updated.privacy) {
-              profileUpdate.privacySettings = JSON.stringify(updated.privacy);
-            }
-            if (updated.preferences) {
-              // Persist only the preferences keys we expose (language)
-              profileUpdate.gamingPreferences = JSON.stringify({
-                language: updated.preferences.language,
-              });
-            }
+        // Persist settings to server only if user is authenticated
+        if (isAuthenticated && UserStorage.hasValidSession()) {
+          (async () => {
+            try {
+              // Map our settings shape to profile fields expected by the API
+              const profileUpdate: Partial<
+                import("../types/auth").UpdateProfileData
+              > = {};
+              if (updated.privacy) {
+                profileUpdate.privacySettings = JSON.stringify(updated.privacy);
+              }
+              if (updated.preferences) {
+                // Persist only the preferences keys we expose (language)
+                profileUpdate.gamingPreferences = JSON.stringify({
+                  language: updated.preferences.language,
+                });
+              }
 
-            await ProfileService.updateProfile(profileUpdate);
-          } catch (err) {
-            console.warn("Failed to persist settings via ProfileService:", err);
-          }
-        })();
+              await ProfileService.updateProfile(profileUpdate);
+            } catch (err) {
+              console.warn(
+                "Failed to persist settings via ProfileService:",
+                err
+              );
+              // If it's an auth error, trigger session validation
+              if (
+                err instanceof ApiError &&
+                (err.isAuthError || err.statusCode === 401)
+              ) {
+                console.warn(
+                  "Settings update failed due to invalid session, triggering session validation"
+                );
+                SessionService.validateToken().then((isValid) => {
+                  if (!isValid) {
+                    window.dispatchEvent(new CustomEvent("session:expired"));
+                  }
+                });
+              }
+            }
+          })();
+        }
 
         return updated;
       });
     },
-    [setSettings]
+    [setSettings, isAuthenticated]
   );
 
   // Authentication functions
@@ -502,12 +518,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (!isAuthenticated) return;
       const updatedUser = await ProfileService.getMyProfile();
       setUser(updatedUser);
-      // Update localStorage using STORAGE_KEYS
-      try {
-        localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(updatedUser));
-      } catch {
-        // ignore
-      }
+      // UserStorage.updateStoredUser is already called by ProfileService.getMyProfile()
+      // No need to manually update storage here
     } catch (error) {
       console.error("Failed to refresh profile:", error);
       throw error;

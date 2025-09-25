@@ -1,17 +1,12 @@
 // Authentication Service - Handles all API communication
-import { apiFetch, ApiError, createFormData } from "../lib/api";
-import { API_ENDPOINTS, STORAGE_KEYS } from "../config/constants";
+import { ApiError } from "../lib";
+import { BaseService } from "../lib/baseService";
+import { API_ENDPOINTS } from "../config/constants";
 import { SessionService } from "./SessionService";
-import type {
-  User,
-  LoginResponse,
-  SignupResponse,
-  ProfileResponse,
-  TokenValidationResponse,
-  BackendResponse,
-} from "../types/auth";
+import { UserStorage } from "../lib";
+import type { User, LoginResponse, SignupResponse } from "../types/auth";
 
-export class AuthService {
+export class AuthService extends BaseService {
   /**
    * Register a new user
    */
@@ -21,18 +16,15 @@ export class AuthService {
     password: string
   ): Promise<SignupResponse> {
     try {
-      const formData = createFormData({
+      const formData = this.createFormData({
         displayName,
         email,
         password,
       });
-
-      const data = await apiFetch<SignupResponse>(API_ENDPOINTS.auth.signup, {
+      const data = (await this.requestWithRetry(API_ENDPOINTS.auth.signup, {
         method: "POST",
         body: formData,
-        useFormData: true,
-      });
-
+      })) as SignupResponse;
       return data;
     } catch (err) {
       if (err instanceof ApiError) {
@@ -58,21 +50,17 @@ export class AuthService {
     password: string
   ): Promise<LoginResponse> {
     try {
-      const formData = createFormData({
+      const formData = this.createFormData({
         identifier, // Can be email or displayName
         password,
       });
-
-      const data = await apiFetch<LoginResponse>(API_ENDPOINTS.auth.login, {
+      const data = (await this.requestWithRetry(API_ENDPOINTS.auth.login, {
         method: "POST",
         body: formData,
-        useFormData: true,
-      });
-
+      })) as LoginResponse;
       if (data.success && data.token && data.user) {
         this.storeAuthData(data);
       }
-
       return data;
     } catch (err) {
       if (err instanceof ApiError) {
@@ -96,7 +84,7 @@ export class AuthService {
   static async logout(): Promise<void> {
     try {
       // Call backend logout endpoint
-      await apiFetch<BackendResponse>(API_ENDPOINTS.auth.logout, {
+      await this.requestWithRetry(API_ENDPOINTS.auth.logout, {
         method: "POST",
       });
     } catch (error) {
@@ -118,7 +106,10 @@ export class AuthService {
    */
   static async getCurrentUser(): Promise<User> {
     try {
-      const data = await apiFetch<ProfileResponse>(API_ENDPOINTS.auth.me);
+      const data = (await this.requestWithRetry(API_ENDPOINTS.auth.me)) as {
+        success: boolean;
+        user?: User;
+      };
       if (data.success && data.user) {
         return data.user;
       }
@@ -140,9 +131,9 @@ export class AuthService {
       const token = this.getStoredToken();
       if (!token) return false;
 
-      const data = await apiFetch<TokenValidationResponse>(
+      const data = (await this.requestWithRetry(
         API_ENDPOINTS.auth.validateToken
-      );
+      )) as { valid: boolean };
       return data.valid;
     } catch (err) {
       console.warn("Token validation failed:", err);
@@ -156,13 +147,13 @@ export class AuthService {
    */
   private static storeAuthData(data: LoginResponse): void {
     try {
-      localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(data.user));
-      // Always use SessionService for consistent token management
-      if (data.token) {
-        SessionService.storeToken(data.token);
+      if (data.user && data.token) {
+        // Use UserStorage for atomic user+token storage
+        UserStorage.storeUserSession(data.user, data.token);
       }
-    } catch {
-      console.warn("Failed to persist auth data");
+    } catch (error) {
+      console.warn("Failed to persist auth data:", error);
+      throw error;
     }
   }
 
@@ -171,46 +162,33 @@ export class AuthService {
    */
   private static clearAuthData(): void {
     try {
+      // Use UserStorage for consistent session clearing
+      UserStorage.clearUserSession();
+      // Also ensure SessionService timers are stopped
       SessionService.clearSession();
-      localStorage.removeItem(STORAGE_KEYS.user);
-    } catch {
-      console.warn("Failed to clear auth data");
+    } catch (error) {
+      console.warn("Failed to clear auth data:", error);
     }
   }
 
   /**
-   * Get stored token via SessionService
+   * Get stored token via UserStorage
    */
   static getStoredToken(): string | null {
-    return SessionService.getStoredToken();
+    return UserStorage.getStoredToken();
   }
 
   /**
    * Get stored user data
    */
   static getStoredUser(): User | null {
-    const userData = (() => {
-      try {
-        return localStorage.getItem(STORAGE_KEYS.user);
-      } catch {
-        return null;
-      }
-    })();
-    if (!userData) return null;
-
-    try {
-      return JSON.parse(userData) as User;
-    } catch {
-      return null;
-    }
+    return UserStorage.getStoredUser();
   }
 
   /**
    * Check if user is authenticated
    */
   static isAuthenticated(): boolean {
-    const token = this.getStoredToken();
-    const user = this.getStoredUser();
-    return !!(token && user);
+    return UserStorage.hasValidSession();
   }
 }

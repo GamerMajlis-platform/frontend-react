@@ -1,4 +1,4 @@
-import { apiFetch } from "../lib/api";
+import { BaseService } from "../lib/baseService";
 import type {
   PostCreateRequest,
   PostUpdateRequest,
@@ -18,7 +18,7 @@ import type {
   CommentDeleteResponse,
 } from "../types";
 
-export class PostService {
+export class PostService extends BaseService {
   /**
    * Create a new post
    */
@@ -61,11 +61,14 @@ export class PostService {
       formData.append("visibility", request.visibility);
     }
 
-    const response = await apiFetch<PostCreateResponse>("/posts", {
-      method: "POST",
-      body: formData,
-      useFormData: true,
-    });
+    const response = await this.authenticatedRequest<PostCreateResponse>(
+      "/posts",
+      {
+        method: "POST",
+        body: formData,
+        useFormData: true,
+      }
+    );
     if (
       response &&
       typeof response === "object" &&
@@ -81,7 +84,7 @@ export class PostService {
    * Get post details by ID
    */
   static async getPost(postId: number): Promise<PostResponse> {
-    return await apiFetch<PostResponse>(`/posts/${postId}`);
+    return await this.requestWithRetry<PostResponse>(`/posts/${postId}`);
   }
 
   /**
@@ -112,7 +115,9 @@ export class PostService {
       params.append("myPosts", filters.myPosts.toString());
     }
 
-    return await apiFetch<PostListResponse>(`/posts?${params.toString()}`);
+    return await this.requestWithRetry<PostListResponse>(
+      `/posts?${params.toString()}`
+    );
   }
 
   /**
@@ -156,11 +161,14 @@ export class PostService {
       formData.append("visibility", request.visibility);
     }
 
-    const response = await apiFetch<PostResponse>(`/posts/${postId}`, {
-      method: "PUT",
-      body: formData,
-      useFormData: true,
-    });
+    const response = await this.authenticatedRequest<PostResponse>(
+      `/posts/${postId}`,
+      {
+        method: "PUT",
+        body: formData,
+        useFormData: true,
+      }
+    );
     if (
       response &&
       typeof response === "object" &&
@@ -176,27 +184,36 @@ export class PostService {
    * Delete post
    */
   static async deletePost(postId: number): Promise<PostDeleteResponse> {
-    return await apiFetch<PostDeleteResponse>(`/posts/${postId}`, {
-      method: "DELETE",
-    });
+    return await this.authenticatedRequest<PostDeleteResponse>(
+      `/posts/${postId}`,
+      {
+        method: "DELETE",
+      }
+    );
   }
 
   /**
    * Like or unlike a post
    */
   static async toggleLike(postId: number): Promise<PostLikeResponse> {
-    return await apiFetch<PostLikeResponse>(`/posts/${postId}/like`, {
-      method: "POST",
-    });
+    return await this.authenticatedRequest<PostLikeResponse>(
+      `/posts/${postId}/like`,
+      {
+        method: "POST",
+      }
+    );
   }
 
   /**
    * Share a post
    */
   static async sharePost(postId: number): Promise<PostShareResponse> {
-    return await apiFetch<PostShareResponse>(`/posts/${postId}/share`, {
-      method: "POST",
-    });
+    return await this.authenticatedRequest<PostShareResponse>(
+      `/posts/${postId}/share`,
+      {
+        method: "POST",
+      }
+    );
   }
 
   /**
@@ -208,12 +225,18 @@ export class PostService {
   ): Promise<CommentResponse> {
     const formData = new FormData();
     formData.append("content", request.content);
+    if (request.parentId !== undefined && request.parentId !== null) {
+      formData.append("parentId", String(request.parentId));
+    }
 
-    return await apiFetch<CommentResponse>(`/posts/${postId}/comments`, {
-      method: "POST",
-      body: formData,
-      useFormData: true,
-    });
+    return await this.authenticatedRequest<CommentResponse>(
+      `/posts/${postId}/comments`,
+      {
+        method: "POST",
+        body: formData,
+        useFormData: true,
+      }
+    );
   }
 
   /**
@@ -267,7 +290,7 @@ export class PostService {
       params.append("size", filters.size.toString());
     }
 
-    return await apiFetch<CommentListResponse>(
+    return await this.requestWithRetry<CommentListResponse>(
       `/posts/${postId}/comments?${params.toString()}`
     );
   }
@@ -278,10 +301,30 @@ export class PostService {
   static async deleteComment(
     commentId: number
   ): Promise<CommentDeleteResponse> {
-    return await apiFetch<CommentDeleteResponse>(
+    return await this.authenticatedRequest<CommentDeleteResponse>(
       `/posts/comments/${commentId}`,
       {
         method: "DELETE",
+      }
+    );
+  }
+
+  /**
+   * Update comment
+   */
+  static async updateComment(
+    commentId: number,
+    content: string
+  ): Promise<CommentResponse> {
+    const formData = new FormData();
+    formData.append("content", content);
+
+    return await this.authenticatedRequest<CommentResponse>(
+      `/posts/comments/${commentId}`,
+      {
+        method: "PUT",
+        body: formData,
+        useFormData: true,
       }
     );
   }
@@ -307,7 +350,7 @@ export class PostService {
       params.append("gameCategory", filters.gameCategory);
     }
 
-    return await apiFetch<PostListResponse>(
+    return await this.requestWithRetry<PostListResponse>(
       `/posts/search?${params.toString()}`
     );
   }
@@ -328,7 +371,7 @@ export class PostService {
       params.append("days", filters.days.toString());
     }
 
-    return await apiFetch<PostListResponse>(
+    return await this.requestWithRetry<PostListResponse>(
       `/posts/trending?${params.toString()}`
     );
   }

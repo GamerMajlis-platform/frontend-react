@@ -17,10 +17,10 @@ type TabKey = "about" | "manage" | "stats";
 export default function Profile() {
   const { i18n } = useTranslation();
   const { user, settings } = useAppContext();
-  const { updateProfile, clearError } = useProfile();
+  const { updateProfile, isLoading } = useProfile();
   const { getUserProfile } = useProfile();
   const { id: routeId } = useParams();
-  const [isEditing, setIsEditing] = useState(false);
+  // Editing is managed per-section (About, Manage, Stats)
   const [activeTab, setActiveTab] = useState<TabKey>("about");
   const [editData, setEditData] = useState({
     displayName: "",
@@ -81,46 +81,7 @@ export default function Profile() {
     };
   }, [routeId, user, getUserProfile]);
 
-  const startEditing = useCallback(() => {
-    if (user) {
-      setEditData({
-        displayName: user.displayName || "",
-        bio: user.bio || "",
-        gamingPreferences: user.gamingPreferences || "{}",
-        socialLinks: user.socialLinks || "{}",
-      });
-    }
-    setIsEditing(true);
-    clearError();
-  }, [user, clearError]);
-
-  const cancelEditing = useCallback(() => {
-    if (user) {
-      setEditData({
-        displayName: user.displayName || "",
-        bio: user.bio || "",
-        gamingPreferences: user.gamingPreferences || "{}",
-        socialLinks: user.socialLinks || "{}",
-      });
-    }
-    setIsEditing(false);
-    clearError();
-  }, [user, clearError]);
-
-  const saveEditing = useCallback(async () => {
-    try {
-      await updateProfile({
-        displayName: editData.displayName,
-        bio: editData.bio,
-        gamingPreferences: editData.gamingPreferences,
-        socialLinks: editData.socialLinks,
-      });
-      setIsEditing(false);
-    } catch (err) {
-      console.error("Failed to save profile:", err);
-      // Error will be shown by the useProfile hook
-    }
-  }, [updateProfile, editData]);
+  // Section-level edit/save/cancel handlers live inside each panel
 
   const handleInputChange = useCallback(
     (field: keyof typeof editData, value: string) => {
@@ -170,6 +131,32 @@ export default function Profile() {
     (typeof parsedPrivacy["showSocialLinks"] === "undefined"
       ? true
       : Boolean(parsedPrivacy["showSocialLinks"]));
+
+  // Ensure activeTab is always a visible tab. If the current active tab becomes hidden
+  // (e.g. About hidden for non-owner, or Stats hidden by privacy), pick a fallback.
+  useEffect(() => {
+    const available: TabKey[] = [];
+    if (viewedUser?.id === user?.id) available.push("about");
+    if (viewedUser?.id === user?.id) available.push("manage");
+    if (finalCanViewStats) available.push("stats");
+
+    if (!available.includes(activeTab)) {
+      // Prefer manage (owner), then stats, then about
+      if (available.includes("manage")) setActiveTab("manage");
+      else if (available.includes("stats")) setActiveTab("stats");
+      else if (available.includes("about")) setActiveTab("about");
+      else setActiveTab("manage");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewedUser?.id, user?.id, finalCanViewStats]);
+
+  // Determine whether any panel (About / Manage / Stats) should be shown inside the
+  // main content area. If none are available, hide the rounded content container
+  // entirely to avoid rendering an empty box (this prevents the empty container you
+  // saw when viewing other users with restricted stats/privacy).
+  const hasPanelContent =
+    Boolean(viewedUser && viewedUser.id === user?.id) ||
+    Boolean(finalCanViewStats);
 
   return (
     <main
@@ -345,12 +332,8 @@ export default function Profile() {
               </div>
             ) : (
               <BackendProfileHeader
-                isEditing={isEditing}
                 isRTL={isRTL}
                 onChange={(field, value) => handleInputChange(field, value)}
-                onSave={saveEditing}
-                onCancel={cancelEditing}
-                onEdit={startEditing}
               />
             )}
           </div>
@@ -361,64 +344,65 @@ export default function Profile() {
           active={activeTab}
           onChange={(key) => setActiveTab(key)}
           showManage={viewedUser?.id === user?.id}
+          showAbout={viewedUser?.id === user?.id}
+          showStats={finalCanViewStats}
         />
 
         {/* Content Panels */}
-        <div className="overflow-hidden bg-slate-800/90 backdrop-blur-xl rounded-3xl border border-slate-700/50 shadow-xl">
-          <div className="p-4 sm:p-6 lg:p-8">
-            {activeTab === "about" && (
-              <>
-                {viewedUser && viewedUser.id !== user?.id && !canViewBio ? (
-                  <div className="p-6 text-slate-400 italic">
-                    {i18n.t(
-                      visibility === "friends"
-                        ? "profile:visibility.friends"
-                        : "profile:visibility.private",
-                      visibility === "friends"
-                        ? "This profile is visible to friends only"
-                        : "This profile is private"
-                    )}
-                  </div>
-                ) : (
-                  <AboutSection
-                    isEditing={
-                      Boolean(viewedUser?.id === user?.id) && isEditing
+        {hasPanelContent && (
+          <div className="overflow-hidden bg-slate-800/90 backdrop-blur-xl rounded-3xl border border-slate-700/50 shadow-xl">
+            <div className="p-4 sm:p-6 lg:p-8">
+              {activeTab === "about" && viewedUser?.id === user?.id && (
+                <AboutSection
+                  isRTL={isRTL}
+                  bio={editData.bio}
+                  isSaving={isLoading}
+                  onSave={async (newBio) => {
+                    // Use updateProfile to save only bio; keep other fields unchanged
+                    try {
+                      await updateProfile({
+                        displayName: editData.displayName,
+                        bio: newBio,
+                        gamingPreferences: editData.gamingPreferences,
+                        socialLinks: editData.socialLinks,
+                      });
+                      // reflect saved bio in editData
+                      setEditData((prev) => ({ ...prev, bio: newBio }));
+                    } catch (err) {
+                      console.error(
+                        "Failed to save bio from AboutSection:",
+                        err
+                      );
                     }
-                    isRTL={isRTL}
-                    bio={
-                      viewedUser && viewedUser.id !== user?.id
-                        ? viewedUser.bio ?? ""
-                        : editData.bio
-                    }
-                    onChange={(val) => handleInputChange("bio", val)}
-                  />
-                )}
-              </>
-            )}
+                  }}
+                  // AboutSection manages cancel locally; do not wire to global cancelEditing
+                />
+              )}
 
-            {activeTab === "manage" && viewedUser?.id === user?.id && (
-              <EnhancedProfileForm />
-            )}
+              {activeTab === "manage" && viewedUser?.id === user?.id && (
+                <EnhancedProfileForm />
+              )}
 
-            {activeTab === "stats" && (
-              <>
-                {viewedUser &&
-                viewedUser.id !== user?.id &&
-                !finalCanViewStats ? (
-                  <div className="p-6 text-slate-400 italic">
-                    {i18n.t("profile:visibility.hidden_stats_by_user", {
-                      username: viewedUser.displayName,
-                    })}
-                  </div>
-                ) : viewedUser && viewedUser.id !== user?.id ? (
-                  <GamingStatisticsPanel viewUser={viewedUser} />
-                ) : (
-                  <GamingStatisticsPanel />
-                )}
-              </>
-            )}
+              {activeTab === "stats" && (
+                <>
+                  {viewedUser &&
+                  viewedUser.id !== user?.id &&
+                  !finalCanViewStats ? (
+                    <div className="p-6 text-slate-400 italic">
+                      {i18n.t("profile:visibility.hidden_stats_by_user", {
+                        username: viewedUser.displayName,
+                      })}
+                    </div>
+                  ) : viewedUser && viewedUser.id !== user?.id ? (
+                    <GamingStatisticsPanel viewUser={viewedUser} />
+                  ) : (
+                    <GamingStatisticsPanel />
+                  )}
+                </>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </main>
   );

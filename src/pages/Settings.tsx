@@ -208,19 +208,86 @@ export default function Settings() {
               </div>
             </section>
 
-            {/* Connected Accounts Section */}
+            {/* Account Section */}
             <section className="rounded-xl p-4 sm:p-6 bg-dark-secondary">
               <div className="grid gap-4">
                 <div className="grid gap-2">
                   <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold font-alice text-text">
-                    {t("settings.sections.accounts.title")}
+                    {t("settings.sections.account.title", "Account")}
                   </h2>
                   <p className="text-xs sm:text-sm lg:text-base text-text-secondary">
-                    {t("settings.sections.accounts.description")}
+                    {t(
+                      "settings.sections.account.description",
+                      "Manage your account details and connected services"
+                    )}
                   </p>
                 </div>
 
                 <div className="grid gap-4">
+                  {/* Change Email */}
+                  <div className="border border-gray-700 rounded-lg p-4">
+                    <div className="grid gap-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="font-semibold text-text">{t("settings.sections.account.changeEmail", "Change Email")}</h3>
+                          <p className="text-sm text-text-secondary">{t("settings.sections.account.changeEmail_desc", "Update your account email address")}</p>
+                        </div>
+                      </div>
+
+                      <form
+                        onSubmit={async (e) => {
+                          e.preventDefault();
+                          const form = e.target as HTMLFormElement;
+                          const input = form.elements.namedItem("newEmail") as HTMLInputElement;
+                          const email = input?.value?.trim();
+                          if (!email) return;
+                          try {
+                            // ProfileService.UpdateProfileData doesn't include email in typings,
+                            // but backend accepts email update. Cast to any to call API.
+                            await (await import("../services/ProfileService")).ProfileService.updateProfile(
+                              ( { email } as unknown as import("../types/auth").UpdateProfileData )
+                            );
+                            // refresh settings from context if needed
+                            window.dispatchEvent(new CustomEvent("profile:updated"));
+                            alert(t("settings.messages.emailUpdateSuccess", "Email updated successfully"));
+                          } catch (err) {
+                            console.error("Failed to update email:", err);
+                            alert(t("settings.messages.emailUpdateFailed", "Failed to update email. Please try again later."));
+                          }
+                        }}
+                      >
+                        <div className="grid gap-2 md:grid-cols-2">
+                          <input
+                            name="newEmail"
+                            type="email"
+                            placeholder={t("settings.placeholders.newEmail", "you@example.com")}
+                            className="w-full rounded-xl border border-slate-600 bg-[#0F172A] px-4 py-3 text-white placeholder-slate-400"
+                          />
+                          <button type="submit" className="px-4 py-3 bg-cyan-500 text-white rounded-xl">{t("settings.actions.update", "Update")}</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+
+                  {/* Change Password - backend endpoint not found in API guide; show UI but disable submission */}
+                  <div className="border border-gray-700 rounded-lg p-4">
+                    <div className="grid gap-3">
+                      <div>
+                        <h3 className="font-semibold text-text">{t("settings.sections.account.changePassword", "Change Password")}</h3>
+                        <p className="text-sm text-text-secondary">{t("settings.sections.account.changePassword_desc", "Change your account password. If this option is not available, please use password recovery.")}</p>
+                      </div>
+
+                      <form onSubmit={(e) => { e.preventDefault(); alert(t("settings.messages.passwordNotSupported", "Password change via frontend is not available. Use password recovery or contact support.")); }}>
+                        <div className="grid gap-2 md:grid-cols-3">
+                          <input name="currentPassword" type="password" placeholder={t("settings.placeholders.currentPassword", "Current password")} className="w-full rounded-xl border border-slate-600 bg-[#0F172A] px-4 py-3 text-white" disabled />
+                          <input name="newPassword" type="password" placeholder={t("settings.placeholders.newPassword", "New password")} className="w-full rounded-xl border border-slate-600 bg-[#0F172A] px-4 py-3 text-white" disabled />
+                          <button type="submit" className="px-4 py-3 bg-gray-600 text-white rounded-xl" disabled>{t("settings.actions.change", "Change")}</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+
+                  {/* Discord linking moved here */}
                   <div className="border border-gray-700 rounded-lg p-4">
                     <div className="grid gap-3">
                       <div className="flex items-center gap-3">

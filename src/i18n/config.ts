@@ -40,7 +40,14 @@ i18n
 
     // Default namespace
     defaultNS: "translation",
-    ns: ["translation", "profile", "events", "tournaments"],
+    ns: [
+      "translation",
+      "profile",
+      "events",
+      "tournaments",
+      "posts",
+      "chatrooms",
+    ],
 
     // Backend load path (served from /public). Use BASE_URL to support subpath deployments.
     backend: {

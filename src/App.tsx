@@ -3,6 +3,7 @@ import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AppProvider } from "./context/AppContext";
 import { useAppContext } from "./context/useAppContext";
+import { NavigationService } from "./lib/navigation";
 
 // Components
 import { Header, Footer } from "./components";
@@ -53,6 +54,11 @@ function AppContent() {
   const { isAuthenticated, sessionInitialized } = useAppContext();
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Initialize NavigationService with React Router's navigate function
+  useEffect(() => {
+    NavigationService.initialize(navigate);
+  }, [navigate]);
 
   // Derive current page from pathname for active nav styling
   const path = location.pathname.replace(/\/$/, "");

@@ -80,10 +80,14 @@ export interface Comment {
   author: PostAuthor;
   createdAt: string;
   updatedAt?: string;
+  parentId?: number | null;
+  // Optional list of replies (simple flat array for now)
+  replies?: Comment[];
 }
 
 export interface CommentCreateRequest {
   content: string;
+  parentId?: number | null;
 }
 
 export interface PostFilters {

@@ -79,11 +79,11 @@ export const PostFeed: React.FC<PostFeedProps> = ({
             hasMore: response.currentPage < response.totalPages - 1,
           });
         } else {
-          setError(response.message || t("posts.feed.loadError"));
+          setError(response.message || t("posts:feed.loadError"));
         }
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : t("posts.feed.loadError")
+          err instanceof Error ? err.message : t("posts:feed.loadError")
         );
       } finally {
         setLoading(false);
@@ -123,7 +123,7 @@ export const PostFeed: React.FC<PostFeedProps> = ({
   };
 
   const handleDelete = async (postId: number) => {
-    if (!window.confirm(t("posts.feed.confirmDelete"))) {
+    if (!window.confirm(t("posts:feed.confirmDelete"))) {
       return;
     }
 
@@ -250,10 +250,10 @@ export const PostFeed: React.FC<PostFeedProps> = ({
             />
           </svg>
           <h3 className="text-lg font-medium text-gray-900 mb-2">
-            {t("posts.feed.noPosts")}
+            {t("posts:feed.noPosts")}
           </h3>
           <p className="text-gray-600 max-w-md mx-auto">
-            {t("posts.feed.noPostsDescription")}
+            {t("posts:feed.noPostsDescription")}
           </p>
         </div>
       </div>
@@ -283,14 +283,14 @@ export const PostFeed: React.FC<PostFeedProps> = ({
             disabled={loading}
             className="bg-[#6fffe9] text-black px-8 py-3 rounded-lg hover:bg-[#5ee6d3] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
           >
-            {loading ? t("common.loading") : t("posts.feed.loadMore")}
+            {loading ? t("common.loading") : t("posts:feed.loadMore")}
           </button>
         </div>
       )}
 
       {posts.length > 0 && (
         <div className="text-center mt-6 text-sm text-gray-500">
-          {t("posts.feed.showing", {
+          {t("posts:feed.showing", {
             count: posts.length,
             total: pagination.totalElements,
           })}

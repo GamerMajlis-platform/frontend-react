@@ -1,7 +1,7 @@
 // Tournament Management Service
 // Implements all Tournament Management APIs (#74-#87)
 
-import { apiFetch } from "../lib/api";
+import { BaseService } from "../lib/baseService";
 import type {
   Tournament,
   TournamentMatch,
@@ -15,7 +15,7 @@ import type {
   DisqualifyParticipantRequest,
 } from "../types/tournaments";
 
-class TournamentService {
+class TournamentService extends BaseService {
   // ===== TOURNAMENT MANAGEMENT APIs (#74-#81) =====
 
   /**
@@ -25,7 +25,7 @@ class TournamentService {
   static async createTournament(
     data: CreateTournamentRequest
   ): Promise<Tournament> {
-    return await apiFetch<Tournament>("/tournaments", {
+    return await this.authenticatedRequest<Tournament>("/tournaments", {
       method: "POST",
       body: JSON.stringify(data),
     });
@@ -36,7 +36,7 @@ class TournamentService {
    * GET /api/tournaments/{id}
    */
   static async getTournament(id: number): Promise<Tournament> {
-    return await apiFetch<Tournament>(`/tournaments/${id}`);
+    return await this.requestWithRetry<Tournament>(`/tournaments/${id}`);
   }
 
   /**
@@ -47,7 +47,7 @@ class TournamentService {
     id: number,
     data: UpdateTournamentRequest
   ): Promise<Tournament> {
-    return await apiFetch<Tournament>(`/tournaments/${id}`, {
+    return await this.authenticatedRequest<Tournament>(`/tournaments/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),
     });
@@ -58,7 +58,7 @@ class TournamentService {
    * DELETE /api/tournaments/{id}
    */
   static async deleteTournament(id: number): Promise<void> {
-    await apiFetch<void>(`/tournaments/${id}`, {
+    await this.authenticatedRequest<void>(`/tournaments/${id}`, {
       method: "DELETE",
     });
   }
@@ -96,7 +96,9 @@ class TournamentService {
     const queryString = params.toString();
     const url = queryString ? `/tournaments?${queryString}` : "/tournaments";
 
-    const data = await apiFetch<Tournament[] | TournamentsListResponse>(url);
+    const data = await this.requestWithRetry<
+      Tournament[] | TournamentsListResponse
+    >(url);
 
     // Normalize response - handle both array and paginated responses
     if (Array.isArray(data)) {
@@ -119,7 +121,7 @@ class TournamentService {
   static async getTournamentsByOrganizer(
     organizerId: number
   ): Promise<Tournament[]> {
-    return await apiFetch<Tournament[]>(
+    return await this.requestWithRetry<Tournament[]>(
       `/tournaments/organizer/${organizerId}`
     );
   }
@@ -132,7 +134,7 @@ class TournamentService {
     tournamentId: number,
     moderatorId: number
   ): Promise<void> {
-    await apiFetch<void>(
+    await this.authenticatedRequest<void>(
       `/tournaments/${tournamentId}/moderators?moderatorId=${moderatorId}`,
       {
         method: "POST",
@@ -146,7 +148,7 @@ class TournamentService {
    */
   static async incrementTournamentView(tournamentId: number): Promise<void> {
     try {
-      await apiFetch<void>(`/tournaments/${tournamentId}/view`, {
+      await this.requestWithRetry<void>(`/tournaments/${tournamentId}/view`, {
         method: "POST",
       });
     } catch {
@@ -167,7 +169,7 @@ class TournamentService {
     tournamentId: number,
     participantId: number
   ): Promise<RegisterForTournamentResponse> {
-    return await apiFetch<RegisterForTournamentResponse>(
+    return await this.authenticatedRequest<RegisterForTournamentResponse>(
       `/tournaments/${tournamentId}/participants/register?participantId=${participantId}`,
       {
         method: "POST",
@@ -183,7 +185,7 @@ class TournamentService {
     tournamentId: number,
     participantId: number
   ): Promise<void> {
-    await apiFetch<void>(
+    await this.authenticatedRequest<void>(
       `/tournaments/${tournamentId}/participants/check-in?participantId=${participantId}`,
       {
         method: "POST",
@@ -204,7 +206,7 @@ class TournamentService {
       reason: request.reason,
     });
 
-    await apiFetch<void>(
+    await this.authenticatedRequest<void>(
       `/tournaments/${tournamentId}/participants/disqualify?${params}`,
       {
         method: "POST",
@@ -225,7 +227,7 @@ class TournamentService {
       won: request.won.toString(),
     });
 
-    await apiFetch<void>(
+    await this.authenticatedRequest<void>(
       `/tournaments/${tournamentId}/participants/submit-result?${params}`,
       {
         method: "POST",
@@ -240,7 +242,7 @@ class TournamentService {
   static async getTournamentParticipants(
     tournamentId: number
   ): Promise<TournamentParticipation[]> {
-    return await apiFetch<TournamentParticipation[]>(
+    return await this.requestWithRetry<TournamentParticipation[]>(
       `/tournaments/${tournamentId}/participants`
     );
   }
@@ -253,7 +255,7 @@ class TournamentService {
     tournamentId: number,
     participantId: number
   ): Promise<TournamentParticipation> {
-    return await apiFetch<TournamentParticipation>(
+    return await this.requestWithRetry<TournamentParticipation>(
       `/tournaments/${tournamentId}/participants/${participantId}`
     );
   }

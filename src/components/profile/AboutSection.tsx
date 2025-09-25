@@ -1,11 +1,13 @@
-import { memo, useRef, useEffect } from "react";
+import { memo, useRef, useEffect, useState } from "react";
+import formatBio from "../../utils/formatMarkdown";
 import { useTranslation } from "react-i18next";
 
 interface AboutSectionProps {
-  isEditing: boolean;
   isRTL: boolean;
   bio: string;
-  onChange: (bio: string) => void;
+  isSaving?: boolean;
+  onSave?: (bio: string) => void;
+  onCancel?: () => void;
 }
 
 /**
@@ -15,6 +17,8 @@ interface AboutSectionProps {
  */
 function AboutSection(props: AboutSectionProps) {
   const { t } = useTranslation();
+  const [isEditing, setIsEditing] = useState(false);
+  const [localBio, setLocalBio] = useState(props.bio || "");
   const bioRef = useRef<HTMLTextAreaElement | null>(null);
 
   const autoSizeBio = () => {
@@ -24,9 +28,13 @@ function AboutSection(props: AboutSectionProps) {
     el.style.height = `${el.scrollHeight}px`;
   };
 
+  // use shared formatBio util
+
   useEffect(() => {
+    // sync local bio when parent prop changes while not editing
+    if (!isEditing) setLocalBio(props.bio || "");
     autoSizeBio();
-  }, [props.isEditing]);
+  }, [props.bio, isEditing]);
 
   const wrapSelection = (before: string, after: string = before) => {
     const el = bioRef.current;
@@ -37,7 +45,7 @@ function AboutSection(props: AboutSectionProps) {
     const selected = value.slice(start, end);
     const newValue =
       value.slice(0, start) + before + selected + after + value.slice(end);
-    props.onChange(newValue);
+    setLocalBio(newValue);
     requestAnimationFrame(() => {
       el.focus();
       el.setSelectionRange(start + before.length, end + before.length);
@@ -45,16 +53,30 @@ function AboutSection(props: AboutSectionProps) {
     });
   };
 
-  if (!props.isEditing) {
+  if (!isEditing) {
     return (
-      <div
-        className={`text-base sm:text-lg leading-relaxed ${
-          props.bio ? "text-slate-200" : "text-slate-500 italic"
-        } whitespace-pre-wrap`}
-      >
-        {props.bio ||
-          (t("profile:placeholders.bio") as string) ||
-          "Tell others about yourself..."}
+      <div className="flex items-start justify-between">
+        <div
+          className={`text-base sm:text-lg leading-relaxed ${
+            props.bio ? "text-slate-200" : "text-slate-500 italic"
+          } max-w-[80%]`}
+          // render lightweight markdown: **bold** and *italic*
+          dangerouslySetInnerHTML={{
+            __html: formatBio(
+              props.bio ||
+                (t("profile:placeholders.bio") as string) ||
+                "Tell others about yourself..."
+            ),
+          }}
+        />
+        <div className="ml-4">
+          <button
+            onClick={() => setIsEditing(true)}
+            className="px-4 py-2 bg-primary hover:bg-primary/80 text-white rounded-lg transition-colors"
+          >
+            {t("common.edit")}
+          </button>
+        </div>
       </div>
     );
   }
@@ -81,9 +103,9 @@ function AboutSection(props: AboutSectionProps) {
         </div>
         <textarea
           ref={bioRef}
-          value={props.bio}
+          value={localBio}
           onChange={(e) => {
-            props.onChange(e.target.value);
+            setLocalBio(e.target.value);
             autoSizeBio();
           }}
           placeholder={
@@ -95,8 +117,32 @@ function AboutSection(props: AboutSectionProps) {
           }`}
         />
         <div className="text-right text-slate-400 text-sm">
-          {props.bio.length} / 500
+          {isEditing ? localBio.length : (props.bio || "").length} / 500
         </div>
+      </div>
+      {/* Save / Cancel controls when editing */}
+      <div className="flex justify-end gap-3">
+        <button
+          onClick={() => {
+            // cancel local edits
+            setLocalBio(props.bio || "");
+            setIsEditing(false);
+            props.onCancel?.();
+          }}
+          className="px-4 py-2 bg-slate-600 hover:bg-slate-700 disabled:opacity-50 text-white rounded-lg font-medium transition-colors"
+        >
+          {t("common.cancel")}
+        </button>
+        <button
+          onClick={() => {
+            props.onSave?.(localBio);
+            setIsEditing(false);
+          }}
+          disabled={props.isSaving}
+          className="px-4 py-2 bg-primary hover:bg-primary/80 disabled:opacity-50 text-white rounded-lg font-medium transition-colors"
+        >
+          {props.isSaving ? t("common.saving") : t("common.save")}
+        </button>
       </div>
     </div>
   );

@@ -1,4 +1,3 @@
-import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../../context/useAppContext";
 import type { ChatMessage, ChatRoom } from "../../types/chat";

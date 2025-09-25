@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { LanguageSwitcher, ProfileDropdown } from "../index";
 import ProfileSearch from "../profile/ProfileSearch";
 import { useAppContext } from "../../context/useAppContext";
+import Notifications from "./Notifications";
 import { useClickOutside } from "../../hooks";
 import { navigationItems } from "../../data";
 
@@ -130,6 +131,11 @@ export default function Header({
               <div className="w-5 h-0.5 bg-white" />
             </div>
           </button>
+        </div>
+
+        {/* Mobile notifications (left of profile) */}
+        <div className="absolute right-16 top-4 md:hidden">
+          <Notifications />
         </div>
 
         {/* (kept simplified hamburger above; alternative implementations removed) */}
@@ -282,11 +288,9 @@ export default function Header({
           <Link
             to="/"
             onClick={() => onSectionChange?.("home")}
-            className="flex items-center gap-3 cursor-pointer"
+            className="flex flex-row items-center gap-3 cursor-pointer"
+            dir="ltr"
           >
-            <span className="text-white text-[20px] sm:text-[22px] md:text-[24px] tracking-wider font-[var(--font-alice)] bg-gradient-to-r from-white via-primary/80 to-white bg-clip-text text-transparent drop-shadow-lg relative">
-              GamerMajlis
-            </span>
             <div className="relative">
               <img
                 src="/brand/controller.png"
@@ -295,11 +299,18 @@ export default function Header({
                 draggable={false}
               />
             </div>
+            <span className="text-white text-[20px] sm:text-[22px] md:text-[24px] tracking-wider font-[var(--font-alice)] bg-gradient-to-r from-white via-primary/80 to-white bg-clip-text text-transparent drop-shadow-lg relative">
+              GamerMajlis
+            </span>
           </Link>
         </div>
 
         {/* Desktop Navigation with clearer frame for evaluation */}
-        <nav className="hidden md:flex items-center gap-6 lg:gap-8 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-900/60 backdrop-blur-md rounded-full px-6 py-2 border-2 border-cyan-300/40 shadow-lg">
+        <nav
+          className={`hidden md:flex items-center ${
+            i18n.dir() === "ltr" ? "gap-3 lg:gap-4" : "gap-6 lg:gap-8"
+          } absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-900/60 backdrop-blur-md rounded-full px-6 py-2 border-2 border-cyan-300/40 shadow-lg`}
+        >
           {navigationItems.map((item) => (
             <Link
               key={item.key}
@@ -347,35 +358,35 @@ export default function Header({
             </div>
           )}
 
-          {/* Enhanced Messages Button */}
+          {/* Messages - compact icon button */}
           <button
             onClick={() => onSectionChange?.("messages")}
+            aria-label={t("nav.messages")}
             className={`
-              relative flex items-center gap-2 h-10 px-4 rounded-lg font-medium transition-all duration-300 transform hover:scale-105
-              border-2 border-cyan-300/30 backdrop-blur-md bg-slate-800/50
-              ${
-                isMessageHovered
-                  ? "bg-gradient-to-r from-primary to-cyan-300 text-slate-900 shadow-glow border-transparent"
-                  : "text-white hover:bg-slate-700/60"
-              }
+              relative flex items-center justify-center h-10 w-10 rounded-full transition-all duration-200
+              border-2 border-cyan-300/40 bg-slate-800/50 text-white
+              hover:bg-slate-700/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary
+              ${isMessageHovered ? "ring-2 ring-primary/40" : ""}
             `}
             onMouseEnter={() => setIsMessageHovered(true)}
             onMouseLeave={() => setIsMessageHovered(false)}
           >
-            {/* Message Icon with enhanced styling */}
-            <div className="relative">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-              </svg>
-              {/* Enhanced notification badge */}
-              <div className="absolute -top-2 -right-2 w-3 h-3 bg-gradient-to-r from-red-500 to-red-600 rounded-full border-2 border-slate-800 shadow-lg animate-pulse" />
-            </div>
-            <span className="hidden lg:inline text-sm font-medium">
-              {t("nav.messages")}
-            </span>
+            <svg
+              className="w-5 h-5"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M3 4a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3H10l-5 4v-4H6a3 3 0 0 1-3-3V4z" />
+            </svg>
+            <span className="sr-only">{t("nav.messages")}</span>
+            {/* Notification badge disabled until chat notifications are integrated */}
           </button>
 
+          {/* Notifications */}
+          <div className="transform hover:scale-105 transition-transform duration-200">
+            <Notifications />
+          </div>
           <div className="transform hover:scale-105 transition-transform duration-200">
             <ProfileDropdown onSectionChange={onSectionChange} />
           </div>

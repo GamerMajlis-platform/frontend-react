@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../../context/useAppContext";
 import { useProfile } from "../../hooks/useProfile";
@@ -122,38 +122,47 @@ export default function EnhancedProfileForm() {
     title: string;
     isOpen: boolean;
     onToggle: () => void;
-  }) => (
-    <div className="border border-slate-700/50 rounded-xl overflow-hidden">
-      <button
-        onClick={onToggle}
-        aria-expanded={isOpen}
-        className={`w-full flex items-center justify-between p-4 text-left font-semibold transition-colors ${
-          isOpen
-            ? "bg-primary/20 text-primary border-b border-primary/30"
-            : "bg-slate-800/50 text-slate-300 hover:bg-slate-700/50"
-        }`}
-      >
-        <span>{title}</span>
-        <svg
-          className={`h-5 w-5 text-slate-300 transform transition-transform duration-200 ${
-            isOpen ? "rotate-180 text-primary" : "rotate-0"
+  }) => {
+    const sectionId = `section-content-${title
+      .replace(/\s+/g, "-")
+      .toLowerCase()}`;
+    return (
+      <div className="border border-slate-700/50 rounded-xl overflow-hidden">
+        <button
+          onClick={onToggle}
+          aria-controls={sectionId}
+          className={`w-full flex items-center justify-between p-4 text-left font-semibold transition-colors ${
+            isOpen
+              ? "bg-primary/20 text-primary border-b border-primary/30"
+              : "bg-slate-800/50 text-slate-300 hover:bg-slate-700/50"
           }`}
-          viewBox="0 0 20 20"
-          fill="none"
-          aria-hidden="true"
         >
-          <path
-            d="M6 8l4 4 4-4"
-            stroke="currentColor"
-            strokeWidth={1.5}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </button>
-      {isOpen && <div className="p-6 bg-slate-800/30">{children}</div>}
-    </div>
-  );
+          <span>{title}</span>
+          <svg
+            className={`h-5 w-5 text-slate-300 transform transition-transform duration-200 ${
+              isOpen ? "rotate-180 text-primary" : "rotate-0"
+            }`}
+            viewBox="0 0 20 20"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M6 8l4 4 4-4"
+              stroke="currentColor"
+              strokeWidth={1.5}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+        {isOpen && (
+          <div id={sectionId} className="p-6 bg-slate-800/30">
+            {children}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const InputField = ({
     label,
@@ -173,39 +182,52 @@ export default function EnhancedProfileForm() {
     required?: boolean;
     maxLength?: number;
     disabled?: boolean;
-  }) => (
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-slate-300">
-        {label} {required && <span className="text-red-400">*</span>}
-      </label>
-      {type === "textarea" ? (
-        <textarea
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          disabled={disabled}
-          maxLength={maxLength}
-          rows={4}
-          className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
-        />
-      ) : (
-        <input
-          type={type}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          disabled={disabled}
-          maxLength={maxLength}
-          className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
-        />
-      )}
-      {maxLength && (
-        <div className="text-xs text-slate-400 text-right">
-          {value.length}/{maxLength}
-        </div>
-      )}
-    </div>
-  );
+  }) => {
+    const idRef = useRef<string | null>(null);
+    if (!idRef.current) {
+      idRef.current = `epf-input-${Math.random().toString(36).slice(2, 9)}`;
+    }
+    const id = idRef.current;
+
+    return (
+      <div className="space-y-2">
+        <label
+          htmlFor={id}
+          className="block text-sm font-medium text-slate-300"
+        >
+          {label} {required && <span className="text-red-400">*</span>}
+        </label>
+        {type === "textarea" ? (
+          <textarea
+            id={id}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={placeholder}
+            disabled={disabled}
+            maxLength={maxLength}
+            rows={4}
+            className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+          />
+        ) : (
+          <input
+            id={id}
+            type={type}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={placeholder}
+            disabled={disabled}
+            maxLength={maxLength}
+            className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+          />
+        )}
+        {maxLength && (
+          <div className="text-xs text-slate-400 text-right">
+            {value.length}/{maxLength}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const SelectField = ({
     label,
@@ -221,25 +243,37 @@ export default function EnhancedProfileForm() {
     options: { value: string; label: string }[];
     required?: boolean;
     disabled?: boolean;
-  }) => (
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-slate-300">
-        {label} {required && <span className="text-red-400">*</span>}
-      </label>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        disabled={disabled}
-        className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
+  }) => {
+    const idRef = useRef<string | null>(null);
+    if (!idRef.current) {
+      idRef.current = `epf-select-${Math.random().toString(36).slice(2, 9)}`;
+    }
+    const id = idRef.current;
+
+    return (
+      <div className="space-y-2">
+        <label
+          htmlFor={id}
+          className="block text-sm font-medium text-slate-300"
+        >
+          {label} {required && <span className="text-red-400">*</span>}
+        </label>
+        <select
+          id={id}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          disabled={disabled}
+          className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
+  };
 
   // ToggleField removed; privacy toggles are handled in Settings
 
@@ -305,10 +339,14 @@ export default function EnhancedProfileForm() {
               maxLength={50}
             />
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-slate-300">
+              <label
+                htmlFor="discord-username"
+                className="block text-sm font-medium text-slate-300"
+              >
                 {t("profile:discordUsername")}
               </label>
               <input
+                id="discord-username"
                 type="text"
                 value={user?.discordUsername || "Not linked"}
                 disabled

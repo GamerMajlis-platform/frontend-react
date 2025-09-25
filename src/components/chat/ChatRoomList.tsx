@@ -45,11 +45,18 @@ export const ChatRoomList: React.FC<ChatRoomListProps> = ({
       (now.getTime() - date.getTime()) / (1000 * 60)
     );
 
-    if (diffInMinutes < 1) return t("chat.justNow");
+    if (diffInMinutes < 1)
+      return t("chat.justNow", { defaultValue: "Just now" });
     if (diffInMinutes < 60)
-      return t("chat.minutesAgo", { count: diffInMinutes });
+      return t("chat.minutesAgo", {
+        defaultValue: "{{count}} minutes ago",
+        count: diffInMinutes,
+      });
     if (diffInMinutes < 1440)
-      return t("chat.hoursAgo", { count: Math.floor(diffInMinutes / 60) });
+      return t("chat.hoursAgo", {
+        defaultValue: "{{count}} hours ago",
+        count: Math.floor(diffInMinutes / 60),
+      });
     return date.toLocaleDateString();
   };
 
@@ -110,8 +117,15 @@ export const ChatRoomList: React.FC<ChatRoomListProps> = ({
         className={`bg-white rounded-lg shadow-sm p-6 text-center border ${className}`}
       >
         <div className="text-4xl mb-4">💬</div>
-        <h3 className="text-lg font-semibold mb-2">{t("chat.noRooms")}</h3>
-        <p className="text-gray-600">{t("chat.noRoomsDescription")}</p>
+        <h3 className="text-lg font-semibold mb-2">
+          {t("chat.noRooms", { defaultValue: "No rooms" })}
+        </h3>
+        <p className="text-gray-600">
+          {t("chat.noRoomsDescription", {
+            defaultValue:
+              "You have no rooms yet. Create a room to start chatting.",
+          })}
+        </p>
       </div>
     );
   }
@@ -119,9 +133,11 @@ export const ChatRoomList: React.FC<ChatRoomListProps> = ({
   return (
     <div className={`space-y-2 ${className}`}>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold">{t("chat.myRooms")}</h2>
+        <h2 className="text-lg font-semibold">
+          {t("chat.myRooms", { defaultValue: "My rooms" })}
+        </h2>
         <span className="text-sm text-gray-500">
-          {rooms.length} {t("chat.rooms")}
+          {rooms.length} {t("chat.rooms", { defaultValue: "rooms" })}
         </span>
       </div>
 
@@ -163,7 +179,7 @@ export const ChatRoomList: React.FC<ChatRoomListProps> = ({
                     </p>
                   ) : (
                     <p className="text-sm text-gray-500 italic">
-                      {t("chat.noMessages")}
+                      {t("chat.noMessages", { defaultValue: "No messages" })}
                     </p>
                   )}
                 </div>
@@ -171,11 +187,12 @@ export const ChatRoomList: React.FC<ChatRoomListProps> = ({
                 <div className="flex items-center space-x-2 ml-2">
                   {room.isPrivate && (
                     <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
-                      🔒 {t("chat.private")}
+                      🔒 {t("chat.private", { defaultValue: "Private" })}
                     </span>
                   )}
                   <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                    {room.currentMembers} {t("chat.members")}
+                    {room.currentMembers}{" "}
+                    {t("chat.members", { defaultValue: "members" })}
                   </span>
                 </div>
               </div>

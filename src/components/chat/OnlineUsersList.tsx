@@ -143,9 +143,14 @@ export const OnlineUsersList: React.FC<OnlineUsersListProps> = ({
     <div className={`bg-white rounded-lg shadow-sm border ${className}`}>
       <div className="p-4 border-b">
         <div className="flex items-center justify-between">
-          <h3 className="font-semibold">{t("chat.onlineUsers")}</h3>
+          <h3 className="font-semibold">
+            {t("chat.onlineUsers.title", { defaultValue: "Online users" })}
+          </h3>
           <span className="text-sm text-gray-500">
-            {onlineUsers.length} {t("chat.online")}
+            {t("chat.onlineCount", {
+              defaultValue: "{{count}} online",
+              count: onlineUsers.length,
+            })}
           </span>
         </div>
       </div>
@@ -154,7 +159,11 @@ export const OnlineUsersList: React.FC<OnlineUsersListProps> = ({
         {onlineUsers.length === 0 ? (
           <div className="p-6 text-center">
             <div className="text-4xl mb-4">😴</div>
-            <p className="text-gray-500">{t("chat.noOnlineUsers")}</p>
+            <p className="text-gray-500">
+              {t("chat.onlineUsers.noOnlineUsers", {
+                defaultValue: "No users online",
+              })}
+            </p>
           </div>
         ) : (
           <div className="space-y-1 p-2">

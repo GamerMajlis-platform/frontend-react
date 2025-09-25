@@ -204,14 +204,14 @@
     "error": "Error",
     "loading": "Loading...",
     "noResults": "No results",
+    "optional": "optional",
     "retry": "Retry",
     "save": "Save",
     "saving": "Saving...",
     "search": "Search",
     "select": "Select",
     "success": "Success",
-    "tryAgain": "Try again",
-    "optional": "optional"
+    "tryAgain": "Try again"
   },
   "conversations": {
     "composer": {
@@ -364,48 +364,6 @@
     "messages": "Messages",
     "profile": "Profile",
     "tournaments": "Tournaments"
-  },
-  "posts": {
-    "copyLink": "Copy link",
-    "create": {
-      "content": "Content",
-      "contentPlaceholder": "Share your thoughts, experiences, or ask questions...",
-      "createError": "Failed to create post. Please try again.",
-      "gameCategory": "Game category",
-      "gameTitle": "Game title",
-      "gameTitlePlaceholder": "e.g., Valorant, League of Legends",
-      "hashtags": "Hashtags",
-      "hashtagsHelp": "Detected automatically from content or add manually",
-      "hashtagsPlaceholder": "Gaming, esports, community",
-      "platform": "Platform",
-      "postTitle": "Post title",
-      "private": "Private",
-      "public": "Public",
-      "publish": "Publish post",
-      "publishing": "Publishing...",
-      "requiredFields": "Please fill in all required fields.",
-      "selectCategory": "Select category",
-      "selectPlatform": "Select platform",
-      "subtitle": "Share your gaming experiences with the community",
-      "successMessage": "Post created successfully!",
-      "tags": "Tags",
-      "tagsHelp": "Separate tags",
-      "tagsPlaceholder": "Games, Competitive, Strategy",
-      "title": "Create New Post",
-      "titlePlaceholder": "What's your gaming story?",
-      "visibility": "Visibility"
-    },
-    "delete": "Delete Post",
-    "feed": {
-      "confirmDelete": "Are you sure you want to delete this post?",
-      "loadError": "Failed to load posts",
-      "loadMore": "Load more",
-      "noPosts": "No posts yet",
-      "noPostsDescription": "Be the first to share something with the community!",
-      "showing": "Showing {{count}} of {{total}} posts"
-    },
-    "menu": "Post options",
-    "share": "Share"
   },
   "product": {
     "ascending": "Ascending",

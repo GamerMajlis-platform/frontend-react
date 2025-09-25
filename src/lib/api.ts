@@ -1,6 +1,6 @@
-import { API_CONFIG, STORAGE_KEYS } from "../config/constants";
-import { ErrorHandler, RetryHandler } from "./errors";
-import { SecureStorage } from "./security";
+import { API_CONFIG } from "../config/constants";
+import { ErrorHandler, RetryHandler, type RetryOptions } from "./errors";
+import { UserStorage } from "./userStorage";
 
 // Use the unified env var `VITE_API_BASE_URL` if set, otherwise fall back to constant
 const API_BASE = import.meta.env.VITE_API_BASE_URL || API_CONFIG.baseUrl;
@@ -16,22 +16,16 @@ if (import.meta.env.DEV) {
 
 export interface ApiOptions extends RequestInit {
   useFormData?: boolean;
-  retryOptions?: {
-    maxAttempts?: number;
-    delay?: number;
-    backoffFactor?: number;
-  };
+  retryOptions?: RetryOptions;
 }
 
 export async function apiFetch<T = unknown>(
   path: string,
   options: ApiOptions = {}
 ): Promise<T> {
-  // Prefer secure token storage (sessionStorage) then fall back to legacy localStorage key
+  // Use centralized UserStorage for token retrieval
   const token =
-    typeof window !== "undefined"
-      ? SecureStorage.getToken() || localStorage.getItem(STORAGE_KEYS.auth)
-      : null;
+    typeof window !== "undefined" ? UserStorage.getStoredToken() : null;
 
   const { useFormData = false, retryOptions, ...fetchOptions } = options;
 
@@ -113,7 +107,22 @@ export async function apiFetch<T = unknown>(
 
   // Apply retry logic if specified
   if (retryOptions) {
-    return RetryHandler.retry(makeRequest, retryOptions);
+    // Create method-aware retry options with idempotency detection
+    const method = fetchOptions.method || "GET";
+    const enhancedOptions = RetryHandler.createRetryOptions(
+      method,
+      retryOptions
+    );
+
+    if (import.meta.env.DEV) {
+      console.debug(`🔄 Retry configuration for ${method} ${path}:`, {
+        isIdempotent: enhancedOptions.isIdempotent,
+        maxAttempts: enhancedOptions.maxAttempts,
+        method,
+      });
+    }
+
+    return RetryHandler.retry(makeRequest, enhancedOptions);
   }
 
   return makeRequest();

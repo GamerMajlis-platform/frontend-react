@@ -234,15 +234,17 @@ export default function Events() {
           </div>
         </section>
 
-        {/* Create Event Toggle */}
+        {/* Create Event Button - hide when form open; form has its own X */}
         <div className="mb-6 flex justify-center">
-          <button
-            className="rounded-xl bg-cyan-500 px-6 py-3 text-white font-medium hover:bg-cyan-600 transition-colors"
-            onClick={() => setShowCreate(!showCreate)}
-            type="button"
-          >
-            {showCreate ? t("events:closeCreate") : t("events:create")}
-          </button>
+          {!showCreate && (
+            <button
+              className="rounded-xl bg-cyan-500 px-6 py-3 text-white font-medium hover:bg-cyan-600 transition-colors"
+              onClick={() => setShowCreate(true)}
+              type="button"
+            >
+              {t("events:create")}
+            </button>
+          )}
         </div>
 
         {/* Create Event Form */}

@@ -1,8 +1,9 @@
 // Profile Service - Handles profile-related API communication
-import { apiFetch, createFormData } from "../lib/api";
-import { API_ENDPOINTS, STORAGE_KEYS } from "../config/constants";
+import { API_ENDPOINTS } from "../config/constants";
 import { AuthService } from "./AuthService";
 import { MediaService } from "./MediaService";
+import { BaseService } from "../lib/baseService";
+import { UserStorage } from "../lib/userStorage";
 import type {
   User,
   ProfileResponse,
@@ -51,18 +52,19 @@ export interface ProfileSuggestionsResponse extends BackendResponse {
   suggestions: ProfileSuggestion[];
 }
 
-export class ProfileService {
+export class ProfileService extends BaseService {
   /**
    * Get current user's full profile
    */
   static async getMyProfile(): Promise<User> {
     try {
-      const data = await apiFetch<ProfileResponse>(API_ENDPOINTS.profile.me);
+      const data = await this.authenticatedRequest<ProfileResponse>(
+        API_ENDPOINTS.profile.me
+      );
       if (data.success && data.user) {
-        // Parse JSON fields and persist to storage
         const parsed = this.parseUserJsonFields(data.user);
         try {
-          localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(parsed));
+          UserStorage.updateStoredUser(parsed as User);
         } catch (err) {
           console.warn("Failed to persist user after fetch:", err);
         }
@@ -70,8 +72,7 @@ export class ProfileService {
       }
       throw new Error(data.message || "Failed to get profile");
     } catch (err) {
-      console.error("Get profile error:", err);
-      throw err;
+      this.handleServiceError(err, "ProfileService", "getMyProfile");
     }
   }
 
@@ -80,7 +81,8 @@ export class ProfileService {
    */
   static async getUserProfile(userId: number): Promise<User> {
     try {
-      const data = await apiFetch<ProfileResponse>(
+      this.validateRequired({ userId });
+      const data = await this.requestWithRetry<ProfileResponse>(
         `${API_ENDPOINTS.profile.byId}/${userId}`
       );
       if (data.success && data.user) {
@@ -88,8 +90,7 @@ export class ProfileService {
       }
       throw new Error(data.message || "Failed to get user profile");
     } catch (err) {
-      console.error("Get user profile error:", err);
-      throw err;
+      this.handleServiceError(err, "ProfileService", "getUserProfile");
     }
   }
 
@@ -98,28 +99,27 @@ export class ProfileService {
    */
   static async updateProfile(profileData: UpdateProfileData): Promise<User> {
     try {
-      const formData = createFormData(profileData as Record<string, string>);
-
-      const data = await apiFetch<ProfileResponse>(API_ENDPOINTS.profile.me, {
-        method: "PUT",
-        body: formData,
-        useFormData: true,
-      });
-
+      this.validateRequired({ profileData });
+      const formData = this.createFormData(
+        profileData as Record<string, string>
+      );
+      const data = await this.authenticatedRequest<ProfileResponse>(
+        API_ENDPOINTS.profile.me,
+        {
+          method: "PUT",
+          body: formData,
+          useFormData: true,
+        }
+      );
       if (data.success && data.user) {
-        // Parse JSON fields and persist parsed user to localStorage
         const parsed = this.parseUserJsonFields(data.user);
         try {
-          const storedUser = localStorage.getItem(STORAGE_KEYS.user);
+          const storedUser = UserStorage.getStoredUser();
           if (storedUser) {
-            const currentUser = JSON.parse(storedUser);
-            const updatedUser = { ...currentUser, ...parsed };
-            localStorage.setItem(
-              STORAGE_KEYS.user,
-              JSON.stringify(updatedUser)
-            );
+            const updatedUser = { ...storedUser, ...parsed };
+            UserStorage.updateStoredUser(updatedUser as User);
           } else {
-            localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(parsed));
+            UserStorage.updateStoredUser(parsed as User);
           }
         } catch (err) {
           console.warn("Failed to update stored user data:", err);
@@ -128,8 +128,7 @@ export class ProfileService {
       }
       throw new Error(data.message || "Failed to update profile");
     } catch (err) {
-      console.error("Update profile error:", err);
-      throw err;
+      this.handleServiceError(err, "ProfileService", "updateProfile");
     }
   }
 
@@ -138,18 +137,8 @@ export class ProfileService {
    */
   static async uploadProfilePicture(file: File): Promise<string> {
     try {
-      if (!file) {
-        throw new Error("No file provided");
-      }
-
-      // Test authentication first
-      try {
-        await AuthService.getCurrentUser();
-      } catch {
-        throw new Error("Please log in again before uploading");
-      }
-
-      // Validate file type
+      this.validateRequired({ file });
+      await AuthService.getCurrentUser();
       const allowedTypes = [
         "image/jpeg",
         "image/jpg",
@@ -161,90 +150,41 @@ export class ProfileService {
           "Invalid file type. Please upload JPG, PNG, or GIF files only."
         );
       }
-
-      // Validate file size (10MB limit)
-      const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+      const maxSize = 10 * 1024 * 1024;
       if (file.size > maxSize) {
         throw new Error("File is too large. Maximum size is 10MB.");
       }
-
-      // T12: Validate square aspect ratio
+      // T12: Validate aspect ratio (1:1 to 4:5)
       const aspectRatioValidation = await MediaService.validateProfilePicture(
         file
       );
       if (!aspectRatioValidation.isValid) {
         throw new Error(aspectRatioValidation.error);
       }
-
-      // T9: Check for malicious files
+      //T9: Check for malicious files
       const securityCheck = await MediaService.detectMaliciousFile(file);
       if (!securityCheck.isSafe) {
         throw new Error(securityCheck.reason || "File failed security check");
       }
-
       const formData = new FormData();
       formData.append("file", file);
-
-      console.log("📤 Uploading profile picture:", {
-        fileName: file.name,
-        fileSize: file.size,
-        fileType: file.type,
-        endpoint: API_ENDPOINTS.profile.uploadPicture,
-      });
-
-      const data = await apiFetch<
+      const data = await this.authenticatedRequest<
         BackendResponse & { profilePictureUrl: string }
       >(API_ENDPOINTS.profile.uploadPicture, {
         method: "POST",
         body: formData,
         useFormData: true,
       });
-
-      console.log("✅ Profile picture upload response:", data);
-
       if (data.success && data.profilePictureUrl) {
         return data.profilePictureUrl;
       }
-
-      // Provide more specific error messages based on backend response
       const userMessage =
         data.message === "Failed to upload profile picture"
           ? "Unable to upload image. The backend server couldn't process the file. Please contact support."
           : data.message || "Upload failed. Please try again.";
-
       throw new Error(userMessage);
     } catch (err) {
-      console.error("Upload profile picture error:", err);
-
-      // Log detailed error information for debugging
-      if (err instanceof Error) {
-        console.error("Error details:", {
-          message: err.message,
-          name: err.name,
-          stack: err.stack,
-        });
-      }
-
-      // Handle different types of errors
-      if (err instanceof Error) {
-        // If it's already a user-friendly message, keep it
-        if (err.message.includes("Please") || err.message.includes("Unable")) {
-          throw err;
-        }
-
-        // Check if it's a network/API error with more details
-        if (
-          err.message.includes("500") ||
-          err.message.includes("Internal Server Error")
-        ) {
-          throw new Error(
-            "Backend server error. The image upload service may be temporarily unavailable. Please try again later or contact support."
-          );
-        }
-
-        throw new Error(`Failed to upload profile picture: ${err.message}`);
-      }
-      throw new Error("Failed to upload profile picture: Unknown error");
+      this.handleServiceError(err, "ProfileService", "uploadProfilePicture");
     }
   }
 
@@ -253,19 +193,17 @@ export class ProfileService {
    */
   static async removeProfilePicture(): Promise<void> {
     try {
-      const data = await apiFetch<BackendResponse>(
+      const data = await this.authenticatedRequest<BackendResponse>(
         API_ENDPOINTS.profile.removePicture,
         {
           method: "DELETE",
         }
       );
-
       if (!data.success) {
         throw new Error(data.message || "Failed to remove profile picture");
       }
     } catch (err) {
-      console.error("Remove profile picture error:", err);
-      throw err;
+      this.handleServiceError(err, "ProfileService", "removeProfilePicture");
     }
   }
 
@@ -274,25 +212,23 @@ export class ProfileService {
    */
   static async updateGamingStats(stats: GamingStats): Promise<string> {
     try {
-      const formData = createFormData({
+      this.validateRequired({ stats });
+      const formData = this.createFormData({
         gamingStatistics: JSON.stringify(stats),
       });
-
-      const data = await apiFetch<
+      const data = await this.authenticatedRequest<
         BackendResponse & { gamingStatistics: string }
       >(API_ENDPOINTS.profile.updateStats, {
         method: "POST",
         body: formData,
         useFormData: true,
       });
-
       if (data.success && data.gamingStatistics) {
         return data.gamingStatistics;
       }
       throw new Error(data.message || "Failed to update gaming statistics");
     } catch (err) {
-      console.error("Update gaming stats error:", err);
-      throw err;
+      this.handleServiceError(err, "ProfileService", "updateGamingStats");
     }
   }
 
@@ -303,23 +239,21 @@ export class ProfileService {
     params: ProfileSearchParams
   ): Promise<ProfileSearchResponse> {
     try {
+      this.validateRequired({ query: params.query });
       const searchParams = new URLSearchParams({
         query: params.query,
         page: (params.page || 0).toString(),
         size: (params.size || 20).toString(),
       });
-
-      const data = await apiFetch<ProfileSearchResponse>(
+      const data = await this.requestWithRetry<ProfileSearchResponse>(
         `${API_ENDPOINTS.profile.search}?${searchParams.toString()}`
       );
-
       if (data.success) {
         return data;
       }
       throw new Error(data.message || "Failed to search profiles");
     } catch (err) {
-      console.error("Search profiles error:", err);
-      throw err;
+      this.handleServiceError(err, "ProfileService", "searchProfiles");
     }
   }
 
@@ -333,18 +267,15 @@ export class ProfileService {
       const searchParams = new URLSearchParams({
         limit: limit.toString(),
       });
-
-      const data = await apiFetch<ProfileSuggestionsResponse>(
+      const data = await this.requestWithRetry<ProfileSuggestionsResponse>(
         `${API_ENDPOINTS.profile.suggestions}?${searchParams.toString()}`
       );
-
       if (data.success && data.suggestions) {
         return data.suggestions;
       }
       throw new Error(data.message || "Failed to get profile suggestions");
     } catch (err) {
-      console.error("Get profile suggestions error:", err);
-      throw err;
+      this.handleServiceError(err, "ProfileService", "getProfileSuggestions");
     }
   }
 

@@ -8,6 +8,8 @@ interface TabBarProps {
   active: TabKey;
   onChange: (key: TabKey) => void;
   showManage?: boolean; // if false, hide the manage tab (used when viewing other users)
+  showAbout?: boolean; // if false, hide the about tab (used when viewing other users)
+  showStats?: boolean; // if false, hide the stats tab (used when viewing other users)
 }
 /**
  * Design note:
@@ -39,11 +41,15 @@ function TabBar(props: TabBarProps) {
 
   return (
     <div className="flex flex-wrap gap-2 sm:gap-3 mb-6 sm:mb-8 justify-center items-center">
-      <TabButton id="about" label={t("profile:tabs.about")} />
+      {props.showAbout !== false && (
+        <TabButton id="about" label={t("profile:tabs.about")} />
+      )}
       {props.showManage !== false && (
         <TabButton id="manage" label={t("profile:tabs.manage")} />
       )}
-      <TabButton id="stats" label={t("profile:tabs.stats")} />
+      {props.showStats !== false && (
+        <TabButton id="stats" label={t("profile:tabs.stats")} />
+      )}
 
       {/* Settings Icon Button: only show for profile owner (showManage !== false) */}
       {props.showManage !== false && (

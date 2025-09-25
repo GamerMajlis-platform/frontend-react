@@ -178,9 +178,17 @@ class WebSocketService {
 
       try {
         // Connect with authorization token
-        const wsUrl = `ws://localhost:8080/api/ws?token=${encodeURIComponent(
-          token
-        )}`;
+        const base =
+          (import.meta as any).env?.VITE_WS_BASE_URL ||
+          (typeof window !== "undefined"
+            ? `${window.location.protocol === "https:" ? "wss" : "ws"}://${
+                window.location.host
+              }`
+            : "ws://localhost:8080");
+        const wsUrl = `${base.replace(
+          /\/$/,
+          ""
+        )}/api/ws?token=${encodeURIComponent(token)}`;
         this.ws = new WebSocket(wsUrl);
 
         this.ws.onopen = () => {

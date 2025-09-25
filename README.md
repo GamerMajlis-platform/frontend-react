@@ -99,57 +99,100 @@ A modern React gaming platform built with TypeScript, Vite, and Tailwind CSS. Fe
 ```
 src/
 ├── components/
-│   ├── shared/              # Reusable UI components
-│   │   ├── Header.tsx       # Auth-aware navigation with lucide-react icons
-│   │   ├── InputField.tsx   # Form input with Eye/EyeOff password visibility
-│   │   ├── Card.tsx         # Product/tournament/event cards
-│   │   ├── SortBy.tsx       # Reusable sort dropdown
-│   │   ├── Dropdown.tsx     # Enhanced dropdown with ChevronDown icon
-│   │   └── LanguageSwitcher.tsx # EN/AR language toggle
-│   ├── profile/             # Profile management
-│   │   ├── BackendProfileHeader.tsx # Profile header with social icons
-│   │   ├── EnhancedProfileForm.tsx # Complete profile editing
-│   │   ├── GamingStatisticsPanel.tsx # Gaming stats tracking
-│   │   └── TabBar.tsx       # Profile navigation tabs
-│   ├── discord/             # Discord OAuth integration
-│   │   ├── DiscordUserInfo.tsx # Discord account display
-│   │   └── DiscordLinkButton.tsx # Account linking
-│   ├── events/              # Event management
-│   │   ├── CreateEventForm.tsx # Event creation with validation
-│   │   └── EventGrid.tsx    # Event display grid
-│   ├── media/               # Media upload and validation
-│   │   ├── MediaUpload.tsx  # File upload with progress tracking
-│   │   └── MediaValidator.tsx # File validation and security
-│   └── chat/                # Real-time chat system
-│       ├── ChatRoom.tsx     # Main chat interface
-│       └── MessageList.tsx  # Message history
+│   ├── chat/           # Real-time chat system UI
+│   ├── discord/        # Discord OAuth integration UI
+│   ├── events/         # Event management UI
+│   ├── media/          # Media upload/validation UI
+│   ├── posts/          # Post system UI
+│   ├── products/       # Marketplace UI
+│   ├── profile/        # Profile management UI
+│   ├── settings/       # Settings UI
+│   ├── shared/         # Reusable UI components
+│   ├── tournaments/    # Tournament UI
+│   ├── PreferencesBootstrap.tsx
+│   ├── ProfileDropdown.tsx
+│   ├── ProgressBar.tsx
+│   └── index.ts
 ├── pages/
-│   ├── Profile.tsx          # Profile page with social icons under Discord username
-│   ├── Events.tsx           # Event browsing and management
-│   ├── Tournaments.tsx      # Tournament system
-│   ├── Marketplace.tsx      # Product marketplace
-│   ├── Chat.tsx            # Chat system
-│   ├── AuthSuccess.tsx     # OAuth success handler (React Router)
-│   └── DiscordCallback.tsx # Discord OAuth callback (React Router)
+│   ├── AuthSuccess.tsx
+│   ├── Chat.tsx
+│   ├── DiscordCallback.tsx
+│   ├── DiscordOnlyLogin.tsx
+│   ├── EmailVerification.tsx
+│   ├── Events.tsx
+│   ├── Home.tsx
+│   ├── Login.tsx
+│   ├── Marketplace.tsx
+│   ├── Messages.tsx
+│   ├── NotFound.tsx
+│   ├── Profile.tsx
+│   ├── Settings.tsx
+│   ├── Signup.tsx
+│   ├── Tournaments.tsx
+│   ├── Wishlist.tsx
+│   └── index.ts
 ├── services/
-│   ├── AuthService.ts      # Authentication management
-│   ├── SessionService.ts   # 24-hour session handling
-│   ├── DiscordService.ts   # Discord OAuth integration
-│   ├── MediaService.ts     # Media upload and validation
-│   ├── EventService.ts     # Event management
-│   ├── TournamentService.ts # Tournament operations
-│   └── WebSocketService.ts # Real-time communication
+│   ├── AuthService.ts        # Authentication management (extends BaseService)
+│   ├── ChatService.ts        # Chat system (extends BaseService)
+│   ├── DiscordService.ts     # Discord OAuth (extends BaseService)
+│   ├── EventService.ts       # Event management (extends BaseService)
+│   ├── MediaService.ts       # Media upload/validation (extends BaseService)
+│   ├── PostService.ts        # Post system (extends BaseService)
+│   ├── ProductService.ts     # Marketplace (extends BaseService)
+│   ├── ProfileService.ts     # Profile management (extends BaseService)
+│   ├── SessionService.ts     # 24-hour session handling
+│   ├── TournamentService.ts  # Tournament operations (extends BaseService)
+│   └── WebSocketService.ts   # Real-time communication
 ├── hooks/
-│   ├── useApi.ts           # API integration hook
-│   ├── useFormValidation.ts # Form validation utilities
-│   ├── useProfile.ts       # Profile management
-│   └── useLocalStorage.ts  # Persistent state management
-└── types/
-    ├── auth.ts             # Authentication types
-    ├── events.ts           # Event system types
-    ├── tournaments.ts      # Tournament types
-    ├── media.ts            # Media handling types
-    └── ui.ts               # UI component types
+│   ├── useApi.ts
+│   ├── useClickOutside.ts
+│   ├── useDebounce.ts
+│   ├── useDeepStable.ts
+│   ├── useFormValidation.ts
+│   ├── useIsMobile.ts
+│   ├── useLocalStorage.ts
+│   ├── usePreferences.ts
+│   └── useProfile.ts
+├── types/
+│   ├── auth.ts
+│   ├── chat.ts
+│   ├── common.ts
+│   ├── context7-mcp.d.ts
+│   ├── data.ts
+│   ├── discord.ts
+│   ├── events.ts
+│   ├── forms.ts
+│   ├── index.ts
+│   ├── media.ts
+│   ├── posts.ts
+│   ├── products.ts
+│   ├── tournaments.ts
+│   └── ui.ts
+├── lib/
+│   ├── api.ts
+│   ├── baseService.ts        # Abstract BaseService for DRY service logic
+│   ├── errors.ts
+│   ├── icons.tsx
+│   ├── index.ts
+│   ├── logger.ts
+│   ├── navigation.ts
+│   ├── security.ts
+│   └── userStorage.ts
+├── config/
+│   ├── constants.ts
+│   └── index.ts
+├── context/
+│   ├── AppContext.tsx
+│   └── useAppContext.ts
+├── data/
+│   ├── index.ts
+│   ├── languages.ts
+│   ├── navigation.ts
+│   └── README.md
+├── i18n/
+│   └── config.ts
+└── states/
+  └── EmptyState.tsx
 ```
 
 ## 🔧 Technical Improvements Made
@@ -177,6 +220,12 @@ src/
 - Comprehensive file upload validation with malicious file detection
 - Form validation for all user inputs with proper error handling
 - CVE vulnerability scanning for project dependencies
+
+### Service Layer Refactor
+
+- Introduced `BaseService` abstract class for all major services to enforce DRY, maintainable, and consistent API logic (authentication, retries, error handling, form data, etc.)
+- All domain services (AuthService, ChatService, DiscordService, EventService, MediaService, PostService, ProductService, ProfileService, TournamentService) now extend `BaseService`.
+- Reduced boilerplate and improved maintainability across the codebase.
 
 ## 🏗️ Backend Integration Requirements
 

@@ -22,12 +22,10 @@ export default function ProfileDropdown({
     username: string;
     discriminator?: string;
   }>(null);
-  const [discordLoading, setDiscordLoading] = useState(false);
 
   useEffect(() => {
     let mounted = true;
     if (user) {
-      setDiscordLoading(true);
       DiscordService.getUserInfo()
         .then((res) => {
           if (mounted && res.success && res.discordUser) {
@@ -37,7 +35,9 @@ export default function ProfileDropdown({
             });
           }
         })
-        .finally(() => mounted && setDiscordLoading(false));
+        .finally(() => {
+          /* noop */
+        });
     } else {
       setDiscordUser(null);
     }
@@ -73,6 +73,14 @@ export default function ProfileDropdown({
     },
     { key: "settings", label: t("settings.title"), icon: "⚙️" },
   ];
+
+  // Positioning: keep mobile (small) dropdown RTL-aware, but force desktop (md+) to be right-aligned
+  // This prevents the dropdown from dropping outside the screen on desktop while preserving
+  // RTL text/ordering inside the menu items.
+  const dropdownPositionClass =
+    typeof document !== "undefined" && document.documentElement.dir === "rtl"
+      ? "left-4 md:left-auto md:right-0 right-4"
+      : "right-4 md:right-0";
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -127,9 +135,9 @@ export default function ProfileDropdown({
           />
 
           <div
-            className="fixed md:absolute right-4 md:right-0 top-16 md:top-12 
+            className={`fixed md:absolute ${dropdownPositionClass} top-16 md:top-12 
                   w-[calc(100%-2rem)] md:w-56 bg-white rounded-lg shadow-lg 
-                  border border-gray-100 py-3 z-[1000] grid gap-2 animate-in fade-in-10 max-h-[60vh] overflow-auto"
+                  border border-gray-100 py-3 z-[1000] grid gap-2 animate-in fade-in-10 max-h-[60vh] overflow-auto`}
           >
             {/* User Info */}
             <div
@@ -139,14 +147,12 @@ export default function ProfileDropdown({
               <p className="font-semibold text-[#1C2541] break-all">
                 {displayUser.name}
               </p>
-              <p className="text-gray-500 break-all">{displayUser.email}</p>
-              <div
-                className="mt-1 text-xs flex items-center gap-2 flex-wrap"
-                dir={isRTL ? "rtl" : "ltr"}
-              >
-                {discordLoading ? (
-                  <span className="text-gray-400 animate-pulse">Discord…</span>
-                ) : discordUser ? (
+              {/* Only show discord username when user has linked their Discord account; remove email and link option per UX request */}
+              {discordUser ? (
+                <div
+                  className="mt-1 text-xs flex items-center gap-2 flex-wrap"
+                  dir={isRTL ? "rtl" : "ltr"}
+                >
                   <span className="inline-flex items-center gap-1 bg-[#5865F2]/10 text-[#5865F2] px-2 py-0.5 rounded-md font-medium">
                     <svg
                       viewBox="0 0 24 24"
@@ -160,15 +166,8 @@ export default function ProfileDropdown({
                       ? `#${discordUser.discriminator}`
                       : ""}
                   </span>
-                ) : (
-                  <button
-                    onClick={() => DiscordService.initiateOAuth("/")}
-                    className="inline-flex items-center gap-1 text-[#5865F2] hover:text-[#4752C4] transition-colors"
-                  >
-                    <span>Link Discord</span>
-                  </button>
-                )}
-              </div>
+                </div>
+              ) : null}
             </div>
 
             {/* Menu Items */}
