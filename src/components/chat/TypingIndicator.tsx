@@ -38,14 +38,14 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({
 
   const getTypingMessage = () => {
     if (typingUsers.length === 1) {
-      return t("chat.userIsTyping", { name: typingUsers[0].displayName });
+      return t("chat:userIsTyping", { name: typingUsers[0].displayName });
     } else if (typingUsers.length === 2) {
-      return t("chat.twoUsersAreTyping", {
+      return t("chat:twoUsersAreTyping", {
         name1: typingUsers[0].displayName,
         name2: typingUsers[1].displayName,
       });
     } else {
-      return t("chat.multipleUsersAreTyping", {
+      return t("chat:multipleUsersAreTyping", {
         count: typingUsers.length,
       });
     }

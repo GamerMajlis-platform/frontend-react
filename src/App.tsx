@@ -19,9 +19,11 @@ const Home = lazy(() => import("./pages/Home"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Tournaments = lazy(() => import("./pages/Tournaments"));
 const Events = lazy(() => import("./pages/Events"));
+const EventDetails = lazy(() => import("./pages/EventDetails"));
 const Messages = lazy(() => import("./pages/Messages"));
 const Chat = lazy(() => import("./pages/Chat"));
 const Marketplace = lazy(() => import("./pages/Marketplace"));
+const ProductDetails = lazy(() => import("./pages/ProductDetails"));
 const Signup = lazy(() => import("./pages/Signup"));
 const Login = lazy(() => import("./pages/Login"));
 const EmailVerification = lazy(() => import("./pages/EmailVerification"));
@@ -189,9 +191,11 @@ function AppContent() {
                   <Route path="/profile/:id" element={<Profile />} />
                   <Route path="/tournaments" element={<Tournaments />} />
                   <Route path="/events" element={<Events />} />
+                  <Route path="/events/:id" element={<EventDetails />} />
                   <Route path="/messages" element={<Messages />} />
                   <Route path="/chat" element={<Chat />} />
                   <Route path="/marketplace" element={<Marketplace />} />
+                  <Route path="/marketplace/:id" element={<ProductDetails />} />
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/verify-email" element={<EmailVerification />} />

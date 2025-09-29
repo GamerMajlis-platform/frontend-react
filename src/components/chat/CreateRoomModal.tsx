@@ -30,10 +30,9 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
     e.preventDefault();
 
     if (!formData.name.trim()) {
-      setError(t("chat.errors.nameRequired"));
+      setError(t("chat:errors.nameRequired"));
       return;
     }
-
     try {
       setLoading(true);
       setError(null);
@@ -41,19 +40,9 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
       const room = await chatService.createRoom(formData);
       onRoomCreated(room);
       onClose();
-
-      // Reset form
-      setFormData({
-        name: "",
-        description: "",
-        type: "GROUP",
-        isPrivate: false,
-        maxMembers: 50,
-        gameTitle: "",
-      });
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : t("chat.errors.createRoomFailed")
+        err instanceof Error ? err.message : t("chat:errors.createRoomFailed")
       );
     } finally {
       setLoading(false);
@@ -71,13 +60,15 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
+      <div className="bg-dark-secondary rounded-lg max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto border border-slate-700 custom-scrollbar">
+        <div className="p-6 text-gray-200">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold">{t("chat.createRoom")}</h2>
+            <h2 className="text-xl font-semibold text-white">
+              {t("chat:createRoom")}
+            </h2>
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-gray-300 hover:text-white"
               disabled={loading}
             >
               ✕
@@ -87,15 +78,15 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Room Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {t("chat.roomName")} *
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                {t("chat:roomName")} *
               </label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder={t("chat.enterRoomName")}
+                className="w-full px-3 py-2 border border-slate-600 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-primary text-gray-200"
+                placeholder={t("chat:enterRoomName")}
                 maxLength={100}
                 disabled={loading}
               />
@@ -103,16 +94,16 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 
             {/* Room Description */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {t("chat.description")}
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                {t("chat:description")}
               </label>
               <textarea
                 value={formData.description}
                 onChange={(e) =>
                   handleInputChange("description", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder={t("chat.enterDescription")}
+                className="w-full px-3 py-2 border border-slate-600 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-primary text-gray-200"
+                placeholder={t("chat:enterDescription")}
                 rows={3}
                 maxLength={500}
                 disabled={loading}
@@ -123,9 +114,9 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
             <div>
               <label
                 htmlFor="roomType"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="block text-sm font-medium text-gray-300 mb-1"
               >
-                {t("chat.roomType")}
+                {t("chat:roomType")}
               </label>
               <select
                 id="roomType"
@@ -136,12 +127,12 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
                     e.target.value as "GROUP" | "DIRECT_MESSAGE"
                   )
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-3 py-2 border border-slate-600 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-primary text-gray-200"
                 disabled={loading}
               >
-                <option value="GROUP">{t("chat.groupRoom")}</option>
+                <option value="GROUP">{t("chat:groupRoom")}</option>
                 <option value="DIRECT_MESSAGE">
-                  {t("chat.directMessage")}
+                  {t("chat:directMessage")}
                 </option>
               </select>
             </div>
@@ -155,11 +146,11 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
                 onChange={(e) =>
                   handleInputChange("isPrivate", e.target.checked)
                 }
-                className="rounded border-gray-300 text-primary focus:ring-primary"
+                className="rounded border-slate-600 text-primary focus:ring-primary"
                 disabled={loading}
               />
-              <label htmlFor="isPrivate" className="text-sm text-gray-700">
-                {t("chat.makePrivate")}
+              <label htmlFor="isPrivate" className="text-sm text-gray-300">
+                {t("chat:makePrivate")}
               </label>
             </div>
 
@@ -167,9 +158,9 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
             <div>
               <label
                 htmlFor="maxMembers"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="block text-sm font-medium text-gray-300 mb-1"
               >
-                {t("chat.maxMembers")}
+                {t("chat:maxMembers")}
               </label>
               <input
                 id="maxMembers"
@@ -178,33 +169,33 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
                 onChange={(e) =>
                   handleInputChange("maxMembers", parseInt(e.target.value) || 0)
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-3 py-2 border border-slate-600 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-primary text-gray-200"
                 min={2}
                 max={500}
                 disabled={loading}
-                placeholder={t("chat.enterMaxMembers")}
+                placeholder={t("chat:enterMaxMembers")}
               />
             </div>
 
             {/* Game Title */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {t("chat.gameTitle")}
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                {t("chat:gameTitle")}
               </label>
               <input
                 type="text"
                 value={formData.gameTitle}
                 onChange={(e) => handleInputChange("gameTitle", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder={t("chat.enterGameTitle")}
+                className="w-full px-3 py-2 border border-slate-600 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-primary text-gray-200"
+                placeholder={t("chat:enterGameTitle")}
                 disabled={loading}
               />
             </div>
 
             {/* Error Message */}
             {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-600 text-sm">{error}</p>
+              <div className="p-3 bg-red-900/30 border border-red-700 rounded-lg">
+                <p className="text-red-300 text-sm">{error}</p>
               </div>
             )}
 
@@ -213,17 +204,17 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex-1 px-4 py-2 border border-slate-600 text-gray-200 rounded-lg hover:bg-slate-700/40 transition-colors"
                 disabled={loading}
               >
                 {t("common.cancel")}
               </button>
               <button
                 type="submit"
-                className="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50"
+                className="flex-1 px-4 py-2 bg-primary text-dark rounded-lg hover:bg-primary-hover transition-colors disabled:opacity-50"
                 disabled={loading || !formData.name.trim()}
               >
-                {loading ? t("common.creating") : t("chat.createRoom")}
+                {loading ? t("common.creating") : t("chat:createRoom")}
               </button>
             </div>
           </form>

@@ -99,9 +99,9 @@ export const MessageList: React.FC<MessageListProps> = ({
     yesterday.setDate(yesterday.getDate() - 1);
 
     if (date.toDateString() === today.toDateString()) {
-      return t("chat.today");
+      return t("chat today");
     } else if (date.toDateString() === yesterday.toDateString()) {
-      return t("chat.yesterday");
+      return t("chat yesterday");
     } else {
       return date.toLocaleDateString();
     }
@@ -138,11 +138,11 @@ export const MessageList: React.FC<MessageListProps> = ({
       <div
         className={`flex-1 flex items-center justify-center p-6 ${className}`}
       >
-        <div className="text-center">
+        <div className="text-center text-gray-300">
           <div className="text-4xl mb-4">💬</div>
-          <p className="text-gray-500">{t("chat.noMessagesYet")}</p>
+          <p className="text-gray-300">{t("chat noMessagesYet")}</p>
           <p className="text-sm text-gray-400 mt-2">
-            {t("chat.startConversation")}
+            {t("chat startConversation")}
           </p>
         </div>
       </div>
@@ -154,15 +154,15 @@ export const MessageList: React.FC<MessageListProps> = ({
   return (
     <div
       ref={messagesContainerRef}
-      className={`flex-1 overflow-y-auto p-4 space-y-4 ${className}`}
+      className={`flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar min-h-0 ${className}`}
       onScroll={handleScroll}
     >
       {/* Loading indicator for older messages */}
       {loading && (
-        <div className="text-center py-2">
+        <div className="text-center py-2 text-gray-300">
           <div className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
-          <span className="ml-2 text-sm text-gray-500">
-            {t("chat.loadingMessages")}
+          <span className="ml-2 text-sm text-gray-300">
+            {t("chat loadingMessages")}
           </span>
         </div>
       )}
@@ -171,7 +171,7 @@ export const MessageList: React.FC<MessageListProps> = ({
       {!hasMore && messages.length > 0 && (
         <div className="text-center py-2">
           <span className="text-xs text-gray-400">
-            {t("chat.noMoreMessages")}
+            {t("chat noMoreMessages")}
           </span>
         </div>
       )}
@@ -181,7 +181,7 @@ export const MessageList: React.FC<MessageListProps> = ({
         <div key={`${group.date}-${groupIndex}`}>
           {/* Date separator */}
           <div className="text-center my-4">
-            <span className="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+            <span className="text-xs text-gray-300 bg-slate-700/30 px-3 py-1 rounded-full">
               {group.date}
             </span>
           </div>
@@ -211,7 +211,7 @@ export const MessageList: React.FC<MessageListProps> = ({
                       }`}
                     >
                       {showAvatar && (
-                        <div className="w-8 h-8 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                        <div className="w-8 h-8 bg-gradient-to-br from-slate-500 to-slate-700 rounded-full flex items-center justify-center text-white text-sm font-medium">
                           {message.sender.displayName.charAt(0).toUpperCase()}
                         </div>
                       )}
@@ -227,13 +227,13 @@ export const MessageList: React.FC<MessageListProps> = ({
                     <div
                       className={`rounded-lg p-3 ${
                         isOwnMessage
-                          ? "bg-primary text-white"
-                          : "bg-gray-100 text-gray-900"
+                          ? "bg-primary text-dark"
+                          : "bg-slate-700 text-gray-100"
                       }`}
                     >
                       {/* Sender name (for other users and first message in group) */}
                       {!isOwnMessage && showAvatar && (
-                        <div className="text-xs font-medium mb-1 opacity-75">
+                        <div className="text-xs font-medium mb-1 text-gray-300 opacity-80">
                           {message.sender.displayName}
                         </div>
                       )}
@@ -243,8 +243,8 @@ export const MessageList: React.FC<MessageListProps> = ({
                         <div
                           className={`mb-2 p-2 rounded border-l-2 text-xs ${
                             isOwnMessage
-                              ? "bg-white/20 border-white/40 text-white/80"
-                              : "bg-gray-200 border-gray-400 text-gray-600"
+                              ? "bg-white/10 border-white/20 text-white/80"
+                              : "bg-slate-600 border-slate-500 text-gray-200"
                           }`}
                         >
                           <div className="font-medium">
@@ -267,10 +267,10 @@ export const MessageList: React.FC<MessageListProps> = ({
                             target="_blank"
                             rel="noopener noreferrer"
                             className={`text-xs underline ${
-                              isOwnMessage ? "text-white/80" : "text-blue-600"
+                              isOwnMessage ? "text-white/80" : "text-primary/80"
                             }`}
                           >
-                            📎 {message.fileName || t("chat.attachment")}
+                            📎 {message.fileName || t("chat attachment")}
                           </a>
                         </div>
                       )}
@@ -278,7 +278,7 @@ export const MessageList: React.FC<MessageListProps> = ({
                       {/* Message footer */}
                       <div
                         className={`flex items-center justify-between mt-2 text-xs ${
-                          isOwnMessage ? "text-white/75" : "text-gray-500"
+                          isOwnMessage ? "text-white/75" : "text-gray-400"
                         }`}
                       >
                         <span>{formatMessageTime(message.createdAt)}</span>
@@ -286,7 +286,7 @@ export const MessageList: React.FC<MessageListProps> = ({
                           <button
                             onClick={() => handleDeleteMessage(message.id)}
                             className="ml-2 hover:text-red-500 transition-colors"
-                            title={t("chat.deleteMessage")}
+                            title={t("chat deleteMessage")}
                           >
                             🗑️
                           </button>

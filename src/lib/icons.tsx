@@ -33,6 +33,13 @@ export const Plus = ({ size, ...props }: IconProps) => (
   </svg>
 );
 
+export const Search = ({ size, ...props }: IconProps) => (
+  <svg {...baseProps(size, props)}>
+    <circle cx="11" cy="11" r="6" />
+    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+  </svg>
+);
+
 export const MessageSquare = ({ size, ...props }: IconProps) => (
   <svg {...baseProps(size, props)}>
     <rect x="3" y="3" width="18" height="14" rx="2" />
@@ -97,6 +104,30 @@ export const Twitch = ({ size, ...props }: IconProps) => (
     <rect x="3" y="3" width="14" height="12" rx="2" />
     <path d="M7 21v-4" />
     <path d="M17 21v-4" />
+  </svg>
+);
+
+export const Send = ({ size, ...props }: IconProps) => (
+  <svg {...baseProps(size, props)}>
+    <line x1="22" y1="2" x2="11" y2="13" />
+    <polygon points="22 2 15 22 11 13 2 9 22 2" />
+  </svg>
+);
+
+// Flatter / more directed send icon variant (points more horizontally)
+export const SendAlt = ({ size, ...props }: IconProps) => (
+  <svg {...baseProps(size, props)}>
+    {/* Directed paper-plane pointing right (tip at right) */}
+    <path d="M2 3 L22 12 L2 21 L8 13 L2 3 Z" />
+  </svg>
+);
+
+export const ArrowLeft = ({ size, ...props }: IconProps) => (
+  <svg {...baseProps(size, props)}>
+    {/* horizontal shaft */}
+    <line x1="19" y1="12" x2="6" y2="12" />
+    {/* arrow head pointing left */}
+    <polyline points="12 6 6 12 12 18" />
   </svg>
 );
 

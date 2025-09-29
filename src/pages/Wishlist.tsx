@@ -52,6 +52,7 @@ export default function Wishlist() {
                     rate={item.rate}
                     reviews={item.reviews}
                     imageUrl={item.imageUrl}
+                    onClick={() => navigate(`/marketplace/${item.id}`)}
                   />
                   <div className="text-[var(--color-text)] text-sm text-center mt-4 font-medium">
                     {t("wishlist.added")}{" "}

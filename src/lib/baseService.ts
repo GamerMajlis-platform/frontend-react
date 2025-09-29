@@ -18,6 +18,19 @@ export abstract class BaseService {
     endpoint: string,
     options: ApiOptions = {}
   ): Promise<T> {
+    // Debug: surface whether a valid session/token exists
+    // (do not print the token value)
+    try {
+      console.debug(
+        "BaseService.authenticatedRequest - hasValidSession",
+        UserStorage.hasValidSession(),
+        "hasStoredToken",
+        !!UserStorage.getStoredToken()
+      );
+    } catch {
+      // ignore debug errors
+    }
+
     // Check authentication before making request
     if (!UserStorage.hasValidSession()) {
       throw new ApiError("Authentication required", "AUTH_REQUIRED", 401);

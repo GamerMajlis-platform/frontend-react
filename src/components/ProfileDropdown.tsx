@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../context/useAppContext";
 import { useTranslation } from "react-i18next";
+import AvatarImage from "./profile/AvatarImage";
 import { useClickOutside } from "../hooks";
 import { DiscordService } from "../services/DiscordService";
 
@@ -84,46 +85,77 @@ export default function ProfileDropdown({
 
   return (
     <div className="relative" ref={dropdownRef}>
-      {/* Toggle Button (desktop avatar, mobile hamburger) */}
-      <button
-        onClick={() => setIsOpen((v) => !v)}
-        className="flex md:hidden flex-col justify-center items-center w-10 h-10 
-                   rounded-md bg-[#1C2541] text-white hover:bg-[#3A506B] transition"
-        aria-label="Toggle menu"
-      >
-        {/* Hamburger / X animation */}
-        <span
-          className={`block h-0.5 w-6 bg-white transition-transform duration-300 ${
-            isOpen ? "rotate-45 translate-y-1.5" : ""
-          }`}
-        />
-        <span
-          className={`block h-0.5 w-6 bg-white my-1 transition-opacity duration-300 ${
-            isOpen ? "opacity-0" : "opacity-100"
-          }`}
-        />
-        <span
-          className={`block h-0.5 w-6 bg-white transition-transform duration-300 ${
-            isOpen ? "-rotate-45 -translate-y-1.5" : ""
-          }`}
-        />
-      </button>
+      {/* Toggle Button (mobile: show avatar if available, otherwise hamburger) */}
+      {user && user.profilePictureUrl ? (
+        <>
+          <button
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={() => setIsOpen((v) => !v)}
+            className="flex md:hidden items-center justify-center w-10 h-10 rounded-full bg-[#1C2541] text-white hover:bg-[#3A506B] transition"
+            aria-label="Toggle menu"
+          >
+            <AvatarImage
+              source={user.profilePictureUrl}
+              alt={user.displayName || "Profile"}
+              className="w-10 h-10 rounded-full object-cover"
+            />
+          </button>
 
-      {/* Desktop Avatar Button */}
-      <button
-        onClick={() => setIsOpen((v) => !v)}
-        className="hidden md:flex items-center justify-center w-9 h-9 
-                   bg-[#1C2541] text-white rounded-full hover:bg-[#3A506B] shadow-md"
-        aria-label="Profile Menu"
-      >
-        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-          <path
-            fillRule="evenodd"
-            d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-            clipRule="evenodd"
-          />
-        </svg>
-      </button>
+          {/* Desktop Avatar Button (larger for better visibility) */}
+          <button
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={() => setIsOpen((v) => !v)}
+            className="hidden md:flex items-center justify-center w-12 h-12 bg-[#1C2541] text-white rounded-full hover:bg-[#3A506B] shadow-md"
+            aria-label="Profile Menu"
+          >
+            <AvatarImage
+              source={user.profilePictureUrl}
+              alt={user.displayName || "Profile"}
+              className="w-10 h-10 rounded-full object-cover"
+            />
+          </button>
+        </>
+      ) : (
+        <>
+          <button
+            onClick={() => setIsOpen((v) => !v)}
+            className="flex md:hidden flex-col justify-center items-center w-10 h-10 rounded-md bg-[#1C2541] text-white hover:bg-[#3A506B] transition"
+            aria-label="Toggle menu"
+          >
+            {/* Hamburger / X animation */}
+            <span
+              className={`block h-0.5 w-6 bg-white transition-transform duration-300 ${
+                isOpen ? "rotate-45 translate-y-1.5" : ""
+              }`}
+            />
+            <span
+              className={`block h-0.5 w-6 bg-white my-1 transition-opacity duration-300 ${
+                isOpen ? "opacity-0" : "opacity-100"
+              }`}
+            />
+            <span
+              className={`block h-0.5 w-6 bg-white transition-transform duration-300 ${
+                isOpen ? "-rotate-45 -translate-y-1.5" : ""
+              }`}
+            />
+          </button>
+
+          {/* Desktop Avatar Button (fallback icon) */}
+          <button
+            onClick={() => setIsOpen((v) => !v)}
+            className="hidden md:flex items-center justify-center w-12 h-12 bg-[#1C2541] text-white rounded-full hover:bg-[#3A506B] shadow-md"
+            aria-label="Profile Menu"
+          >
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fillRule="evenodd"
+                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
+        </>
+      )}
 
       {/* Dropdown */}
       {isOpen && (

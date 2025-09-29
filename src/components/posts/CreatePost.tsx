@@ -151,10 +151,10 @@ export const CreatePost: React.FC<CreatePostProps> = ({
   return (
     <div className={containerClasses}>
       <div className="mb-4">
-        <h2 className="text-xl font-semibold text-gray-900">
+        <h2 className="text-xl font-semibold text-white mb-2">
           {t("posts:create.title")}
         </h2>
-        <p className="text-gray-600 text-sm mt-1">
+        <p className="text-white text-sm mt-1">
           {t("posts:create.subtitle")}
         </p>
       </div>

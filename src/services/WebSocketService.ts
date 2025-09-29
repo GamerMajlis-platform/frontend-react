@@ -178,62 +178,84 @@ class WebSocketService {
 
       try {
         // Connect with authorization token
-        const base =
-          (import.meta as any).env?.VITE_WS_BASE_URL ||
-          (typeof window !== "undefined"
-            ? `${window.location.protocol === "https:" ? "wss" : "ws"}://${
-                window.location.host
-              }`
-            : "ws://localhost:8080");
-        const wsUrl = `${base.replace(
-          /\/$/,
-          ""
-        )}/api/ws?token=${encodeURIComponent(token)}`;
-        this.ws = new WebSocket(wsUrl);
+        // Use explicit URL for testing per developer request
+        const wsUrl = `ws://localhost:8080/api/ws?token=${encodeURIComponent(
+          token
+        )}`;
 
-        this.ws.onopen = () => {
-          console.log("WebSocket connected");
-          this.isConnecting = false;
-          this.reconnectAttempts = 0;
-          this.emit("connected");
+        // Helper to attach common handlers to a created WebSocket instance
+        const attachHandlers = (
+          socket: WebSocket,
+          resolveP: () => void,
+          rejectP: (err?: unknown) => void
+        ) => {
+          socket.onopen = () => {
+            console.log("WebSocket connected");
+            this.isConnecting = false;
+            this.reconnectAttempts = 0;
+            this.emit("connected");
 
-          // Resubscribe to previous topics
-          this.subscribedTopics.forEach((topic) => {
-            this.subscribeToTopic(topic);
-          });
+            // Resubscribe to previous topics
+            this.subscribedTopics.forEach((topic) => {
+              this.subscribeToTopic(topic);
+            });
 
-          resolve();
+            resolveP();
+          };
+
+          socket.onmessage = (event) => {
+            try {
+              const message: WebSocketMessage = JSON.parse(event.data);
+              this.handleMessage(message);
+            } catch (error) {
+              console.error("Failed to parse WebSocket message:", error);
+            }
+          };
+
+          socket.onclose = (event) => {
+            console.log("WebSocket disconnected:", event.code, event.reason);
+            this.isConnecting = false;
+            this.emit("disconnected", event);
+
+            // Attempt to reconnect unless it was a manual close
+            if (
+              event.code !== 1000 &&
+              this.reconnectAttempts < this.maxReconnectAttempts
+            ) {
+              this.scheduleReconnect();
+            }
+          };
+
+          socket.onerror = (error) => {
+            console.error("WebSocket error:", error);
+            this.isConnecting = false;
+            this.emit("error", error);
+            rejectP(error);
+          };
         };
 
-        this.ws.onmessage = (event) => {
-          try {
-            const message: WebSocketMessage = JSON.parse(event.data);
-            this.handleMessage(message);
-          } catch (error) {
-            console.error("Failed to parse WebSocket message:", error);
+        // Single explicit attempt using the provided wsUrl
+        try {
+          if (this.ws) {
+            try {
+              this.ws.close();
+            } catch (e) {
+              console.warn("Error closing previous WebSocket instance:", e);
+            }
+            this.ws = null;
           }
-        };
 
-        this.ws.onclose = (event) => {
-          console.log("WebSocket disconnected:", event.code, event.reason);
+          console.debug("Attempting WebSocket connect", { wsUrl });
+          this.ws = new WebSocket(wsUrl);
+          attachHandlers(
+            this.ws,
+            () => resolve(),
+            (err) => reject(err)
+          );
+        } catch (err) {
           this.isConnecting = false;
-          this.emit("disconnected", event);
-
-          // Attempt to reconnect unless it was a manual close
-          if (
-            event.code !== 1000 &&
-            this.reconnectAttempts < this.maxReconnectAttempts
-          ) {
-            this.scheduleReconnect();
-          }
-        };
-
-        this.ws.onerror = (error) => {
-          console.error("WebSocket error:", error);
-          this.isConnecting = false;
-          this.emit("error", error);
-          reject(error);
-        };
+          reject(err);
+        }
       } catch (error) {
         this.isConnecting = false;
         reject(error);

@@ -74,13 +74,10 @@
     "success": "تم إنشاء البطولة بنجاح",
     "title": "إنشاء بطولة",
     "types": {
-      "BRACKET": "قوسين",
-      "DOUBLE_ELIMINATION": "إقصاء مزدوج",
+      "bracket": "قوسية",
       "elimination": "إقصاء",
-      "LEAGUE": "دوري",
-      "ROUND_ROBIN": "دوري شامل",
-      "SINGLE_ELIMINATION": "إقصاء مفرد",
-      "SWISS": "النظام السويسري"
+      "roundRobin": "دوري شامل",
+      "swiss": "النظام السويسري"
     },
     "validation": {
       "descriptionMinLength": "الوصف يجب أن يكون 10 أحرف على الأقل",

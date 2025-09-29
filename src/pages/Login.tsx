@@ -1,11 +1,11 @@
+import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { InputField } from "../components/shared";
 import { DiscordLoginButton } from "../components/discord";
-import { useFormValidation, commonValidationRules } from "../hooks";
 import { useAppContext } from "../context/useAppContext";
-import type { LoginFormData } from "../types/auth";
 
+// Minimal final Login: accept text identifier and password, show backend message only on failure.
 export default function Login() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -13,58 +13,32 @@ export default function Login() {
   const { login } = useAppContext();
   const isRtl = !!(i18n.language && i18n.language.startsWith("ar"));
 
-  const {
-    values: formData,
-    errors,
-    touched,
-    isSubmitting,
-    isValid,
-    handleChange,
-    handleBlur,
-    setError,
-  } = useFormValidation<LoginFormData>(
-    { identifier: "", password: "", general: "" },
-    {
-      identifier: commonValidationRules.email,
-      password: commonValidationRules.password,
-    }
-  );
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const isFormValid =
-    isValid &&
-    formData.identifier.trim() !== "" &&
-    formData.password.trim() !== "";
-  const isSubmitDisabled = isSubmitting || !isFormValid;
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    handleChange(name as keyof LoginFormData, value);
-  };
-
-  const handleInputBlur = (name: keyof LoginFormData) => {
-    handleBlur(name);
-  };
+  const isSubmitDisabled =
+    isSubmitting || identifier.trim() === "" || password.trim() === "";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSubmitDisabled) return;
 
-    try {
-      // Basic input sanitization
-      const identifier = formData.identifier.trim();
-      const password = formData.password.trim();
+    setIsSubmitting(true);
+    setErrorMessage(null);
 
-      await login(identifier, password);
-      // If a redirect target was provided (protected route), navigate there.
-      // Otherwise, go to home. Previously we always sent users to /profile.
+    try {
+      await login(identifier.trim(), password.trim());
       const state = location.state as { from?: string } | undefined;
       const redirectTo = state?.from ?? "/";
       navigate(redirectTo, { replace: true });
-    } catch (error) {
-      setError(
-        "general",
-        error instanceof Error ? error.message : "Login failed"
-      );
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : String(err ?? "Login failed");
+      setErrorMessage(message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -85,34 +59,30 @@ export default function Login() {
           dir={isRtl ? "rtl" : "ltr"}
           className="w-full flex flex-col items-center gap-4 sm:gap-[22px]"
         >
-          {errors.general && (
+          {errorMessage && (
             <div className="w-full px-3 sm:px-4 py-3 bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)] rounded-lg text-[#ef4444] text-sm text-center mb-4 font-[Alice]">
-              {errors.general}
+              {errorMessage}
             </div>
           )}
 
           <InputField
             name="identifier"
-            type="email"
-            value={formData.identifier}
+            type="text"
+            value={identifier}
             label={t("auth.emailOrUsername")}
-            error={touched.identifier ? errors.identifier : undefined}
+            error={undefined}
             disabled={isSubmitting}
-            onChange={handleInputChange}
-            onBlur={() => handleInputBlur("identifier")}
-            required
+            onChange={(e) => setIdentifier(e.target.value)}
           />
 
           <InputField
             name="password"
             type="password"
-            value={formData.password}
+            value={password}
             label={t("auth.password")}
-            error={touched.password ? errors.password : undefined}
+            error={undefined}
             disabled={isSubmitting}
-            onChange={handleInputChange}
-            onBlur={() => handleInputBlur("password")}
-            required
+            onChange={(e) => setPassword(e.target.value)}
           />
 
           <div className="w-full flex justify-center mt-3">
@@ -146,9 +116,7 @@ export default function Login() {
               size="lg"
               variant="outline"
               className="w-[345px] mx-auto"
-              onError={(error) => {
-                setError("general", error);
-              }}
+              onError={(error) => setErrorMessage(String(error))}
             />
           </div>
         </div>

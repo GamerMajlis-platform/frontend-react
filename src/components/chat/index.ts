@@ -8,6 +8,8 @@ export { default as TypingIndicator } from "./TypingIndicator";
 export { default as MemberList } from "./MemberList";
 export { default as OnlineUsersList } from "./OnlineUsersList";
 export { default as InviteMemberModal } from "./InviteMemberModal";
+export { default as RoomSuggestions } from "./RoomSuggestions";
+export { default as SearchDMs } from "./SearchDMs";
 
 // Re-export types for convenience
 export type {

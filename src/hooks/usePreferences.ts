@@ -12,6 +12,13 @@ export function usePreferences() {
   const setLanguage = useCallback(
     (lng: string) => {
       if (lng && i18n.resolvedLanguage !== lng) {
+        const maybeLoad = i18n as unknown as {
+          loadLanguages?: (...args: unknown[]) => Promise<void>;
+        };
+        if (typeof maybeLoad.loadLanguages === "function") {
+          // preload resources for the language before switching
+          maybeLoad.loadLanguages(lng).catch(() => {});
+        }
         i18n.changeLanguage(lng);
       }
       updateSetting("preferences", "language", lng);
@@ -24,6 +31,13 @@ export function usePreferences() {
     if (settings?.preferences?.language) {
       const lng = settings.preferences.language;
       if (i18n.resolvedLanguage !== lng) {
+        const maybeLoad = i18n as unknown as {
+          loadLanguages?: (...args: unknown[]) => Promise<void>;
+        };
+        if (typeof maybeLoad.loadLanguages === "function") {
+          // preload then change, but don't await here to avoid blocking
+          maybeLoad.loadLanguages(lng).catch(() => {});
+        }
         i18n.changeLanguage(lng);
       }
     }

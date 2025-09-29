@@ -4,6 +4,11 @@ import { PostService } from "../../services/PostService";
 import { Comments } from "./Comments";
 import type { PostListItem } from "../../types";
 import { Link } from "react-router-dom";
+import {
+  markUploadPathFailed,
+  getAvatarSrc,
+  DEFAULT_BLANK_AVATAR,
+} from "../../lib/urls";
 
 interface PostCardProps {
   post: PostListItem;
@@ -93,11 +98,16 @@ export const PostCard: React.FC<PostCardProps> = ({
             className="flex items-center gap-3"
           >
             <img
-              src={
-                post.author.profilePictureUrl || "/assets/default-avatar.png"
-              }
+              src={getAvatarSrc(post.author.profilePictureUrl)}
               alt={post.author.displayName}
               className="w-10 h-10 rounded-full object-cover"
+              data-original={post.author.profilePictureUrl ?? undefined}
+              onError={(e) => {
+                const img = e.target as HTMLImageElement;
+                const orig = img.getAttribute("data-original");
+                markUploadPathFailed(orig ?? undefined);
+                img.src = DEFAULT_BLANK_AVATAR;
+              }}
             />
             <div>
               <h3 className="font-semibold text-gray-100 text-sm">

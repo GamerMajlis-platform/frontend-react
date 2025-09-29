@@ -19,6 +19,38 @@ interface FormFieldProps {
   children: ReactNode;
 }
 
+// Pull FormField outside of the parent component to avoid recreating the
+// component function on every render. Recreating it caused React to remount
+// the inputs as children which made the caret/focus get lost after one
+// character was typed.
+const FormField = ({
+  id,
+  label,
+  error,
+  required,
+  children,
+}: FormFieldProps) => {
+  const { t } = useTranslation();
+
+  return (
+    <div>
+      <label
+        htmlFor={id}
+        className="block text-sm font-medium text-text-secondary mb-2"
+      >
+        {label}
+        {!required && (
+          <span className="text-xs text-gray-500 inline-block ml-2">
+            ({t("common.optional")})
+          </span>
+        )}
+      </label>
+      {children}
+      {error && <p className="text-red-400 text-sm mt-1">{error}</p>}
+    </div>
+  );
+};
+
 const CreateTournamentForm = ({
   onSubmit,
   onSuccess,
@@ -201,31 +233,6 @@ const CreateTournamentForm = ({
       label: t("tournaments:status.registrationClosed"),
     },
   ];
-
-  // Helper component for consistent form fields
-  const FormField = ({
-    id,
-    label,
-    error,
-    required,
-    children,
-  }: FormFieldProps) => (
-    <div>
-      <label
-        htmlFor={id}
-        className="block text-sm font-medium text-text-secondary mb-2"
-      >
-        {label}
-        {!required && (
-          <span className="text-xs text-gray-500 inline-block ml-2">
-            ({t("common.optional")})
-          </span>
-        )}
-      </label>
-      {children}
-      {error && <p className="text-red-400 text-sm mt-1">{error}</p>}
-    </div>
-  );
 
   const inputClassName =
     "w-full rounded-xl border border-slate-600 bg-[#0F172A] px-4 py-3 text-white placeholder-slate-400 focus:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300/20";

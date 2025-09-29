@@ -1,4 +1,4 @@
-import {
+import React, {
   createContext,
   useCallback,
   useEffect,
@@ -542,6 +542,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         const profilePictureUrl = await ProfileService.uploadProfilePicture(
           file
         );
+        // If backend returned a direct upload path (starts with '/'), clear any
+        // failed-path state and wait for it to become available. If the backend
+        // returns a numeric id (e.g. "123"), the AvatarImage component will
+        // resolve it via MediaService.getMedia, so skip the path helpers.
+        
         // Refresh profile to get updated data
         await refreshProfile();
         return profilePictureUrl;
@@ -588,9 +593,30 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // Event state management
-  const [registeredEvents, setRegisteredEvents] = useLocalStorage<number[]>(
-    "registeredEvents",
-    []
+  // Use a raw localStorage-backed value and normalize it to an array to avoid
+  // runtime errors when localStorage contains malformed data (e.g. not an array).
+  const [registeredEventsRaw, setRegisteredEventsRaw] = useLocalStorage<
+    number[] | unknown
+  >("registeredEvents", []);
+
+  // Ensure consumers always get an array
+  const registeredEvents: number[] = React.useMemo(() => {
+    return Array.isArray(registeredEventsRaw)
+      ? (registeredEventsRaw as number[])
+      : [];
+  }, [registeredEventsRaw]);
+
+  const safeSetRegisteredEvents = useCallback(
+    (value: number[] | ((prev: number[]) => number[])) => {
+      setRegisteredEventsRaw((prev: unknown) => {
+        const base = Array.isArray(prev) ? (prev as number[]) : [];
+        if (typeof value === "function") {
+          return (value as (p: number[]) => number[])(base);
+        }
+        return value;
+      });
+    },
+    [setRegisteredEventsRaw]
   );
 
   const isRegisteredForEvent = useCallback(
@@ -604,26 +630,26 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     async (eventId: number): Promise<void> => {
       try {
         await EventService.registerForEvent(eventId);
-        setRegisteredEvents((prev) => [...prev, eventId]);
+        safeSetRegisteredEvents((prev) => [...prev, eventId]);
       } catch (error) {
         console.error("Failed to register for event:", error);
         throw error;
       }
     },
-    [setRegisteredEvents]
+    [safeSetRegisteredEvents]
   );
 
   const unregisterFromEvent = useCallback(
     async (eventId: number): Promise<void> => {
       try {
         await EventService.unregisterFromEvent(eventId);
-        setRegisteredEvents((prev) => prev.filter((id) => id !== eventId));
+        safeSetRegisteredEvents((prev) => prev.filter((id) => id !== eventId));
       } catch (error) {
         console.error("Failed to unregister from event:", error);
         throw error;
       }
     },
-    [setRegisteredEvents]
+    [safeSetRegisteredEvents]
   );
 
   const refreshEventRegistrations = useCallback(async (): Promise<void> => {

@@ -3,6 +3,7 @@
 import { useEffect, useState, memo } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../../context/useAppContext";
+import { useNavigate } from "react-router-dom";
 import {
   IconCalendar,
   IconLocation,
@@ -19,6 +20,7 @@ interface BaseCardProps {
   preset: "product" | "event" | "tournament";
   imageUrl?: string;
   className?: string; // Additional container classes
+  onClick?: () => void;
 }
 
 // Product preset props (mirrors original ProductCard)
@@ -42,6 +44,7 @@ interface EventPresetProps extends BaseCardProps {
   organizer: string;
   scheduledOn: string;
   location: string;
+  eventId?: number;
 }
 
 // Tournament preset props
@@ -127,6 +130,7 @@ function areCardPropsEqual(prev: CardProps, next: CardProps) {
       prev.organizer === next.organizer &&
       prev.scheduledOn === next.scheduledOn &&
       prev.location === next.location &&
+      prev.eventId === next.eventId &&
       prev.imageUrl === next.imageUrl &&
       prev.className === next.className
     );
@@ -151,8 +155,9 @@ function areCardPropsEqual(prev: CardProps, next: CardProps) {
 // Centralized style token map (kept 1:1 with original classes for fidelity)
 const presetStyles = {
   product: {
+    // Use full width for the card container so it fits responsive grid cells
     container:
-      "group relative z-20 flex h-[520px] sm:h-[480px] md:h-[500px] lg:h-[560px] w-full max-w-[420px] min-w-[280px] flex-col overflow-hidden rounded-2xl border border-slate-600 bg-slate-800 shadow-lg transition-all duration-300 ease-in-out hover:border-slate-500 hover:shadow-xl product-card",
+      "group relative z-20 flex h-[520px] sm:h-[480px] md:h-[500px] lg:h-[560px] w-full flex-col overflow-hidden rounded-2xl border border-slate-600 bg-slate-800 shadow-lg transition-all duration-300 ease-in-out hover:border-slate-500 hover:shadow-xl product-card",
     image:
       "relative h-[180px] sm:h-[200px] md:h-[220px] lg:h-[240px] shrink-0 bg-slate-700 product-card-image",
     content:
@@ -187,6 +192,7 @@ function ProductPreset({
   imageUrl,
   className = "",
   hideWishlistButton,
+  onClick,
 }: ProductPresetProps) {
   const { toggleWishlist, isInWishlist } = useAppContext();
   const [isFavorite, setIsFavorite] = useState(false);
@@ -212,8 +218,20 @@ function ProductPreset({
     setIsFavorite((prev) => !prev);
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      onClick?.();
+    }
+  };
+
   return (
-    <div className={`${presetStyles.product.container} ${className}`}>
+    <div
+      className={`${presetStyles.product.container} ${className}`}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onClick={onClick}
+      onKeyDown={onClick ? handleKeyPress : undefined}
+    >
       {/* Image Container */}
       <div className={presetStyles.product.image}>
         {imageUrl ? (
@@ -233,7 +251,11 @@ function ProductPreset({
         {/* Wishlist Button */}
         {!hideWishlistButton && (
           <button
-            onClick={toggleFavorite}
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleFavorite();
+            }}
             className={`absolute top-2 sm:top-3 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full border border-white/20 text-sm sm:text-base text-white transition-colors duration-200 ease-in-out ${
               hasArabicContent
                 ? "left-2 sm:left-3 right-auto"
@@ -307,7 +329,14 @@ function ProductPreset({
               hasArabicContent ? "flex-row-reverse" : "flex-row"
             }`}
           >
-            <button className="flex-1 rounded-md border border-primary bg-transparent px-3 sm:px-4 py-2 sm:py-2.5 text-xs font-medium transition-colors duration-200 ease-in-out product-card-button text-primary hover:bg-[#5ee6d3] hover:text-black hover:border-[#5ee6d3]">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onClick?.();
+              }}
+              className="flex-1 rounded-md border border-primary bg-transparent px-3 sm:px-4 py-2 sm:py-2.5 text-xs font-medium transition-colors duration-200 ease-in-out product-card-button text-primary hover:bg-[#5ee6d3] hover:text-black hover:border-[#5ee6d3]"
+            >
               {t("product.details")}
             </button>
             <button className="flex-1 rounded-md border-none bg-primary px-3 sm:px-4 py-2 sm:py-2.5 text-xs font-semibold text-black transition-colors duration-200 ease-in-out product-card-button hover:bg-[#5ee6d3]">
@@ -329,9 +358,44 @@ function EventPreset({
   scheduledOn,
   location,
   className = "",
+  eventId,
 }: EventPresetProps) {
   const current = eventVariantStyles[variant] || eventVariantStyles.upcoming;
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { isRegisteredForEvent, registerForEvent, unregisterFromEvent } =
+    useAppContext();
+
+  const [processing, setProcessing] = useState(false);
+
+  const registered = eventId ? isRegisteredForEvent(eventId) : false;
+
+  const handleAction = async (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (!eventId) {
+      // Fallback: navigate to details if no event id provided
+      navigate?.(`/events/${eventId}`);
+      return;
+    }
+
+    try {
+      setProcessing(true);
+      if (variant === "upcoming") {
+        if (registered) {
+          await unregisterFromEvent(eventId);
+        } else {
+          await registerForEvent(eventId);
+        }
+      } else {
+        // ongoing or past -> view/spectate/results
+        navigate(`/events/${eventId}`);
+      }
+    } catch (err) {
+      console.error("Event action failed:", err);
+    } finally {
+      setProcessing(false);
+    }
+  };
 
   return (
     <div className={`${presetStyles.event.container} ${className}`}>
@@ -373,17 +437,23 @@ function EventPreset({
             </span>
           </div>
         </div>
-        <div
+        <button
+          type="button"
+          onClick={handleAction}
           className={`w-full h-[36px] sm:h-[40px] lg:h-[43px] rounded-[8px] sm:rounded-[10px] flex items-center justify-center mt-3 ${current.button}`}
         >
           <span className="font-inter font-bold text-[16px] sm:text-[18px] lg:text-[20px] leading-6 text-white">
-            {variant === "upcoming"
-              ? t("activity.join")
+            {processing
+              ? t("common.loading")
+              : variant === "upcoming"
+              ? registered
+                ? t("activity.cancel")
+                : t("activity.join")
               : variant === "ongoing"
               ? t("activity.watch")
               : t("activity.view")}
           </span>
-        </div>
+        </button>
       </div>
     </div>
   );

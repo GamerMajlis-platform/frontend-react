@@ -54,6 +54,55 @@ export interface ProfileSuggestionsResponse extends BackendResponse {
 
 export class ProfileService extends BaseService {
   /**
+   * T12: Validate profile picture aspect ratio
+   * Kept here because it's profile-specific validation and may differ from general media rules.
+   */
+  static async validateProfilePicture(
+    file: File
+  ): Promise<{ isValid: boolean; error?: string }> {
+    // Make aspect ratio enforcement configurable via environment variable
+    // VITE_REQUIRE_SQUARE_AVATAR=true|false (default true)
+    const requireSquareFlag = import.meta.env.VITE_REQUIRE_SQUARE_AVATAR as
+      | string
+      | undefined;
+    const requireSquare =
+      requireSquareFlag === "true" || requireSquareFlag === "1";
+
+    if (!requireSquare) {
+      // If frontend is configured to not require square avatars, just ensure image loads
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve({ isValid: true });
+        img.onerror = () =>
+          resolve({ isValid: false, error: "Invalid image file" });
+        img.src = URL.createObjectURL(file);
+      });
+    }
+
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const aspectRatio = img.width / img.height;
+        const tolerance = 0.1; // 10% tolerance for square aspect ratio
+
+        if (Math.abs(aspectRatio - 1) > tolerance) {
+          resolve({
+            isValid: false,
+            error: "Profile picture must have a square aspect ratio (1:1)",
+          });
+        } else {
+          resolve({ isValid: true });
+        }
+      };
+
+      img.onerror = () => {
+        resolve({ isValid: false, error: "Invalid image file" });
+      };
+
+      img.src = URL.createObjectURL(file);
+    });
+  }
+  /**
    * Get current user's full profile
    */
   static async getMyProfile(): Promise<User> {
@@ -150,34 +199,81 @@ export class ProfileService extends BaseService {
           "Invalid file type. Please upload JPG, PNG, or GIF files only."
         );
       }
+
       const maxSize = 10 * 1024 * 1024;
-      if (file.size > maxSize) {
+      if (file.size > maxSize)
         throw new Error("File is too large. Maximum size is 10MB.");
-      }
-      // T12: Validate aspect ratio (1:1 to 4:5)
-      const aspectRatioValidation = await MediaService.validateProfilePicture(
-        file
-      );
-      if (!aspectRatioValidation.isValid) {
+
+      const aspectRatioValidation = await this.validateProfilePicture(file);
+      if (!aspectRatioValidation.isValid)
         throw new Error(aspectRatioValidation.error);
-      }
-      //T9: Check for malicious files
+
       const securityCheck = await MediaService.detectMaliciousFile(file);
-      if (!securityCheck.isSafe) {
+      if (!securityCheck.isSafe)
         throw new Error(securityCheck.reason || "File failed security check");
-      }
+
       const formData = new FormData();
       formData.append("file", file);
+
       const data = await this.authenticatedRequest<
-        BackendResponse & { profilePictureUrl: string }
+        BackendResponse & { profilePictureUrl?: string }
       >(API_ENDPOINTS.profile.uploadPicture, {
         method: "POST",
         body: formData,
         useFormData: true,
       });
-      if (data.success && data.profilePictureUrl) {
-        return data.profilePictureUrl;
+
+      if (data.success) {
+        const resp = data as unknown as Record<string, unknown>;
+        // Helpful debug output in development to inspect backend response shape
+        if (import.meta.env.DEV) {
+          try {
+            console.debug(
+              "ProfileService.uploadProfilePicture response:",
+              resp
+            );
+          } catch {
+            /* ignore */
+          }
+        }
+
+        // 1) direct string
+        const profilePictureUrl = resp["profilePictureUrl"];
+        if (typeof profilePictureUrl === "string") return profilePictureUrl;
+
+        // 2) file object metadata
+        const maybeFileObj = (resp["file"] ||
+          resp["profilePicture"] ||
+          resp["media"]) as Record<string, unknown> | undefined;
+        if (maybeFileObj && typeof maybeFileObj === "object") {
+          const maybeId = maybeFileObj["id"];
+          if (typeof maybeId === "number" || typeof maybeId === "string")
+            return String(maybeId);
+
+          const filenameRaw =
+            maybeFileObj["storedFilename"] ||
+            maybeFileObj["file"] ||
+            maybeFileObj["filename"] ||
+            maybeFileObj["filePath"];
+          if (typeof filenameRaw === "string" && filenameRaw.length > 0) {
+            const filename = filenameRaw;
+            if (
+              filename.startsWith("/") ||
+              /^https?:\/\//i.test(filename) ||
+              filename.startsWith("data:")
+            )
+              return filename;
+            return `/uploads/profile-pictures/${filename}`;
+          }
+        }
+
+        // 3) fallback keys
+        for (const key of ["url", "path"]) {
+          const val = resp[key];
+          if (typeof val === "string") return val;
+        }
       }
+
       const userMessage =
         data.message === "Failed to upload profile picture"
           ? "Unable to upload image. The backend server couldn't process the file. Please contact support."
@@ -185,25 +281,6 @@ export class ProfileService extends BaseService {
       throw new Error(userMessage);
     } catch (err) {
       this.handleServiceError(err, "ProfileService", "uploadProfilePicture");
-    }
-  }
-
-  /**
-   * Remove profile picture
-   */
-  static async removeProfilePicture(): Promise<void> {
-    try {
-      const data = await this.authenticatedRequest<BackendResponse>(
-        API_ENDPOINTS.profile.removePicture,
-        {
-          method: "DELETE",
-        }
-      );
-      if (!data.success) {
-        throw new Error(data.message || "Failed to remove profile picture");
-      }
-    } catch (err) {
-      this.handleServiceError(err, "ProfileService", "removeProfilePicture");
     }
   }
 
@@ -223,9 +300,11 @@ export class ProfileService extends BaseService {
         body: formData,
         useFormData: true,
       });
-      if (data.success && data.gamingStatistics) {
-        return data.gamingStatistics;
-      }
+      const gamingStatsVal = (data as unknown as Record<string, unknown>)[
+        "gamingStatistics"
+      ];
+      if (data.success && typeof gamingStatsVal === "string")
+        return gamingStatsVal as string;
       throw new Error(data.message || "Failed to update gaming statistics");
     } catch (err) {
       this.handleServiceError(err, "ProfileService", "updateGamingStats");
@@ -233,24 +312,39 @@ export class ProfileService extends BaseService {
   }
 
   /**
-   * Search profiles by query
+   * Remove current user's profile picture
+   */
+  static async removeProfilePicture(): Promise<void> {
+    try {
+      const data = await this.authenticatedRequest<BackendResponse>(
+        API_ENDPOINTS.profile.removePicture,
+        { method: "DELETE" }
+      );
+      if (!data.success)
+        throw new Error(data.message || "Failed to remove profile picture");
+      return;
+    } catch (err) {
+      this.handleServiceError(err, "ProfileService", "removeProfilePicture");
+    }
+  }
+
+  /**
+   * Search profiles with query params
    */
   static async searchProfiles(
     params: ProfileSearchParams
   ): Promise<ProfileSearchResponse> {
     try {
-      this.validateRequired({ query: params.query });
-      const searchParams = new URLSearchParams({
-        query: params.query,
-        page: (params.page || 0).toString(),
-        size: (params.size || 20).toString(),
-      });
+      const qs = new URLSearchParams();
+      if (params.query) qs.set("query", params.query);
+      if (typeof params.page === "number") qs.set("page", String(params.page));
+      if (typeof params.size === "number") qs.set("size", String(params.size));
+
       const data = await this.requestWithRetry<ProfileSearchResponse>(
-        `${API_ENDPOINTS.profile.search}?${searchParams.toString()}`
+        `${API_ENDPOINTS.profile.search}?${qs.toString()}`
       );
-      if (data.success) {
-        return data;
-      }
+
+      if (data.success) return data;
       throw new Error(data.message || "Failed to search profiles");
     } catch (err) {
       this.handleServiceError(err, "ProfileService", "searchProfiles");

@@ -6,7 +6,6 @@ import type {
   DiscordUnlinkResponse,
   DiscordUserInfoResponse,
   DiscordRefreshResponse,
-  DiscordOAuthConfig,
   DiscordOAuthState,
 } from "../types";
 
@@ -16,25 +15,31 @@ import type {
  * Based on APIs #88-93
  */
 export class DiscordService extends BaseService {
-  private static readonly DISCORD_CONFIG: DiscordOAuthConfig = {
-    clientId: "1416218898063429724", // From API spec
-    redirectUri: "http://localhost:8080/api/login/oauth2/code/discord", // Backend callback
-    scopes: ["identify", "email"],
-  };
+  private static readonly DISCORD_CLIENT_ID = "1416218898063429724";
+  private static getDiscordRedirectUri(): string {
+    // Use the frontend origin as the redirect URI so Discord will redirect
+    // back to the frontend (e.g. http://localhost:3000/auth/discord/callback).
+    // This matches the previous working flow where the frontend handled the
+    // callback UI and then asked the backend to exchange the code.
+    const cbPath = API_ENDPOINTS.auth.discord.callback.startsWith("/")
+      ? API_ENDPOINTS.auth.discord.callback
+      : `/${API_ENDPOINTS.auth.discord.callback}`;
+    return `${this.getFrontendUrl()}${cbPath}`;
+  }
+
+  private static readonly DISCORD_SCOPES = ["identify", "email"];
 
   private static readonly OAUTH_STATE_KEY = "discord_oauth_state";
 
-  // Get the backend base URL from environment or default
-  private static getBackendUrl(): string {
-    // Prefer explicit API base (with /api) if provided
-    const explicit = import.meta.env.VITE_API_BASE_URL as string | undefined;
-    if (explicit) {
-      return explicit.replace(/\/$/, "");
-    }
-    const base = import.meta.env.VITE_BACKEND_URL || "http://localhost:8080";
-    // Ensure it ends with /api
-    return base.endsWith("/api") ? base : `${base.replace(/\/$/, "")}/api`;
-  }
+  // (no global backend helper here - kept minimal for Discord service)
+
+  /**
+   * Discord-specific backend base.
+   * Use VITE_DISCORD_AUTH_BASE_URL if provided, otherwise default to localhost:3000
+   * This keeps other API calls pointing at the default backend while directing
+   * Discord-auth calls to the auth server which may run on a different port.
+   */
+  // (no discord-specific backend base — keep Discord auth callback on frontend)
 
   // Get the frontend base URL from the current window origin. This allows
   // running the frontend on different ports (3000, 3001, etc.) without forcing
@@ -46,6 +51,17 @@ export class DiscordService extends BaseService {
   private static oauthInFlight = false;
   private static oauthLastAt = 0;
   private static readonly OAUTH_COOLDOWN_MS = 2000;
+
+  /**
+   * Generate secure random state for OAuth CSRF protection
+   */
+  private static generateState(): string {
+    const array = new Uint8Array(32);
+    crypto.getRandomValues(array);
+    return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join(
+      ""
+    );
+  }
 
   /**
    * API #88: Initiate Discord OAuth
@@ -63,46 +79,19 @@ export class DiscordService extends BaseService {
       this.oauthInFlight = true;
       this.oauthLastAt = Date.now();
 
-      // Generate state for CSRF protection
+      // Generate state for CSRF protection and store return URL
       const state = this.generateState();
       const oauthState: DiscordOAuthState = {
         state,
         returnUrl: returnUrl || "/",
       };
-
-      // Store state in localStorage for later verification
       localStorage.setItem(this.OAUTH_STATE_KEY, JSON.stringify(oauthState));
 
-      // Redirect to backend OAuth endpoint which will handle Discord OAuth flow
-      const frontendUrl = this.getFrontendUrl();
-      const base = this.getBackendUrl();
-      const path = API_ENDPOINTS.auth.discord.login.startsWith("/")
-        ? API_ENDPOINTS.auth.discord.login
-        : `/${API_ENDPOINTS.auth.discord.login}`;
-      const targetReturn = frontendUrl + (returnUrl || "/");
-      const backendOAuthUrl = `${base}${path}?state=${encodeURIComponent(
-        state
-      )}&return_url=${encodeURIComponent(
-        targetReturn
-      )}&returnUrl=${encodeURIComponent(targetReturn)}`;
-
-      console.log("🔑 Discord OAuth state:", {
-        state,
-        targetReturn,
-        base,
-        path,
-      });
-
-      console.log("🔗 Discord OAuth URL:", backendOAuthUrl);
-      console.log("🏠 Frontend URL:", frontendUrl);
-      // In DiscordService.initiateOAuth - add more logging
-      console.log("🔍 OAuth Initiation Debug:", {
-        storedState: DiscordService.getStoredOAuthState(),
-        currentUrl: window.location.href,
-        backendUrl: this.getBackendUrl(),
-      });
-
-      window.location.href = backendOAuthUrl;
+      // Build Discord authorize URL from frontend so redirect_uri points at
+      // the frontend (e.g. http://localhost:3000/auth/discord/callback)
+      const authUrl = this.buildOAuthUrl(state);
+      console.log("🔗 Redirecting to Discord authorize URL:", authUrl);
+      window.location.href = authUrl;
     } catch (error) {
       console.error("Discord OAuth initiation failed:", error);
       throw new Error("Failed to initiate Discord authentication");
@@ -118,12 +107,12 @@ export class DiscordService extends BaseService {
     state: string
   ): Promise<DiscordOAuthCallbackResponse> {
     try {
-      // Verify state
+      // Verify state stored in localStorage (frontend initiated flow)
       const storedStateData = localStorage.getItem(this.OAUTH_STATE_KEY);
       if (!storedStateData) {
+        console.error("OAuth state not found in storage");
         throw new Error("OAuth state not found");
       }
-
       const oauthState: DiscordOAuthState = JSON.parse(storedStateData);
       if (oauthState.state !== state) {
         console.error("OAuth state mismatch", {
@@ -133,10 +122,19 @@ export class DiscordService extends BaseService {
         throw new Error("Invalid OAuth state");
       }
 
-      // Call backend callback endpoint
+      // Call backend callback endpoint to exchange code for token. Use the
+      // relative API path so the request goes to the configured backend.
+      const redirectUri = DiscordService.getDiscordRedirectUri();
       const url = `${
         API_ENDPOINTS.auth.discord.callback
-      }?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state)}`;
+      }?code=${encodeURIComponent(code)}&state=${encodeURIComponent(
+        state
+      )}&redirect_uri=${encodeURIComponent(redirectUri)}`;
+      // Log the exact backend callback URL used for token exchange so we can
+      // correlate with server logs and the network tab when debugging failures.
+      if (import.meta.env.DEV) {
+        console.debug("Discord OAuth callback request URL:", url);
+      }
       const response = (await this.requestWithRetry(
         url
       )) as DiscordOAuthCallbackResponse;
@@ -146,8 +144,15 @@ export class DiscordService extends BaseService {
       this.oauthInFlight = false;
       return response;
     } catch (error) {
+      // Preserve and rethrow the original error so calling code (and UI)
+      // can access the server-provided message (for debugging during dev).
       console.error("Discord OAuth callback failed:", error);
       this.oauthInFlight = false;
+      // If the error is already an Error (or ApiError), rethrow it to keep
+      // the original message and metadata. Otherwise wrap it minimally.
+      if (error instanceof Error) {
+        throw error;
+      }
       throw new Error("Discord authentication failed");
     }
   }
@@ -234,18 +239,6 @@ export class DiscordService extends BaseService {
       throw new Error("Failed to refresh Discord token");
     }
   }
-
-  /**
-   * Generate secure random state for OAuth CSRF protection
-   */
-  private static generateState(): string {
-    const array = new Uint8Array(32);
-    crypto.getRandomValues(array);
-    return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join(
-      ""
-    );
-  }
-
   /**
    * Get stored OAuth state from localStorage
    */
@@ -283,13 +276,13 @@ export class DiscordService extends BaseService {
    */
   static buildOAuthUrl(state?: string): string {
     const authUrl = new URL("https://discord.com/api/oauth2/authorize");
-    authUrl.searchParams.append("client_id", this.DISCORD_CONFIG.clientId);
+    authUrl.searchParams.append("client_id", this.DISCORD_CLIENT_ID);
     authUrl.searchParams.append(
       "redirect_uri",
-      this.DISCORD_CONFIG.redirectUri
+      DiscordService.getDiscordRedirectUri()
     );
     authUrl.searchParams.append("response_type", "code");
-    authUrl.searchParams.append("scope", this.DISCORD_CONFIG.scopes.join(" "));
+    authUrl.searchParams.append("scope", this.DISCORD_SCOPES.join(" "));
 
     if (state) {
       authUrl.searchParams.append("state", state);

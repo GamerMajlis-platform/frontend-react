@@ -9,6 +9,7 @@ interface ProductGridProps {
   emptyMessage?: string;
   compact?: boolean;
   columns?: 2 | 3 | 4 | 5;
+  onProductOpen?: (id: number) => void;
 }
 
 export default function ProductGrid({
@@ -18,9 +19,12 @@ export default function ProductGrid({
   emptyMessage,
   compact = false,
   columns = 4,
+  onProductOpen,
 }: ProductGridProps) {
   const { t } = useTranslation();
 
+  // Use the same breakpoints and spacing as the Wishlist page to ensure
+  // consistent card sizing and placement across marketplace and wishlist.
   const gridClasses = {
     2: "grid-cols-1 sm:grid-cols-2",
     3: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
@@ -28,7 +32,7 @@ export default function ProductGrid({
     5: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5",
   };
 
-  const gapClasses = compact ? "gap-3" : "gap-4";
+  const gapClasses = compact ? "gap-3" : "gap-6"; // match wishlist's gap-6 by default
 
   if (loading) {
     return (
@@ -118,18 +122,21 @@ export default function ProductGrid({
   return (
     <div className={`grid ${gridClasses[columns]} ${gapClasses}`}>
       {(products || []).map((product) => (
-        <Card
-          key={product.id}
-          preset="product"
-          id={product.id}
-          category={product.category || "Unknown"}
-          productName={product.name}
-          seller={product.seller?.displayName || "Unknown Seller"}
-          price={`$${product.price}`}
-          rate={product.averageRating?.toString() || "0"}
-          reviews={product.totalReviews?.toString() || "0"}
-          imageUrl={product.mainImageUrl}
-        />
+        <div key={product.id} className="flex flex-col">
+          <Card
+            preset="product"
+            id={product.id}
+            category={product.category || "Unknown"}
+            productName={product.name}
+            seller={product.seller?.displayName || "Unknown Seller"}
+            price={`$${product.price}`}
+            rate={product.averageRating?.toString() || "0"}
+            reviews={product.totalReviews?.toString() || "0"}
+            imageUrl={product.mainImageUrl}
+            className="w-full max-w-full min-w-0"
+            onClick={() => onProductOpen?.(product.id)}
+          />
+        </div>
       ))}
     </div>
   );

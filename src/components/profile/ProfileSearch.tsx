@@ -1,4 +1,10 @@
 import React, { useState, useCallback } from "react";
+import {
+  getAvatarSrc,
+  DEFAULT_BLANK_AVATAR,
+  markUploadPathFailed,
+  getAlternateUploadUrl,
+} from "../../lib/urls";
 import { useTranslation } from "react-i18next";
 import { useProfile } from "../../hooks/useProfile";
 import type {
@@ -247,9 +253,23 @@ export default function ProfileSearch({
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-cyan-300/20 flex items-center justify-center overflow-hidden">
                   {profile.profilePictureUrl ? (
                     <img
-                      src={profile.profilePictureUrl}
+                      src={getAvatarSrc(profile.profilePictureUrl)}
                       alt={profile.displayName}
                       className="w-full h-full object-cover"
+                      data-original={profile.profilePictureUrl}
+                      onError={(e) => {
+                        const img = e.currentTarget as HTMLImageElement;
+                        const orig = img.getAttribute("data-original");
+                        if (orig) {
+                          const alt = getAlternateUploadUrl(orig);
+                          if (alt && img.src !== alt) {
+                            img.src = alt;
+                            return;
+                          }
+                        }
+                        markUploadPathFailed(orig ?? undefined);
+                        img.src = DEFAULT_BLANK_AVATAR;
+                      }}
                     />
                   ) : (
                     <span className="text-primary font-semibold">
@@ -337,9 +357,23 @@ export default function ProfileSearch({
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-cyan-300/20 flex items-center justify-center overflow-hidden">
                     {suggestion.profilePictureUrl ? (
                       <img
-                        src={suggestion.profilePictureUrl}
+                        src={getAvatarSrc(suggestion.profilePictureUrl)}
                         alt={suggestion.displayName}
                         className="w-full h-full object-cover"
+                        data-original={suggestion.profilePictureUrl}
+                        onError={(e) => {
+                          const img = e.currentTarget as HTMLImageElement;
+                          const orig = img.getAttribute("data-original");
+                          if (orig) {
+                            const alt = getAlternateUploadUrl(orig);
+                            if (alt && img.src !== alt) {
+                              img.src = alt;
+                              return;
+                            }
+                          }
+                          markUploadPathFailed(orig ?? undefined);
+                          img.src = DEFAULT_BLANK_AVATAR;
+                        }}
                       />
                     ) : (
                       <span className="text-primary font-semibold text-sm">

@@ -15,15 +15,30 @@ export default function LanguageSwitcher({
 
   const changeLanguage = async (langCode: string) => {
     try {
-      // Force reload the language resources
-      await i18n.reloadResources(langCode);
+      // Preload resources for the target language first to avoid long
+      // suspense waits or requiring a full page reload to see new keys.
+      // `loadLanguages` is not strongly typed in some i18next versions,
+      // so access it via `any` to avoid TS errors.
+      // This fetches backend resources for the language before switching.
+      // Some i18next builds expose `loadLanguages`; check and call safely.
+      const maybeLoad = i18n as unknown as {
+        loadLanguages?: (...args: unknown[]) => Promise<void>;
+      };
+      if (typeof maybeLoad.loadLanguages === "function") {
+        await maybeLoad.loadLanguages(langCode);
+      }
+
+      // Now change language; resources are already loaded so components
+      // will re-render immediately without long Suspense waits.
       await i18n.changeLanguage(langCode);
-      // Force a hard refresh to ensure all components re-render with new translations
-      window.location.reload();
+
+      // Ensure all configured namespaces are present (defensive).
+      const namespaces = (i18n.options.ns as string[]) || ["translation"];
+      await i18n.loadNamespaces(namespaces);
     } catch (error) {
       console.error("Failed to change language:", error);
       // Fallback to simple language change
-      i18n.changeLanguage(langCode);
+      i18n.changeLanguage(langCode).catch(() => {});
     }
   };
 

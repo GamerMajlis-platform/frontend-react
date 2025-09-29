@@ -69,9 +69,45 @@ export default function CreateEventForm({
   const [endDate, setEndDate] = useState<Date | null>(
     parseToDate(formData.endDateTime)
   );
+
   const [registrationDate, setRegistrationDate] = useState<Date | null>(
     parseToDate(formData.registrationDeadline)
   );
+
+  // Start of today (midnight) used as a fallback/minimum for datepickers
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+
+  const getTimePropsFor = (d: Date | null) => {
+    if (!d) return {} as Record<string, Date>;
+    const now = new Date();
+    const isToday =
+      d.getFullYear() === now.getFullYear() &&
+      d.getMonth() === now.getMonth() &&
+      d.getDate() === now.getDate();
+
+    const minTime = isToday
+      ? new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate(),
+          now.getHours(),
+          now.getMinutes(),
+          0
+        )
+      : new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0);
+
+    const maxTime = new Date(
+      d.getFullYear(),
+      d.getMonth(),
+      d.getDate(),
+      23,
+      45,
+      0
+    );
+
+    return { minTime, maxTime };
+  };
 
   const validateForm = (): boolean => {
     const newErrors: EventFormErrors = {};
@@ -85,8 +121,10 @@ export default function CreateEventForm({
       newErrors.titleMaxLength = t("events:validation.titleMaxLength");
     }
 
-    // Description validation
-    if (formData.description && formData.description.length > 1000) {
+    // Description validation (required)
+    if (!formData.description || !formData.description.trim()) {
+      newErrors.description = t("events:validation.descriptionRequired");
+    } else if (formData.description.length > 1000) {
       newErrors.descriptionMaxLength = t(
         "events:validation.descriptionMaxLength"
       );
@@ -154,16 +192,16 @@ export default function CreateEventForm({
     }
 
     // Location-specific validation
+    // For virtual or hybrid events: virtual link is optional on backend in some cases
+    // so only validate its format if provided. Do not block submission when empty.
     if (
       formData.locationType === "VIRTUAL" ||
       formData.locationType === "HYBRID"
     ) {
-      if (!formData.virtualLink?.trim()) {
-        newErrors.virtualLinkRequired = t(
-          "events:validation.virtualLinkRequired"
-        );
-      } else if (formData.virtualLink && !isValidUrl(formData.virtualLink)) {
-        newErrors.virtualLinkValid = t("events:validation.virtualLinkValid");
+      if (formData.virtualLink && formData.virtualLink.trim()) {
+        if (!isValidUrl(formData.virtualLink)) {
+          newErrors.virtualLinkValid = t("events:validation.virtualLinkValid");
+        }
       }
     }
 
@@ -199,13 +237,21 @@ export default function CreateEventForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Debug: indicate submit was triggered and current form data
+    console.debug("CreateEventForm submit triggered", { formData });
+
     if (!validateForm()) {
       return;
     }
 
     try {
+      // Debug: about to call onSubmit prop
+      console.debug("CreateEventForm calling onSubmit");
       await onSubmit(formData);
-    } catch {
+    } catch (err) {
+      // Log error for debugging so we can inspect why submission failed
+      // Keep the displayed message generic; show full error in dev console
+      console.error("CreateEventForm submit error:", err);
       setErrors({ general: t("events:messages.createError") });
     }
   };
@@ -232,6 +278,12 @@ export default function CreateEventForm({
       onSubmit={handleSubmit}
       className="max-w-2xl mx-auto bg-[#1C2541] rounded-xl p-6 space-y-6"
     >
+      {/* Surface a general error banner (e.g. backend/network/create failure) */}
+      {errors.general && (
+        <div className="w-full px-3 sm:px-4 py-3 bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)] rounded-lg text-[#ef4444] text-sm text-center mb-2">
+          {errors.general}
+        </div>
+      )}
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-2xl font-bold text-white">
           {t("events:form.create")}
@@ -284,10 +336,6 @@ export default function CreateEventForm({
           className="block text-sm font-medium text-white mb-2"
         >
           {t("events:form.description")}
-          <span className="text-xs text-white/60">
-            {" "}
-            ({t("common.optional")})
-          </span>
         </label>
         <textarea
           id="description"
@@ -324,6 +372,8 @@ export default function CreateEventForm({
             className="w-full rounded-xl border border-slate-600 bg-[#0F172A] px-4 py-3 text-white"
             disabled={isSubmitting}
             required
+            minDate={startOfToday}
+            {...getTimePropsFor(startDate)}
           />
           {renderError("startDateTime")}
         </div>
@@ -351,6 +401,8 @@ export default function CreateEventForm({
             placeholderText={t("events:form.endDateTime")}
             className="w-full rounded-xl border border-slate-600 bg-[#0F172A] px-4 py-3 text-white"
             disabled={isSubmitting}
+            minDate={startDate || startOfToday}
+            {...getTimePropsFor(endDate || startDate || startOfToday)}
           />
           {renderError("endDateTime")}
         </div>

@@ -1,10 +1,11 @@
 import { useEffect, useState, useCallback, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { webSocketService } from "../../services/WebSocketService";
 import type { NotificationMessage } from "../../services/WebSocketService";
 import { useAppContext } from "../../context/useAppContext";
 import SessionService from "../../services/SessionService";
-// theme constants intentionally not needed here
+import useIsMobile from "../../hooks/useIsMobile";
 
 export default function Notifications() {
   const { user, isAuthenticated } = useAppContext();
@@ -12,9 +13,9 @@ export default function Notifications() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const panelRef = useRef<HTMLDivElement | null>(null);
+  const isMobile = useIsMobile();
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
-  // keep notifications dropdown right-aligned to avoid floating off-screen
 
   const handleIncoming = useCallback((n: NotificationMessage) => {
     setNotifications((prev) => [n, ...prev].slice(0, 50));
@@ -69,7 +70,6 @@ export default function Notifications() {
   }
 
   function onNotificationClick(n: NotificationMessage) {
-    // Try to navigate based on data payload
     const d = n.data as Record<string, unknown> | undefined;
     if (d && typeof d === "object") {
       if (d.postId) {
@@ -81,9 +81,52 @@ export default function Notifications() {
         return;
       }
     }
-    // fallback: navigate to home
     navigate("/");
   }
+
+  const panelContent = (
+    <div className="w-full max-w-md bg-slate-900/95 border border-slate-700/50 rounded-lg shadow-2xl z-50 p-2">
+      <div className="flex items-center justify-between px-2 py-1 border-b border-slate-700/30 mb-2">
+        <strong className="text-sm text-white">Notifications</strong>
+        <button
+          className="text-xs text-slate-300 hover:text-white"
+          onClick={() => setNotifications([])}
+        >
+          Clear
+        </button>
+      </div>
+
+      <div className="max-h-64 overflow-auto">
+        {notifications.length === 0 && (
+          <div className="p-4 text-sm text-slate-300">No notifications</div>
+        )}
+        {notifications.map((n) => (
+          <button
+            key={n.id}
+            onClick={() => onNotificationClick(n)}
+            className={`w-full text-left px-3 py-2 flex gap-3 items-start hover:bg-white/3 rounded-md transition-colors ${
+              n.isRead ? "" : "bg-white/2"
+            }`}
+          >
+            <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-sm text-white">
+              🔔
+            </div>
+            <div className="flex-1">
+              <div className="text-sm font-medium text-white">{n.title}</div>
+              <div className="text-xs text-slate-300 mt-1 line-clamp-2">
+                {n.message}
+              </div>
+            </div>
+            <div className="text-xs text-slate-400 ml-2">
+              {new Date(n.timestamp).toLocaleTimeString()}
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  // Mobile modal (portal) to avoid being clipped by transformed parents / header z-index
 
   return (
     <div className="relative" ref={panelRef}>
@@ -106,49 +149,71 @@ export default function Notifications() {
         )}
       </button>
 
-      {open && (
-        <div className="absolute right-0 mt-2 w-80 bg-slate-900/95 border border-slate-700/50 rounded-lg shadow-2xl z-50 p-2">
-          <div className="flex items-center justify-between px-2 py-1 border-b border-slate-700/30 mb-2">
-            <strong className="text-sm text-white">Notifications</strong>
-            <button
-              className="text-xs text-slate-300 hover:text-white"
-              onClick={() => setNotifications([])}
-            >
-              Clear
-            </button>
-          </div>
-
-          <div className="max-h-64 overflow-auto">
-            {notifications.length === 0 && (
-              <div className="p-4 text-sm text-slate-300">No notifications</div>
-            )}
-            {notifications.map((n) => (
-              <button
-                key={n.id}
-                onClick={() => onNotificationClick(n)}
-                className={`w-full text-left px-3 py-2 flex gap-3 items-start hover:bg-white/3 rounded-md transition-colors ${
-                  n.isRead ? "" : "bg-white/2"
-                }`}
-              >
-                <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-sm text-white">
-                  🔔
-                </div>
-                <div className="flex-1">
-                  <div className="text-sm font-medium text-white">
-                    {n.title}
-                  </div>
-                  <div className="text-xs text-slate-300 mt-1 line-clamp-2">
-                    {n.message}
-                  </div>
-                </div>
-                <div className="text-xs text-slate-400 ml-2">
-                  {new Date(n.timestamp).toLocaleTimeString()}
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
+      {open && !isMobile && (
+        <div className="absolute right-0 mt-2 w-80">{panelContent}</div>
       )}
+
+      {/* Render mobile portal alongside the button so the icon stays visible when open */}
+      {open &&
+        isMobile &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[10003] bg-black/40 flex items-start justify-center p-4"
+            onClick={() => setOpen(false)}
+          >
+            <div
+              className="w-full max-w-2xl mt-20 bg-slate-900/95 border border-slate-700/50 rounded-xl p-4"
+              onClick={(e) => e.stopPropagation()}
+              role="dialog"
+              aria-label="Notifications"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-white font-semibold">Notifications</h3>
+                <button
+                  aria-label="Close notifications"
+                  className="text-slate-300 hover:text-white"
+                  onClick={() => setOpen(false)}
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="max-h-64 overflow-auto">
+                {notifications.length === 0 && (
+                  <div className="p-4 text-sm text-slate-300">
+                    No notifications
+                  </div>
+                )}
+                {notifications.map((n) => (
+                  <button
+                    key={n.id}
+                    onClick={() => onNotificationClick(n)}
+                    className={`w-full text-left px-3 py-2 flex gap-3 items-start hover:bg-white/3 rounded-md transition-colors ${
+                      n.isRead ? "" : "bg-white/2"
+                    }`}
+                  >
+                    <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-sm text-white">
+                      🔔
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-white">
+                        {n.title}
+                      </div>
+                      <div className="text-xs text-slate-300 mt-1 line-clamp-2">
+                        {n.message}
+                      </div>
+                    </div>
+                    <div className="text-xs text-slate-400 ml-2">
+                      {new Date(n.timestamp).toLocaleTimeString()}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 }

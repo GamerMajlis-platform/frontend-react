@@ -55,12 +55,45 @@ class EventService extends BaseService {
   static async createEvent(
     data: CreateEventRequest
   ): Promise<EventCreateResponse> {
+    // Ensure required fields are present: title, description, startDateTime
+    // Remove undefined, null and empty-string values so we don't send
+    // empty endDateTime/registrationDeadline fields which backend may reject
+    const cleaned: Record<string, unknown> = Object.fromEntries(
+      Object.entries(data).filter(([, v]) => {
+        if (v === undefined || v === null) return false;
+        if (typeof v === "string" && v.trim() === "") return false;
+        return true;
+      })
+    );
+
+    this.validateRequired({
+      title: cleaned.title,
+      description: cleaned.description,
+      startDateTime: cleaned.startDateTime,
+    });
+
+    // Always send FormData to match backend expectation
     const prepared: Record<string, string | Blob> = {};
-
-    Object.entries(data).forEach(([key, value]) => {
+    Object.entries(cleaned).forEach(([key, value]) => {
       if (value === undefined || value === null) return;
+      // Normalize date/time strings to include seconds when sending to backend
+      if (
+        (key === "startDateTime" ||
+          key === "endDateTime" ||
+          key === "registrationDeadline") &&
+        typeof value === "string"
+      ) {
+        // If value looks like YYYY-MM-DDTHH:mm (no seconds), append :00
+        const shortDateTimeMatch = value.match(
+          /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/
+        );
+        if (shortDateTimeMatch) {
+          prepared[key] = `${value}:00`;
+          return;
+        }
+      }
 
-      if (value && typeof value === "object" && "stream" in value) {
+      if (value instanceof File || value instanceof Blob) {
         prepared[key] = value as Blob;
       } else if (typeof value === "boolean" || typeof value === "number") {
         prepared[key] = value.toString();
@@ -70,9 +103,24 @@ class EventService extends BaseService {
     });
 
     const formData = this.createFormData(prepared);
+    if (import.meta.env.DEV) {
+      const debugEntries: Record<string, unknown> = {};
+      formData.forEach((v, k) => {
+        debugEntries[k] =
+          v instanceof File ? { file: v.name, size: v.size, type: v.type } : v;
+      });
+      console.debug(
+        "EventService.createEvent - FormData to send:",
+        debugEntries
+      );
+    }
     return await this.authenticatedRequest(API_ENDPOINTS.events, {
       method: "POST",
       body: formData,
+      // hint to apiFetch it's form data (prevents manual Content-Type)
+      // note: apiFetch detects FormData automatically, but being explicit is safe
+      // useFormData is supported by ApiOptions
+      useFormData: true,
     });
   }
 

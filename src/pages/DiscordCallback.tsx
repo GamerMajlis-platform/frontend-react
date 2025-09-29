@@ -16,6 +16,7 @@ const DiscordCallback: React.FC = () => {
         const params = new URLSearchParams(window.location.search);
         const code = params.get("code");
         const state = params.get("state");
+        const tokenParam = params.get("token");
         const error = params.get("error");
         const success = params.get("success");
 
@@ -26,6 +27,15 @@ const DiscordCallback: React.FC = () => {
           success,
           fullUrl: window.location.href,
         });
+
+        // If backend returned a token directly in the URL (some backends do
+        // this after successful exchange), store it and redirect.
+        if (tokenParam) {
+          SessionService.storeToken(tokenParam);
+          setStatus("success");
+          navigate("/", { replace: true, state: { fromOAuth: true } });
+          return;
+        }
 
         // If there's an error from the backend
         if (error) {
@@ -57,11 +67,27 @@ const DiscordCallback: React.FC = () => {
 
         throw new Error("Authentication response was invalid");
       } catch (error) {
+        // Surface detailed error information for debugging
         console.error("Discord callback error:", error);
         setStatus("error");
-        setErrorMessage(
-          error instanceof Error ? error.message : "Authentication failed"
-        );
+
+        // Try to extract a useful message from ApiError-like objects
+        let message = "Authentication failed";
+        try {
+          // ApiError from ErrorHandler has message + errorCode + statusCode
+          if (error && typeof error === "object") {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const e: any = error as any;
+            if (e.message) message = e.message;
+            if (e.errorCode) message += ` (code: ${e.errorCode})`;
+            if (e.statusCode) message += ` [status: ${e.statusCode}]`;
+            if (e.errors) message += ` details: ${JSON.stringify(e.errors)}`;
+          }
+        } catch {
+          // ignore extraction errors
+        }
+
+        setErrorMessage(message);
       }
     })();
   }, [navigate]);

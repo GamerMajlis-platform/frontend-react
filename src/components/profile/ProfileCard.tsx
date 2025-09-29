@@ -1,3 +1,9 @@
+import {
+  getAvatarSrc,
+  DEFAULT_BLANK_AVATAR,
+  markUploadPathFailed,
+  getAlternateUploadUrl,
+} from "../../lib/urls";
 import type {
   ProfileSearchResult,
   ProfileSuggestion,
@@ -30,9 +36,24 @@ export default function ProfileCard({
         <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary/20 to-cyan-300/20 flex items-center justify-center overflow-hidden flex-shrink-0">
           {profile.profilePictureUrl ? (
             <img
-              src={profile.profilePictureUrl}
+              src={getAvatarSrc(profile.profilePictureUrl)}
               alt={profile.displayName}
               className="w-full h-full object-cover"
+              data-original={profile.profilePictureUrl}
+              onError={(e) => {
+                const img = e.currentTarget as HTMLImageElement;
+                const orig = img.getAttribute("data-original");
+                // Try alternate URL pattern with /api prefix once before falling back
+                if (orig) {
+                  const alt = getAlternateUploadUrl(orig);
+                  if (alt && img.src !== alt) {
+                    img.src = alt;
+                    return;
+                  }
+                }
+                markUploadPathFailed(orig ?? undefined);
+                img.src = DEFAULT_BLANK_AVATAR;
+              }}
             />
           ) : (
             <span className="text-primary font-bold text-xl">

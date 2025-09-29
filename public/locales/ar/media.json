@@ -1,0 +1,60 @@
+{
+  "feed": {
+    "confirmDelete": "هل أنت متأكد من حذف هذه الوسائط؟",
+    "loadError": "فشل في تحميل الوسائط",
+    "loadMore": "تحميل المزيد",
+    "noMedia": "لا توجد وسائط",
+    "noMediaDescription": "ارفع بعض محتوى الألعاب للبدء!",
+    "showing": "عرض {{count}} من {{total}} عنصر"
+  },
+  "details": {
+    "type": "النوع",
+    "size": "حجم الملف",
+    "category": "فئة اللعبة",
+    "views": "عدد المشاهدات",
+    "visibility": "الخصوصية",
+    "uploadDate": "تاريخ الرفع"
+  },
+  "edit": "عدل الوسائط",
+  "copyLink": "نسخ الرابط",
+  "delete": "حذف الوسائط",
+  "gallery": {
+    "loadError": "فشل في تحميل الوسائط",
+    "loadMore": "تحميل المزيد",
+    "noMedia": "لا توجد وسائط",
+    "noMediaDescription": "ارفع بعض محتوى الألعاب للبدء!",
+    "showing": "عرض {{count}} من {{total}} عنصر"
+  },
+  "preview": {
+    "moreTags": "المزيد من العلامات",
+    "videoNotSupported": "متصفحك لا يدعم تشغيل الفيديو."
+  },
+  "upload": {
+    "clickToUpload": "انقر للرفع",
+    "description": "الوصف",
+    "descriptionPlaceholder": "اوصف وسائطك...",
+    "fileSize": "حجم الملف",
+    "formats":"الصيغ: MP4، AVI، MOV، JPG، PNG، GIF",
+    "gameCategory": "فئة اللعبة",
+    "orDragAndDrop": "أو اسحب وأفلت",
+    "private": "خاص",
+    "public": "عام",
+    "selectCategory": "اختر فئة",
+    "selectedFile": "الملف المحدد",
+    "supportedFormats": "MP4، AVI، MOV، JPG، PNG، GIF حتى 100 ميجابايت",
+    "tags": "العلامات",
+    "tagsHelp": "افصل العلامات بفواصل",
+    "tagsPlaceholder": "ألعاب، لقطة مميزة، مضحك",
+    "title": "العنوان",
+    "titlePlaceholder": "أدخل عنوان الوسائط",
+    "upload": "رفع الوسائط",
+    "uploadDetails": "تفاصيل الرفع",
+    "uploading": "جاري الرفع...",
+    "visibility": "الخصوصية",
+    "sizes": "الحجم الأقصى: 100 ميجابايت (فيديوهات)، 10 ميجابايت (صور)",
+    "compression": "ستُضغط الملفات (تقليل بنسبة 30% على الأقل)",
+    "security": "جميع الملفات تُفحص للأمان",
+    "requirements": "المتطلبات",
+    "addTag": "اضف علامة"
+  }
+}

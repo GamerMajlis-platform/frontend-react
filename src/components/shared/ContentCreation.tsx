@@ -144,42 +144,35 @@ export const ContentCreation: React.FC<ContentCreationProps> = ({
             <div className="space-y-4">
               <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
                 <h4 className="text-blue-200 font-medium mb-2">
-                  {t("media.upload.requirements", "Upload Requirements")}
+                  {t("media:upload.requirements", "Upload Requirements")}
                 </h4>
                 <ul className="text-blue-100/80 text-sm space-y-1">
                   <li>
                     •{" "}
                     {t(
-                      "media.upload.formats",
+                      "media:upload.formats",
                       "Formats: MP4, AVI, MOV, JPG, PNG, GIF"
                     )}
                   </li>
                   <li>
                     •{" "}
                     {t(
-                      "media.upload.sizes",
+                      "media:upload.sizes",
                       "Max size: 100MB (videos), 10MB (images)"
                     )}
                   </li>
                   <li>
                     •{" "}
                     {t(
-                      "media.upload.compression",
+                      "media:upload.compression",
                       "Files will be compressed (min 30% reduction)"
                     )}
                   </li>
                   <li>
                     •{" "}
                     {t(
-                      "media.upload.security",
+                      "media:upload.security",
                       "All files are scanned for security"
-                    )}
-                  </li>
-                  <li>
-                    •{" "}
-                    {t(
-                      "media.upload.profileSquare",
-                      "Profile pictures must be square (1:1 ratio)"
                     )}
                   </li>
                 </ul>

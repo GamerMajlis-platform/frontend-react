@@ -54,6 +54,7 @@
     "signingIn": "Signing in..."
   },
   "categories": {
+    "all": "All",
     "accessories": "Accessories",
     "allItems": "All items",
     "audio": "Audio",
@@ -65,121 +66,6 @@
     "merchandise": "Merchandise",
     "pcParts": "PC parts",
     "software": "Software"
-  },
-  "chat": {
-    "connected": "Connected to chat",
-    "connecting": "Connecting to chat...",
-    "createRoom": "New room",
-    "createRoomModal": {
-      "cancel": "Cancel",
-      "create": "Create room",
-      "creating": "Creating...",
-      "description": "Description",
-      "descriptionPlaceholder": "Enter room description...",
-      "isPrivate": "Private room",
-      "name": "Room name",
-      "namePlaceholder": "Enter room name...",
-      "privateDescription": "Only invited members can join",
-      "title": "Create a new room",
-      "type": "Room type"
-    },
-    "deleteRoom": "Delete room",
-    "disconnected": "Disconnected from chat",
-    "editRoom": "Edit room",
-    "errors": {
-      "accessDenied": "Access denied",
-      "connectionFailed": "Failed to connect to chat",
-      "createRoomFailed": "Failed to create room",
-      "deleteMessageFailed": "Failed to delete message",
-      "fileTooLarge": "File too large",
-      "invalidFileType": "Invalid file type",
-      "joinRoomFailed": "Failed to join room",
-      "leaveRoomFailed": "Failed to leave room",
-      "loadMessagesFailed": "Failed to load messages",
-      "loadRoomsFailed": "Failed to load chat rooms",
-      "messageTooLong": "Message too long",
-      "roomFull": "Room is full",
-      "roomNotFound": "Room not found",
-      "sendMessageFailed": "Failed to send message",
-      "uploadFailed": "File upload failed"
-    },
-    "inviteModal": {
-      "alreadyMember": "Already a member",
-      "invite": "Invite",
-      "invited": "Invited",
-      "noUsers": "No users found",
-      "search": "Search users...",
-      "title": "Invite members"
-    },
-    "joinRoom": "Join room",
-    "lastMessage": "Last message: {{time}}",
-    "leaveRoom": "Leave room",
-    "loginDescription": "Please log in to access the chat system.",
-    "loginRequired": "Login required",
-    "memberCount": "{{count}} member",
-    "memberCount_plural": "{{count}} members",
-    "memberManagement": {
-      "admin": "Admin",
-      "ban": "Ban member",
-      "banned": "Banned",
-      "invite": "Invite members",
-      "lastSeen": "Last seen {{time}}",
-      "makeAdmin": "Make admin",
-      "member": "Member",
-      "offline": "Offline",
-      "online": "Online",
-      "owner": "Owner",
-      "remove": "Remove member",
-      "removeAdmin": "Remove admin",
-      "title": "Members"
-    },
-    "messageInput": {
-      "attach": "Attach file",
-      "emoji": "Add emoji",
-      "placeholder": "Type a message...",
-      "send": "Send"
-    },
-    "messages": {
-      "copy": "Copy",
-      "delete": "Delete",
-      "deleteConfirm": "Are you sure you want to delete this message?",
-      "downloadFile": "Download",
-      "edit": "Edit",
-      "editedIndicator": "Edited",
-      "fileAttachment": "File attachment",
-      "imageAttachment": "Image attachment",
-      "reply": "Reply",
-      "report": "Report",
-      "viewImage": "View image"
-    },
-    "multipleTyping": "{{users}} are typing...",
-    "noMessages": "No messages yet",
-    "notifications": {
-      "invitedToRoom": "You were invited to {{room}}",
-      "joinedRoom": "{{user}} joined the room",
-      "leftRoom": "{{user}} left the room",
-      "mentionedYou": "{{user}} mentioned you",
-      "newMessage": "New message from {{user}}",
-      "roomDeleted": "Room {{room}} was deleted"
-    },
-    "onlineCount": "{{count}} online",
-    "onlineUsers": {
-      "noOnlineUsers": "No users online",
-      "startDirectMessage": "Start direct message",
-      "title": "Online users",
-      "viewProfile": "View profile"
-    },
-    "roomSettings": "Room settings",
-    "roomTypes": {
-      "direct": "Direct message",
-      "private": "Private",
-      "public": "Public"
-    },
-    "selectRoom": "Select a chat room",
-    "selectRoomDescription": "Choose a room from the sidebar to start chatting, or create a new one.",
-    "startConversation": "Start conversation",
-    "title": "Chat",
-    "typingIndicator": "{{user}} is typing..."
   },
   "chatbot": {
     "close": "Close chat",
@@ -195,6 +81,7 @@
     "welcome": "Hi! I’m the Gamer Majlis bot. How can I help you today? 🎮"
   },
   "common": {
+    "close": "Close",
     "and": "and",
     "cancel": "Cancel",
     "clearFilters": "Clear filters",
@@ -209,6 +96,7 @@
     "save": "Save",
     "saving": "Saving...",
     "search": "Search",
+    "searching": "Searching...",
     "select": "Select",
     "success": "Success",
     "tryAgain": "Try again"
@@ -291,7 +179,9 @@
     "tabs": {
       "create": "Create Content",
       "media": "Media Gallery",
-      "posts": "Community Posts"
+      "posts": "Community Posts",
+      "postsShort": "Posts",
+      "mediaShort": "Media"
     },
     "title": "Gamer Majlis",
     "viewTournaments": "Browse Tournaments"
@@ -313,40 +203,48 @@
     "subtitle": "Discover premium gaming gear from trusted sellers worldwide",
     "title": "Gaming Marketplace"
   },
-  "media": {
-    "gallery": {
-      "loadError": "Failed to load media",
-      "loadMore": "Load more",
-      "noMedia": "No media yet",
-      "noMediaDescription": "Upload some gaming content to get started!",
-      "showing": "Showing {{count}} of {{total}} items"
-    },
-    "preview": {
-      "moreTags": "More tags",
-      "videoNotSupported": "Your browser doesn’t support video playback."
-    },
-    "upload": {
-      "clickToUpload": "Click to upload",
-      "description": "Description",
-      "descriptionPlaceholder": "Describe your media...",
-      "fileSize": "File size",
-      "gameCategory": "Game category",
-      "orDragAndDrop": "or drag & drop",
-      "private": "Private",
-      "public": "Public",
-      "selectCategory": "Select category",
-      "selectedFile": "Selected file",
-      "supportedFormats": "MP4, AVI, MOV, JPG, PNG, GIF up to 100MB",
-      "tags": "Tags",
-      "tagsHelp": "Separate tags with commas",
-      "tagsPlaceholder": "Games, highlight, funny",
-      "title": "Title",
-      "titlePlaceholder": "Enter media title",
-      "upload": "Upload media",
-      "uploadDetails": "Upload details",
-      "uploading": "Uploading...",
-      "visibility": "Visibility"
-    }
+  "feed": {
+    "loadError": "Failed to load media",
+    "loadMore": "Load more",
+    "noMedia": "No media yet",
+    "noMediaDescription": "Upload some gaming content to get started!",
+    "showing": "Showing {{count}} of {{total}} items"
+  },
+  "edit": "Edit Media",
+  "copyLink": "Copy link",
+  "delete": "Delete Media",
+  "gallery": {
+    "loadError": "Failed to load media",
+    "loadMore": "Load more",
+    "noMedia": "No media yet",
+    "noMediaDescription": "Upload some gaming content to get started!",
+    "showing": "Showing {{count}} of {{total}} items"
+  },
+  "preview": {
+    "moreTags": "More tags",
+    "videoNotSupported": "Your browser doesn’t support video playback."
+  },
+  "upload": {
+    "clickToUpload": "Click to upload",
+    "description": "Description",
+    "descriptionPlaceholder": "Describe your media...",
+    "fileSize": "File size",
+    "gameCategory": "Game category",
+    "orDragAndDrop": "or drag & drop",
+    "private": "Private",
+    "public": "Public",
+    "selectCategory": "Select category",
+    "selectedFile": "Selected file",
+    "supportedFormats": "MP4, AVI, MOV, JPG, PNG, GIF up to 100MB",
+    "tags": "Tags",
+    "tagsHelp": "Separate tags with commas",
+    "tagsPlaceholder": "Games, highlight, funny",
+    "title": "Title",
+    "titlePlaceholder": "Enter media title",
+    "upload": "Upload media",
+    "uploadDetails": "Upload details",
+    "uploading": "Uploading...",
+    "visibility": "Visibility"
   },
   "nav": {
     "events": "Events",

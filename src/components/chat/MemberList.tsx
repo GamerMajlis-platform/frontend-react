@@ -33,7 +33,7 @@ export const MemberList: React.FC<MemberListProps> = ({
       setMembers(response.members);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : t("chat.errors.loadMembersFailed")
+        err instanceof Error ? err.message : t("chat:errors.loadMembersFailed")
       );
     } finally {
       setLoading(false);
@@ -100,11 +100,11 @@ export const MemberList: React.FC<MemberListProps> = ({
       (now.getTime() - date.getTime()) / (1000 * 60)
     );
 
-    if (diffInMinutes < 1) return t("chat.justNow");
+    if (diffInMinutes < 1) return t("chat:justNow");
     if (diffInMinutes < 60)
-      return t("chat.minutesAgo", { count: diffInMinutes });
+      return t("chat:minutesAgo", { count: diffInMinutes });
     if (diffInMinutes < 1440)
-      return t("chat.hoursAgo", { count: Math.floor(diffInMinutes / 60) });
+      return t("chat:hoursAgo", { count: Math.floor(diffInMinutes / 60) });
     return date.toLocaleDateString();
   };
 
@@ -114,10 +114,10 @@ export const MemberList: React.FC<MemberListProps> = ({
         {[...Array(5)].map((_, i) => (
           <div key={i} className="animate-pulse">
             <div className="flex items-center space-x-3 p-3">
-              <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
+              <div className="w-10 h-10 bg-slate-600 rounded-full"></div>
               <div className="flex-1 space-y-2">
-                <div className="h-4 bg-gray-300 rounded w-3/4"></div>
-                <div className="h-3 bg-gray-300 rounded w-1/2"></div>
+                <div className="h-4 bg-slate-600 rounded w-3/4"></div>
+                <div className="h-3 bg-slate-600 rounded w-1/2"></div>
               </div>
             </div>
           </div>
@@ -129,13 +129,13 @@ export const MemberList: React.FC<MemberListProps> = ({
   if (error) {
     return (
       <div
-        className={`bg-white rounded-lg shadow-sm p-6 text-center border ${className}`}
+        className={`bg-dark-secondary rounded-lg shadow-sm p-6 text-center border ${className} border-slate-700`}
       >
-        <div className="text-red-500 mb-4">⚠️</div>
-        <p className="text-red-600 mb-4">{error}</p>
+        <div className="text-red-400 mb-4">⚠️</div>
+        <p className="text-red-300 mb-4">{error}</p>
         <button
           onClick={loadMembers}
-          className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
+          className="px-4 py-2 bg-primary text-dark hover:bg-primary-hover transition-colors rounded-lg"
         >
           {t("common.retry")}
         </button>
@@ -144,11 +144,13 @@ export const MemberList: React.FC<MemberListProps> = ({
   }
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm border ${className}`}>
-      <div className="p-4 border-b">
-        <h3 className="font-semibold flex items-center justify-between">
-          <span>{t("chat.members")}</span>
-          <span className="text-sm text-gray-500 font-normal">
+    <div
+      className={`bg-dark-secondary rounded-lg shadow-sm border ${className} border-slate-700`}
+    >
+      <div className="p-4 border-b border-slate-700">
+        <h3 className="font-semibold flex items-center justify-between text-white">
+          <span>{t("chat:members")}</span>
+          <span className="text-sm text-gray-400 font-normal">
             {members.length} / {room.maxMembers || "∞"}
           </span>
         </h3>
@@ -156,16 +158,16 @@ export const MemberList: React.FC<MemberListProps> = ({
 
       <div className="max-h-96 overflow-y-auto">
         {members.length === 0 ? (
-          <div className="p-6 text-center">
+          <div className="p-6 text-center text-gray-300">
             <div className="text-4xl mb-4">👥</div>
-            <p className="text-gray-500">{t("chat.noMembers")}</p>
+            <p>{t("chat:noMembers")}</p>
           </div>
         ) : (
           <div className="space-y-1 p-2">
             {members.map((member) => (
               <div
                 key={member.id}
-                className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-700/40 transition-colors"
               >
                 {/* Avatar with status indicator */}
                 <div className="relative flex-shrink-0">
@@ -176,7 +178,7 @@ export const MemberList: React.FC<MemberListProps> = ({
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="w-10 h-10 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center text-white font-medium">
+                    <div className="w-10 h-10 bg-gradient-to-br from-slate-500 to-slate-700 rounded-full flex items-center justify-center text-white font-medium">
                       {member.user.displayName.charAt(0).toUpperCase()}
                     </div>
                   )}
@@ -206,23 +208,23 @@ export const MemberList: React.FC<MemberListProps> = ({
                     {/* You indicator */}
                     {user && member.user.id === user.id && (
                       <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                        {t("chat.you")}
+                        {t("chat:you")}
                       </span>
                     )}
                   </div>
 
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm text-gray-300">
                     {member.isOnline ? (
-                      <span className="text-green-600">{t("chat.online")}</span>
+                      <span className="text-green-600">{t("chat:online")}</span>
                     ) : (
                       <span>
-                        {t("chat.lastSeen")} {formatLastSeen(member.lastSeen)}
+                        {t("chat:lastSeen")} {formatLastSeen(member.lastSeen)}
                       </span>
                     )}
                   </div>
 
                   <div className="text-xs text-gray-400">
-                    {t("chat.joinedOn")}{" "}
+                    {t("chat:joinedOn")}{" "}
                     {new Date(member.joinedAt).toLocaleDateString()}
                   </div>
                 </div>
@@ -234,7 +236,7 @@ export const MemberList: React.FC<MemberListProps> = ({
                       onClick={() => handleRemoveMember(member.user.id)}
                       disabled={removingMemberId === member.user.id}
                       className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
-                      title={t("chat.removeMember")}
+                      title={t("chat:removeMember")}
                     >
                       {removingMemberId === member.user.id ? "⏳" : "🗑️"}
                     </button>

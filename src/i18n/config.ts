@@ -46,7 +46,8 @@ i18n
       "events",
       "tournaments",
       "posts",
-      "chatrooms",
+      "chat",
+      "media",
     ],
 
     // Backend load path (served from /public). Use BASE_URL to support subpath deployments.
@@ -120,6 +121,13 @@ i18n.on("initialized", () => {
     const parsed = JSON.parse(raw);
     const saved = parsed?.preferences?.language;
     if (saved && typeof saved === "string" && saved !== i18n.language) {
+      const maybeLoad = i18n as unknown as {
+        loadLanguages?: (...args: unknown[]) => Promise<void>;
+      };
+      if (typeof maybeLoad.loadLanguages === "function") {
+        // preload resources before switching language at init
+        maybeLoad.loadLanguages(saved).catch(() => {});
+      }
       i18n.changeLanguage(saved).catch(() => {});
     }
   } catch {

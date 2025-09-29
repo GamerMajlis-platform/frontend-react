@@ -1,3 +1,5 @@
 export { MediaUpload } from "./MediaUpload";
-export { MediaPreview } from "./MediaPreview";
-export { MediaGallery } from "./MediaGallery";
+export { MediaCard } from "./MediaCard";
+export { MediaFeed } from "./MediaFeed";
+export { MediaDetailsModal } from "./MediaDetailsModal";
+export { MediaFeedSection } from "./MediaFeedSection";

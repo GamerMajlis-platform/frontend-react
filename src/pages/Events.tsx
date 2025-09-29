@@ -43,6 +43,7 @@ export default function Events() {
     loading: eventsLoading,
     error: eventsError,
     execute: executeLoadEvents,
+    setData,
   } = useApi<EventsListResponse>(null);
 
   // Get events list with proper type
@@ -136,9 +137,36 @@ export default function Events() {
   const handleCreateEvent = async (data: CreateEventRequest) => {
     setIsCreating(true);
     try {
-      await EventService.createEvent(data);
+      console.debug("Events.handleCreateEvent called", { data });
+      const res = await EventService.createEvent(data);
+      console.debug("Events.createEvent response", { res });
       setShowCreate(false);
-      await fetchEvents(); // Refresh the list
+
+      const createdEvent = res?.event;
+      if (createdEvent) {
+        // Temporary workaround: prepend the created event to local state because
+        // the GET /api/events list endpoint is currently broken. This avoids
+        // relying on the backend until the backend team fixes the list API.
+        const current = eventsData?.events || [];
+        const updatedList: EventsListResponse = {
+          success: true,
+          message: res.message || "",
+          events: [createdEvent, ...current],
+          totalElements: (eventsData?.totalElements || 0) + 1,
+          totalPages: eventsData?.totalPages || 1,
+          currentPage: eventsData?.currentPage || 0,
+          pageSize: eventsData?.pageSize || 20,
+        };
+        // setData is provided by the useApi hook
+        setData(updatedList);
+      } else {
+        // Fallback: try to refresh the list if API didn't return the event
+        await fetchEvents();
+      }
+    } catch (err) {
+      // Surface error in console for debugging and rethrow so caller can handle
+      console.error("Events.handleCreateEvent error:", err);
+      throw err;
     } finally {
       setIsCreating(false);
     }

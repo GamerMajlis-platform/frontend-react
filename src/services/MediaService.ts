@@ -1,5 +1,6 @@
 import { BaseService } from "../lib/baseService";
-import { API_ENDPOINTS } from "../config/constants";
+import { API_ENDPOINTS, API_CONFIG } from "../config/constants";
+import { UserStorage } from "../lib/userStorage";
 import {
   SUPPORTED_VIDEO_TYPES,
   SUPPORTED_IMAGE_TYPES,
@@ -112,7 +113,28 @@ export class MediaService extends BaseService {
 
       xhr.onerror = () => reject(new Error("Upload failed"));
 
-      xhr.open("POST", API_ENDPOINTS.media.upload);
+      // Build full upload URL from configured API base (handles /api prefix)
+      const rawBase =
+        (import.meta.env.VITE_API_BASE_URL as string) || API_CONFIG.baseUrl;
+      const base = rawBase.replace(/\/$/, "");
+      const uploadUrl = `${base}${API_ENDPOINTS.media.upload}`;
+
+      // Ensure cookies are included for session-based auth
+      xhr.withCredentials = true;
+
+      // Open connection first, then set headers
+      xhr.open("POST", uploadUrl);
+
+      const token =
+        typeof window !== "undefined" ? UserStorage.getStoredToken() : null;
+      if (token) {
+        try {
+          xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+        } catch {
+          // ignore
+        }
+      }
+
       xhr.send(formData);
     });
   }

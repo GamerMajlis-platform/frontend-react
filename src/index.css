@@ -410,6 +410,39 @@ body {
   --border-radius-full: 50%;
 }
 
+/* Custom scrollbar utility */
+.custom-scrollbar {
+  /* For Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
+}
+
+/* Webkit-based browsers */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  border: 2px solid transparent; /* creates padding effect */
+  background-clip: padding-box;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.22);
+}
+
+/* Thin variant */
+.custom-scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar-thin {
+  scrollbar-width: thin;
+}
+
 .animate-fade-in {
   animation: fade-in 1s var(--animation-delay, 0s) ease forwards;
 }

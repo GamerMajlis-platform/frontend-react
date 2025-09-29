@@ -1,12 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { BackgroundDecor } from "../components";
 import { PostFeed } from "../components/posts";
-import { MediaGallery } from "../components/media";
+import { MediaFeedSection } from "../components/media";
 import { ContentCreation } from "../components/shared/ContentCreation";
 import { useAppContext } from "../context/useAppContext";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MessageSquare, Image, Plus } from "../lib/icons";
+import useIsMobile from "../hooks/useIsMobile"; // ✅ new import
 
 export default function Home() {
   const { t } = useTranslation();
@@ -15,6 +16,8 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<"posts" | "media" | "create">(
     "posts"
   );
+  const isMobile = useIsMobile(); // ✅ detect viewport
+
   // profile browser moved to header for authorized users
 
   const renderAuthenticatedContent = () => {
@@ -23,43 +26,63 @@ export default function Home() {
         {/* Tab Navigation */}
         <div className="bg-black/20 backdrop-blur-sm rounded-2xl p-2 mb-8 border border-white/10">
           <div className="flex space-x-2">
+            {/* Posts Tab */}
             <button
               onClick={() => setActiveTab("posts")}
-              className={`flex-1 px-6 py-3 rounded-xl transition-all duration-200 font-medium ${
+              className={`flex-1 ${
+                isMobile ? "px-3 py-2 text-sm" : "px-6 py-3 text-base"
+              } rounded-xl transition-all duration-200 font-medium ${
                 activeTab === "posts"
                   ? "bg-[#6fffe9] text-black"
                   : "text-white hover:bg-white/10"
               }`}
             >
               <div className="flex items-center justify-center space-x-2">
-                <MessageSquare size={20} />
-                <span>{t("home.tabs.posts")}</span>
+                <MessageSquare size={isMobile ? 16 : 20} />
+                <span>
+                  {isMobile
+                    ? t("home.tabs.postsShort", "Posts")
+                    : t("home.tabs.posts")}
+                </span>
               </div>
             </button>
+
+            {/* Media Tab */}
             <button
               onClick={() => setActiveTab("media")}
-              className={`flex-1 px-6 py-3 rounded-xl transition-all duration-200 font-medium ${
+              className={`flex-1 ${
+                isMobile ? "px-3 py-2 text-sm" : "px-6 py-3 text-base"
+              } rounded-xl transition-all duration-200 font-medium ${
                 activeTab === "media"
                   ? "bg-[#6fffe9] text-black"
                   : "text-white hover:bg-white/10"
               }`}
             >
               <div className="flex items-center justify-center space-x-2">
-                <Image size={20} />
-                <span>{t("home.tabs.media")}</span>
+                <Image size={isMobile ? 16 : 20} />
+                <span>
+                  {isMobile
+                    ? t("home.tabs.mediaShort", "Media")
+                    : t("home.tabs.media")}
+                </span>
               </div>
             </button>
+
+            {/* Create Tab */}
             <button
               onClick={() => setActiveTab("create")}
-              className={`flex-1 px-6 py-3 rounded-xl transition-all duration-200 font-medium ${
+              className={`flex-1 ${
+                isMobile ? "px-3 py-2 text-sm" : "px-6 py-3 text-base"
+              } rounded-xl transition-all duration-200 font-medium ${
                 activeTab === "create"
                   ? "bg-[#6fffe9] text-black"
                   : "text-white hover:bg-white/10"
               }`}
             >
               <div className="flex items-center justify-center space-x-2">
-                <Plus size={20} />
-                <span>{t("home.tabs.create")}</span>
+                <Plus size={isMobile ? 16 : 20} />
+                {/* Only show text on desktop */}
+                {!isMobile && <span>{t("home.tabs.create")}</span>}
               </div>
             </button>
           </div>
@@ -107,9 +130,7 @@ export default function Home() {
                 </svg>
                 <span>{t("home.content.mediaTitle")}</span>
               </h2>
-              <MediaGallery
-                onMediaSelect={(media) => console.log("Selected media:", media)}
-              />
+              <MediaFeedSection />
             </div>
           )}
 
@@ -171,8 +192,6 @@ export default function Home() {
             </span>
           </button>
         </div>
-
-        {/* Profile browser demo removed — profile search now lives in the header for authorized users */}
       </div>
     );
   };

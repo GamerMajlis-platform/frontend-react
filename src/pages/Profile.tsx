@@ -11,6 +11,7 @@ import OnlineStatus from "../components/profile/OnlineStatus";
 import { useParams } from "react-router-dom";
 import type { User } from "../types/auth";
 import { Youtube, Twitter, Instagram, Twitch, GamepadIcon } from "../lib/icons";
+import AvatarImage from "../components/profile/AvatarImage";
 
 type TabKey = "about" | "manage" | "stats";
 
@@ -180,8 +181,8 @@ export default function Profile() {
               <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr_auto] gap-6 lg:gap-8 items-center justify-items-center lg:justify-items-start">
                 <div className="w-24 h-24 bg-slate-700 rounded-full overflow-hidden">
                   {viewedUser.profilePictureUrl ? (
-                    <img
-                      src={viewedUser.profilePictureUrl}
+                    <AvatarImage
+                      source={viewedUser.profilePictureUrl}
                       alt={viewedUser.displayName}
                       className="w-full h-full object-cover"
                     />

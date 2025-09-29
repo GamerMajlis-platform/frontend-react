@@ -213,6 +213,19 @@ class ChatService extends BaseService {
   }
 
   /**
+   * API: Delete Chat Room
+   * Permanently deletes a chat room (admin/creator only)
+   */
+  async deleteRoom(roomId: number): Promise<void> {
+    await ChatService.authenticatedRequest<ChatApiResponse>(
+      `/chat/rooms/${roomId}`,
+      {
+        method: "DELETE",
+      }
+    );
+  }
+
+  /**
    * API #70: Get Chat Room Members
    * Retrieves all members of a chat room with their status
    */
@@ -268,6 +281,27 @@ class ChatService extends BaseService {
   }
 
   /**
+   * API: Get Suggested Rooms
+   * Retrieves rooms suggested by other players (feed)
+   */
+  async getSuggestedRooms(
+    params: ChatRoomsParams = {}
+  ): Promise<ChatRoomsResponse> {
+    const searchParams = new URLSearchParams();
+    if (params.page !== undefined)
+      searchParams.append("page", params.page.toString());
+    if (params.size !== undefined)
+      searchParams.append("size", params.size.toString());
+
+    const url = `/chat/suggested${
+      searchParams.toString() ? `?${searchParams.toString()}` : ""
+    }`;
+    return await ChatService.authenticatedRequest<ChatRoomsResponse>(url, {
+      method: "GET",
+    });
+  }
+
+  /**
    * API #73: Send Typing Indicator
    * Sends typing indicator to a chat room
    */
@@ -292,14 +326,16 @@ class ChatService extends BaseService {
    * Utility method to check if user can moderate a room
    */
   isUserModerator(room: ChatRoom, userId: number): boolean {
-    return (
-      room.creator.id === userId ||
-      (room.moderatorIds?.includes(userId) ?? false) ||
-      (room.members?.some(
-        (m) => m.user.id === userId && ["ADMIN", "MODERATOR"].includes(m.role)
-      ) ??
-        false)
-    );
+    // Be defensive: room.creator or members may be undefined for certain room shapes
+    const creatorId = room.creator?.id;
+    const isCreator = creatorId !== undefined && creatorId === userId;
+    const isModeratorId = room.moderatorIds?.includes(userId) ?? false;
+    const isMemberModerator =
+      room.members?.some(
+        (m) => m.user?.id === userId && ["ADMIN", "MODERATOR"].includes(m.role)
+      ) ?? false;
+
+    return isCreator || isModeratorId || isMemberModerator;
   }
 
   /**

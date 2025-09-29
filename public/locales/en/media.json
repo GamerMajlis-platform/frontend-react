@@ -1,0 +1,60 @@
+{
+  "feed": {
+    "confirmDelete": "Are you sure you want to delete this media?",
+    "loadError": "Failed to load media",
+    "loadMore": "Load more",
+    "noMedia": "No media available",
+    "noMediaDescription": "Upload some gaming content to get started!",
+    "showing": "Showing {{count}} of {{total}} items"
+  },
+  "details": {
+    "type": "Type",
+    "size": "File size",
+    "category": "Game category",
+    "views": "Views",
+    "visibility": "Visibility",
+    "uploadDate": "Upload date"
+  },
+  "edit": "Edit media",
+  "copyLink": "Copy link",
+  "delete": "Delete media",
+  "gallery": {
+    "loadError": "Failed to load media",
+    "loadMore": "Load more",
+    "noMedia": "No media available",
+    "noMediaDescription": "Upload some gaming content to get started!",
+    "showing": "Showing {{count}} of {{total}} items"
+  },
+  "preview": {
+    "moreTags": "More tags",
+    "videoNotSupported": "Your browser does not support video playback."
+  },
+  "upload": {
+    "clickToUpload": "Click to upload",
+    "description": "Description",
+    "descriptionPlaceholder": "Describe your media...",
+    "fileSize": "File size",
+    "formats":"Formats: MP4, AVI, MOV, JPG, PNG, GIF",
+    "gameCategory": "Game category",
+    "orDragAndDrop": "or drag and drop",
+    "private": "Private",
+    "public": "Public",
+    "selectCategory": "Select category",
+    "selectedFile": "Selected file",
+    "supportedFormats": "MP4, AVI, MOV, JPG, PNG, GIF up to 100MB",
+    "tags": "Tags",
+    "tagsHelp": "Separate tags with commas",
+    "tagsPlaceholder": "Gaming, highlight, funny",
+    "title": "Title",
+    "titlePlaceholder": "Enter media title",
+    "upload": "Upload media",
+    "uploadDetails": "Upload details",
+    "uploading": "Uploading...",
+    "visibility": "Visibility",
+    "sizes": "Max size: 100MB (videos), 10MB (images)",
+    "compression": "Files will be compressed (min 30% reduction)",
+    "security": "All files are scanned for security",
+    "requirements": "Requirements",
+    "addTag": "Add tag"
+  }
+}

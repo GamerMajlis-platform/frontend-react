@@ -73,7 +73,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
     if (file) {
       // Check file size (max 10MB as per API spec)
       if (file.size > 10 * 1024 * 1024) {
-        alert(t("chat.errors.fileTooLarge"));
+        alert(t("chat:errors.fileTooLarge"));
         return;
       }
       setSelectedFile(file);
@@ -150,12 +150,12 @@ export const MessageInput: React.FC<MessageInputProps> = ({
   };
 
   return (
-    <div className={`border-t bg-white ${className}`}>
+    <div className={`border-t bg-dark-secondary ${className}`}>
       {/* Reply indicator */}
       {replyToMessage && (
-        <div className="px-4 py-2 bg-gray-50 border-b flex items-center justify-between">
+        <div className="px-4 py-2 bg-slate-700/40 border-b border-slate-700 flex items-center justify-between text-gray-200">
           <div className="flex-1">
-            <div className="text-xs text-gray-500">{t("chat.replyingTo")}</div>
+            <div className="text-xs text-gray-500">{t("chat:replyingTo")}</div>
             <div className="text-sm font-medium text-gray-700">
               {replyToMessage.sender.displayName}
             </div>
@@ -176,7 +176,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
 
       {/* File preview */}
       {selectedFile && (
-        <div className="px-4 py-2 bg-blue-50 border-b flex items-center justify-between">
+        <div className="px-4 py-2 bg-slate-700/30 border-b border-slate-700 flex items-center justify-between text-gray-200">
           <div className="flex items-center space-x-2">
             <span className="text-lg">{getFileIcon(selectedFile)}</span>
             <div className="flex-1">
@@ -207,16 +207,16 @@ export const MessageInput: React.FC<MessageInputProps> = ({
             onChange={handleFileSelect}
             className="hidden"
             accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt"
-            aria-label={t("chat.attachFile")}
+            aria-label={t("chat:attachFile")}
           />
 
           {/* File attachment button */}
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="flex-shrink-0 p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
+            className="flex-shrink-0 p-2 text-gray-300 hover:text-white hover:bg-slate-700/40 rounded-full transition-colors"
             disabled={sending}
-            title={t("chat.attachFile")}
+            title={t("chat:attachFile")}
           >
             📎
           </button>
@@ -228,8 +228,8 @@ export const MessageInput: React.FC<MessageInputProps> = ({
               value={content}
               onChange={handleTextareaChange}
               onKeyPress={handleKeyPress}
-              placeholder={t("chat.typeMessage")}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none min-h-[42px] max-h-[120px]"
+              placeholder={t("chat:typeMessage")}
+              className="w-full px-3 py-2 border border-slate-600 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-primary resize-none min-h-[42px] max-h-[120px] text-gray-200"
               disabled={sending}
               maxLength={1000}
               rows={1}
@@ -240,8 +240,8 @@ export const MessageInput: React.FC<MessageInputProps> = ({
           <button
             type="submit"
             disabled={(!content.trim() && !selectedFile) || sending}
-            className="flex-shrink-0 p-2 bg-primary text-white rounded-full hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            title={t("chat.sendMessage")}
+            className="flex-shrink-0 p-2 bg-primary text-dark rounded-full hover:bg-primary-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            title={t("chat:sendMessage")}
           >
             {sending ? (
               <div className="w-5 h-5 flex items-center justify-center">

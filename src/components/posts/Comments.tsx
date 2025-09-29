@@ -3,6 +3,11 @@ import { useTranslation } from "react-i18next";
 import { PostService } from "../../services/PostService";
 import type { Comment } from "../../types";
 import { Link } from "react-router-dom";
+import {
+  markUploadPathFailed,
+  getAvatarSrc,
+  DEFAULT_BLANK_AVATAR,
+} from "../../lib/urls";
 import { useAppContext } from "../../context/useAppContext";
 
 interface CommentsProps {
@@ -199,12 +204,18 @@ export const Comments: React.FC<CommentsProps> = ({
                     className="flex-shrink-0"
                   >
                     <img
-                      src={
-                        comment.author.profilePictureUrl ||
-                        "/assets/default-avatar.png"
-                      }
+                      src={getAvatarSrc(comment.author.profilePictureUrl)}
                       alt={comment.author.displayName}
                       className="w-9 h-9 rounded-full object-cover"
+                      data-original={
+                        comment.author.profilePictureUrl ?? undefined
+                      }
+                      onError={(e) => {
+                        const img = e.target as HTMLImageElement;
+                        const orig = img.getAttribute("data-original");
+                        markUploadPathFailed(orig ?? undefined);
+                        img.src = DEFAULT_BLANK_AVATAR;
+                      }}
                     />
                   </Link>
                   <div className="flex-1">
@@ -313,12 +324,19 @@ export const Comments: React.FC<CommentsProps> = ({
                               className="flex-shrink-0"
                             >
                               <img
-                                src={
-                                  r.author.profilePictureUrl ||
-                                  "/assets/default-avatar.png"
-                                }
+                                src={getAvatarSrc(r.author.profilePictureUrl)}
                                 alt={r.author.displayName}
                                 className="w-7 h-7 rounded-full object-cover"
+                                data-original={
+                                  r.author.profilePictureUrl ?? undefined
+                                }
+                                onError={(e) => {
+                                  const img = e.target as HTMLImageElement;
+                                  const orig =
+                                    img.getAttribute("data-original");
+                                  markUploadPathFailed(orig ?? undefined);
+                                  img.src = DEFAULT_BLANK_AVATAR;
+                                }}
                               />
                             </Link>
                             <div className="flex-1">
@@ -404,9 +422,16 @@ export const Comments: React.FC<CommentsProps> = ({
       <div className="flex items-start gap-3">
         <div className="flex-shrink-0">
           <img
-            src={user?.profilePictureUrl || "/assets/default-avatar.png"}
+            src={getAvatarSrc(user?.profilePictureUrl)}
             alt={user?.displayName || "You"}
             className="w-9 h-9 rounded-full object-cover"
+            data-original={user?.profilePictureUrl ?? undefined}
+            onError={(e) => {
+              const img = e.target as HTMLImageElement;
+              const orig = img.getAttribute("data-original");
+              markUploadPathFailed(orig ?? undefined);
+              img.src = DEFAULT_BLANK_AVATAR;
+            }}
           />
         </div>
         <div className="flex-1">

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { BackgroundDecor, SortBy, IconSearch } from "../components";
 import { ProductGrid } from "../components/products";
@@ -10,13 +10,19 @@ import type {
   ProductCondition,
 } from "../types/products";
 import { useIsMobile, useDebounce } from "../hooks";
+import { NavigationService } from "../lib/navigation";
 
 // Enhanced CreateProductForm Component
 function CreateProductForm({
   onCreated,
   onCancel,
 }: {
-  onCreated?: () => Promise<void> | void;
+  // onCreated now receives the created product (fetched by id) as a temporary
+  // workaround for a backend bug where the products list endpoint doesn't
+  // immediately include newly created items. The frontend will fetch the
+  // product by id and pass it to the parent so it can be inserted into the
+  // visible list without waiting for the backend list fix.
+  onCreated?: (created?: ParsedProduct) => Promise<void> | void;
   onCancel?: () => void;
 }) {
   const { t } = useTranslation();
@@ -91,6 +97,26 @@ function CreateProductForm({
 
       const createdProduct = await ProductService.createProduct(payload);
 
+      // Try to fetch the newly created product by id. This is a temporary
+      // workaround: the GET /api/products (list) endpoint currently does not
+      // reliably return the newly created item immediately after creation.
+      // Fetching by id ensures we have the canonical product object to insert
+      // into the UI list until the backend team fixes the list behavior.
+      let fetchedProduct: ParsedProduct | undefined = undefined;
+      try {
+        if (createdProduct && createdProduct.id) {
+          fetchedProduct = await ProductService.getProduct(createdProduct.id);
+        }
+      } catch (errFetch) {
+        // If the fetch by id fails for any reason, fall back to the created
+        // product object returned by createProduct and log a warning.
+        console.warn(
+          "Failed to fetch product by id after creation, using created response:",
+          errFetch
+        );
+        fetchedProduct = createdProduct;
+      }
+
       if (file && createdProduct.id) {
         try {
           await ProductService.uploadProductImages(
@@ -113,7 +139,7 @@ function CreateProductForm({
       setFile(null);
       setErrors({});
 
-      if (onCreated) await onCreated();
+      if (onCreated) await onCreated(fetchedProduct);
     } catch (err) {
       console.error("Failed to create product:", err);
       setErrors({
@@ -192,17 +218,17 @@ function CreateProductForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
+          <label
+            htmlFor="product-description"
+            className="block text-sm font-medium text-gray-300 mb-2"
+          >
             {t("product.description", "Description")}
             <span className="text-xs text-gray-500 ml-2">
               ({formData.description.length}/1000 characters)
             </span>
-            <span className="text-xs text-gray-500 ml-2">
-              {" "}
-              ({t("common.optional")})
-            </span>
           </label>
           <textarea
+            id="product-description"
             value={formData.description}
             onChange={(e) =>
               setFormData((prev) => ({ ...prev, description: e.target.value }))
@@ -214,6 +240,8 @@ function CreateProductForm({
               "product.descriptionPlaceholder",
               "Describe your product (10-1000 characters)"
             )}
+            required
+            aria-required="true"
             rows={4}
             maxLength={1000}
             minLength={10}
@@ -231,14 +259,14 @@ function CreateProductForm({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label
+              htmlFor="product-category"
+              className="block text-sm font-medium text-gray-300 mb-2"
+            >
               {t("product.category", "Category")}
-              <span className="text-xs text-gray-500 ml-2">
-                {" "}
-                ({t("common.optional")})
-              </span>
             </label>
             <select
+              id="product-category"
               value={formData.category}
               onChange={(e) =>
                 setFormData((prev) => ({
@@ -247,6 +275,8 @@ function CreateProductForm({
                 }))
               }
               className="w-full px-4 py-3 bg-[#0F172A] border border-slate-600 rounded-xl text-white focus:outline-none focus:border-cyan-300 focus:shadow-[0_0_0_3px_rgba(111,255,233,0.1)] transition-all duration-300"
+              required
+              aria-required="true"
             >
               <option value="GAMES">{t("categories.games", "Games")}</option>
               <option value="ACCESSORIES">
@@ -265,14 +295,14 @@ function CreateProductForm({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label
+              htmlFor="product-condition"
+              className="block text-sm font-medium text-gray-300 mb-2"
+            >
               {t("product.condition", "Condition")}
-              <span className="text-xs text-gray-500 ml-2">
-                {" "}
-                ({t("common.optional")})
-              </span>
             </label>
             <select
+              id="product-condition"
               value={formData.condition}
               onChange={(e) =>
                 setFormData((prev) => ({
@@ -281,6 +311,8 @@ function CreateProductForm({
                 }))
               }
               className="w-full px-4 py-3 bg-[#0F172A] border border-slate-600 rounded-xl text-white focus:outline-none focus:border-cyan-300 focus:shadow-[0_0_0_3px_rgba(111,255,233,0.1)] transition-all duration-300"
+              required
+              aria-required="true"
             >
               <option value="NEW">{t("product.conditions.new", "New")}</option>
               <option value="USED_LIKE_NEW">
@@ -297,7 +329,10 @@ function CreateProductForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
+          <label
+            htmlFor="product-image"
+            className="block text-sm font-medium text-gray-300 mb-2"
+          >
             {t("product.image", "Product Image")}
             <span className="text-xs text-gray-500 ml-2">
               {" "}
@@ -305,6 +340,8 @@ function CreateProductForm({
             </span>
           </label>
           <input
+            id="product-image"
+            name="product-image"
             type="file"
             accept="image/*"
             onChange={(e) => setFile(e.target.files?.[0] || null)}
@@ -345,6 +382,10 @@ export default function Marketplace() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [sortBy, setSortBy] = useState<string>("name-asc");
   const [searchTerm, setSearchTerm] = useState("");
+  const [filters, setFilters] = useState<{
+    category?: string;
+    condition?: string;
+  }>({});
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
   // Load products from the backend
@@ -371,15 +412,117 @@ export default function Marketplace() {
   // (search params handled directly via loadProducts when needed)
 
   // Handle product creation success
-  const handleProductCreated = useCallback(async () => {
-    await loadProducts();
-    setShowCreateForm(false);
-  }, [loadProducts]);
+  // Accepts an optional created product object fetched by id. This lets the
+  // frontend insert the new product into the current list immediately because
+  // the products list endpoint may not include the newly created item yet.
+  const handleProductCreated = useCallback(
+    async (created?: ParsedProduct) => {
+      if (created) {
+        // Insert the created product at the top of the list if not already
+        // present. This avoids a full reload and hides the backend timing bug
+        // from users until the API is fixed.
+        setProducts((prev) => {
+          const exists = prev.some((p) => p.id === created.id);
+          if (exists) return prev;
+          return [created, ...prev];
+        });
+      } else {
+        // Fallback: reload list
+        await loadProducts();
+      }
+      setShowCreateForm(false);
+    },
+    [loadProducts]
+  );
 
-  // Load products on component mount and search term change
+  const parseSortParams = useCallback((value: string) => {
+    // Map frontend sort keys to API sortBy/sortOrder
+    switch (value) {
+      case "name-asc":
+        return { sortBy: "createdAt", sortOrder: "asc" };
+      case "name-desc":
+        return { sortBy: "createdAt", sortOrder: "desc" };
+      case "price-low":
+        return { sortBy: "price", sortOrder: "asc" };
+      case "price-high":
+        return { sortBy: "price", sortOrder: "desc" };
+      case "newest":
+        return { sortBy: "createdAt", sortOrder: "desc" };
+      default:
+        return {} as Record<string, string>;
+    }
+  }, []);
+
+  const debouncedSortBy = useDebounce(sortBy, 250);
+  const sortParams = useMemo(
+    () => parseSortParams(debouncedSortBy),
+    [debouncedSortBy, parseSortParams]
+  );
+
+  const handleSortChange = useCallback((val: string) => {
+    setSortBy(val);
+  }, []);
+
+  const handleOpenProduct = useCallback((id?: number) => {
+    if (!id) return;
+    // Navigate to product details. Use NavigationService to keep routing centralized.
+    NavigationService.navigateTo(`/marketplace/${id}`);
+  }, []);
+
+  // Backward-compatible event-based navigation from ProductGrid (in case a
+  // parent doesn't pass the handler). This keeps the grid usable standalone.
   useEffect(() => {
-    loadProducts(debouncedSearchTerm ? { query: debouncedSearchTerm } : {});
-  }, [loadProducts, debouncedSearchTerm]);
+    const handler = (e: Event) => {
+      try {
+        // Guarded extraction in case the event is not a CustomEvent
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const maybe = e as any;
+        if (maybe && maybe.detail && maybe.detail.id) {
+          handleOpenProduct(maybe.detail.id);
+        }
+      } catch {
+        // ignore
+      }
+    };
+    window.addEventListener("product:open", handler as EventListener);
+    return () =>
+      window.removeEventListener("product:open", handler as EventListener);
+  }, [handleOpenProduct]);
+
+  // Stable handler to change category filter. It avoids creating a new
+  // filters object when the selected category is already active which
+  // prevents unnecessary re-renders of children that depend on `filters`.
+  const handleCategoryChange = useCallback((category?: string) => {
+    setFilters((prev) => {
+      if ((prev.category || undefined) === category) return prev;
+      return { ...prev, category };
+    });
+  }, []);
+
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value),
+    []
+  );
+
+  // Load products when search term, sort or filters change
+  useEffect(() => {
+    const paramsMutable: Record<string, unknown> = {};
+    if (debouncedSearchTerm) paramsMutable.query = debouncedSearchTerm;
+    if (filters.category)
+      paramsMutable.category = filters.category as
+        | import("../types/products").ProductCategoryType
+        | undefined;
+    if (filters.condition)
+      paramsMutable.condition = filters.condition as
+        | import("../types/products").ProductCondition
+        | undefined;
+    if (sortParams.sortBy) paramsMutable.sortBy = sortParams.sortBy;
+    if (sortParams.sortOrder) paramsMutable.sortOrder = sortParams.sortOrder;
+
+    loadProducts(
+      paramsMutable as import("../types/products").ProductSearchParams
+    );
+  }, [loadProducts, debouncedSearchTerm, sortParams, filters]);
 
   const handleSearchFocus = (e: React.FocusEvent<HTMLInputElement>) => {
     e.currentTarget.style.borderColor = "#6fffe9";
@@ -406,49 +549,66 @@ export default function Marketplace() {
         {/* Search and Sort controls */}
         <section className="mb-8 search-section md:mb-6 relative z-10">
           <div
-            className="mb-6 flex w-full max-w-[800px] mx-auto items-center gap-3 search-controls"
+            className={`mb-6 flex w-full max-w-[900px] mx-auto items-center gap-3 search-controls`}
             dir={i18n.dir()}
           >
-            {/* Search Input */}
-            <div className="flex-1 relative">
-              <input
-                type="text"
-                placeholder={
-                  isMobile
-                    ? t("common.search")
-                    : t("marketplace.searchPlaceholder", "Search products...")
-                }
-                className={`
-                  h-12 w-full rounded-xl border border-slate-600
-                  bg-[#1C2541] px-4 py-3 text-white placeholder-slate-400
-                  transition-all duration-300 focus:border-cyan-300
-                  focus:shadow-[0_0_0_3px_rgba(111,255,233,0.1)] focus:outline-none search-input
-                  pr-12
-                `}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onFocus={handleSearchFocus}
-                onBlur={handleSearchBlur}
-              />
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400">
-                <IconSearch />
+            {/* + button: will be ordered explicitly per dir */}
+            <div
+              className={`flex items-center ${
+                i18n.dir() === "rtl" ? "order-3" : "order-1"
+              }`}
+            >
+              <button
+                onClick={() => setShowCreateForm(true)}
+                className="self-center -mt-1 text-white font-extrabold text-4xl hover:opacity-80 transition-opacity px-3 w-12 h-12 flex items-center justify-center"
+                type="button"
+                aria-label={t("product.createProduct", "Sell Product")}
+                title={t("product.createProduct", "Sell Product")}
+              >
+                +
+              </button>
+            </div>
+
+            {/* Search Input: center */}
+            <div className={`flex-1 ${"order-2"}`}>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder={
+                    isMobile
+                      ? t("common.search")
+                      : t("marketplace.searchPlaceholder", "Search products...")
+                  }
+                  className={`h-12 w-full rounded-xl border border-slate-600 bg-[#1C25441] px-4 py-3 text-white placeholder-slate-400 transition-all duration-300 focus:border-cyan-300 focus:shadow-[0_0_0_3px_rgba(111,255,233,0.1)] focus:outline-none search-input ${
+                    i18n.dir() === "rtl" ? "pl-12" : "pr-12"
+                  }`}
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  onFocus={handleSearchFocus}
+                  onBlur={handleSearchBlur}
+                />
+                <div
+                  className={`absolute top-1/2 transform -translate-y-1/2 text-slate-400 ${
+                    i18n.dir() === "rtl" ? "left-3" : "right-3"
+                  }`}
+                >
+                  <IconSearch />
+                </div>
               </div>
             </div>
 
-            {/* Sort dropdown hidden on mobile */}
-            <div className="relative w-[160px] sort-container hidden sm:block">
+            {/* SortBy: right in LTR, left in RTL (mirrored via order) */}
+            <div
+              className={`relative w-[220px] sort-container hidden sm:flex items-center gap-2 ${
+                i18n.dir() === "rtl" ? "order-1" : "order-3"
+              }`}
+            >
               <SortBy
                 value={sortBy}
-                onChange={(val) => setSortBy(val as string)}
+                onChange={handleSortChange}
                 options={[
-                  {
-                    value: "name-asc",
-                    label: t("sort.nameAsc", "Name A-Z"),
-                  },
-                  {
-                    value: "name-desc",
-                    label: t("sort.nameDesc", "Name Z-A"),
-                  },
+                  { value: "name-asc", label: t("sort.nameAsc", "Name A-Z") },
+                  { value: "name-desc", label: t("sort.nameDesc", "Name Z-A") },
                   {
                     value: "price-low",
                     label: t("sort.price_low", "Price: Low to High"),
@@ -457,27 +617,11 @@ export default function Marketplace() {
                     value: "price-high",
                     label: t("sort.price_high", "Price: High to Low"),
                   },
-                  {
-                    value: "newest",
-                    label: t("sort.newest", "Newest First"),
-                  },
+                  { value: "newest", label: t("sort.newest", "Newest First") },
                 ]}
                 placeholderKey="sort.placeholder"
               />
             </div>
-          </div>
-
-          {/* Create Product Button - Centered under search */}
-          <div className="flex justify-center">
-            <button
-              onClick={() => setShowCreateForm(!showCreateForm)}
-              className="rounded-xl bg-cyan-500 px-6 py-3 text-white font-medium hover:bg-cyan-600 transition-colors"
-              type="button"
-            >
-              {showCreateForm
-                ? t("marketplace.closeCreate", "Close Form")
-                : t("product.createProduct", "Sell Product")}
-            </button>
           </div>
         </section>
 
@@ -494,28 +638,67 @@ export default function Marketplace() {
         {/* Advanced Filters - Optional enhancement */}
         <div className="mb-6 flex justify-center">
           <div className="flex gap-2 flex-wrap justify-center">
-            <button className="px-4 py-2 bg-[#1C2541] border border-slate-600 rounded-lg text-white text-sm hover:border-cyan-300 transition-colors">
+            <button
+              onClick={() => handleCategoryChange(undefined)}
+              className={`px-4 py-2 rounded-lg text-sm transition-colors border ${
+                !filters.category
+                  ? "bg-cyan-500 text-black border-cyan-500"
+                  : "bg-[#1C2541] border-slate-600 text-white hover:border-cyan-300"
+              }`}
+            >
+              {t("categories.all", "All")}
+            </button>
+            <button
+              onClick={() => handleCategoryChange("GAMES")}
+              className={`px-4 py-2 rounded-lg text-sm transition-colors border ${
+                filters.category === "GAMES"
+                  ? "bg-cyan-500 text-black border-cyan-500"
+                  : "bg-[#1C2541] border-slate-600 text-white hover:border-cyan-300"
+              }`}
+            >
               {t("categories.games", "Games")}
             </button>
-            <button className="px-4 py-2 bg-[#1C2541] border border-slate-600 rounded-lg text-white text-sm hover:border-cyan-300 transition-colors">
+            <button
+              onClick={() => handleCategoryChange("ACCESSORIES")}
+              className={`px-4 py-2 rounded-lg text-sm transition-colors border ${
+                filters.category === "ACCESSORIES"
+                  ? "bg-cyan-500 text-black border-cyan-500"
+                  : "bg-[#1C2541] border-slate-600 text-white hover:border-cyan-300"
+              }`}
+            >
               {t("categories.accessories", "Accessories")}
             </button>
-            <button className="px-4 py-2 bg-[#1C2541] border border-slate-600 rounded-lg text-white text-sm hover:border-cyan-300 transition-colors">
+            <button
+              onClick={() => handleCategoryChange("HARDWARE")}
+              className={`px-4 py-2 rounded-lg text-sm transition-colors border ${
+                filters.category === "HARDWARE"
+                  ? "bg-cyan-500 text-black border-cyan-500"
+                  : "bg-[#1C2541] border-slate-600 text-white hover:border-cyan-300"
+              }`}
+            >
               {t("categories.hardware", "Hardware")}
             </button>
-            <button className="px-4 py-2 bg-[#1C2541] border border-slate-600 rounded-lg text-white text-sm hover:border-cyan-300 transition-colors">
+            <button
+              onClick={() => handleCategoryChange("SOFTWARE")}
+              className={`px-4 py-2 rounded-lg text-sm transition-colors border ${
+                filters.category === "SOFTWARE"
+                  ? "bg-cyan-500 text-black border-cyan-500"
+                  : "bg-[#1C2541] border-slate-600 text-white hover:border-cyan-300"
+              }`}
+            >
               {t("categories.software", "Software")}
             </button>
           </div>
         </div>
 
         {/* Products Grid */}
-        <section className="grid grid-cols-1 justify-items-center gap-8 products-grid min-[900px]:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 md:gap-6 sm:gap-4 mt-8 md:mt-6 relative z-0">
+        <section className="w-full mt-8 md:mt-6 relative z-0">
           <ProductGrid
             products={products}
             loading={loading}
             emptyMessage={t("marketplace.noProducts", "No products found")}
             columns={4}
+            onProductOpen={handleOpenProduct}
           />
         </section>
       </div>

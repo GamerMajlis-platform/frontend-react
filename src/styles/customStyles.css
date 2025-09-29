@@ -1,0 +1,32 @@
+/* Chat-scoped UI tweaks - only affects elements inside .chat-root */
+
+/* Only affect non-button form controls so we don't override button backgrounds */
+.chat-root input,
+.chat-root select,
+.chat-root textarea {
+  font: inherit;
+  color: inherit;
+  background-color: transparent;
+  outline: none;
+}
+
+/* Slightly tighten spacing for header controls in chat */
+.chat-root .rounded-md > * {
+  margin-left: 0.5rem;
+}
+
+/* Make sure the chat create + button is visually consistent */
+.chat-root .create-room-plus {
+  background: transparent;
+  border: 0;
+  padding: 0.1rem 0.3rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Utility to flip icons for RTL locales (applied only inside chat) */
+.chat-root .rtl-flip {
+  transform: scaleX(-1);
+}

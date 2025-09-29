@@ -72,7 +72,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               className="w-8 h-8 rounded-full object-cover"
             />
           ) : (
-            <div className="w-8 h-8 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
+            <div className="w-8 h-8 bg-gradient-to-br from-slate-500 to-slate-700 rounded-full flex items-center justify-center text-white text-sm font-medium">
               {message.sender.displayName.charAt(0).toUpperCase()}
             </div>
           )}
@@ -85,12 +85,14 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
       >
         <div
           className={`rounded-lg p-3 relative group ${
-            isOwnMessage ? "bg-primary text-white" : "bg-gray-100 text-gray-900"
+            isOwnMessage
+              ? "bg-primary text-white"
+              : "bg-slate-700 text-gray-100"
           }`}
         >
           {/* Sender name for group messages */}
           {!isOwnMessage && showSenderName && (
-            <div className="text-xs font-medium mb-1 opacity-75">
+            <div className="text-xs font-medium mb-1 text-gray-300 opacity-80">
               {message.sender.displayName}
             </div>
           )}
@@ -100,8 +102,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             <div
               className={`mb-2 p-2 rounded border-l-2 text-xs ${
                 isOwnMessage
-                  ? "bg-white/20 border-white/40 text-white/80"
-                  : "bg-gray-200 border-gray-400 text-gray-600"
+                  ? "bg-white/10 border-white/20 text-white/80"
+                  : "bg-slate-600 border-slate-500 text-gray-300"
               }`}
             >
               <div className="font-medium">
@@ -116,7 +118,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             <div className="flex items-center mb-2 text-xs opacity-75">
               <span className="mr-1">{getMessageTypeIcon()}</span>
               <span>
-                {t(`chat.messageTypes.${message.messageType.toLowerCase()}`)}
+                {t(`chatmessageTypes.${message.messageType.toLowerCase()}`)}
               </span>
             </div>
           )}
@@ -141,7 +143,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                       controls
                       className="max-w-full h-auto rounded border"
                     >
-                      {t("chat.videoNotSupported")}
+                      {t("chatvideoNotSupported")}
                     </video>
                   ) : null}
                 </div>
@@ -158,7 +160,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                 >
                   <span className="mr-1">📎</span>
                   <span>
-                    {message.fileName || t("chat.attachment")}
+                    {message.fileName || t("chatattachment")}
                     {message.fileSize && (
                       <span className="ml-1 opacity-75">
                         ({chatService.formatFileSize(message.fileSize)})
@@ -186,7 +188,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                       ? "text-white/75 hover:text-white"
                       : "text-gray-500 hover:text-gray-700"
                   }`}
-                  title={t("chat.reply")}
+                  title={t("chatreply")}
                 >
                   ↩️
                 </button>
@@ -199,7 +201,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                   className={`p-1 rounded text-xs hover:bg-red-500/20 hover:text-red-500 ${
                     isOwnMessage ? "text-white/75" : "text-gray-500"
                   }`}
-                  title={t("chat.deleteMessage")}
+                  title={t("chatdeleteMessage")}
                 >
                   🗑️
                 </button>
@@ -215,7 +217,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           >
             <span>{formatTime(message.createdAt)}</span>
             {message.updatedAt && message.updatedAt !== message.createdAt && (
-              <span className="italic opacity-75">{t("chat.edited")}</span>
+              <span className="italic opacity-75">{t("chatedited")}</span>
             )}
           </div>
         </div>

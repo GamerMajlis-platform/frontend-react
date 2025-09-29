@@ -2,19 +2,25 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { chatService } from "../../services/ChatService";
 import type { ChatRoom } from "../../types/chat";
+import { useAppContext } from "../../context/useAppContext";
 
 interface ChatRoomListProps {
   onRoomSelect: (room: ChatRoom) => void;
   selectedRoomId?: number;
   className?: string;
+  view?: "ROOMS" | "DIRECT";
+  refreshKey?: number;
 }
 
-export const ChatRoomList: React.FC<ChatRoomListProps> = ({
+const ChatRoomList: React.FC<ChatRoomListProps> = ({
   onRoomSelect,
   selectedRoomId,
   className = "",
+  view = "ROOMS",
+  refreshKey,
 }) => {
   const { t } = useTranslation();
+  const { user } = useAppContext();
   const [rooms, setRooms] = useState<ChatRoom[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,10 +30,10 @@ export const ChatRoomList: React.FC<ChatRoomListProps> = ({
       setLoading(true);
       setError(null);
       const response = await chatService.getUserRooms({ page: 0, size: 50 });
-      setRooms(response.chatRooms);
+      setRooms(response.chatRooms || []);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : t("chat.errors.loadRoomsFailed")
+        err instanceof Error ? err.message : t("chat:errors.loadRoomsFailed")
       );
     } finally {
       setLoading(false);
@@ -36,9 +42,10 @@ export const ChatRoomList: React.FC<ChatRoomListProps> = ({
 
   useEffect(() => {
     loadRooms();
-  }, [loadRooms]);
+  }, [loadRooms, refreshKey]);
 
   const formatLastActivity = (lastActivity: string) => {
+    if (!lastActivity) return "";
     const date = new Date(lastActivity);
     const now = new Date();
     const diffInMinutes = Math.floor(
@@ -46,18 +53,23 @@ export const ChatRoomList: React.FC<ChatRoomListProps> = ({
     );
 
     if (diffInMinutes < 1)
-      return t("chat.justNow", { defaultValue: "Just now" });
+      return t("chat:justNow", { defaultValue: "Just now" });
     if (diffInMinutes < 60)
-      return t("chat.minutesAgo", {
+      return t("chat:minutesAgo", {
         defaultValue: "{{count}} minutes ago",
         count: diffInMinutes,
       });
     if (diffInMinutes < 1440)
-      return t("chat.hoursAgo", {
+      return t("chat:hoursAgo", {
         defaultValue: "{{count}} hours ago",
         count: Math.floor(diffInMinutes / 60),
       });
     return date.toLocaleDateString();
+  };
+
+  const formatTimestamp = (iso?: string) => {
+    if (!iso) return "";
+    return formatLastActivity(iso);
   };
 
   const getRoomIcon = (room: ChatRoom) => {
@@ -69,6 +81,7 @@ export const ChatRoomList: React.FC<ChatRoomListProps> = ({
   };
 
   const truncateMessage = (content: string, maxLength: number = 50) => {
+    if (!content) return "";
     return content.length > maxLength
       ? content.substring(0, maxLength) + "..."
       : content;
@@ -79,12 +92,12 @@ export const ChatRoomList: React.FC<ChatRoomListProps> = ({
       <div className={`space-y-3 ${className}`}>
         {[...Array(5)].map((_, i) => (
           <div key={i} className="animate-pulse">
-            <div className="bg-white rounded-lg shadow-sm p-4 border">
+            <div className="bg-dark-secondary rounded-lg shadow-sm p-4 border border-slate-700">
               <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
+                <div className="w-12 h-12 bg-slate-600 rounded-full"></div>
                 <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-gray-300 rounded w-3/4"></div>
-                  <div className="h-3 bg-gray-300 rounded w-1/2"></div>
+                  <div className="h-4 bg-slate-600 rounded w-3/4"></div>
+                  <div className="h-3 bg-slate-600 rounded w-1/2"></div>
                 </div>
               </div>
             </div>
@@ -97,13 +110,13 @@ export const ChatRoomList: React.FC<ChatRoomListProps> = ({
   if (error) {
     return (
       <div
-        className={`bg-white rounded-lg shadow-sm p-6 text-center border ${className}`}
+        className={`bg-dark-secondary rounded-lg shadow-sm p-6 text-center border border-slate-700 ${className}`}
       >
-        <div className="text-red-500 mb-4">⚠️</div>
-        <p className="text-red-600 mb-4">{error}</p>
+        <div className="text-red-400 mb-4">⚠️</div>
+        <p className="text-red-300 mb-4">{error}</p>
         <button
           onClick={loadRooms}
-          className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
+          className="px-4 py-2 bg-primary text-dark hover:bg-primary-hover transition-colors rounded-lg"
         >
           {t("common.retry")}
         </button>
@@ -111,20 +124,33 @@ export const ChatRoomList: React.FC<ChatRoomListProps> = ({
     );
   }
 
-  if (rooms.length === 0) {
+  const filteredRooms = rooms.filter((r) =>
+    view === "DIRECT"
+      ? r.type === "DIRECT_MESSAGE"
+      : r.type !== "DIRECT_MESSAGE"
+  );
+
+  if (filteredRooms.length === 0) {
     return (
       <div
-        className={`bg-white rounded-lg shadow-sm p-6 text-center border ${className}`}
+        className={`bg-dark-secondary rounded-lg shadow-sm p-6 text-center border border-slate-700 ${className}`}
       >
         <div className="text-4xl mb-4">💬</div>
-        <h3 className="text-lg font-semibold mb-2">
-          {t("chat.noRooms", { defaultValue: "No rooms" })}
+        <h3 className="text-lg font-semibold mb-2 text-white">
+          {view === "DIRECT"
+            ? t("chat:noDirects", { defaultValue: "No direct messages" })
+            : t("chat:noRooms", { defaultValue: "No rooms" })}
         </h3>
-        <p className="text-gray-600">
-          {t("chat.noRoomsDescription", {
-            defaultValue:
-              "You have no rooms yet. Create a room to start chatting.",
-          })}
+        <p className="text-gray-300">
+          {view === "DIRECT"
+            ? t("chat:noDirectsDescription", {
+                defaultValue:
+                  "You have no direct messages yet. Start a DM to chat with someone.",
+              })
+            : t("chat:noRoomsDescription", {
+                defaultValue:
+                  "You have no rooms yet. Create a room to start chatting.",
+              })}
         </p>
       </div>
     );
@@ -134,25 +160,45 @@ export const ChatRoomList: React.FC<ChatRoomListProps> = ({
     <div className={`space-y-2 ${className}`}>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">
-          {t("chat.myRooms", { defaultValue: "My rooms" })}
+          {view === "DIRECT"
+            ? t("chat:directMessages", { defaultValue: "Direct Messages" })
+            : t("chat:myRooms", { defaultValue: "My rooms" })}
         </h2>
         <span className="text-sm text-gray-500">
-          {rooms.length} {t("chat.rooms", { defaultValue: "rooms" })}
+          {filteredRooms.length}{" "}
+          {view === "DIRECT"
+            ? t("chat:directs", { defaultValue: "conversations" })
+            : t("chat:rooms", { defaultValue: "rooms" })}
         </span>
       </div>
 
-      {rooms.map((room) => (
-        <div
-          key={room.id}
-          className={`bg-white rounded-lg shadow-sm p-4 cursor-pointer transition-all duration-200 hover:shadow-md border ${
-            selectedRoomId === room.id
-              ? "ring-2 ring-primary bg-primary/5"
-              : "hover:bg-gray-50"
-          }`}
-          onClick={() => onRoomSelect(room)}
-        >
-          <div className="flex items-center space-x-3">
-            <div className="flex-shrink-0">
+      {filteredRooms.map((room) => {
+        const membersCount =
+          room.members?.length ??
+          (room.type === "DIRECT_MESSAGE" ? 2 : room.currentMembers ?? 0);
+        let title = room.name || "";
+        if (room.type === "DIRECT_MESSAGE") {
+          const other = (room.members || []).find(
+            (m) => m.user?.id !== user?.id
+          );
+          if (other && other.user) title = other.user.displayName;
+          else if (!title)
+            title = t("chat:directMessage", { defaultValue: "Direct Message" });
+        }
+        const lastMsg = room.lastMessage;
+        const timestamp = lastMsg?.createdAt ?? room.lastActivity;
+
+        return (
+          <div
+            key={room.id}
+            className={`bg-dark-secondary rounded-lg shadow-sm p-4 cursor-pointer transition-all duration-200 hover:shadow-md border border-slate-700 flex items-center ${
+              selectedRoomId === room.id
+                ? "ring-2 ring-primary bg-primary/10"
+                : ""
+            }`}
+            onClick={() => onRoomSelect(room)}
+          >
+            <div className="flex-shrink-0 mr-3">
               <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center text-white text-xl">
                 {getRoomIcon(room)}
               </div>
@@ -160,39 +206,41 @@ export const ChatRoomList: React.FC<ChatRoomListProps> = ({
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-gray-900 truncate">
-                  {room.name}
+                <h3 className="text-sm font-semibold text-white truncate max-w-[60%]">
+                  {title}
                 </h3>
-                <span className="text-xs text-gray-500">
-                  {formatLastActivity(room.lastActivity)}
+                <span className="text-xs text-gray-400 ml-2">
+                  {formatTimestamp(timestamp)}
                 </span>
               </div>
 
               <div className="flex items-center justify-between mt-1">
-                <div className="flex-1">
-                  {room.lastMessage ? (
-                    <p className="text-sm text-gray-600">
-                      <span className="font-medium">
-                        {room.lastMessage.sender.displayName}:
+                <div className="flex-1 min-w-0">
+                  {lastMsg ? (
+                    <p className="text-sm text-gray-300 truncate">
+                      <span className="font-medium text-white">
+                        {lastMsg.sender?.displayName
+                          ? `${lastMsg.sender.displayName}:`
+                          : ""}
                       </span>{" "}
-                      {truncateMessage(room.lastMessage.content)}
+                      {truncateMessage(lastMsg.content || "")}
                     </p>
                   ) : (
-                    <p className="text-sm text-gray-500 italic">
-                      {t("chat.noMessages", { defaultValue: "No messages" })}
+                    <p className="text-sm text-gray-400 italic truncate">
+                      {t("chat:noMessages", { defaultValue: "No messages" })}
                     </p>
                   )}
                 </div>
 
-                <div className="flex items-center space-x-2 ml-2">
+                <div className="flex items-center space-x-2 ml-3">
                   {room.isPrivate && (
                     <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
-                      🔒 {t("chat.private", { defaultValue: "Private" })}
+                      🔒 {t("chat:private", { defaultValue: "Private" })}
                     </span>
                   )}
-                  <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                    {room.currentMembers}{" "}
-                    {t("chat.members", { defaultValue: "members" })}
+                  <span className="text-xs bg-slate-600 text-gray-200 px-2 py-1 rounded">
+                    {membersCount}{" "}
+                    {t("chat:members", { defaultValue: "members" })}
                   </span>
                 </div>
               </div>
@@ -206,8 +254,8 @@ export const ChatRoomList: React.FC<ChatRoomListProps> = ({
               )}
             </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };

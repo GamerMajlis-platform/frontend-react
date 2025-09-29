@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Youtube,
@@ -12,6 +12,9 @@ import { useProfile } from "../../hooks/useProfile";
 import { DiscordUserInfo } from "../discord/DiscordUserInfo";
 import { DiscordLinkButton } from "../discord/DiscordLinkButton";
 import formatBio from "../../utils/formatMarkdown";
+import { getAvatarSrc } from "../../lib/urls";
+import AvatarImage from "./AvatarImage";
+import AvatarModal from "./AvatarModal";
 
 interface BackendProfileHeaderProps {
   isEditing?: boolean;
@@ -27,8 +30,8 @@ export default function BackendProfileHeader(props: BackendProfileHeaderProps) {
   const { uploadProfilePicture, removeProfilePicture, error, clearError } =
     useProfile();
 
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const onPickAvatar = () => fileInputRef.current?.click();
@@ -38,9 +41,6 @@ export default function BackendProfileHeader(props: BackendProfileHeaderProps) {
     if (!file) return;
 
     // Show preview immediately
-    const reader = new FileReader();
-    reader.onload = () => setAvatarUrl(reader.result as string);
-    reader.readAsDataURL(file);
 
     // Upload to backend - let useProfile hook handle errors
     setUploading(true);
@@ -48,14 +48,23 @@ export default function BackendProfileHeader(props: BackendProfileHeaderProps) {
 
     try {
       await uploadProfilePicture(file);
-      // Avatar URL will be updated via context refresh
-      setAvatarUrl(null); // Clear preview since real image is now loaded
+      // The AppContext will handle the profile refresh and the component will re-render with the new image.
       setUploading(false);
+      setStatusMessage("Avatar uploaded");
+      setTimeout(() => setStatusMessage(null), 3000);
     } catch (err) {
       console.error("Failed to upload avatar:", err);
-      setAvatarUrl(null); // Clear preview on error
       setUploading(false);
+      setStatusMessage("Upload failed");
+      setTimeout(() => setStatusMessage(null), 3000);
       // Error will be handled by useProfile hook and displayed in UI
+    } finally {
+      // Clear the file input so selecting the same file again will fire change
+      try {
+        if (fileInputRef.current) fileInputRef.current.value = "";
+      } catch {
+        /* ignore */
+      }
     }
   };
 
@@ -66,11 +75,20 @@ export default function BackendProfileHeader(props: BackendProfileHeaderProps) {
     clearError();
     try {
       await removeProfilePicture();
-      setAvatarUrl(null);
+      setStatusMessage("Avatar removed");
+      setTimeout(() => setStatusMessage(null), 3000);
     } catch (err) {
       console.error("Failed to remove avatar:", err);
+      setStatusMessage("Remove failed");
+      setTimeout(() => setStatusMessage(null), 3000);
     } finally {
       setUploading(false);
+      // Clear file input in case user wants to immediately re-upload same file
+      try {
+        if (fileInputRef.current) fileInputRef.current.value = "";
+      } catch {
+        /* ignore */
+      }
     }
   };
 
@@ -87,7 +105,8 @@ export default function BackendProfileHeader(props: BackendProfileHeaderProps) {
   }
 
   const displayName = user.displayName || "User";
-  const profileImageUrl = avatarUrl || user.profilePictureUrl || null;
+  // If backend returned a path that was previously marked as failed, skip it
+  const profileImageUrl = getAvatarSrc(user.profilePictureUrl);
 
   // Function to render social media icons
   const renderSocialIcons = (socialLinks: Record<string, unknown>) => {
@@ -267,6 +286,12 @@ export default function BackendProfileHeader(props: BackendProfileHeaderProps) {
           {error}
         </div>
       )}
+      {/* Local status (upload/remove) */}
+      {statusMessage && (
+        <div className="col-span-full bg-green-900/30 border border-green-600 rounded-lg p-2 text-green-200 text-sm">
+          {statusMessage}
+        </div>
+      )}
     </div>
   );
 }
@@ -291,17 +316,34 @@ function BackendAvatarPicker({
   hasAvatar,
 }: BackendAvatarPickerProps) {
   const { t } = useTranslation();
+  const [showPreview, setShowPreview] = useState(false);
+
+  // close on escape while preview is open
+  useEffect(() => {
+    if (!showPreview) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowPreview(false);
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [showPreview]);
 
   return (
     <div className="relative group">
       {/* Avatar Image */}
       <div className="w-24 h-24 rounded-full bg-slate-700 overflow-hidden border-4 border-slate-600 relative">
         {avatarUrl ? (
-          <img
-            src={avatarUrl}
-            alt="Profile"
-            className="w-full h-full object-cover"
-          />
+          <button
+            onClick={() => setShowPreview(true)}
+            aria-label={t("profile:previewAvatar")}
+            className="w-full h-full"
+          >
+            <AvatarImage
+              source={avatarUrl}
+              alt="Profile"
+              className="w-full h-full object-cover"
+            />
+          </button>
         ) : (
           <div className="w-full h-full flex items-center justify-center text-slate-400">
             <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
@@ -376,6 +418,11 @@ function BackendAvatarPicker({
           </button>
         )}
       </div>
+
+      {/* --- Improved Avatar Preview Modal --- */}
+      {showPreview && avatarUrl && (
+        <AvatarModal src={avatarUrl} onClose={() => setShowPreview(false)} />
+      )}
 
       {/* Hidden File Input */}
       <input

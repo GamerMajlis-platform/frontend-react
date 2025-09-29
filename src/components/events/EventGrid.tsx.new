@@ -71,25 +71,16 @@ export default function EventGrid({
           event.locationType === "VIRTUAL"
             ? t("events:locationTypes.VIRTUAL")
             : event.locationType === "PHYSICAL"
-            ? event.physicalVenue ||
-              event.physicalAddress ||
-              t("events:locationTypes.PHYSICAL")
+            ? event.physicalVenue || event.physicalAddress || t("events:locationTypes.PHYSICAL")
             : t("events:locationTypes.HYBRID");
 
         const getEventVariant = (): ActivityVariant => {
           const now = new Date();
           const startDate = new Date(event.startDateTime);
-          const endDate = event.endDateTime
-            ? new Date(event.endDateTime)
-            : null;
+          const endDate = event.endDateTime ? new Date(event.endDateTime) : null;
 
-          if (event.status === "COMPLETED" || (endDate && endDate < now))
-            return "past";
-          if (
-            event.status === "LIVE" ||
-            (startDate <= now && (!endDate || endDate > now))
-          )
-            return "ongoing";
+          if (event.status === "COMPLETED" || (endDate && endDate < now)) return "past";
+          if (event.status === "LIVE" || (startDate <= now && (!endDate || endDate > now))) return "ongoing";
           return "upcoming";
         };
 
@@ -99,7 +90,6 @@ export default function EventGrid({
           <Card
             key={event.id}
             preset="event"
-            eventId={event.id}
             variant={getEventVariant()}
             name={event.title}
             organizer={event.organizer.displayName}

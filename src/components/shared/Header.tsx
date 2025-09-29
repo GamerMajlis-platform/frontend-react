@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher, ProfileDropdown } from "../index";
+import AvatarImage from "../profile/AvatarImage";
 import ProfileSearch from "../profile/ProfileSearch";
 import { useAppContext } from "../../context/useAppContext";
 import Notifications from "./Notifications";
@@ -18,7 +19,7 @@ export default function Header({
   onSectionChange,
 }: HeaderProps) {
   const { t, i18n } = useTranslation();
-  const { wishlist, logout, isAuthenticated } = useAppContext();
+  const { wishlist, logout, isAuthenticated, user } = useAppContext();
   const SHOW_LANG = import.meta.env.VITE_SHOW_LANG_SWITCHER === "true";
   const [isMessageHovered, setIsMessageHovered] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -29,6 +30,7 @@ export default function Header({
   const searchModalRef = useClickOutside<HTMLDivElement>(() =>
     setIsSearchOpen(false)
   );
+
   const profileMenuRef = useClickOutside<HTMLDivElement>(() =>
     setIsProfileMenuOpen(false)
   );
@@ -88,7 +90,12 @@ export default function Header({
           {isAuthenticated && (
             <button
               aria-label="Open profile search"
-              onClick={() => setIsSearchOpen(true)}
+              onClick={() => {
+                setIsSearchOpen(true);
+                // make search the only open control on mobile
+                setIsProfileMenuOpen(false);
+                setIsMobileMenuOpen(false);
+              }}
               className="p-2 rounded-lg hover:bg-white/10 transition-colors"
             >
               <svg
@@ -106,22 +113,55 @@ export default function Header({
               </svg>
             </button>
           )}
-          {/* Profile Avatar button */}
+          {/* Notifications placed between search and profile on mobile */}
+          <div className="transform hover:scale-105 transition-transform duration-200">
+            <Notifications />
+          </div>
+          {/* Profile Avatar button (show user's avatar if available) */}
           <button
             ref={profileButtonRef}
-            onClick={() => setIsProfileMenuOpen((v) => !v)}
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={() => {
+              const next = !isProfileMenuOpen;
+              setIsProfileMenuOpen(next);
+              if (next) {
+                // close other mobile controls when opening profile
+                setIsMobileMenuOpen(false);
+                setIsSearchOpen(false);
+              }
+            }}
             aria-label="Open profile menu"
-            className="w-10 h-10 rounded-full p-0.5 bg-gradient-to-r from-primary to-cyan-300 shadow-glow focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className={`w-10 h-10 rounded-full p-0.5 shadow-glow focus:outline-none focus-visible:ring-2 focus-visible:ring-primary overflow-hidden ${
+              user && user.profilePictureUrl
+                ? "bg-transparent border-0"
+                : "bg-gradient-to-r from-primary to-cyan-300"
+            }`}
           >
-            <span className="w-full h-full rounded-full bg-slate-800 border border-slate-600 overflow-hidden flex items-center justify-center text-white text-sm font-bold">
-              U
-            </span>
+            {user && user.profilePictureUrl ? (
+              <AvatarImage
+                source={user.profilePictureUrl}
+                alt={user.displayName || "Profile"}
+                className="w-full h-full rounded-full object-cover"
+              />
+            ) : (
+              <span className="w-full h-full rounded-full bg-slate-800 border border-slate-600 overflow-hidden flex items-center justify-center text-white text-sm font-bold">
+                U
+              </span>
+            )}
           </button>
 
           {/* Enhanced Hamburger Menu */}
           <button
             className="flex-none p-2 rounded-lg focus:outline-none transition-transform duration-200 hover:scale-105"
-            onClick={() => setIsMobileMenuOpen((v) => !v)}
+            onClick={() => {
+              const next = !isMobileMenuOpen;
+              setIsMobileMenuOpen(next);
+              if (next) {
+                // when opening the mobile nav, close other popovers
+                setIsProfileMenuOpen(false);
+                setIsSearchOpen(false);
+              }
+            }}
             aria-label="Toggle mobile menu"
             ref={menuButtonRef}
           >
@@ -133,10 +173,7 @@ export default function Header({
           </button>
         </div>
 
-        {/* Mobile notifications (left of profile) */}
-        <div className="absolute right-16 top-4 md:hidden">
-          <Notifications />
-        </div>
+        {/* (notifications now inline between search and profile) */}
 
         {/* (kept simplified hamburger above; alternative implementations removed) */}
       </div>
@@ -256,7 +293,7 @@ export default function Header({
           >
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-white font-semibold">
-                {t("profile.browser.title") || "Discover Gamers"}
+                {t("profile:browser.title") || "Discover Gamers"}
               </h3>
               <button
                 aria-label="Close search"
