@@ -110,32 +110,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
               />
             </div>
 
-            {/* Room Type */}
-            <div>
-              <label
-                htmlFor="roomType"
-                className="block text-sm font-medium text-gray-300 mb-1"
-              >
-                {t("chat:roomType")}
-              </label>
-              <select
-                id="roomType"
-                value={formData.type}
-                onChange={(e) =>
-                  handleInputChange(
-                    "type",
-                    e.target.value as "GROUP" | "DIRECT_MESSAGE"
-                  )
-                }
-                className="w-full px-3 py-2 border border-slate-600 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-primary text-gray-200"
-                disabled={loading}
-              >
-                <option value="GROUP">{t("chat:groupRoom")}</option>
-                <option value="DIRECT_MESSAGE">
-                  {t("chat:directMessage")}
-                </option>
-              </select>
-            </div>
+            {/* Room type is fixed to GROUP (no DM creation here) */}
 
             {/* Privacy Setting */}
             <div className="flex items-center space-x-3">

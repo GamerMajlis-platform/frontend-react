@@ -1,6 +1,7 @@
 import { StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
+import "./styles/customStyles.css";
 import "./i18n/config";
 import App from "./App.tsx";
 import { BrowserRouter } from "react-router-dom";

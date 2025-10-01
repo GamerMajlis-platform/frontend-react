@@ -248,14 +248,20 @@ export default function ProductSearch({
               >
                 <option value="">{t("product.allConditions")}</option>
                 <option value="NEW">{t("product.conditions.new")}</option>
-                <option value="USED_LIKE_NEW">
-                  {t("product.conditions.usedLikeNew")}
+                <option value="LIKE_NEW">
+                  {t("product.conditions.likeNew")}
                 </option>
-                <option value="USED_GOOD">
-                  {t("product.conditions.usedGood")}
+                <option value="EXCELLENT">
+                  {t("product.conditions.excellent")}
                 </option>
-                <option value="USED_FAIR">
-                  {t("product.conditions.usedFair")}
+                <option value="GOOD">{t("product.conditions.good")}</option>
+                <option value="FAIR">{t("product.conditions.fair")}</option>
+                <option value="POOR">{t("product.conditions.poor")}</option>
+                <option value="REFURBISHED">
+                  {t("product.conditions.refurbished")}
+                </option>
+                <option value="FOR_PARTS">
+                  {t("product.conditions.forParts")}
                 </option>
               </select>
             </div>

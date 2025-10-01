@@ -1,13 +1,16 @@
 {
   "comments": {
     "add": "أضف تعليقًا...",
+    "confirmDelete": "هل أنت متأكد من حذف هذا التعليق؟",
+    "confirmTitle": "تأكيد حذف التعليق",
     "label": "التعليقات",
+    "noComments": "لا توجد تعليقات بعد. كن أول من يعلق!",
     "placeholder": "اكتب تعليقك هنا...",
-    "reply": "رد",
     "replies": "الردود",
-    "viewReplies": "اظهار الردود",
+    "reply": "رد",
+    "replyingTo": "الرد على {{username}}",
     "title": "التعليقات",
-    "replyingTo": "الرد على {{username}}"
+    "viewReplies": "اظهار الردود"
   },
   "copyLink": "نسخ الرابط",
   "create": {
@@ -42,6 +45,7 @@
   "edit": "تعديل المنشور",
   "feed": {
     "confirmDelete": "هل أنت متأكد من حذف هذا المنشور؟",
+    "confirmTitle": "تأكيد حذف المنشور",
     "loadError": "فشل في تحميل المنشورات",
     "loadMore": "تحميل المزيد",
     "noPosts": "لا توجد منشورات بعد",
@@ -49,5 +53,16 @@
     "showing": "عرض {{count}} من {{total}} منشور"
   },
   "menu": "خيارات المنشور",
-  "share": "مشاركة"
+  "search": {
+    "placeholder": "ابحث في المنشورات، الوسوم، الألعاب...",
+    "results": "نتائج البحث"
+  },
+  "share": "مشاركة",
+  "tabs": {
+    "forYou": "مناسب لك",
+    "trending": "الرائج"
+  },
+  "trending": {
+    "title": "الرائج الآن"
+  }
 }

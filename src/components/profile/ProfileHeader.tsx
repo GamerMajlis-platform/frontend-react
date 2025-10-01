@@ -16,7 +16,7 @@ import { getAvatarSrc } from "../../lib/urls";
 import AvatarImage from "./AvatarImage";
 import AvatarModal from "./AvatarModal";
 
-interface BackendProfileHeaderProps {
+interface ProfileHeaderProps {
   isEditing?: boolean;
   isRTL: boolean;
   onChange: (field: "displayName" | "bio", value: string) => void;
@@ -25,7 +25,7 @@ interface BackendProfileHeaderProps {
   onEdit?: () => void;
 }
 
-export default function BackendProfileHeader(props: BackendProfileHeaderProps) {
+export default function ProfileHeader(props: ProfileHeaderProps) {
   const { user } = useAppContext();
   const { uploadProfilePicture, removeProfilePicture, error, clearError } =
     useProfile();
@@ -198,7 +198,7 @@ export default function BackendProfileHeader(props: BackendProfileHeaderProps) {
     >
       {/* Avatar */}
       <div className="relative order-1">
-        <BackendAvatarPicker
+        <AvatarPicker
           avatarUrl={profileImageUrl}
           onPick={onPickAvatar}
           onRemove={onRemoveAvatar}
@@ -296,7 +296,7 @@ export default function BackendProfileHeader(props: BackendProfileHeaderProps) {
   );
 }
 
-interface BackendAvatarPickerProps {
+interface AvatarPickerProps {
   avatarUrl: string | null;
   onPick: () => void;
   onRemove: () => void;
@@ -306,7 +306,7 @@ interface BackendAvatarPickerProps {
   hasAvatar: boolean;
 }
 
-function BackendAvatarPicker({
+function AvatarPicker({
   avatarUrl,
   onPick,
   onRemove,
@@ -314,7 +314,7 @@ function BackendAvatarPicker({
   fileInputRef,
   uploading,
   hasAvatar,
-}: BackendAvatarPickerProps) {
+}: AvatarPickerProps) {
   const { t } = useTranslation();
   const [showPreview, setShowPreview] = useState(false);
 

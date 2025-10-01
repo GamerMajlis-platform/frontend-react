@@ -14,6 +14,7 @@ import {
 } from "../components/chat";
 import { SearchDMs } from "../components/chat";
 import { chatService } from "../services/ChatService";
+import type { LastMessage } from "../types/chat";
 import useIsMobile from "../hooks/useIsMobile";
 
 export default function ChatPage() {
@@ -171,12 +172,67 @@ export default function ChatPage() {
     }
   }, [isConnected, user]);
 
+  // Refresh rooms list when a new chat message arrives so DM list updates immediately
+  useEffect(() => {
+    const onChatMsg = (data: { roomId: number; message: unknown }) => {
+      // bump refresh counter to reload lists
+      setRoomsRefreshCounter((c) => c + 1);
+
+      // if selected room matches, update selectedRoom lastMessage / lastActivity
+      if (selectedRoom && data.roomId === selectedRoom.id) {
+        const m = data.message as Record<string, unknown>;
+        const sender =
+          typeof m.sender === "object" &&
+          m.sender &&
+          !(m.sender instanceof Array)
+            ? (m.sender as Record<string, unknown>)
+            : undefined;
+
+        const lastMsg: LastMessage = {
+          id: typeof m.id === "number" ? (m.id as number) : Number(m.id) || 0,
+          content: (m.content as string) || "",
+          sender: {
+            id:
+              typeof sender?.id === "number"
+                ? (sender.id as number)
+                : Number(sender?.id) || 0,
+            displayName:
+              typeof sender?.displayName === "string"
+                ? (sender.displayName as string)
+                : String(sender?.displayName ?? ""),
+            profilePictureUrl:
+              typeof sender?.profilePictureUrl === "string"
+                ? (sender.profilePictureUrl as string)
+                : undefined,
+          },
+          createdAt:
+            (m.createdAt as string) ||
+            (m.timestamp as string) ||
+            new Date().toISOString(),
+        };
+
+        setSelectedRoom((prev) =>
+          prev
+            ? { ...prev, lastActivity: lastMsg.createdAt, lastMessage: lastMsg }
+            : prev
+        );
+      }
+    };
+
+    webSocketService.on("chatMessage", onChatMsg);
+    return () => {
+      webSocketService.off("chatMessage", onChatMsg);
+    };
+  }, [selectedRoom]);
+
   const handleRoomSelect = (room: ChatRoomType) => {
     setSelectedRoom(room);
   };
 
   const handleRoomUpdate = (room: ChatRoomType) => {
     setSelectedRoom(room);
+    // Trigger reload of room lists so lastMessage/lastActivity reflect immediately
+    setRoomsRefreshCounter((c) => c + 1);
   };
 
   const handleRoomCreated = (room: ChatRoomType) => {
@@ -195,9 +251,62 @@ export default function ChatPage() {
   };
 
   const handleStartDirectMessage = async (recipientId: number) => {
+    if (!user) return;
     let dmRoom: ChatRoomType | null = null;
     try {
       dmRoom = await chatService.startDirectMessage({ recipientId });
+      // Ensure DM room has readable title (other participant's displayName)
+      if (dmRoom && dmRoom.type === "DIRECT_MESSAGE") {
+        const other = (dmRoom.members || []).find(
+          (m) => m.user?.id !== user?.id
+        );
+        // If members are missing or incomplete, attach minimal member records for both users
+        if (!dmRoom.members || dmRoom.members.length === 0) {
+          dmRoom.members = [
+            {
+              id: 0,
+              user: { id: user.id, displayName: user.displayName },
+              role: "MEMBER",
+              joinedAt: new Date().toISOString(),
+            },
+            {
+              id: 0,
+              user: { id: recipientId, displayName: "" },
+              role: "MEMBER",
+              joinedAt: new Date().toISOString(),
+            },
+          ];
+        }
+
+        if (!other || !other.user || !other.user.displayName) {
+          try {
+            const { ProfileService } = await import(
+              "../services/ProfileService"
+            );
+            const profile = await ProfileService.getUserProfile(recipientId);
+            // Attach a minimal members array so UI can show name
+            // update the recipient member displayName if we previously created placeholder
+            dmRoom.members = dmRoom.members?.map((m) =>
+              m.user?.id === profile.id
+                ? {
+                    ...m,
+                    user: {
+                      ...m.user,
+                      displayName: profile.displayName,
+                      profilePictureUrl: profile.profilePictureUrl,
+                    },
+                  }
+                : m
+            );
+            dmRoom = {
+              ...dmRoom,
+              name: profile.displayName || dmRoom.name,
+            } as ChatRoomType;
+          } catch {
+            // ignore profile fetch failures
+          }
+        }
+      }
       setSelectedRoom(dmRoom);
       setView("DIRECT");
 

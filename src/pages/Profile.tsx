@@ -4,7 +4,7 @@ import { useAppContext } from "../context/useAppContext";
 import { useProfile } from "../hooks/useProfile";
 import TabBar from "../components/profile/TabBar";
 import AboutSection from "../components/profile/AboutSection";
-import BackendProfileHeader from "../components/profile/BackendProfileHeader";
+import ProfileHeader from "../components/profile/ProfileHeader";
 import EnhancedProfileForm from "../components/profile/EnhancedProfileForm";
 import GamingStatisticsPanel from "../components/profile/GamingStatisticsPanel";
 import OnlineStatus from "../components/profile/OnlineStatus";
@@ -332,7 +332,7 @@ export default function Profile() {
                 </div>
               </div>
             ) : (
-              <BackendProfileHeader
+              <ProfileHeader
                 isRTL={isRTL}
                 onChange={(field, value) => handleInputChange(field, value)}
               />

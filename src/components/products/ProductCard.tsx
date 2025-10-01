@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { ParsedProduct } from "../../types/products";
 import ProductService from "../../services/ProductService";
+import { getUploadUrl } from "../../lib/urls";
 
 interface ProductCardProps {
   product: ParsedProduct;
@@ -77,7 +78,7 @@ export default function ProductCard({
       <div className="relative overflow-hidden">
         {product.mainImageUrl ? (
           <img
-            src={product.mainImageUrl}
+            src={getUploadUrl(product.mainImageUrl) || product.mainImageUrl}
             alt={product.name}
             className={imageClasses}
           />

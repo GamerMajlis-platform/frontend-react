@@ -1,23 +1,26 @@
 {
+  "copyLink": "Copy link",
+  "delete": "Delete media",
+  "details": {
+    "category": "Game category",
+    "size": "File size",
+    "type": "Type",
+    "uploadDate": "Upload date",
+    "views": "Views",
+    "visibility": "Visibility"
+  },
+  "edit": "Edit media",
   "feed": {
     "confirmDelete": "Are you sure you want to delete this media?",
+    "confirmTitle": "Confirm delete media",
+    "forYou": "For you",
     "loadError": "Failed to load media",
     "loadMore": "Load more",
     "noMedia": "No media available",
     "noMediaDescription": "Upload some gaming content to get started!",
-    "showing": "Showing {{count}} of {{total}} items"
+    "showing": "Showing {{count}} of {{total}} items",
+    "trending": "Trending now"
   },
-  "details": {
-    "type": "Type",
-    "size": "File size",
-    "category": "Game category",
-    "views": "Views",
-    "visibility": "Visibility",
-    "uploadDate": "Upload date"
-  },
-  "edit": "Edit media",
-  "copyLink": "Copy link",
-  "delete": "Delete media",
   "gallery": {
     "loadError": "Failed to load media",
     "loadMore": "Load more",
@@ -29,18 +32,27 @@
     "moreTags": "More tags",
     "videoNotSupported": "Your browser does not support video playback."
   },
+  "search": {
+    "placeholder": "Search media, tags, games...",
+    "results": "Search results"
+  },
   "upload": {
+    "addTag": "Add tag",
     "clickToUpload": "Click to upload",
+    "compression": "Files will be compressed (min 30% reduction)",
     "description": "Description",
     "descriptionPlaceholder": "Describe your media...",
     "fileSize": "File size",
-    "formats":"Formats: MP4, AVI, MOV, JPG, PNG, GIF",
+    "formats": "Formats: MP4, AVI, MOV, JPG, PNG, GIF",
     "gameCategory": "Game category",
     "orDragAndDrop": "or drag and drop",
     "private": "Private",
     "public": "Public",
+    "requirements": "Requirements",
+    "security": "All files are scanned for security",
     "selectCategory": "Select category",
     "selectedFile": "Selected file",
+    "sizes": "Max size: 100MB (videos), 10MB (images)",
     "supportedFormats": "MP4, AVI, MOV, JPG, PNG, GIF up to 100MB",
     "tags": "Tags",
     "tagsHelp": "Separate tags with commas",
@@ -50,11 +62,6 @@
     "upload": "Upload media",
     "uploadDetails": "Upload details",
     "uploading": "Uploading...",
-    "visibility": "Visibility",
-    "sizes": "Max size: 100MB (videos), 10MB (images)",
-    "compression": "Files will be compressed (min 30% reduction)",
-    "security": "All files are scanned for security",
-    "requirements": "Requirements",
-    "addTag": "Add tag"
+    "visibility": "Visibility"
   }
 }

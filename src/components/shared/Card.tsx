@@ -1,9 +1,11 @@
-// Unified Card component for product / event / tournament presets.
+//import { useEffect, useState, memo } from \"react\";Unified Card component for product / event / tournament presets.
 // Preserves original layouts while reducing duplication across card types.
 import { useEffect, useState, memo } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../../context/useAppContext";
 import { useNavigate } from "react-router-dom";
+import { getUploadUrl, getAlternateUploadUrl } from "../../lib/urls";
+import { useClickOutside } from "../../hooks";
 import {
   IconCalendar,
   IconLocation,
@@ -34,6 +36,11 @@ interface ProductPresetProps extends BaseCardProps {
   rate: string; // kept as string to match original prop shape
   reviews: string;
   hideWishlistButton?: boolean;
+  // Menu functionality
+  isOwnProduct?: boolean;
+  onShare?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 // Event preset props
@@ -119,6 +126,10 @@ function areCardPropsEqual(prev: CardProps, next: CardProps) {
       prev.reviews === next.reviews &&
       prev.imageUrl === next.imageUrl &&
       prev.hideWishlistButton === next.hideWishlistButton &&
+      prev.isOwnProduct === next.isOwnProduct &&
+      prev.onShare === next.onShare &&
+      prev.onEdit === next.onEdit &&
+      prev.onDelete === next.onDelete &&
       prev.className === next.className
     );
   }
@@ -192,13 +203,21 @@ function ProductPreset({
   imageUrl,
   className = "",
   hideWishlistButton,
+  isOwnProduct,
+  onShare,
+  onEdit,
+  onDelete,
   onClick,
 }: ProductPresetProps) {
   const { toggleWishlist, isInWishlist } = useAppContext();
   const [isFavorite, setIsFavorite] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
   const { i18n, t } = useTranslation();
   const isRTL = i18n.language && i18n.language.startsWith("ar");
   const hasArabicContent = isRTL || isRTLText(productName) || isRTLText(seller);
+
+  // Close menu when clicking outside
+  const menuRef = useClickOutside<HTMLDivElement>(() => setShowMenu(false));
 
   useEffect(() => {
     setIsFavorite(isInWishlist(id));
@@ -218,28 +237,46 @@ function ProductPreset({
     setIsFavorite((prev) => !prev);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" || e.key === " ") {
-      onClick?.();
-    }
-  };
-
   return (
-    <div
-      className={`${presetStyles.product.container} ${className}`}
-      role={onClick ? "button" : undefined}
-      tabIndex={onClick ? 0 : undefined}
-      onClick={onClick}
-      onKeyDown={onClick ? handleKeyPress : undefined}
-    >
-      {/* Image Container */}
+    <div className={`${presetStyles.product.container} ${className}`}>
+      {/* Image Container - Clickable area with proper pointer events */}
       <div className={presetStyles.product.image}>
+        {/* Clickable image overlay - only this area triggers navigation */}
+        <div
+          className="absolute inset-0 cursor-pointer z-0"
+          onClick={onClick}
+        />
+
         {imageUrl ? (
           <img
-            src={imageUrl}
+            src={getUploadUrl(imageUrl) || imageUrl}
             alt={productName}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover relative z-0 pointer-events-none"
             loading="lazy"
+            onError={(e) => {
+              // Try alternate URL if main fails
+              const target = e.target as HTMLImageElement;
+              if (!target.dataset.fallbackTried) {
+                target.dataset.fallbackTried = "true";
+                const altUrl = getAlternateUploadUrl(imageUrl);
+                if (altUrl && altUrl !== target.src) {
+                  target.src = altUrl;
+                  return;
+                }
+              }
+              // Hide image on final failure
+              target.style.display = "none";
+              const parent = target.parentElement;
+              if (parent) {
+                const placeholder = document.createElement("div");
+                placeholder.className =
+                  "absolute inset-0 flex flex-col items-center justify-center text-slate-400";
+                placeholder.innerHTML = `<div class="mb-2 text-3xl sm:text-4xl">📷</div><span class="text-xs sm:text-sm">${t(
+                  "product.noImage"
+                )}</span>`;
+                parent.appendChild(placeholder);
+              }
+            }}
           />
         ) : (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
@@ -256,7 +293,7 @@ function ProductPreset({
               e.stopPropagation();
               toggleFavorite();
             }}
-            className={`absolute top-2 sm:top-3 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full border border-white/20 text-sm sm:text-base text-white transition-colors duration-200 ease-in-out ${
+            className={`absolute top-2 sm:top-3 z-10 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full border border-white/20 text-sm sm:text-base text-white transition-colors duration-200 ease-in-out ${
               hasArabicContent
                 ? "left-2 sm:left-3 right-auto"
                 : "right-2 sm:right-3 left-auto"
@@ -265,16 +302,127 @@ function ProductPreset({
             {isFavorite ? "❤️" : "🤍"}
           </button>
         )}
+
+        {/* 3-Dot Menu */}
+        {(onShare || onEdit || onDelete) && (
+          <div
+            ref={menuRef}
+            className={`absolute top-2 sm:top-3 z-10 ${
+              hasArabicContent ? "right-2 sm:right-3" : "left-2 sm:left-3"
+            }`}
+          >
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowMenu(!showMenu);
+              }}
+              className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full border border-white/20 text-white transition-colors duration-200 ease-in-out bg-black/30 hover:bg-black/50 relative z-10"
+              aria-label={t("common.options", "Options")}
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+              </svg>
+            </button>
+
+            {/* Dropdown Menu */}
+            {showMenu && (
+              <div
+                className={`absolute top-full mt-1 w-40 bg-[#1C2541] border border-slate-600 rounded-lg shadow-lg z-[100] ${
+                  hasArabicContent ? "right-0" : "left-0"
+                }`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {onShare && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowMenu(false);
+                      onShare();
+                    }}
+                    className="w-full px-4 py-2 text-left text-sm text-white hover:bg-slate-700 flex items-center gap-2 transition-colors"
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
+                      />
+                    </svg>
+                    {t("common.share", "Share")}
+                  </button>
+                )}
+                {isOwnProduct && onEdit && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowMenu(false);
+                      onEdit();
+                    }}
+                    className="w-full px-4 py-2 text-left text-sm text-white hover:bg-slate-700 flex items-center gap-2 transition-colors"
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                      />
+                    </svg>
+                    {t("common.edit", "Edit")}
+                  </button>
+                )}
+                {isOwnProduct && onDelete && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowMenu(false);
+                      onDelete();
+                    }}
+                    className="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-red-900/20 flex items-center gap-2 transition-colors"
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                    {t("common.delete", "Delete")}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Content */}
       <div className={presetStyles.product.content}>
         <h3
-          className={`mb-2 sm:mb-2.5 line-clamp-3 min-h-[54px] sm:min-h-[60px] md:min-h-[64px] lg:min-h-[72px] text-sm sm:text-base lg:text-[17px] font-semibold leading-relaxed text-white product-card-title ${
+          className={`mb-2 sm:mb-2.5 line-clamp-3 min-h-[54px] sm:min-h-[60px] md:min-h-[64px] lg:min-h-[72px] text-sm sm:text-base lg:text-[17px] font-semibold leading-relaxed text-white product-card-title cursor-pointer hover:text-primary transition-colors ${
             hasArabicContent
               ? "text-right font-scheherazade"
               : "text-left font-sans"
           }`}
+          onClick={onClick}
         >
           {productName}
         </h3>

@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { chatService } from "../../services/ChatService";
+import webSocketService from "../../services/WebSocketService";
 import { SendAlt, ArrowLeft } from "../../lib/icons";
 import { useAppContext } from "../../context/useAppContext";
 import type { ChatRoom as ChatRoomType, ChatMessage } from "../../types/chat";
+import ConfirmDialog from "../shared/ConfirmDialog";
 
 interface ChatRoomProps {
   room: ChatRoomType;
@@ -30,6 +32,7 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const loadMessages = useCallback(async () => {
     try {
@@ -39,7 +42,9 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({
         page: 0,
         size: 50,
       });
-      setMessages(response.messages.reverse()); // Reverse to show newest at bottom
+      // Defensive: backend may return undefined for messages
+      const msgs = Array.isArray(response.messages) ? response.messages : [];
+      setMessages(msgs.slice().reverse()); // Reverse to show newest at bottom
     } catch (err) {
       setError(
         err instanceof Error ? err.message : t("chat:errors.loadMessagesFailed")
@@ -52,6 +57,80 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({
   useEffect(() => {
     loadMessages();
   }, [loadMessages]);
+
+  // Subscribe to incoming websocket chat messages so DMs/rooms update live
+  useEffect(() => {
+    const handleIncoming = (data: { roomId: number; message: unknown }) => {
+      if (data?.roomId !== room.id) return;
+
+      try {
+        const m = data.message as Record<string, unknown>;
+        // Map websocket message shape to ChatMessage minimal shape used here
+        const mapped: ChatMessage = {
+          id: m.id,
+          content: (m.content as string) || "",
+          messageType:
+            typeof m.messageType === "string"
+              ? (m.messageType as string)
+              : "TEXT",
+          sender: (() => {
+            const s = m.sender;
+            if (typeof s === "object" && s && !(s instanceof Array)) {
+              const obj = s as Record<string, unknown>;
+              return {
+                id:
+                  typeof obj.id === "number"
+                    ? (obj.id as number)
+                    : Number(obj.id) || 0,
+                displayName:
+                  typeof obj.displayName === "string"
+                    ? (obj.displayName as string)
+                    : String(obj.displayName ?? ""),
+                profilePictureUrl:
+                  typeof obj.profilePictureUrl === "string"
+                    ? (obj.profilePictureUrl as string)
+                    : undefined,
+              };
+            }
+            return { id: 0, displayName: "", profilePictureUrl: undefined };
+          })(),
+          createdAt:
+            (m.createdAt as string) ||
+            (m.timestamp as string) ||
+            new Date().toISOString(),
+        } as ChatMessage;
+
+        setMessages((prev) => [...prev, mapped]);
+
+        // Inform parent to update room's lastActivity / lastMessage
+        const updatedRoom = {
+          ...room,
+          lastActivity: mapped.createdAt,
+          lastMessage: {
+            id: mapped.id,
+            content: mapped.content,
+            sender: mapped.sender,
+            createdAt: mapped.createdAt,
+          },
+        } as ChatRoomType;
+        onRoomUpdate(updatedRoom);
+      } catch (e) {
+        console.debug(
+          "Failed to handle incoming WS chatMessage in ChatRoom",
+          e
+        );
+      }
+    };
+
+    webSocketService.on("chatMessage", handleIncoming);
+    // Subscribe to the specific room topic so backend sends room messages here
+    const topic = `/topic/chat/room/${room.id}`;
+    webSocketService.subscribeToTopic(topic);
+    return () => {
+      webSocketService.off("chatMessage", handleIncoming);
+      webSocketService.unsubscribeFromTopic(`/topic/chat/room/${room.id}`);
+    };
+  }, [room, onRoomUpdate]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -145,9 +224,22 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({
           {icon}
         </div>
         <div className="flex-1">
-          <h2 className="font-semibold text-white">{room.name}</h2>
+          <h2 className="font-semibold text-white">
+            {room.type === "DIRECT_MESSAGE"
+              ? (() => {
+                  const other = (room.members || []).find(
+                    (m) => m.user?.id !== user?.id
+                  );
+                  if (other?.user?.displayName) return other.user.displayName;
+                  return (
+                    room.name ||
+                    t("chat:directMessage", { defaultValue: "Direct Message" })
+                  );
+                })()
+              : room.name}
+          </h2>
           <p className="text-sm text-gray-300">
-            {/* For direct messages we don't show members count; it's implicitly 2 */}
+            {/* For direct messages we don't show members count or visibility */}
             {room.type !== "DIRECT_MESSAGE" && (
               <>
                 {room.currentMembers} {t("chat:members")}
@@ -157,7 +249,8 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          {room.isPrivate && (
+          {/* Don't show privacy badge for direct messages */}
+          {room.type !== "DIRECT_MESSAGE" && room.isPrivate && (
             <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
               🔒 {t("chat:private")}
             </span>
@@ -168,22 +261,7 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({
               (user.id !== undefined &&
                 chatService.isUserModerator(room, user.id))) && (
               <button
-                onClick={async () => {
-                  // UI placeholder for delete room functionality
-                  // TODO: When backend DELETE /chat/rooms/{id} is implemented,
-                  // replace the code below with:
-                  //   try {
-                  //     await chatService.deleteRoom(room.id);
-                  //     if (onRoomDeleted) onRoomDeleted(room.id);
-                  //   } catch (err) {
-                  //     console.error("Failed to delete room:", err);
-                  //   }
-                  // For now, simulate deletion locally by invoking the callback so the
-                  // UI updates (this avoids calling a non-existent API).
-                  if (!confirm(t("chat:confirmDelete", "Delete this room?")))
-                    return;
-                  if (onRoomDeleted) onRoomDeleted(room.id);
-                }}
+                onClick={() => setConfirmOpen(true)}
                 className="ml-2 text-xs px-2 py-1 rounded bg-red-600 text-white hover:bg-red-700"
                 title={t("chat:deleteRoom", "Delete room")}
               >
@@ -193,6 +271,22 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({
         </div>
       </div>
     );
+  };
+
+  const onCancelDeleteRoom = () => setConfirmOpen(false);
+
+  const onConfirmDeleteRoom = async () => {
+    setConfirmOpen(false);
+    try {
+      // If backend supports deleting rooms, call the API. Otherwise caller
+      // can simulate deletion by handling the onRoomDeleted callback.
+      await chatService.deleteRoom(room.id);
+      if (onRoomDeleted) onRoomDeleted(room.id);
+    } catch (err) {
+      console.error("Failed to delete room:", err);
+      // Fallback: still notify parent so UI can update if appropriate
+      if (onRoomDeleted) onRoomDeleted(room.id);
+    }
   };
 
   if (loading) {
@@ -372,6 +466,15 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({
           </button>
         </form>
       </div>
+      <ConfirmDialog
+        open={confirmOpen}
+        title={t("chat:deleteRoom", "Delete room")}
+        message={t("chat:confirmDelete", "Delete this room?")}
+        confirmLabel={t("common.delete", "Delete")}
+        cancelLabel={t("common.cancel", "Cancel")}
+        onConfirm={onConfirmDeleteRoom}
+        onCancel={onCancelDeleteRoom}
+      />
     </div>
   );
 };

@@ -3,12 +3,32 @@ import EmptyState from "../states/EmptyState";
 import { useAppContext } from "../context/useAppContext";
 import type { WishlistItem } from "../context/AppContext";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function Wishlist() {
   const { wishlist } = useAppContext();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Restore scroll position when returning from product details
+  useEffect(() => {
+    const state = location.state as { scrollY?: number } | null;
+    if (state?.scrollY !== undefined) {
+      // Use setTimeout to ensure DOM is fully rendered
+      setTimeout(() => {
+        window.scrollTo(0, state.scrollY!);
+      }, 0);
+    }
+  }, [location]);
+
+  const handleProductClick = (id: number) => {
+    const scrollY = window.scrollY;
+    navigate(`/marketplace/${id}`, {
+      state: { from: "wishlist", scrollY },
+    });
+  };
 
   return (
     <main
@@ -52,7 +72,7 @@ export default function Wishlist() {
                     rate={item.rate}
                     reviews={item.reviews}
                     imageUrl={item.imageUrl}
-                    onClick={() => navigate(`/marketplace/${item.id}`)}
+                    onClick={() => handleProductClick(item.id)}
                   />
                   <div className="text-[var(--color-text)] text-sm text-center mt-4 font-medium">
                     {t("wishlist.added")}{" "}

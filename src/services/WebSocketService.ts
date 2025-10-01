@@ -279,13 +279,33 @@ class WebSocketService {
    * Subscribe to a WebSocket topic
    */
   subscribeToTopic(topic: string): void {
+    console.debug("WebSocketService.subscribeToTopic called", {
+      topic,
+      readyState: this.ws?.readyState,
+    });
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
       // Store for later subscription when connected
+      console.debug("WebSocket not open yet - deferring subscription", {
+        topic,
+      });
       this.subscribedTopics.add(topic);
+
+      // If we have an auth token and we're not already connecting, try to connect now
+      if (this.authToken && !this.isConnecting) {
+        console.debug(
+          "WebSocketService: attempting reconnect to send deferred subscriptions",
+          { topic }
+        );
+        this.connect(this.authToken).catch((err) => {
+          console.error("WebSocketService: reconnect attempt failed:", err);
+        });
+      }
+
       return;
     }
 
     this.subscribedTopics.add(topic);
+    console.debug("Sending SUBSCRIBE for topic", { topic });
     this.sendMessage({
       type: "SUBSCRIBE",
       topic,
@@ -296,9 +316,11 @@ class WebSocketService {
    * Unsubscribe from a WebSocket topic
    */
   unsubscribeFromTopic(topic: string): void {
+    console.debug("WebSocketService.unsubscribeFromTopic called", { topic });
     this.subscribedTopics.delete(topic);
 
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      console.debug("Sending UNSUBSCRIBE for topic", { topic });
       this.sendMessage({
         type: "UNSUBSCRIBE",
         topic,

@@ -77,19 +77,40 @@ export default function EventGrid({
             : t("events:locationTypes.HYBRID");
 
         const getEventVariant = (): ActivityVariant => {
+          // Map backend status to UI categories:
+          // - Upcoming: DRAFT, REGISTRATION_OPEN, REGISTRATION_CLOSED
+          // - Ongoing: ACTIVE, LIVE, PAUSED
+          // - Past: COMPLETED, CANCELLED
+
+          if (event.status === "COMPLETED" || event.status === "CANCELLED") {
+            return "past";
+          }
+
+          if (
+            event.status === "ACTIVE" ||
+            event.status === "LIVE" ||
+            event.status === "PAUSED"
+          ) {
+            return "ongoing";
+          }
+
+          if (
+            event.status === "DRAFT" ||
+            event.status === "REGISTRATION_OPEN" ||
+            event.status === "REGISTRATION_CLOSED"
+          ) {
+            return "upcoming";
+          }
+
+          // Fallback to date-based logic if status is unexpected
           const now = new Date();
           const startDate = new Date(event.startDateTime);
           const endDate = event.endDateTime
             ? new Date(event.endDateTime)
             : null;
 
-          if (event.status === "COMPLETED" || (endDate && endDate < now))
-            return "past";
-          if (
-            event.status === "LIVE" ||
-            (startDate <= now && (!endDate || endDate > now))
-          )
-            return "ongoing";
+          if (endDate && endDate < now) return "past";
+          if (startDate <= now && (!endDate || endDate > now)) return "ongoing";
           return "upcoming";
         };
 
@@ -106,7 +127,11 @@ export default function EventGrid({
             scheduledOn={combinedDateTime}
             location={locationDisplay}
             imageUrl={event.organizer.profilePictureUrl}
-            onClick={() => navigate(`/events/${event.id}`)}
+            onClick={() =>
+              navigate(`/events/${event.id}`, {
+                state: { from: "events", scrollY: window.scrollY },
+              })
+            }
           />
         );
       })}

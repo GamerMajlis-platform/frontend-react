@@ -31,7 +31,7 @@
   },
   "create": {
     "button": "إنشاء بطولة",
-    "error": "فشل في إنشاء البطولة",
+    "error": "تعذّر إنشاء البطولة",
     "form": {
       "currency": "العملة",
       "currencyOptions": {
@@ -55,7 +55,7 @@
       "locationPlaceholder": "مكان البطولة",
       "maxParticipants": "الحد الأقصى للمشاركين",
       "maxParticipantsDefault": "16",
-      "maxParticipantsPlaceholder": "الالعدد الأقصى للمشاركين",
+      "maxParticipantsPlaceholder": "العدد الأقصى للمشاركين",
       "name": "اسم البطولة",
       "namePlaceholder": "أدخل اسم البطولة",
       "prizePool": "مجموع الجوائز",
@@ -71,10 +71,10 @@
       "submit": "إنشاء البطولة",
       "tournamentType": "نوع البطولة"
     },
-    "success": "تم إنشاء البطولة بنجاح",
+    "success": "لقد أُنشئت البطولة بنجاح",
     "title": "إنشاء بطولة",
     "types": {
-      "bracket": "قوسية",
+      "bracket": "نظام القوس",
       "elimination": "إقصاء",
       "roundRobin": "دوري شامل",
       "swiss": "النظام السويسري"
@@ -115,20 +115,20 @@
     "title": "لا توجد بطولات"
   },
   "error": {
-    "loadFailed": "فشل في تحميل البطولات. يرجى المحاولة مرة أخرى.",
+    "loadFailed": "تعذّر تحميل البطولات. حاول مرة أخرى.",
     "title": "خطأ في تحميل البطولات"
   },
   "noMatches": "جرّب تعديل البحث أو الفلاتر.",
   "registration": {
-    "alreadyRegistered": "أنت مسجل بالفعل",
+    "alreadyRegistered": "أنت مسجّل بالفعل",
     "confirmUnregister": "هل أنت متأكد من إلغاء التسجيل؟",
-    "error": "فشل في التسجيل للبطولة",
+    "error": "تعذّر التسجيل في البطولة",
     "registrationClosed": "التسجيل مغلق",
-    "success": "تم التسجيل في البطولة بنجاح",
+    "success": "لقد سُجّلت في البطولة بنجاح",
     "title": "تسجيل البطولة",
     "tournamentFull": "البطولة مكتملة",
-    "unregisterError": "فشل في إلغاء التسجيل",
-    "unregisterSuccess": "تم إلغاء التسجيل بنجاح"
+    "unregisterError": "تعذّر إلغاء التسجيل",
+    "unregisterSuccess": "لقد ألغيت تسجيلك بنجاح"
   },
   "searchPlaceholder": "ابحث عن البطولات أو المنظمين...",
   "sort": {
@@ -141,7 +141,7 @@
     "prizeLowest": "الجائزة: الأقل"
   },
   "status": {
-    "cancelled": "ملغية",
+    "cancelled": "أُلغيت",
     "completed": "مكتملة",
     "inProgress": "جارية",
     "registrationClosed": "التسجيل مغلق",

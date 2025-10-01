@@ -19,3 +19,4 @@ export {
   MultipleSuspense,
 } from "./SuspenseWrapper";
 export { CategoryButtons } from "./CategoryButtons";
+export { default as ConfirmDialog } from "./ConfirmDialog";

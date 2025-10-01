@@ -74,10 +74,10 @@
     "success": "Tournament created successfully",
     "title": "Create Tournament",
     "types": {
-      "roundRobin": "Round Robin",
-      "swiss": "Swiss",
       "bracket": "Bracket",
-      "elimination": "Elimination"
+      "elimination": "Elimination",
+      "roundRobin": "Round Robin",
+      "swiss": "Swiss"
     },
     "validation": {
       "descriptionMinLength": "Description must be at least 10 characters",

@@ -1,9 +1,9 @@
 {
-  "bio": "نبذة",
+  "bio": "نُبذة",
   "browser": {
     "subtitle": "ابحث وتواصل مع لاعبين آخرين",
-    "suggested": "اللاعبون المقترحون",
-    "title": "تصفح اللاعبين"
+    "suggested": "اللاعبون المقترَحون",
+    "title": "تصفّح اللاعبين"
   },
   "cancel": "إلغاء",
   "changeAvatar": "تغيير صورة الملف",
@@ -20,45 +20,45 @@
     "characters": "{{count}}/500",
     "remove": "إزالة"
   },
-  "emailNotVerified": "لم يتم التحقق من البريد الإلكتروني",
-  "emailVerified": "تم التحقق من البريد الإلكتروني",
+  "emailNotVerified": "البريد الإلكتروني غير مُحقَّق",
+  "emailVerified": "البريد الإلكتروني مُحقَّق",
   "gaming": {
-    "favoriteGames": "الألعاب المفضلة",
+    "favoriteGames": "الألعاب المفضَّلة",
     "favoriteGames.placeholder": "أدخل الألعاب مفصولة بفواصل",
     "platforms": "منصات اللعب",
     "platforms.placeholder": "PC، PlayStation، Xbox، Mobile، إلخ",
     "playtime": "مدة اللعب",
-    "playtime.casual": "غير منتظم (1-5 ساعات/أسبوع)",
-    "playtime.hardcore": "مكثف (15+ ساعة/أسبوع)",
-    "playtime.regular": "منتظم (5-15 ساعة/أسبوع)",
+    "playtime.casual": "غير منتظم (١-٥ ساعات/أسبوع)",
+    "playtime.hardcore": "مكثّف (١٥+ ساعة/أسبوع)",
+    "playtime.regular": "منتظم (٥-١٥ ساعة/أسبوع)",
     "skillLevel": "مستوى المهارة",
-    "skillLevel.advanced": "متقدم",
+    "skillLevel.advanced": "متقدّم",
     "skillLevel.beginner": "مبتدئ",
-    "skillLevel.intermediate": "متوسط",
+    "skillLevel.intermediate": "متوسّط",
     "skillLevel.professional": "محترف",
-    "statistics": "إحصائيات اللعب",
+    "statistics": "إحصائيّات اللعب",
     "stats": {
       "achievements": "الإنجازات",
-      "addFirstGame": "أضف لعبتك الأولى",
+      "addFirstGame": "أضِف لعبتك الأولى",
       "addGame": "إضافة لعبة",
       "currentStreak": "السلسلة الحالية",
-      "favoriteGame": "اللعبة المفضلة",
-      "favoriteGame.placeholder": "أدخل لعبتك المفضلة",
-      "gameBreakdown": "إحصائيات الألعاب",
+      "favoriteGame": "اللعبة المفضّلة",
+      "favoriteGame.placeholder": "أدخل لعبتك المفضّلة",
+      "gameBreakdown": "تفصيل الألعاب",
       "gameName": "اسم اللعبة",
       "games": "ألعاب",
-      "gamesPlayed": "ألعاب تم لعبها",
+      "gamesPlayed": "ألعاب لُعِبت",
       "hours": "ساعات",
-      "hoursPlayed": "الساعات",
+      "hoursPlayed": "الساعات الملعوبة",
       "lastUpdated": "آخر تحديث",
       "longestStreak": "أطول سلسلة",
       "losses": "هزائم",
-      "noGames": "لا توجد إحصائيات ألعاب مسجلة بعد",
-      "notSet": "غير محدد",
+      "noGames": "لا توجد إحصائيّات ألعاب مسجَّلة بعد",
+      "notSet": "غير محدَّد",
       "totalGames": "إجمالي الألعاب",
       "totalHours": "إجمالي الساعات",
-      "unlocked": "تم فتحها",
-      "unnamedGame": "لعبة غير مسماة",
+      "unlocked": "مفتوحة",
+      "unnamedGame": "لعبة بلا اسم",
       "winRate": "نسبة الفوز",
       "wins": "انتصارات"
     }
@@ -67,12 +67,12 @@
   "level": "المستوى {{level}}",
   "manage": "إدارة الملف",
   "placeholders": {
-    "bio": "نبذة",
+    "bio": "نُبذة",
     "discordName": "اسم المستخدم في ديسكورد",
     "displayName": "أدخل اسم العرض",
     "gamingPreferences": "تفضيلات اللعب",
-    "gamingStatistics": "إحصائيات اللعب",
-    "preferenceItem": "أضف تفضيل...",
+    "gamingStatistics": "إحصائيّات اللعب",
+    "preferenceItem": "أضِف تفضيل...",
     "statName": "اسم الإحصائية (مثال: نسبة الفوز)"
   },
   "privacy": {
@@ -80,8 +80,8 @@
     "allowDirectMessages.description": "السماح للمستخدمين الآخرين بإرسال رسائل لك",
     "showEmail": "إظهار البريد الإلكتروني",
     "showEmail.description": "عرض بريدك الإلكتروني في ملفك العام",
-    "showGamingStats": "إظهار إحصائيات اللعب",
-    "showGamingStats.description": "عرض إحصائيات اللعب في ملفك",
+    "showGamingStats": "إظهار إحصائيّات اللعب",
+    "showGamingStats.description": "عرض إحصائيّات اللعب في ملفك",
     "showOnlineStatus": "إظهار الحالة عند الاتصال",
     "showOnlineStatus.description": "دع الآخرين يرون متى تكون متصلاً",
     "visibility": "رؤية الملف",
@@ -104,15 +104,15 @@
     "personalWebsite": "الموقع الشخصي"
   },
   "tabs": {
-    "about": "نبذة",
+    "about": "نُبذة",
     "manage": "إدارة",
     "privacy": "الخصوصية",
-    "stats": "إحصائيات"
+    "stats": "إحصائيّات"
   },
   "uploadAvatar": "رفع صورة الملف",
   "uploadPhoto": "رفع صورة",
   "visibility": {
-    "hidden_stats_by_user": "{{username}} أخفى إحصائيات اللعب الخاصة به",
-    "viewer_hide_stats": "لقد عطلت عرض إحصائيات اللعب من إعداداتك"
+    "hidden_stats_by_user": "{{username}} أخفى إحصائيّات اللعب الخاصّة به",
+    "viewer_hide_stats": "لقد عطّلتَ عرض إحصائيّات اللعب من إعداداتك"
   }
 }

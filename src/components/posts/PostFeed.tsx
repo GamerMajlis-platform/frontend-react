@@ -3,6 +3,7 @@ import { useDeepStable, useStableEmptyObject } from "../../hooks/useDeepStable";
 import { useTranslation } from "react-i18next";
 import { PostService } from "../../services/PostService";
 import { PostCard } from "./PostCard";
+import { ConfirmDialog } from "../shared/ConfirmDialog";
 import type { PostListItem, PostFilters } from "../../types";
 
 interface PostFeedProps {
@@ -122,18 +123,29 @@ export const PostFeed: React.FC<PostFeedProps> = ({
     console.log("Post shared:", postId);
   };
 
-  const handleDelete = async (postId: number) => {
-    if (!window.confirm(t("posts:feed.confirmDelete"))) {
-      return;
-    }
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingDeletePostId, setPendingDeletePostId] = useState<number | null>(
+    null
+  );
 
+  const promptDeletePost = (postId: number) => {
+    setPendingDeletePostId(postId);
+    setConfirmOpen(true);
+  };
+
+  const handleDelete = async (postId?: number) => {
+    const id = postId ?? pendingDeletePostId;
+    if (id == null) return;
     try {
-      const response = await PostService.deletePost(postId);
+      const response = await PostService.deletePost(id);
       if (response.success) {
-        setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
+        setPosts((prevPosts) => prevPosts.filter((post) => post.id !== id));
       }
     } catch (error) {
       console.error("Failed to delete post:", error);
+    } finally {
+      setPendingDeletePostId(null);
+      setConfirmOpen(false);
     }
   };
 
@@ -271,7 +283,7 @@ export const PostFeed: React.FC<PostFeedProps> = ({
             onLike={handleLike}
             onComment={handleComment}
             onShare={handleShare}
-            onDelete={handleDelete}
+            onDelete={promptDeletePost}
           />
         ))}
       </div>
@@ -296,6 +308,16 @@ export const PostFeed: React.FC<PostFeedProps> = ({
           })}
         </div>
       )}
+      <ConfirmDialog
+        open={confirmOpen}
+        title={t("posts:feed.confirmTitle")}
+        message={t("posts:feed.confirmDelete")}
+        onConfirm={() => handleDelete()}
+        onCancel={() => {
+          setPendingDeletePostId(null);
+          setConfirmOpen(false);
+        }}
+      />
     </div>
   );
 };

@@ -30,3 +30,54 @@
 .chat-root .rtl-flip {
   transform: scaleX(-1);
 }
+
+/* Post-creation form/modal scoped styles moved from index.css to keep index smaller */
+.create-post-form select,
+.create-post-modal select {
+  background-color: rgba(11, 19, 43, 0.6); /* semi-transparent dark */
+  color: var(--color-text);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding-right: 2rem; /* leave space for native chevron */
+}
+
+.create-post-form select:focus,
+.create-post-modal select:focus {
+  box-shadow: 0 0 0 3px rgba(111, 255, 233, 0.12);
+}
+
+.create-post-form option,
+.create-post-modal option {
+  background-color: var(--color-dark);
+  color: var(--color-text);
+}
+
+.create-post-form option[value=""],
+.create-post-modal option[value=""] {
+  color: var(--color-text-secondary);
+}
+
+.create-post-form label,
+.create-post-modal label {
+  color: var(--color-text) !important;
+}
+
+.create-post-form .text-xs.text-gray-500,
+.create-post-modal .text-xs.text-gray-500 {
+  color: var(--color-text-secondary) !important;
+}
+
+.create-post-form input,
+.create-post-modal input,
+.create-post-form textarea,
+.create-post-modal textarea {
+  color: var(--color-text);
+  background-color: transparent;
+}
+
+.create-post-form input::placeholder,
+.create-post-modal input::placeholder,
+.create-post-form textarea::placeholder,
+.create-post-modal textarea::placeholder {
+  color: var(--color-text-secondary);
+  opacity: 1; /* ensure consistent placeholder visibility */
+}

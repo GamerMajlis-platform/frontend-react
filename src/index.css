@@ -832,3 +832,5 @@ input:-webkit-autofill::first-line {
 }
 
 /* (removed old mobile menu overrides; using portal-based dialog now) */
+
+/* Post-creation styles moved to `src/styles/customStyles.css` to reduce index.css size */

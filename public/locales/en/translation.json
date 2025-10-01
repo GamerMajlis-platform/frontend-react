@@ -3,7 +3,8 @@
     "join": "Join",
     "view": "View",
     "viewResults": "View results",
-    "watch": "Watch"
+    "watch": "Watch",
+    "cancel": "Cancel"
   },
   "auth": {
     "alreadyHaveAccount": "Already have an account?",
@@ -54,16 +55,25 @@
     "signingIn": "Signing in..."
   },
   "categories": {
-    "all": "All",
     "accessories": "Accessories",
+    "gamingAccessories": "Gaming Accessories",
+    "gamingGear": "Gaming gear",
+    "gamingConsoles": "Gaming Consoles",
+    "gamingPeripherals": "Gaming Peripherals",
+    "gamingChairs": "Gaming Chairs",
+    "headsets": "Headsets",
+    "keyboards": "Keyboards",
+    "mice": "Mice",
+    "monitors": "Monitors",
+    "all": "All",
     "allItems": "All items",
     "audio": "Audio",
     "collectibles": "Collectibles",
     "console": "Consoles",
     "games": "Games",
-    "gamingGear": "Gaming gear",
     "hardware": "Hardware",
     "merchandise": "Merchandise",
+    "other": "Other",
     "pcParts": "PC parts",
     "software": "Software"
   },
@@ -81,23 +91,31 @@
     "welcome": "Hi! I’m the Gamer Majlis bot. How can I help you today? 🎮"
   },
   "common": {
-    "close": "Close",
     "and": "and",
+    "areYouSure": "Are you sure?",
+    "back": "Back",
     "cancel": "Cancel",
     "clearFilters": "Clear filters",
     "clearSearch": "Clear search",
+    "close": "Close",
+    "confirm": "Confirm",
+    "confirmDelete": "Are you sure you want to delete this item?",
     "delete": "Delete",
     "edit": "Edit",
+    "share": "Share",
     "error": "Error",
+    "hide": "Hide",
     "loading": "Loading...",
     "noResults": "No results",
     "optional": "optional",
+    "readMore": "Read more",
     "retry": "Retry",
     "save": "Save",
     "saving": "Saving...",
     "search": "Search",
     "searching": "Searching...",
     "select": "Select",
+    "show": "Show",
     "success": "Success",
     "tryAgain": "Try again"
   },
@@ -111,6 +129,8 @@
     "searchPlaceholder": "Search messages...",
     "selectPrompt": "Select a conversation to start chatting"
   },
+  "copyLink": "Copy link",
+  "delete": "Delete Media",
   "discord": {
     "auth": {
       "connecting": "Connecting...",
@@ -141,6 +161,7 @@
       "unlinking": "Unlinking..."
     }
   },
+  "edit": "Edit Media",
   "errors": {
     "accessDenied": "You don’t have permission to perform this action",
     "authRequired": "Please log in to continue",
@@ -155,6 +176,13 @@
     "serverError": "Something went wrong. Please try again later",
     "validationFailed": "Please check the data and try again"
   },
+  "feed": {
+    "loadError": "Failed to load media",
+    "loadMore": "Load more",
+    "noMedia": "No media yet",
+    "noMediaDescription": "Upload some gaming content to get started!",
+    "showing": "Showing {{count}} of {{total}} items"
+  },
   "footer": {
     "allRightsReserved": "© 2025 Gamer Majlis. All rights reserved.",
     "community": "Community",
@@ -163,6 +191,13 @@
     "forums": "Forums",
     "quickLinks": "Quick Links",
     "support": "Support"
+  },
+  "gallery": {
+    "loadError": "Failed to load media",
+    "loadMore": "Load more",
+    "noMedia": "No media yet",
+    "noMediaDescription": "Upload some gaming content to get started!",
+    "showing": "Showing {{count}} of {{total}} items"
   },
   "home": {
     "content": {
@@ -179,9 +214,9 @@
     "tabs": {
       "create": "Create Content",
       "media": "Media Gallery",
+      "mediaShort": "Media",
       "posts": "Community Posts",
-      "postsShort": "Posts",
-      "mediaShort": "Media"
+      "postsShort": "Posts"
     },
     "title": "Gamer Majlis",
     "viewTournaments": "Browse Tournaments"
@@ -203,49 +238,6 @@
     "subtitle": "Discover premium gaming gear from trusted sellers worldwide",
     "title": "Gaming Marketplace"
   },
-  "feed": {
-    "loadError": "Failed to load media",
-    "loadMore": "Load more",
-    "noMedia": "No media yet",
-    "noMediaDescription": "Upload some gaming content to get started!",
-    "showing": "Showing {{count}} of {{total}} items"
-  },
-  "edit": "Edit Media",
-  "copyLink": "Copy link",
-  "delete": "Delete Media",
-  "gallery": {
-    "loadError": "Failed to load media",
-    "loadMore": "Load more",
-    "noMedia": "No media yet",
-    "noMediaDescription": "Upload some gaming content to get started!",
-    "showing": "Showing {{count}} of {{total}} items"
-  },
-  "preview": {
-    "moreTags": "More tags",
-    "videoNotSupported": "Your browser doesn’t support video playback."
-  },
-  "upload": {
-    "clickToUpload": "Click to upload",
-    "description": "Description",
-    "descriptionPlaceholder": "Describe your media...",
-    "fileSize": "File size",
-    "gameCategory": "Game category",
-    "orDragAndDrop": "or drag & drop",
-    "private": "Private",
-    "public": "Public",
-    "selectCategory": "Select category",
-    "selectedFile": "Selected file",
-    "supportedFormats": "MP4, AVI, MOV, JPG, PNG, GIF up to 100MB",
-    "tags": "Tags",
-    "tagsHelp": "Separate tags with commas",
-    "tagsPlaceholder": "Games, highlight, funny",
-    "title": "Title",
-    "titlePlaceholder": "Enter media title",
-    "upload": "Upload media",
-    "uploadDetails": "Upload details",
-    "uploading": "Uploading...",
-    "visibility": "Visibility"
-  },
   "nav": {
     "events": "Events",
     "home": "Home",
@@ -263,7 +255,14 @@
     "profile": "Profile",
     "tournaments": "Tournaments"
   },
+  "preview": {
+    "moreTags": "More tags",
+    "videoNotSupported": "Your browser doesn’t support video playback."
+  },
   "product": {
+    "addToCart": "Add to Cart",
+    "addToWishlist": "Add to Wishlist",
+    "inWishlist": "In Wishlist",
     "ascending": "Ascending",
     "buyNow": "Buy Now",
     "by": "By",
@@ -275,6 +274,7 @@
       "likeNew": "Like New",
       "new": "New"
     },
+    "confirmDelete": "Are you sure you want to delete this product? This action cannot be undone.",
     "create": "Create Product",
     "createError": "Failed to create product",
     "createProduct": "Create New Product",
@@ -287,6 +287,7 @@
     "descriptionRequired": "Description is required",
     "details": "Details",
     "filters": {
+      "title": "Filters",
       "brand": "Brand",
       "category": "Category",
       "condition": "Condition",
@@ -306,12 +307,28 @@
     "popularity": "Popularity",
     "price": "Price",
     "pricePlaceholder": "0.00",
+    "quickFilters": "Quick Filters",
     "rating": "Rating",
+    "ratingStar": "Rate {{star}} stars",
     "relevance": "Relevance",
     "reviews": "{{count}} Reviews",
+    "reviewsTitle": "Customer Reviews",
+    "basedOnReviews": "Based on {{count}} reviews",
+    "writeReview": "Write a Review",
+    "yourReview": "Your Review",
+    "yourRating": "Your Rating",
+    "yourComment": "Your Comment",
+    "commentPlaceholder": "Share your experience with this product...",
+    "submitReview": "Submit Review",
+    "submittingReview": "Submitting...",
+    "cancelReview": "Cancel",
+    "noReviews": "No reviews yet. Be the first to review!",
+    "verifiedPurchase": "Verified Purchase",
     "searchPlaceholder": "Search for products...",
     "sortBy": "Sort By",
-    "validPriceRequired": "Valid price required"
+    "validPriceRequired": "Valid price required",
+    "viewProfile": "View Seller Profile",
+    "allConditions": "All Conditions"
   },
   "settings": {
     "save": "Save Changes",
@@ -359,6 +376,28 @@
     "price_low": "Price: Low to High",
     "rating": "Top Rated",
     "reviews": "Most Reviews"
+  },
+  "upload": {
+    "clickToUpload": "Click to upload",
+    "description": "Description",
+    "descriptionPlaceholder": "Describe your media...",
+    "fileSize": "File size",
+    "gameCategory": "Game category",
+    "orDragAndDrop": "or drag & drop",
+    "private": "Private",
+    "public": "Public",
+    "selectCategory": "Select category",
+    "selectedFile": "Selected file",
+    "supportedFormats": "MP4, AVI, MOV, JPG, PNG, GIF up to 100MB",
+    "tags": "Tags",
+    "tagsHelp": "Separate tags with commas",
+    "tagsPlaceholder": "Games, highlight, funny",
+    "title": "Title",
+    "titlePlaceholder": "Enter media title",
+    "upload": "Upload media",
+    "uploadDetails": "Upload details",
+    "uploading": "Uploading...",
+    "visibility": "Visibility"
   },
   "wishlist": {
     "added": "Added",

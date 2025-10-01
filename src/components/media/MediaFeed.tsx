@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useDeepStable, useStableEmptyObject } from "../../hooks/useDeepStable";
 import { useTranslation } from "react-i18next";
 import { MediaService } from "../../services/MediaService";
+import { ConfirmDialog } from "../shared/ConfirmDialog";
 import { MediaCard } from "./MediaCard";
 import { MediaDetailsModal } from "./MediaDetailsModal";
 import type { MediaListItem, MediaFilters } from "../../types";
@@ -45,6 +46,9 @@ export const MediaFeed: React.FC<MediaFeedProps> = ({
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const [selected, setSelected] = useState<MediaListItem | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [expandedDescriptions, setExpandedDescriptions] = useState<{
+    [id: number]: boolean;
+  }>({});
   const { user } = useAppContext();
   const currentUserId = user?.id;
 
@@ -52,6 +56,10 @@ export const MediaFeed: React.FC<MediaFeedProps> = ({
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editTitle, setEditTitle] = useState<string>("");
   const [editDescription, setEditDescription] = useState<string>("");
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingDeleteMediaId, setPendingDeleteMediaId] = useState<
+    number | null
+  >(null);
 
   const emptyObj = useStableEmptyObject<MediaFilters>();
   const stableFilters = useDeepStable(filters ?? emptyObj);
@@ -143,12 +151,53 @@ export const MediaFeed: React.FC<MediaFeedProps> = ({
     setMedia((prev) => prev.filter((m) => m.id !== deletedId));
   };
 
+  const onConfirmDeleteMedia = async () => {
+    if (pendingDeleteMediaId == null) return;
+    try {
+      const res = await MediaService.deleteMedia(pendingDeleteMediaId);
+      if (res.success) {
+        handleDeleted(pendingDeleteMediaId);
+      }
+    } catch (err) {
+      console.error("Failed to delete media", err);
+    } finally {
+      setPendingDeleteMediaId(null);
+      setConfirmOpen(false);
+    }
+  };
+
   useEffect(() => {
     if (!mountedRef.current) {
       mountedRef.current = true;
       if (!initialMedia) loadMedia();
     }
   }, [loadMedia, initialMedia]);
+
+  // Respond to changes in initialMedia (e.g. search results). When
+  // `initialMedia` is provided, show it and disable further list loading.
+  useEffect(() => {
+    if (initialMedia) {
+      setMedia(initialMedia);
+      setPagination({
+        currentPage: 0,
+        totalPages: 1,
+        totalElements: initialMedia.length,
+        hasMore: false,
+      });
+    } else {
+      // When initialMedia is cleared, reset and allow normal loading
+      setMedia([]);
+      setPagination({
+        currentPage: 0,
+        totalPages: 0,
+        totalElements: 0,
+        hasMore: false,
+      });
+      // trigger load only if component already mounted
+      if (mountedRef.current) loadMedia(0, false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialMedia]);
 
   const lastFilterHashRef = useRef<string | null>(null);
   useEffect(() => {
@@ -331,24 +380,10 @@ export const MediaFeed: React.FC<MediaFeedProps> = ({
 
                         {currentUserId === item.uploader.id && (
                           <button
-                            onClick={async () => {
+                            onClick={() => {
                               setShowMenuId(null);
-                              if (
-                                !confirm(
-                                  t("media:confirmDelete", "Delete this media?")
-                                )
-                              )
-                                return;
-                              try {
-                                const res = await MediaService.deleteMedia(
-                                  item.id
-                                );
-                                if (res.success) {
-                                  handleDeleted(item.id);
-                                }
-                              } catch (err) {
-                                console.error("Failed to delete media", err);
-                              }
+                              setPendingDeleteMediaId(item.id);
+                              setConfirmOpen(true);
                             }}
                             className="block px-4 py-2 text-sm text-red-400 hover:bg-[rgba(239,68,68,0.06)] w-full text-left"
                           >
@@ -361,10 +396,17 @@ export const MediaFeed: React.FC<MediaFeedProps> = ({
                 </div>
               </div>
 
-              <div className="cursor-pointer bg-white/3 border border-white/6 rounded-lg overflow-hidden">
-                {/* Build a minimal Media object from MediaListItem so MediaCard has required fields */}
-                {editingId === item.id ? (
-                  <div className="p-4 bg-[rgba(255,255,255,0.02)]">
+              {/* Title / Description / Tags moved above the media (Facebook-like) */}
+              {(() => {
+                const itemDesc = (item as unknown as { description?: string })
+                  .description;
+                const itemCandidate = item as unknown as { tags?: unknown };
+                const itemTags = Array.isArray(itemCandidate.tags)
+                  ? (itemCandidate.tags as string[])
+                  : [];
+
+                return editingId === item.id ? (
+                  <div className="p-4 bg-[rgba(255,255,255,0.02)] mb-2">
                     <div className="mb-2">
                       <input
                         value={editTitle}
@@ -434,94 +476,115 @@ export const MediaFeed: React.FC<MediaFeedProps> = ({
                     </div>
                   </div>
                 ) : (
-                  <MediaCard
-                    media={{
-                      id: item.id,
-                      title: item.title,
-                      description: "",
-                      originalFilename: "",
-                      storedFilename: "",
-                      // Prefer a static uploads path when the list item doesn't
-                      // include a filePath. The detailed fetch will return the
-                      // canonical `filePath` (e.g. "/uploads/media/xxx.mp4").
-                      // For feed previews we fall back to thumbnail or a
-                      // predictable uploads path rooted at `/uploads/media/{id}`.
-                      // Prefer a provided stored filename when available so URLs look
-                      // like /uploads/media/{storedFilename.ext} instead of using the id.
-                      filePath:
-                        item.thumbnailPath ||
-                        ((item as unknown as { storedFilename?: string })
-                          .storedFilename
+                  <div className="mb-3 px-2 text-left">
+                    <h4 className="font-semibold text-base text-white truncate mx-auto text-center">
+                      {item.title}
+                    </h4>
+                    {itemDesc &&
+                      (() => {
+                        const isExpanded = !!expandedDescriptions[item.id];
+                        const short =
+                          itemDesc.length > 180
+                            ? itemDesc.slice(0, 180) + "..."
+                            : itemDesc;
+                        return (
+                          <div className="mt-1">
+                            <p className="text-sm text-white text-left whitespace-pre-wrap break-words max-w-full">
+                              {isExpanded ? itemDesc : short}
+                            </p>
+                            {itemDesc.length > 180 && (
+                              <button
+                                onClick={() =>
+                                  setExpandedDescriptions((prev) => ({
+                                    ...prev,
+                                    [item.id]: !prev[item.id],
+                                  }))
+                                }
+                                className="text-xs text-[#6fffe9] mt-1"
+                              >
+                                {isExpanded
+                                  ? t("common.hide", "Hide")
+                                  : t("common.readMore", "Read more")}
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })()}
+                    {itemTags.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {itemTags.slice(0, 3).map((tag, i) => (
+                          <span
+                            key={i}
+                            className="inline-flex items-center px-2 py-1 rounded-full text-sm font-medium bg-[rgba(111,255,233,0.06)] text-[#6fffe9]"
+                          >
+                            #{tag}
+                          </span>
+                        ))}
+                        {itemTags.length > 3 && (
+                          <span className="text-xs text-gray-400">
+                            +{itemTags.length - 3}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+
+              <div className="cursor-pointer bg-white/3 border border-white/6 rounded-lg overflow-hidden">
+                {/* Build a minimal Media object from MediaListItem so MediaCard has required fields */}
+                <MediaCard
+                  media={{
+                    id: item.id,
+                    title: item.title,
+                    description: "",
+                    originalFilename: "",
+                    storedFilename: "",
+                    // For VIDEO items prefer the actual video file as filePath so
+                    // the <video> element has a playable source. Use thumbnailPath
+                    // as the poster instead. For images, keep thumbnail as source.
+                    filePath:
+                      item.mediaType === "VIDEO"
+                        ? (item as unknown as { storedFilename?: string })
+                            .storedFilename
                           ? `/uploads/media/${
                               (item as unknown as { storedFilename?: string })
                                 .storedFilename
                             }`
-                          : `/uploads/media/${item.id}`),
-                      mediaType: item.mediaType,
-                      fileSize: 0,
-                      compressedSize: undefined,
-                      compressionRatio: undefined,
-                      thumbnailPath: item.thumbnailPath,
-                      duration: item.duration,
-                      resolution: undefined,
-                      tags: [],
-                      gameCategory: item.gameCategory,
-                      visibility: "PUBLIC",
-                      viewCount: item.viewCount ?? 0,
-                      downloadCount: 0,
-                      uploader: {
-                        id: item.uploader.id,
-                        displayName: item.uploader.displayName,
-                      },
-                      createdAt: item.createdAt,
-                      updatedAt: undefined,
-                    }}
-                    onClick={() => {
-                      onMediaSelect?.(item);
-                      handleOpenDetails(item);
-                    }}
-                    showControls={false}
-                  />
-                )}
-
-                {/* Metadata below the media (title, description, tags) */}
-                {(() => {
-                  const itemDesc = (item as unknown as { description?: string })
-                    .description;
-                  const itemCandidate = item as unknown as { tags?: unknown };
-                  const itemTags = Array.isArray(itemCandidate.tags)
-                    ? (itemCandidate.tags as string[])
-                    : [];
-                  return (
-                    <div className="mt-3 px-2">
-                      <h4 className="font-semibold text-sm text-gray-100 truncate">
-                        {item.title}
-                      </h4>
-                      {itemDesc && (
-                        <p className="text-xs text-gray-400 mt-1 line-clamp-2">
-                          {itemDesc}
-                        </p>
-                      )}
-                      {itemTags.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-2">
-                          {itemTags.slice(0, 3).map((tag, i) => (
-                            <span
-                              key={i}
-                              className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[rgba(111,255,233,0.06)] text-[#6fffe9]"
-                            >
-                              #{tag}
-                            </span>
-                          ))}
-                          {itemTags.length > 3 && (
-                            <span className="text-xs text-gray-400">
-                              +{itemTags.length - 3}
-                            </span>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })()}
+                          : `/uploads/media/${item.id}`
+                        : item.thumbnailPath ||
+                          ((item as unknown as { storedFilename?: string })
+                            .storedFilename
+                            ? `/uploads/media/${
+                                (item as unknown as { storedFilename?: string })
+                                  .storedFilename
+                              }`
+                            : `/uploads/media/${item.id}`),
+                    mediaType: item.mediaType,
+                    fileSize: 0,
+                    compressedSize: undefined,
+                    compressionRatio: undefined,
+                    thumbnailPath: item.thumbnailPath,
+                    duration: item.duration,
+                    resolution: undefined,
+                    tags: [],
+                    gameCategory: item.gameCategory,
+                    visibility: "PUBLIC",
+                    viewCount: item.viewCount ?? 0,
+                    downloadCount: 0,
+                    uploader: {
+                      id: item.uploader.id,
+                      displayName: item.uploader.displayName,
+                    },
+                    createdAt: item.createdAt,
+                    updatedAt: undefined,
+                  }}
+                  onClick={() => {
+                    onMediaSelect?.(item);
+                    handleOpenDetails(item);
+                  }}
+                  showControls={false}
+                />
               </div>
             </div>
           </div>
@@ -538,6 +601,17 @@ export const MediaFeed: React.FC<MediaFeedProps> = ({
           })}
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmOpen}
+        title={t("media:feed.confirmTitle")}
+        message={t("media:feed.confirmDelete")}
+        onConfirm={onConfirmDeleteMedia}
+        onCancel={() => {
+          setPendingDeleteMediaId(null);
+          setConfirmOpen(false);
+        }}
+      />
 
       <MediaDetailsModal
         media={selected}

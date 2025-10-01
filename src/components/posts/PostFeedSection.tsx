@@ -1,19 +1,19 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { MediaFeed } from "./MediaFeed";
-import { Search } from "../../lib/icons";
-import { MediaService } from "../../services/MediaService";
-import type { MediaFilters, MediaListItem } from "../../types";
+import { PostFeed } from "./PostFeed";
+import { PostService } from "../../services/PostService";
+import { PostCard } from "./PostCard";
+import type { PostListItem, PostFilters } from "../../types";
 
-export const MediaFeedSection: React.FC = () => {
+export const PostFeedSection: React.FC = () => {
   const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [searching, setSearching] = useState(false);
-  const [results, setResults] = useState<MediaListItem[] | null>(null);
-  const [trending, setTrending] = useState<MediaListItem[]>([]);
+  const [results, setResults] = useState<PostListItem[] | null>(null);
+  const [trending, setTrending] = useState<PostListItem[]>([]);
   const [activeTab, setActiveTab] = useState<"for-you" | "trending">("for-you");
 
-  const filters: MediaFilters = useMemo(() => ({ page: 0, size: 20 }), []);
+  const filters: PostFilters = useMemo(() => ({ page: 0, size: 10 }), []);
 
   const doSearch = useCallback(async () => {
     if (!query.trim()) {
@@ -22,8 +22,8 @@ export const MediaFeedSection: React.FC = () => {
     }
     try {
       setSearching(true);
-      const res = await MediaService.searchMedia({ query, page: 0, size: 20 });
-      if (res.success) setResults(res.media);
+      const res = await PostService.searchPosts({ query, page: 0, size: 10 });
+      if (res.success) setResults(res.posts);
     } finally {
       setSearching(false);
     }
@@ -32,18 +32,19 @@ export const MediaFeedSection: React.FC = () => {
   useEffect(() => {
     let mounted = true;
     (async () => {
-      const res = await MediaService.getTrendingMedia({ limit: 50, days: 14 });
+      const res = await PostService.getTrendingPosts({ limit: 50, days: 14 });
       if (mounted && res.success) {
-        const scored = res.media
-          .map((m) => {
-            const views = m.viewCount ?? 0;
+        // Score by likes & recency similar to media scoring
+        const scored = res.posts
+          .map((p) => {
+            const likes = p.likeCount ?? 0;
             const ageDays = Math.max(
               0.001,
-              (Date.now() - new Date(m.createdAt).getTime()) /
+              (Date.now() - new Date(p.createdAt).getTime()) /
                 (1000 * 60 * 60 * 24)
             );
-            const score = views + 50 / ageDays;
-            return { item: m, score };
+            const score = likes + 50 / ageDays;
+            return { item: p, score };
           })
           .sort((a, b) => b.score - a.score)
           .map((s) => s.item);
@@ -58,7 +59,7 @@ export const MediaFeedSection: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-row items-center gap-3 w-full">
+      <div className="flex items-center gap-3 w-full">
         <div className="flex-1">
           <input
             value={query}
@@ -68,8 +69,8 @@ export const MediaFeedSection: React.FC = () => {
             }}
             className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40 outline-none focus:ring-2 focus:ring-[#6fffe9]"
             placeholder={t(
-              "media:search.placeholder",
-              "Search media, tags, games..."
+              "posts:search.placeholder",
+              "Search posts, tags, games..."
             )}
           />
         </div>
@@ -82,7 +83,7 @@ export const MediaFeedSection: React.FC = () => {
           {searching ? (
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black" />
           ) : (
-            <Search size={18} />
+            "🔍"
           )}
         </button>
       </div>
@@ -96,7 +97,7 @@ export const MediaFeedSection: React.FC = () => {
               : "text-white/80"
           }`}
         >
-          {t("media:feed.forYou", "For you")}
+          {t("posts:tabs.forYou", "For you")}
         </button>
         <button
           onClick={() => setActiveTab("trending")}
@@ -106,29 +107,37 @@ export const MediaFeedSection: React.FC = () => {
               : "text-white/80"
           }`}
         >
-          {t("media:feed.trending", "Trending")}
+          {t("posts:tabs.trending", "Trending")}
         </button>
       </div>
 
       {results ? (
         <div>
           <h4 className="text-white/80 text-sm mb-2">
-            {t("media:search.results", "Search results")} ({results.length})
+            {t("posts:search.results", "Search results")} ({results.length})
           </h4>
-          <MediaFeed initialMedia={results} onMediaSelect={() => {}} />
+          <div className="space-y-4">
+            {results.map((p) => (
+              <PostCard key={p.id} post={p} />
+            ))}
+          </div>
         </div>
       ) : activeTab === "trending" ? (
         <div>
           <h4 className="text-white/80 text-sm mb-2">
-            {t("media:trending.title", "Trending now")}
+            {t("posts:trending.title", "Trending now")}
           </h4>
-          <MediaFeed initialMedia={trending} onMediaSelect={() => {}} />
+          <div className="space-y-4">
+            {trending.map((p) => (
+              <PostCard key={p.id} post={p} />
+            ))}
+          </div>
         </div>
       ) : (
-        <MediaFeed filters={{ ...filters }} />
+        <PostFeed filters={{ ...filters }} />
       )}
     </div>
   );
 };
 
-export default MediaFeedSection;
+export default PostFeedSection;

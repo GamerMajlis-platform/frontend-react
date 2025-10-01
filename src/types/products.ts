@@ -2,17 +2,28 @@
 
 export type ProductCondition =
   | "NEW"
-  | "USED_LIKE_NEW"
-  | "USED_GOOD"
-  | "USED_FAIR"
-  | "USED_POOR";
+  | "LIKE_NEW"
+  | "EXCELLENT"
+  | "GOOD"
+  | "FAIR"
+  | "POOR"
+  | "REFURBISHED"
+  | "FOR_PARTS";
 
 export type ProductCategoryType =
-  | "ACCESSORIES"
-  | "HARDWARE"
+  | "GAMING_CONSOLES"
+  | "GAMING_ACCESSORIES"
+  | "PC_COMPONENTS"
+  | "GAMING_PERIPHERALS"
+  | "GAMING_CHAIRS"
+  | "HEADSETS"
+  | "KEYBOARDS"
+  | "MICE"
+  | "MONITORS"
   | "GAMES"
-  | "SOFTWARE"
-  | "MERCHANDISE";
+  | "COLLECTIBLES"
+  | "MERCHANDISE"
+  | "OTHER";
 
 export type ProductStatus =
   | "DRAFT"
@@ -102,6 +113,7 @@ export interface Product {
   isFeatured?: boolean;
   createdAt: string;
   listedAt?: string;
+  deletedAt?: string | null;
 }
 
 // Parsed JSON fields for easier frontend handling
@@ -203,6 +215,9 @@ export interface ProductFormData {
   returnPolicy?: string;
   warrantyPeriodDays?: number;
   warrantyDescription?: string;
+  // Image handling (not sent directly in product creation, uploaded separately)
+  image?: File;
+  images?: File[];
 }
 
 // Search and filter types

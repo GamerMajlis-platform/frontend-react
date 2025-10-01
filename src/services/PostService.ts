@@ -225,9 +225,6 @@ export class PostService extends BaseService {
   ): Promise<CommentResponse> {
     const formData = new FormData();
     formData.append("content", request.content);
-    if (request.parentId !== undefined && request.parentId !== null) {
-      formData.append("parentId", String(request.parentId));
-    }
 
     return await this.authenticatedRequest<CommentResponse>(
       `/posts/${postId}/comments`,

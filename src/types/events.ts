@@ -1,14 +1,28 @@
 // Event Types based on the API specifications
 
-export type EventType = "TOURNAMENT" | "COMMUNITY_GATHERING";
+export type EventType =
+  | "TOURNAMENT"
+  | "COMMUNITY_GATHERING"
+  | "WORKSHOP"
+  | "MEETUP"
+  | "COMPETITION"
+  | "STREAMING_SESSION"
+  | "GAMING_SESSION"
+  | "ANNOUNCEMENT"
+  | "OTHER";
+
 export type LocationType = "VIRTUAL" | "PHYSICAL" | "HYBRID";
+
 export type EventStatus =
   | "DRAFT"
   | "REGISTRATION_OPEN"
   | "REGISTRATION_CLOSED"
+  | "ACTIVE"
   | "LIVE"
+  | "PAUSED"
   | "COMPLETED"
   | "CANCELLED";
+
 export type AttendanceStatus =
   | "REGISTERED"
   | "CHECKED_IN"

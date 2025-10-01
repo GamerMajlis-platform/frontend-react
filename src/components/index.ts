@@ -13,12 +13,7 @@ export { default as PreferencesBootstrap } from "./PreferencesBootstrap";
 export { ProgressBar } from "./ProgressBar";
 
 // Profile components
-export {
-  ProfileSearch,
-  BackendProfileHeader,
-  AboutSection,
-  TabBar,
-} from "./profile";
+export { ProfileSearch, ProfileHeader, AboutSection, TabBar } from "./profile";
 
 // Chat components
 export {

@@ -66,6 +66,8 @@ export const MediaDetailsModal: React.FC<MediaDetailsModalProps> = ({
     return getMediaUrl(`/uploads/media/${mediaId}`) || "";
   }, [mediaId, details]);
 
+  // (no variants/quality selector by default)
+
   if (!isOpen || !media) return null;
 
   return (
@@ -94,15 +96,17 @@ export const MediaDetailsModal: React.FC<MediaDetailsModalProps> = ({
           <div className="p-8 text-center text-red-400">{error}</div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-            <div className="bg-black flex items-center justify-center aspect-video lg:aspect-auto lg:min-h-[60vh]">
+            <div className="bg-black flex flex-col items-stretch justify-center aspect-video lg:aspect-auto lg:min-h-[60vh]">
               {media.mediaType === "VIDEO" ? (
-                <video
-                  className="w-full h-full"
-                  controls
-                  poster={getMediaUrl(details?.thumbnailPath) || undefined}
-                >
-                  <source src={fileUrl} />
-                </video>
+                <>
+                  <video
+                    className="w-full h-full"
+                    controls
+                    poster={getMediaUrl(details?.thumbnailPath) || undefined}
+                  >
+                    <source src={fileUrl} />
+                  </video>
+                </>
               ) : (
                 <img
                   src={fileUrl}
@@ -113,7 +117,7 @@ export const MediaDetailsModal: React.FC<MediaDetailsModalProps> = ({
             </div>
             <div className="p-5 text-white space-y-4 overflow-y-auto lg:max-h-[60vh]">
               {details?.description && (
-                <p className="text-white/80 whitespace-pre-wrap">
+                <p className="text-white/80 whitespace-pre-wrap break-words max-w-full">
                   {details.description}
                 </p>
               )}

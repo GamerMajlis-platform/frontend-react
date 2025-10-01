@@ -79,11 +79,30 @@ export const PostCard: React.FC<PostCardProps> = ({
   };
 
   const formatContent = (content: string) => {
-    // Simple hashtag formatting
-    return content.replace(
+    // Escape HTML to avoid XSS and preserve newlines, then format hashtags
+    const escapeHtml = (str: string) =>
+      str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+    const escaped = escapeHtml(content);
+    const withBreaks = escaped.replace(/\r\n|\r|\n/g, "<br />");
+    return withBreaks.replace(
       /#([a-zA-Z0-9_]+)/g,
       '<span class="text-blue-500 hover:text-blue-600 cursor-pointer">#$1</span>'
     );
+  };
+
+  const [expanded, setExpanded] = useState(false);
+  const PREVIEW_LENGTH = 500; // chars for preview (match media behavior)
+  const isLongContent = (localPost.content || "").length > PREVIEW_LENGTH;
+  const getPreview = (content: string) => {
+    if (!content) return "";
+    if (content.length <= PREVIEW_LENGTH) return content;
+    return content.slice(0, PREVIEW_LENGTH) + "...";
   };
 
   const isOwnPost = currentUserId === post.author.id;
@@ -210,12 +229,24 @@ export const PostCard: React.FC<PostCardProps> = ({
         {/* Post Content */}
         <div className="mb-4">
           {!showEdit ? (
-            <div
-              className="text-gray-200 leading-relaxed"
-              dangerouslySetInnerHTML={{
-                __html: formatContent(localPost.content),
-              }}
-            />
+            <div className="text-gray-200 leading-relaxed">
+              <div
+                className="break-words max-w-full whitespace-pre-wrap"
+                dangerouslySetInnerHTML={{
+                  __html: formatContent(
+                    expanded ? localPost.content : getPreview(localPost.content)
+                  ),
+                }}
+              />
+              {isLongContent && (
+                <button
+                  onClick={() => setExpanded((s) => !s)}
+                  className="text-xs text-[#6fffe9] mt-2"
+                >
+                  {expanded ? t("common.hide") : t("common.readMore")}
+                </button>
+              )}
+            </div>
           ) : (
             <div className="space-y-2">
               <textarea
@@ -270,7 +301,7 @@ export const PostCard: React.FC<PostCardProps> = ({
           {post.gameCategory && (
             <div className="mt-3">
               <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[rgba(111,255,233,0.08)] text-[#6fffe9]">
-                {t(`gameCategories.${post.gameCategory.toLowerCase()}`)}
+                {t(`events:gameCategories.${post.gameCategory.toUpperCase()}`)}
               </span>
             </div>
           )}

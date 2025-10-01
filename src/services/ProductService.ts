@@ -25,6 +25,9 @@ export class ProductService extends BaseService {
    * Parse JSON string fields in product data for easier frontend handling
    */
   private static parseProductJsonFields(product: Product): ParsedProduct {
+    if (!product) {
+      throw new Error("Product data is missing from response");
+    }
     try {
       return {
         ...product,
@@ -102,19 +105,43 @@ export class ProductService extends BaseService {
   static async createProduct(data: ProductFormData): Promise<ParsedProduct> {
     const prepared = this.prepareProductFormData(data);
     const formData = this.createFormData(prepared);
-    const response = await this.authenticatedRequest<ProductResponse>(
-      API_ENDPOINTS.products.create,
-      {
-        method: "POST",
-        body: formData,
+
+    try {
+      const response = await this.authenticatedRequest<ProductResponse>(
+        API_ENDPOINTS.products.create,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      // Log response for debugging
+      console.log("Create product response:", response);
+
+      if (!response) {
+        throw new Error("No response received from server");
       }
-    );
-    return this.parseProductJsonFields(response.product);
+
+      if (!response.product) {
+        console.error("Response structure:", JSON.stringify(response, null, 2));
+        throw new Error(
+          "Invalid response from server: product data is missing"
+        );
+      }
+
+      return this.parseProductJsonFields(response.product);
+    } catch (error) {
+      console.error("Create product error:", error);
+      throw error;
+    }
   }
 
   /**
    * Upload product images
    * API: POST /api/products/{productId}/images
+   * Images are uploaded as multipart/form-data
+   * The backend will store them in format: /uploads/products/{imageUrl}
+   * The mainImageUrl in product object will be: {{baseUrl}}uploads/products/{{imageUrl}}
    */
   static async uploadProductImages(
     productId: number,
@@ -123,16 +150,18 @@ export class ProductService extends BaseService {
   ): Promise<ProductImageUploadResponse> {
     const formData = new FormData();
 
+    // Append each image file with the key "images" (array)
     images.forEach((image) => {
       formData.append("images", image);
     });
 
+    // Optional: set first uploaded image as main image
     if (setMainImage) {
       formData.append("setMainImage", "true");
     }
 
     return await this.authenticatedRequest<ProductImageUploadResponse>(
-      `${API_ENDPOINTS.products.uploadImages}/${productId}/images`,
+      `${API_ENDPOINTS.products.byId}/${productId}/images`,
       {
         method: "POST",
         body: formData,
@@ -222,12 +251,23 @@ export class ProductService extends BaseService {
   static async deleteProduct(
     productId: number
   ): Promise<{ success: boolean; message: string }> {
-    return await this.authenticatedRequest<{
-      success: boolean;
-      message: string;
-    }>(`${API_ENDPOINTS.products.delete}/${productId}`, {
-      method: "DELETE",
-    });
+    console.log("ProductService.deleteProduct called with ID:", productId);
+    const endpoint = `${API_ENDPOINTS.products.delete}/${productId}`;
+    console.log("Delete endpoint:", endpoint);
+
+    try {
+      const response = await this.authenticatedRequest<{
+        success: boolean;
+        message: string;
+      }>(endpoint, {
+        method: "DELETE",
+      });
+      console.log("ProductService.deleteProduct response:", response);
+      return response;
+    } catch (error) {
+      console.error("ProductService.deleteProduct error:", error);
+      throw error;
+    }
   }
 
   /**
@@ -240,18 +280,16 @@ export class ProductService extends BaseService {
     comment?: string,
     verified = false
   ): Promise<{ success: boolean; message: string; review: ProductReview }> {
-    const prepared: Record<string, string> = {
-      rating: rating.toString(),
-      verified: verified.toString(),
-    };
+    const formData = new FormData();
+    formData.append("rating", rating.toString());
+    formData.append("verified", verified.toString());
 
-    if (comment) {
-      prepared.comment = comment;
+    if (comment && comment.trim()) {
+      formData.append("comment", comment.trim());
     }
 
-    const formData = this.createFormData(prepared);
     return await this.authenticatedRequest(
-      `${API_ENDPOINTS.products.addReview}/${productId}/reviews`,
+      `${API_ENDPOINTS.products.byId}/${productId}/reviews`,
       {
         method: "POST",
         body: formData,
@@ -269,7 +307,7 @@ export class ProductService extends BaseService {
     size = 10
   ): Promise<ProductReviewsResponse> {
     return await this.requestWithRetry<ProductReviewsResponse>(
-      `${API_ENDPOINTS.products.getReviews}/${productId}/reviews?page=${page}&size=${size}`
+      `${API_ENDPOINTS.products.byId}/${productId}/reviews?page=${page}&size=${size}`
     );
   }
 
@@ -281,7 +319,7 @@ export class ProductService extends BaseService {
     productId: number
   ): Promise<WishlistToggleResponse> {
     return await this.authenticatedRequest<WishlistToggleResponse>(
-      `${API_ENDPOINTS.products.toggleWishlist}/${productId}/wishlist`,
+      `${API_ENDPOINTS.products.byId}/${productId}/wishlist`,
       {
         method: "POST",
       }
@@ -294,7 +332,7 @@ export class ProductService extends BaseService {
    */
   static async recordView(productId: number): Promise<ViewRecordResponse> {
     return await this.requestWithRetry<ViewRecordResponse>(
-      `${API_ENDPOINTS.products.recordView}/${productId}/view`,
+      `${API_ENDPOINTS.products.byId}/${productId}/view`,
       {
         method: "POST",
       }

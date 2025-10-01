@@ -30,7 +30,29 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({
       setLoading(true);
       setError(null);
       const response = await chatService.getUserRooms({ page: 0, size: 50 });
-      setRooms(response.chatRooms || []);
+      // Deduplicate rooms by id and prefer richer payloads (members, lastMessage, name)
+      const respRooms = response.chatRooms || [];
+      const dedupe = new Map<number, ChatRoom>();
+      const score = (r: ChatRoom) => {
+        let s = 0;
+        if (r.members && r.members.length > 0) s += 4;
+        if (r.lastMessage) s += 2;
+        if (r.name) s += 1;
+        if (r.lastActivity) s += 1;
+        return s;
+      };
+
+      for (const r of respRooms) {
+        const existing = dedupe.get(r.id);
+        if (!existing) dedupe.set(r.id, r);
+        else {
+          const existingScore = score(existing);
+          const newScore = score(r);
+          if (newScore > existingScore) dedupe.set(r.id, r);
+        }
+      }
+
+      setRooms(Array.from(dedupe.values()));
     } catch (err) {
       setError(
         err instanceof Error ? err.message : t("chat:errors.loadRoomsFailed")
@@ -126,7 +148,7 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({
 
   const filteredRooms = rooms.filter((r) =>
     view === "DIRECT"
-      ? r.type === "DIRECT_MESSAGE"
+      ? r.type === "DIRECT_MESSAGE" && Boolean(r.lastMessage)
       : r.type !== "DIRECT_MESSAGE"
   );
 
@@ -182,8 +204,16 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({
             (m) => m.user?.id !== user?.id
           );
           if (other && other.user) title = other.user.displayName;
-          else if (!title)
-            title = t("chat:directMessage", { defaultValue: "Direct Message" });
+          else if (!title) {
+            // Fallback: use lastMessage sender name if available
+            const lastMsg = room.lastMessage;
+            if (lastMsg && lastMsg.sender && lastMsg.sender.displayName)
+              title = lastMsg.sender.displayName;
+            else
+              title = t("chat:directMessage", {
+                defaultValue: "Direct Message",
+              });
+          }
         }
         const lastMsg = room.lastMessage;
         const timestamp = lastMsg?.createdAt ?? room.lastActivity;
@@ -233,15 +263,18 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({
                 </div>
 
                 <div className="flex items-center space-x-2 ml-3">
-                  {room.isPrivate && (
+                  {/* Hide privacy and members for direct messages */}
+                  {room.type !== "DIRECT_MESSAGE" && room.isPrivate && (
                     <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
                       🔒 {t("chat:private", { defaultValue: "Private" })}
                     </span>
                   )}
-                  <span className="text-xs bg-slate-600 text-gray-200 px-2 py-1 rounded">
-                    {membersCount}{" "}
-                    {t("chat:members", { defaultValue: "members" })}
-                  </span>
+                  {room.type !== "DIRECT_MESSAGE" && (
+                    <span className="text-xs bg-slate-600 text-gray-200 px-2 py-1 rounded">
+                      {membersCount}{" "}
+                      {t("chat:members", { defaultValue: "members" })}
+                    </span>
+                  )}
                 </div>
               </div>
 

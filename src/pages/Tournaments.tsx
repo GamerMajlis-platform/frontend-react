@@ -40,6 +40,7 @@ export default function Tournaments() {
 
   // UI state
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showMobileSortModal, setShowMobileSortModal] = useState(false);
 
   // Search / Sort state
   const [searchTerm, setSearchTerm] = useState("");
@@ -151,44 +152,63 @@ export default function Tournaments() {
         />
 
         {/* Search and Sort controls */}
-        <section className="mb-12 search-section md:mb-8 relative z-10">
+        <section className="mb-8 search-section md:mb-6 relative z-10">
           <div
-            className="mb-6 flex w-full max-w-[800px] mx-auto items-center gap-3 search-controls"
+            className={`mb-6 flex w-full max-w-[900px] mx-auto items-center gap-4 search-controls`}
             dir={i18n.dir()}
           >
-            <input
-              type="text"
-              ref={searchRef}
-              placeholder={
-                isMobile
-                  ? t("common.search")
-                  : t("tournaments:searchPlaceholder")
-              }
-              className={`
-                h-12 w-full flex-1 rounded-xl border border-slate-600
-                bg-[#1C2541] px-4 py-3 text-white placeholder-slate-400
-                transition-all duration-300 focus:border-cyan-300
-                focus:shadow-[0_0_0_3px_rgba(111,255,233,0.1)] focus:outline-none search-input
-              `}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onFocus={handleSearchFocus}
-              onBlur={handleSearchBlur}
-            />
-            {/* Mobile search icon button */}
-            <button
-              type="button"
-              aria-label={t("common.search")}
-              className={`sm:hidden inline-flex items-center justify-center h-10 w-10 rounded-lg border border-slate-600 text-slate-200 hover:text-white hover:border-cyan-300 transition-all ${
-                i18n.dir() === "rtl" ? "mr-auto" : "ml-auto"
+            {/* + button: will be ordered explicitly per dir */}
+            <div
+              className={`flex items-center ${
+                i18n.dir() === "rtl" ? "order-3" : "order-1"
               }`}
-              onClick={() => searchRef.current?.focus()}
             >
-              <IconSearch />
-            </button>
+              <button
+                onClick={() => setShowCreateForm(true)}
+                className="self-center -mt-1 text-white font-extrabold text-4xl hover:opacity-80 transition-opacity px-3 w-12 h-12 flex items-center justify-center"
+                type="button"
+                aria-label={t("tournaments:create.button")}
+                title={t("tournaments:create.button")}
+              >
+                +
+              </button>
+            </div>
 
-            {/* Sort dropdown hidden on mobile */}
-            <div className="relative w-[140px] sort-container hidden sm:block">
+            {/* Search Input: center */}
+            <div className={`flex-1 ${"order-2"}`}>
+              <div className="relative">
+                <input
+                  type="text"
+                  ref={searchRef}
+                  placeholder={
+                    isMobile
+                      ? t("common.search")
+                      : t("tournaments:searchPlaceholder")
+                  }
+                  className={`h-12 w-full rounded-xl border border-slate-600 bg-[#1C2541] px-4 py-3 text-white placeholder-slate-400 transition-all duration-300 focus:border-cyan-300 focus:shadow-[0_0_0_3px_rgba(111,255,233,0.1)] focus:outline-none search-input ${
+                    i18n.dir() === "rtl" ? "pl-12" : "pr-12"
+                  }`}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onFocus={handleSearchFocus}
+                  onBlur={handleSearchBlur}
+                />
+                <div
+                  className={`absolute top-1/2 transform -translate-y-1/2 text-slate-400 ${
+                    i18n.dir() === "rtl" ? "left-3" : "right-3"
+                  }`}
+                >
+                  <IconSearch />
+                </div>
+              </div>
+            </div>
+
+            {/* Sort dropdown: right in LTR, left in RTL */}
+            <div
+              className={`relative w-[180px] sort-container hidden sm:block ${
+                i18n.dir() === "rtl" ? "order-1" : "order-3"
+              }`}
+            >
               <SortBy
                 options={tournamentSortOptions}
                 value={sortBy}
@@ -196,21 +216,72 @@ export default function Tournaments() {
                 placeholderKey={"tournaments:sort.placeholder"}
               />
             </div>
-          </div>
 
-          {/* Create Tournament Toggle - behaves like Events create toggle */}
-          <div className="flex justify-center">
-            {!showCreateForm && (
-              <button
-                className="rounded-xl bg-cyan-500 px-6 py-3 text-white font-medium hover:bg-cyan-600 transition-colors"
-                onClick={() => setShowCreateForm(true)}
-                type="button"
+            {/* Mobile sort button */}
+            <button
+              onClick={() => setShowMobileSortModal(true)}
+              className={`sm:hidden flex items-center justify-center w-12 h-12 rounded-xl border bg-[#1C2541] border-slate-600 text-white transition-all ${
+                i18n.dir() === "rtl" ? "order-1" : "order-3"
+              }`}
+              aria-label={t("tournaments:sort.placeholder")}
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                {t("tournaments:create.button")}
-              </button>
-            )}
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"
+                />
+              </svg>
+            </button>
           </div>
         </section>
+
+        {/* Mobile Sort Modal */}
+        {showMobileSortModal && (
+          <>
+            <div
+              className="fixed inset-0 bg-black/50 z-40"
+              onClick={() => setShowMobileSortModal(false)}
+            />
+            <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#1C2541] border-t border-slate-600 rounded-t-3xl p-6 shadow-2xl animate-slide-up">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-white">
+                  {t("tournaments:sort.placeholder")}
+                </h3>
+                <button
+                  onClick={() => setShowMobileSortModal(false)}
+                  className="text-slate-400 hover:text-white"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="space-y-2">
+                {tournamentSortOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => {
+                      setSortBy(option.value as TournamentSortOption);
+                      setShowMobileSortModal(false);
+                    }}
+                    className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                      sortBy === option.value
+                        ? "bg-cyan-500 text-black font-medium"
+                        : "bg-slate-700 text-white hover:bg-slate-600"
+                    }`}
+                  >
+                    {t(option.labelKey)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
 
         {/* Create Tournament Form (inline, like Events) */}
         {showCreateForm && (

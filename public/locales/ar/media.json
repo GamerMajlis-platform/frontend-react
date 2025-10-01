@@ -1,23 +1,26 @@
 {
+  "copyLink": "نسخ الرابط",
+  "delete": "حذف الوسائط",
+  "details": {
+    "category": "فئة اللعبة",
+    "size": "حجم الملف",
+    "type": "النوع",
+    "uploadDate": "تاريخ الرفع",
+    "views": "عدد المشاهدات",
+    "visibility": "الخصوصية"
+  },
+  "edit": "عدل الوسائط",
   "feed": {
     "confirmDelete": "هل أنت متأكد من حذف هذه الوسائط؟",
+    "confirmTitle": "تأكيد حذف الوسائط",
+    "forYou": "مناسب لك",
     "loadError": "فشل في تحميل الوسائط",
     "loadMore": "تحميل المزيد",
     "noMedia": "لا توجد وسائط",
     "noMediaDescription": "ارفع بعض محتوى الألعاب للبدء!",
-    "showing": "عرض {{count}} من {{total}} عنصر"
+    "showing": "عرض {{count}} من {{total}} عنصر",
+    "trending": "الرائج الآن"
   },
-  "details": {
-    "type": "النوع",
-    "size": "حجم الملف",
-    "category": "فئة اللعبة",
-    "views": "عدد المشاهدات",
-    "visibility": "الخصوصية",
-    "uploadDate": "تاريخ الرفع"
-  },
-  "edit": "عدل الوسائط",
-  "copyLink": "نسخ الرابط",
-  "delete": "حذف الوسائط",
   "gallery": {
     "loadError": "فشل في تحميل الوسائط",
     "loadMore": "تحميل المزيد",
@@ -29,18 +32,27 @@
     "moreTags": "المزيد من العلامات",
     "videoNotSupported": "متصفحك لا يدعم تشغيل الفيديو."
   },
+  "search": {
+    "placeholder": "ابحث في الوسائط، الوسوم، الألعاب...",
+    "results": "نتائج البحث"
+  },
   "upload": {
+    "addTag": "اضف علامة",
     "clickToUpload": "انقر للرفع",
+    "compression": "ستُضغط الملفات (تقليل بنسبة 30% على الأقل)",
     "description": "الوصف",
     "descriptionPlaceholder": "اوصف وسائطك...",
     "fileSize": "حجم الملف",
-    "formats":"الصيغ: MP4، AVI، MOV، JPG، PNG، GIF",
+    "formats": "الصيغ: MP4، AVI، MOV، JPG، PNG، GIF",
     "gameCategory": "فئة اللعبة",
     "orDragAndDrop": "أو اسحب وأفلت",
     "private": "خاص",
     "public": "عام",
+    "requirements": "المتطلبات",
+    "security": "جميع الملفات تُفحص للأمان",
     "selectCategory": "اختر فئة",
     "selectedFile": "الملف المحدد",
+    "sizes": "الحجم الأقصى: 100 ميجابايت (فيديوهات)، 10 ميجابايت (صور)",
     "supportedFormats": "MP4، AVI، MOV، JPG، PNG، GIF حتى 100 ميجابايت",
     "tags": "العلامات",
     "tagsHelp": "افصل العلامات بفواصل",
@@ -50,11 +62,6 @@
     "upload": "رفع الوسائط",
     "uploadDetails": "تفاصيل الرفع",
     "uploading": "جاري الرفع...",
-    "visibility": "الخصوصية",
-    "sizes": "الحجم الأقصى: 100 ميجابايت (فيديوهات)، 10 ميجابايت (صور)",
-    "compression": "ستُضغط الملفات (تقليل بنسبة 30% على الأقل)",
-    "security": "جميع الملفات تُفحص للأمان",
-    "requirements": "المتطلبات",
-    "addTag": "اضف علامة"
+    "visibility": "الخصوصية"
   }
 }

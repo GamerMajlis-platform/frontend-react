@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import type { ParsedProduct } from "../../types/products";
 import { Card } from "../shared";
+import { useAppContext } from "../../context/useAppContext";
 
 interface ProductGridProps {
   products: ParsedProduct[];
@@ -10,6 +11,9 @@ interface ProductGridProps {
   compact?: boolean;
   columns?: 2 | 3 | 4 | 5;
   onProductOpen?: (id: number) => void;
+  onShareProduct?: (product: ParsedProduct) => void;
+  onEditProduct?: (product: ParsedProduct) => void;
+  onDeleteProduct?: (product: ParsedProduct) => void;
 }
 
 export default function ProductGrid({
@@ -20,8 +24,12 @@ export default function ProductGrid({
   compact = false,
   columns = 4,
   onProductOpen,
+  onShareProduct,
+  onEditProduct,
+  onDeleteProduct,
 }: ProductGridProps) {
   const { t } = useTranslation();
+  const { user } = useAppContext();
 
   // Use the same breakpoints and spacing as the Wishlist page to ensure
   // consistent card sizing and placement across marketplace and wishlist.
@@ -121,23 +129,35 @@ export default function ProductGrid({
 
   return (
     <div className={`grid ${gridClasses[columns]} ${gapClasses}`}>
-      {(products || []).map((product) => (
-        <div key={product.id} className="flex flex-col">
-          <Card
-            preset="product"
-            id={product.id}
-            category={product.category || "Unknown"}
-            productName={product.name}
-            seller={product.seller?.displayName || "Unknown Seller"}
-            price={`$${product.price}`}
-            rate={product.averageRating?.toString() || "0"}
-            reviews={product.totalReviews?.toString() || "0"}
-            imageUrl={product.mainImageUrl}
-            className="w-full max-w-full min-w-0"
-            onClick={() => onProductOpen?.(product.id)}
-          />
-        </div>
-      ))}
+      {(products || []).map((product) => {
+        const isOwnProduct = user?.id === product.seller?.id;
+
+        return (
+          <div key={product.id} className="flex flex-col">
+            <Card
+              preset="product"
+              id={product.id}
+              category={product.category || "Unknown"}
+              productName={product.name}
+              seller={product.seller?.displayName || "Unknown Seller"}
+              price={`$${product.price}`}
+              rate={product.averageRating?.toString() || "0"}
+              reviews={product.totalReviews?.toString() || "0"}
+              imageUrl={product.mainImageUrl}
+              className="w-full max-w-full min-w-0"
+              isOwnProduct={isOwnProduct}
+              onShare={
+                onShareProduct ? () => onShareProduct(product) : undefined
+              }
+              onEdit={onEditProduct ? () => onEditProduct(product) : undefined}
+              onDelete={
+                onDeleteProduct ? () => onDeleteProduct(product) : undefined
+              }
+              onClick={() => onProductOpen?.(product.id)}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }

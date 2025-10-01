@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { BackgroundDecor } from "../components";
-import { PostFeed } from "../components/posts";
+import PostFeedSection from "../components/posts/PostFeedSection";
 import { MediaFeedSection } from "../components/media";
 import { ContentCreation } from "../components/shared/ContentCreation";
 import { useAppContext } from "../context/useAppContext";
@@ -11,7 +11,7 @@ import useIsMobile from "../hooks/useIsMobile"; // ✅ new import
 
 export default function Home() {
   const { t } = useTranslation();
-  const { isAuthenticated, user } = useAppContext();
+  const { isAuthenticated } = useAppContext();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"posts" | "media" | "create">(
     "posts"
@@ -108,7 +108,7 @@ export default function Home() {
                 </svg>
                 <span>{t("home.content.postsTitle")}</span>
               </h2>
-              <PostFeed currentUserId={user?.id} />
+              <PostFeedSection />
             </div>
           )}
 
