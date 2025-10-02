@@ -74,6 +74,7 @@ export interface ProfileResponse extends BackendResponse {
 export interface UpdateProfileData {
   displayName?: string;
   bio?: string;
+  email?: string; // Email update support
   gamingPreferences?: string; // JSON string
   socialLinks?: string; // JSON string
   privacySettings?: string; // JSON string

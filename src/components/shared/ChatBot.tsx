@@ -1,18 +1,27 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useClickOutside } from "../../hooks/useClickOutside";
+import { useAppContext } from "../../context/useAppContext";
+import AIService from "../../services/AIService";
 
 interface ChatBotProps {
   className?: string;
 }
 
+interface Message {
+  id: string;
+  text: string;
+  isBot: boolean;
+  timestamp: Date;
+  isError?: boolean;
+}
+
 export default function ChatBot({ className = "" }: ChatBotProps) {
   const { t, i18n } = useTranslation();
+  const { isAuthenticated } = useAppContext();
   const [message, setMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [messages, setMessages] = useState<
-    Array<{ id: string; text: string; isBot: boolean; timestamp: Date }>
-  >([
+  const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
       text: t("chatbot.welcome", {
@@ -26,11 +35,9 @@ export default function ChatBot({ className = "" }: ChatBotProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Modern infrastructure - useClickOutside hook replaces manual state management
   const [isOpen, setIsOpen] = useState(false);
-  const chatRef = useClickOutside<HTMLDivElement>(() => setIsOpen(false));
+  const containerRef = useClickOutside<HTMLDivElement>(() => setIsOpen(false));
 
-  // Simplified RTL detection using i18n.language
   const isRTL = i18n.language.startsWith("ar");
 
   const scrollToBottom = () => {
@@ -45,43 +52,55 @@ export default function ChatBot({ className = "" }: ChatBotProps) {
     setIsOpen(!isOpen);
   };
 
-  const handleSendMessage = () => {
-    if (message.trim()) {
-      const userMessage = {
-        id: Date.now().toString(),
-        text: message,
-        isBot: false,
+  const handleSendMessage = async () => {
+    if (!message.trim() || isTyping) return;
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      text: message,
+      isBot: false,
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    const userMessageText = message;
+    setMessage("");
+    setIsTyping(true);
+
+    // Auto-resize textarea
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
+
+    try {
+      // Call AI service
+      const answer = await AIService.chat(userMessageText);
+
+      const botResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        text: answer,
+        isBot: true,
         timestamp: new Date(),
       };
 
-      setMessages((prev) => [...prev, userMessage]);
-      setMessage("");
-      setIsTyping(true);
+      setMessages((prev) => [...prev, botResponse]);
+    } catch (error) {
+      console.error("AI chat error:", error);
 
-      // Auto-resize textarea
-      if (textareaRef.current) {
-        textareaRef.current.style.height = "auto";
-      }
+      const errorResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        text: t("chatbot.error", {
+          defaultValue:
+            "Sorry, I'm having trouble connecting right now. Please try again later.",
+        }),
+        isBot: true,
+        timestamp: new Date(),
+        isError: true,
+      };
 
-      // Simulate bot typing and response
-      setTimeout(() => {
-        const responses = [
-          "Great question! Let me help you with that. 🎯",
-          "I'm here to assist with all your gaming needs! 🚀",
-          "Thanks for reaching out! How else can I help? 💫",
-          "Perfect! I've got some suggestions for you. ⚡",
-          "Awesome! Let's make your gaming experience better! 🌟",
-        ];
-
-        const botResponse = {
-          id: (Date.now() + 1).toString(),
-          text: responses[Math.floor(Math.random() * responses.length)],
-          isBot: true,
-          timestamp: new Date(),
-        };
-        setMessages((prev) => [...prev, botResponse]);
-        setIsTyping(false);
-      }, 1500);
+      setMessages((prev) => [...prev, errorResponse]);
+    } finally {
+      setIsTyping(false);
     }
   };
 
@@ -106,21 +125,65 @@ export default function ChatBot({ className = "" }: ChatBotProps) {
     autoResize();
   }, [message]);
 
+  // Clear chat history on logout
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setMessages([
+        {
+          id: "welcome",
+          text: t("chatbot.welcome", {
+            defaultValue:
+              "Hi! I'm the GamerMajlis Bot. How can I help you today? 🎮",
+          }),
+          isBot: true,
+          timestamp: new Date(),
+        },
+      ]);
+      setIsOpen(false);
+    }
+  }, [isAuthenticated, t]);
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
   return (
-    <div className={`fixed bottom-4 right-4 z-50 ${className}`}>
+    <div
+      ref={containerRef}
+      className={`fixed bottom-4 right-4 z-50 ${className}`}
+    >
       {/* Enhanced Chat Window */}
       {isOpen && (
-        <div
-          className="absolute bottom-16 right-0 w-80 sm:w-96 md:w-[28rem] max-h-[32rem] bg-gradient-to-b from-slate-800/98 via-slate-700/98 to-slate-800/98 backdrop-blur-2xl rounded-3xl border border-slate-600/40 shadow-2xl overflow-hidden"
-          dir={isRTL ? "rtl" : "ltr"}
-          ref={chatRef}
-        >
+        <div className="absolute bottom-16 right-0 w-80 sm:w-96 md:w-[28rem] max-h-[32rem] bg-gradient-to-b from-slate-800/98 via-slate-700/98 to-slate-800/98 backdrop-blur-2xl rounded-3xl border border-slate-600/40 shadow-2xl overflow-hidden animate-fade-in">
           {/* Decorative header elements */}
           <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-transparent to-cyan-300/8 pointer-events-none" />
           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-primary/15 to-transparent rounded-full blur-2xl pointer-events-none" />
 
-          {/* Simplified Header - Just close button */}
-          <div className="relative p-3 flex justify-end border-b border-slate-600/30">
+          {/* Header with branding */}
+          <div className="relative p-4 flex items-center justify-between border-b border-slate-600/30 bg-slate-800/60">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-cyan-300/20 flex items-center justify-center border border-primary/30">
+                <img
+                  src="/brand/controller.png"
+                  alt="Bot"
+                  className="h-6 w-auto"
+                  draggable={false}
+                />
+              </div>
+              <div>
+                <h3 className="text-white font-semibold text-sm">
+                  {t("chatbot.title", {
+                    defaultValue: "GamerMajlis Assistant",
+                  })}
+                </h3>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                  <span className="text-xs text-slate-400">
+                    {t("chatbot.status", { defaultValue: "Online" })}
+                  </span>
+                </div>
+              </div>
+            </div>
             <button
               onClick={handleToggle}
               className="w-8 h-8 rounded-full bg-slate-600/40 hover:bg-slate-500/50 flex items-center justify-center transition-all duration-300 group border border-slate-500/30"
@@ -143,46 +206,48 @@ export default function ChatBot({ className = "" }: ChatBotProps) {
           </div>
 
           {/* Enhanced Messages Area */}
-          <div className="h-80 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-slate-500/50 scrollbar-track-transparent">
-            {messages.map((msg, index) => (
+          <div className="h-80 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+            {messages.map((msg) => (
               <div
                 key={msg.id}
-                className={`flex items-start gap-3 ${
-                  msg.isBot
-                    ? isRTL
-                      ? "flex-row-reverse"
-                      : "flex-row"
-                    : isRTL
-                    ? "flex-row"
-                    : "flex-row-reverse"
-                } animate-fade-in opacity-0 animate-delay-${index * 100}`}
+                className={`flex items-start gap-3 animate-slide-up ${
+                  msg.isBot ? "flex-row" : "flex-row-reverse"
+                }`}
               >
                 {msg.isBot && (
                   <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
-                    <img
-                      src="/brand/controller.png"
-                      alt="GamerMajlis Bot"
-                      className="h-6 w-auto drop-shadow-sm"
-                      draggable={false}
-                    />
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-cyan-300/20 flex items-center justify-center border border-primary/30 shadow-lg">
+                      <img
+                        src="/brand/controller.png"
+                        alt="Bot"
+                        className="h-5 w-auto drop-shadow-sm"
+                        draggable={false}
+                      />
+                    </div>
                   </div>
                 )}
 
                 <div
                   className={`flex flex-col gap-1 max-w-[75%] ${
-                    !msg.isBot && (isRTL ? "items-start" : "items-end")
+                    msg.isBot ? "items-start" : "items-end"
                   }`}
                 >
                   <div
-                    className={`px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-lg ${
+                    className={`px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-lg break-words ${
                       msg.isBot
-                        ? "bg-slate-700/60 text-slate-100 border border-slate-600/30 backdrop-blur-sm"
+                        ? msg.isError
+                          ? "bg-red-900/40 text-red-200 border border-red-700/40 backdrop-blur-sm"
+                          : "bg-slate-700/60 text-slate-100 border border-slate-600/30 backdrop-blur-sm"
                         : "bg-gradient-to-r from-primary to-cyan-300 text-slate-900 font-medium shadow-glow"
                     } ${isRTL ? "text-right" : "text-left"}`}
                   >
-                    {msg.text}
+                    <div className="whitespace-pre-wrap">{msg.text}</div>
                   </div>
-                  <span className="text-xs text-slate-500 px-2">
+                  <span
+                    className={`text-xs text-slate-500 px-2 ${
+                      isRTL ? "text-right" : "text-left"
+                    }`}
+                  >
                     {msg.timestamp.toLocaleTimeString(i18n.language, {
                       hour: "2-digit",
                       minute: "2-digit",
@@ -192,7 +257,7 @@ export default function ChatBot({ className = "" }: ChatBotProps) {
                 </div>
 
                 {!msg.isBot && (
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-slate-600 to-slate-500 flex items-center justify-center shadow-lg flex-shrink-0 border-2 border-slate-500/50">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-slate-600 to-slate-500 flex items-center justify-center shadow-lg flex-shrink-0 border-2 border-slate-500/50">
                     <svg
                       className="w-4 h-4 text-white"
                       fill="currentColor"
@@ -205,26 +270,28 @@ export default function ChatBot({ className = "" }: ChatBotProps) {
               </div>
             ))}
 
-            {/* Typing Indicator */}
+            {/* Enhanced Typing Indicator */}
             {isTyping && (
               <div
-                className={`flex items-center gap-3 ${
+                className={`flex items-start gap-3 animate-slide-up ${
                   isRTL ? "flex-row-reverse" : "flex-row"
                 }`}
               >
-                <div className="w-10 h-10 flex items-center justify-center">
-                  <img
-                    src="/brand/controller.png"
-                    alt="GamerMajlis Bot"
-                    className="h-6 w-auto drop-shadow-sm"
-                    draggable={false}
-                  />
+                <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-cyan-300/20 flex items-center justify-center border border-primary/30 shadow-lg animate-pulse">
+                    <img
+                      src="/brand/controller.png"
+                      alt="Bot"
+                      className="h-5 w-auto drop-shadow-sm"
+                      draggable={false}
+                    />
+                  </div>
                 </div>
-                <div className="bg-slate-700/60 text-slate-100 border border-slate-600/30 backdrop-blur-sm px-4 py-3 rounded-2xl">
+                <div className="bg-slate-700/60 text-slate-100 border border-slate-600/30 backdrop-blur-sm px-4 py-3 rounded-2xl shadow-lg">
                   <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce [animation-delay:0.1s]"></div>
-                    <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce [animation-delay:0.2s]"></div>
+                    <div className="w-2 h-2 bg-primary/70 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-primary/70 rounded-full animate-bounce [animation-delay:0.15s]"></div>
+                    <div className="w-2 h-2 bg-primary/70 rounded-full animate-bounce [animation-delay:0.3s]"></div>
                   </div>
                 </div>
               </div>
@@ -233,11 +300,52 @@ export default function ChatBot({ className = "" }: ChatBotProps) {
           </div>
 
           {/* Enhanced Input Area */}
-          <div className="p-4 border-t border-slate-600/30 bg-slate-800/50 backdrop-blur-sm">
+          <div
+            className="p-4 border-t border-slate-600/30 bg-slate-800/50 backdrop-blur-sm"
+            dir="ltr"
+          >
             <div className="flex gap-3">
-              <div
-                className={`flex-1 relative ${isRTL ? "order-2" : "order-1"}`}
-              >
+              {isRTL && (
+                <button
+                  onClick={handleSendMessage}
+                  disabled={!message.trim() || isTyping}
+                  className="w-12 h-12 bg-gradient-to-r from-primary to-cyan-300 text-slate-900 rounded-xl font-medium hover:from-primary/90 hover:to-cyan-300/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-glow transform hover:scale-105 disabled:hover:scale-100 group"
+                  aria-label={t("chatbot.send", {
+                    defaultValue: "Send message",
+                  })}
+                >
+                  {isTyping ? (
+                    <svg
+                      className="w-5 h-5 animate-spin"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      className="w-5 h-5 rotate-180 group-hover:scale-110 transition-transform duration-200"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                    </svg>
+                  )}
+                </button>
+              )}
+              <div className="flex-1 relative">
                 <textarea
                   ref={textareaRef}
                   value={message}
@@ -246,84 +354,112 @@ export default function ChatBot({ className = "" }: ChatBotProps) {
                   placeholder={t("chatbot.placeholder", {
                     defaultValue: "Type your message...",
                   })}
-                  className={`w-full bg-slate-700/60 border border-slate-600/40 rounded-xl px-4 py-3 text-white text-sm placeholder-slate-400 focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 resize-none min-h-[44px] max-h-[120px] backdrop-blur-sm transition-all duration-300 ${
+                  disabled={isTyping}
+                  className={`w-full bg-slate-700/60 border border-slate-600/40 rounded-xl px-4 py-3 pb-6 text-white text-sm placeholder-slate-400 focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 resize-none min-h-[44px] max-h-[120px] backdrop-blur-sm transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${
                     isRTL ? "text-right" : "text-left"
                   }`}
                   dir={isRTL ? "rtl" : "ltr"}
                   rows={1}
+                  maxLength={500}
                 />
-                {/* Character count or input status */}
+                {/* Character count */}
                 {message.length > 0 && (
                   <div
-                    className={`absolute bottom-1 text-xs text-slate-500 ${
-                      isRTL ? "left-2" : "right-2"
-                    }`}
+                    className={`absolute bottom-1 text-xs transition-colors duration-200 ${
+                      message.length > 450
+                        ? "text-red-400"
+                        : message.length > 400
+                        ? "text-yellow-400"
+                        : "text-slate-500"
+                    } ${isRTL ? "left-2" : "right-2"}`}
                   >
                     {message.length}/500
                   </div>
                 )}
               </div>
 
-              <button
-                onClick={handleSendMessage}
-                disabled={!message.trim()}
-                className={`w-12 h-12 bg-gradient-to-r from-primary to-cyan-300 text-slate-900 rounded-xl font-medium hover:from-primary/90 hover:to-cyan-300/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-glow transform hover:scale-105 disabled:hover:scale-100 group ${
-                  isRTL ? "order-1" : "order-2"
-                }`}
-                aria-label={t("chatbot.send", { defaultValue: "Send message" })}
-              >
-                <svg
-                  className={`w-5 h-5 transform origin-center transition-transform duration-200 ${
-                    isRTL ? "rotate-180" : "rotate-0"
-                  } group-hover:scale-110`}
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
+              {!isRTL && (
+                <button
+                  onClick={handleSendMessage}
+                  disabled={!message.trim() || isTyping}
+                  className="w-12 h-12 bg-gradient-to-r from-primary to-cyan-300 text-slate-900 rounded-xl font-medium hover:from-primary/90 hover:to-cyan-300/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-glow transform hover:scale-105 disabled:hover:scale-100 group"
+                  aria-label={t("chatbot.send", {
+                    defaultValue: "Send message",
+                  })}
                 >
-                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
-                </svg>
-              </button>
+                  {isTyping ? (
+                    <svg
+                      className="w-5 h-5 animate-spin"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      className="w-5 h-5 group-hover:scale-110 transition-transform duration-200"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                    </svg>
+                  )}
+                </button>
+              )}
             </div>
 
             {/* Quick Actions */}
             <div
-              className={`flex gap-2 mt-3 ${
+              className={`flex gap-2 mt-3 flex-wrap ${
                 isRTL ? "flex-row-reverse" : "flex-row"
               }`}
             >
               <button
-                onClick={() =>
-                  setMessage(
-                    t("chatbot.quickHelp", {
-                      defaultValue: "How can you help me?",
-                    })
-                  )
-                }
-                className="px-3 py-1.5 bg-slate-600/40 hover:bg-slate-500/50 text-slate-300 text-xs rounded-lg transition-all duration-200 border border-slate-500/30 hover:border-slate-400/50"
+                onClick={() => {
+                  const helpText = t("chatbot.quickHelp", {
+                    defaultValue: "How can you help me?",
+                  });
+                  setMessage(helpText);
+                }}
+                disabled={isTyping}
+                className="px-3 py-1.5 bg-slate-600/40 hover:bg-slate-500/50 text-slate-300 text-xs rounded-lg transition-all duration-200 border border-slate-500/30 hover:border-slate-400/50 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 🤔 {t("chatbot.quickHelp", { defaultValue: "Help" })}
               </button>
               <button
-                onClick={() =>
-                  setMessage(
-                    t("chatbot.quickTournaments", {
-                      defaultValue: "Tell me about tournaments",
-                    })
-                  )
-                }
-                className="px-3 py-1.5 bg-slate-600/40 hover:bg-slate-500/50 text-slate-300 text-xs rounded-lg transition-all duration-200 border border-slate-500/30 hover:border-slate-400/50"
+                onClick={() => {
+                  const tournamentsText = t("chatbot.quickTournaments", {
+                    defaultValue: "Tell me about tournaments",
+                  });
+                  setMessage(tournamentsText);
+                }}
+                disabled={isTyping}
+                className="px-3 py-1.5 bg-slate-600/40 hover:bg-slate-500/50 text-slate-300 text-xs rounded-lg transition-all duration-200 border border-slate-500/30 hover:border-slate-400/50 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 🏆{" "}
                 {t("chatbot.quickTournaments", { defaultValue: "Tournaments" })}
               </button>
               <button
-                onClick={() =>
-                  setMessage(
-                    t("chatbot.quickMarketplace", {
-                      defaultValue: "Show me the marketplace",
-                    })
-                  )
-                }
-                className="px-3 py-1.5 bg-slate-600/40 hover:bg-slate-500/50 text-slate-300 text-xs rounded-lg transition-all duration-200 border border-slate-500/30 hover:border-slate-400/50"
+                onClick={() => {
+                  const marketplaceText = t("chatbot.quickMarketplace", {
+                    defaultValue: "Show me the marketplace",
+                  });
+                  setMessage(marketplaceText);
+                }}
+                disabled={isTyping}
+                className="px-3 py-1.5 bg-slate-600/40 hover:bg-slate-500/50 text-slate-300 text-xs rounded-lg transition-all duration-200 border border-slate-500/30 hover:border-slate-400/50 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 🛒 {t("chatbot.quickMarketplace", { defaultValue: "Shop" })}
               </button>
@@ -363,28 +499,27 @@ export default function ChatBot({ className = "" }: ChatBotProps) {
           </svg>
         ) : (
           <svg
-            className="w-7 h-7 text-slate-900 relative z-10 group-hover:scale-125 transition-transform duration-500"
-            fill="currentColor"
+            className="w-8 h-8 text-slate-900 relative z-10 group-hover:scale-125 transition-all duration-500"
+            fill="none"
+            stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2Z" />
-            <rect x="6" y="8" width="12" height="8" rx="2" ry="2" />
-            <circle cx="9" cy="11" r="1" />
-            <circle cx="15" cy="11" r="1" />
-            <rect x="10" y="13" width="4" height="1" rx="0.5" ry="0.5" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+            />
+            <circle cx="12" cy="8" r="1.5" fill="currentColor" />
+            <line x1="12" y1="2" x2="12" y2="3" strokeWidth={2} />
+            <line x1="9" y1="3" x2="9.5" y2="4" strokeWidth={2} />
+            <line x1="15" y1="3" x2="14.5" y2="4" strokeWidth={2} />
           </svg>
-        )}
-
-        {/* Activity indicator */}
-        {!isOpen && (
-          <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-green-400 to-green-500 rounded-full animate-pulse border-2 border-slate-800 shadow-lg">
-            <div className="absolute inset-0 bg-green-400 rounded-full animate-ping opacity-75"></div>
-          </div>
         )}
 
         {/* Message count badge */}
         {!isOpen && messages.length > 1 && (
-          <div className="absolute -top-2 -left-2 w-6 h-6 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center text-white text-xs font-bold border-2 border-slate-800 shadow-lg">
+          <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold border-2 border-white shadow-lg">
             {Math.min(messages.length - 1, 9)}
           </div>
         )}

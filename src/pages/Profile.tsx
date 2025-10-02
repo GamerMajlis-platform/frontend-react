@@ -12,6 +12,8 @@ import { useParams } from "react-router-dom";
 import type { User } from "../types/auth";
 import { Youtube, Twitter, Instagram, Twitch, GamepadIcon } from "../lib/icons";
 import AvatarImage from "../components/profile/AvatarImage";
+import AvatarModal from "../components/profile/AvatarModal";
+import { getAvatarSrc } from "../lib/urls";
 
 type TabKey = "about" | "manage" | "stats";
 
@@ -98,6 +100,7 @@ export default function Profile() {
 
   // Privacy handling for viewed profiles
   const isOwner = Boolean(user && viewedUser && user.id === viewedUser.id);
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
   const parsedPrivacy =
     (viewedUser?.parsedPrivacySettings as
       | Record<string, unknown>
@@ -179,7 +182,22 @@ export default function Profile() {
               <div className="h-32 bg-slate-700 rounded animate-pulse" />
             ) : viewedUser && viewedUser.id !== user?.id ? (
               <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr_auto] gap-6 lg:gap-8 items-center justify-items-center lg:justify-items-start">
-                <div className="w-24 h-24 bg-slate-700 rounded-full overflow-hidden">
+                <div
+                  className="w-24 h-24 bg-slate-700 rounded-full overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+                  onClick={() =>
+                    viewedUser.profilePictureUrl && setShowAvatarModal(true)
+                  }
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (
+                      (e.key === "Enter" || e.key === " ") &&
+                      viewedUser.profilePictureUrl
+                    ) {
+                      setShowAvatarModal(true);
+                    }
+                  }}
+                >
                   {viewedUser.profilePictureUrl ? (
                     <AvatarImage
                       source={viewedUser.profilePictureUrl}
@@ -403,6 +421,14 @@ export default function Profile() {
               )}
             </div>
           </div>
+        )}
+
+        {/* Avatar Modal for public profile view */}
+        {showAvatarModal && viewedUser?.profilePictureUrl && (
+          <AvatarModal
+            src={getAvatarSrc(viewedUser.profilePictureUrl)}
+            onClose={() => setShowAvatarModal(false)}
+          />
         )}
       </div>
     </main>

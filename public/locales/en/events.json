@@ -69,7 +69,7 @@
     "competitive": "Competitive event",
     "create": "Create event",
     "description": "Description",
-    "endDateTime": "End date & time (optional)",
+    "endDateTime": "End date & time",
     "entryFee": "Entry fee",
     "eventType": "Event type",
     "gameCategory": "Game category",

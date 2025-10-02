@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { AppProvider } from "./context/AppContext";
 import { useAppContext } from "./context/useAppContext";
 import { NavigationService } from "./lib/navigation";
+import useIsMobile from "./hooks/useIsMobile";
 
 // Components
 import { Header, Footer } from "./components";
@@ -56,6 +57,7 @@ function AppContent() {
   const { isAuthenticated, sessionInitialized } = useAppContext();
   const location = useLocation();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   // Initialize NavigationService with React Router's navigate function
   useEffect(() => {
@@ -218,17 +220,18 @@ function AppContent() {
           </ErrorBoundary>
         </div>
 
-        {!isAuthPage && (
-          <ErrorBoundary
-            fallback={
-              <div className="h-16 bg-slate-800 text-white text-center p-4">
-                Footer error
-              </div>
-            }
-          >
-            <Footer />
-          </ErrorBoundary>
-        )}
+        {!isAuthPage &&
+          !(isMobile && (!isAuthenticated || currentPage === "chat")) && (
+            <ErrorBoundary
+              fallback={
+                <div className="h-16 bg-slate-800 text-white text-center p-4">
+                  Footer error
+                </div>
+              }
+            >
+              <Footer />
+            </ErrorBoundary>
+          )}
 
         {/* Global ChatBot - appears on all pages */}
         <ErrorBoundary fallback={null}>

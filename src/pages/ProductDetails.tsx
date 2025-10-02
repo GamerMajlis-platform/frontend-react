@@ -20,6 +20,46 @@ export default function ProductDetails() {
   const [isFavorite, setIsFavorite] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
+  // Translation helpers
+  const translateCategory = (category: string) => {
+    const categoryMap: Record<string, string> = {
+      GAMING_CONSOLES: t("categories.gamingConsoles", "Gaming Consoles"),
+      GAMING_ACCESSORIES: t(
+        "categories.gamingAccessories",
+        "Gaming Accessories"
+      ),
+      PC_COMPONENTS: t("categories.pcComponents", "PC Components"),
+      GAMING_PERIPHERALS: t(
+        "categories.gamingPeripherals",
+        "Gaming Peripherals"
+      ),
+      GAMING_CHAIRS: t("categories.gamingChairs", "Gaming Chairs"),
+      HEADSETS: t("categories.headsets", "Headsets"),
+      KEYBOARDS: t("categories.keyboards", "Keyboards"),
+      MICE: t("categories.mice", "Mice"),
+      MONITORS: t("categories.monitors", "Monitors"),
+      GAMES: t("categories.games", "Games"),
+      COLLECTIBLES: t("categories.collectibles", "Collectibles"),
+      MERCHANDISE: t("categories.merchandise", "Merchandise"),
+      OTHER: t("categories.other", "Other"),
+    };
+    return categoryMap[category] || category;
+  };
+
+  const translateCondition = (condition: string) => {
+    const conditionMap: Record<string, string> = {
+      NEW: t("product.conditions.new", "New"),
+      LIKE_NEW: t("product.conditions.likeNew", "Like New"),
+      EXCELLENT: t("product.conditions.excellent", "Excellent"),
+      GOOD: t("product.conditions.good", "Good"),
+      FAIR: t("product.conditions.fair", "Fair"),
+      POOR: t("product.conditions.poor", "Poor"),
+      REFURBISHED: t("product.conditions.refurbished", "Refurbished"),
+      FOR_PARTS: t("product.conditions.forParts", "For Parts"),
+    };
+    return conditionMap[condition] || condition;
+  };
+
   // Get navigation state to determine where we came from
   const state = location.state as { from?: string; scrollY?: number } | null;
   const sourcePage = state?.from || "marketplace";
@@ -193,10 +233,10 @@ export default function ProductDetails() {
                 </h1>
                 <div className="flex flex-wrap items-center gap-3">
                   <span className="px-3 py-1 bg-cyan-500/20 border border-cyan-500/30 rounded-full text-cyan-400 text-sm font-medium">
-                    {product.category}
+                    {translateCategory(product.category)}
                   </span>
                   <span className="px-3 py-1 bg-blue-500/20 border border-blue-500/30 rounded-full text-blue-400 text-sm font-medium">
-                    {product.condition}
+                    {translateCondition(product.condition)}
                   </span>
                 </div>
               </div>

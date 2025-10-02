@@ -100,6 +100,10 @@
     "gaming": "Gaming Preferences",
     "social": "Social Links"
   },
+  "avatarModal": {
+    "openOriginal": "Open Original",
+    "download": "Download"
+  },
   "social": {
     "personalWebsite": "Personal Website"
   },

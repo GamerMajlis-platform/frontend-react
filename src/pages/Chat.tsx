@@ -169,6 +169,16 @@ export default function ChatPage() {
     if (isConnected && user) {
       webSocketService.subscribeToTopic(`/user/queue/private`);
       webSocketService.subscribeToTopic(`/topic/notifications/${user.id}`);
+
+      // Subscribe handler for private queue messages to refresh DM list
+      const handlePrivateMsg = () => {
+        setRoomsRefreshCounter((c) => c + 1);
+      };
+      webSocketService.on("chatMessage", handlePrivateMsg);
+
+      return () => {
+        webSocketService.off("chatMessage", handlePrivateMsg);
+      };
     }
   }, [isConnected, user]);
 

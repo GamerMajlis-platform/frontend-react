@@ -80,7 +80,7 @@ export default function AvatarModal({ src, onClose }: AvatarModalProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full inline-flex items-center justify-center gap-2 rounded-md bg-white/10 text-white px-3 py-2 hover:bg-white/20"
-                aria-label={t("profile:openOriginal", "Open")}
+                aria-label={t("profile:avatarModal.openOriginal", "Open")}
               >
                 <svg
                   className="h-4 w-4"
@@ -95,7 +95,7 @@ export default function AvatarModal({ src, onClose }: AvatarModalProps) {
                     d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                   />
                 </svg>
-                <span>Open</span>
+                <span>{t("profile:avatarModal.openOriginal", "Open")}</span>
               </a>
 
               <button
@@ -159,7 +159,7 @@ export default function AvatarModal({ src, onClose }: AvatarModalProps) {
                   }
                 }}
                 className="w-full inline-flex items-center justify-center gap-2 rounded-md bg-white/10 text-white px-3 py-2 hover:bg-white/20"
-                aria-label={t("profile:download", "Download")}
+                aria-label={t("profile:avatarModal.download", "Download")}
               >
                 <svg
                   className="h-4 w-4"
@@ -174,7 +174,7 @@ export default function AvatarModal({ src, onClose }: AvatarModalProps) {
                     d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                   />
                 </svg>
-                <span>Download</span>
+                <span>{t("profile:avatarModal.download", "Download")}</span>
               </button>
 
               {/* Remove button intentionally removed; only Open and Download remain */}

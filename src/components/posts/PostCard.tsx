@@ -40,8 +40,21 @@ export const PostCard: React.FC<PostCardProps> = ({
   const [editTitle, setEditTitle] = useState(post.title || "");
   const [editContent, setEditContent] = useState(post.content || "");
 
+  // Sync localPost with post prop, but only update if post data actually changed
+  // This prevents the useEffect from resetting user-initiated like state
   useEffect(() => {
-    setLocalPost(post);
+    setLocalPost((prev) => {
+      // If the post ID changed (different post), fully update
+      if (prev.id !== post.id) {
+        return post;
+      }
+      // Otherwise, only sync non-interactive fields to preserve like state
+      return {
+        ...post,
+        isLiked: prev.isLiked, // Keep existing like state
+        likeCount: prev.likeCount, // Keep existing like count
+      };
+    });
     setEditTitle(post.title || "");
     setEditContent(post.content || "");
   }, [post]);
@@ -53,6 +66,12 @@ export const PostCard: React.FC<PostCardProps> = ({
     try {
       const response = await PostService.toggleLike(post.id);
       if (response.success) {
+        // Update local post state to persist like status
+        setLocalPost((prev) => ({
+          ...prev,
+          isLiked: response.liked,
+          likeCount: response.liked ? prev.likeCount + 1 : prev.likeCount - 1,
+        }));
         onLike?.(post.id, response.liked);
       }
     } catch (error) {
@@ -85,7 +104,7 @@ export const PostCard: React.FC<PostCardProps> = ({
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
-        .replace(/\"/g, "&quot;")
+        .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
 
     const escaped = escapeHtml(content);
@@ -315,22 +334,22 @@ export const PostCard: React.FC<PostCardProps> = ({
               onClick={handleLike}
               disabled={isLiking}
               className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors border ${
-                post.isLiked
+                localPost.isLiked
                   ? "border-red-500"
                   : "border-[rgba(239,68,68,0.18)]"
               } bg-transparent disabled:opacity-50 ${
-                post.isLiked
+                localPost.isLiked
                   ? ""
                   : "hover:bg-[rgba(239,68,68,0.06)] hover:text-red-500"
               }`}
             >
               <svg
                 className={`w-5 h-5 ${
-                  post.isLiked ? "text-red-500" : "text-gray-300"
+                  localPost.isLiked ? "text-red-500" : "text-gray-300"
                 }`}
                 viewBox="0 0 24 24"
-                fill={post.isLiked ? "currentColor" : "none"}
-                stroke={post.isLiked ? "none" : "currentColor"}
+                fill={localPost.isLiked ? "currentColor" : "none"}
+                stroke={localPost.isLiked ? "none" : "currentColor"}
               >
                 <path
                   strokeLinecap="round"
@@ -340,7 +359,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                 />
               </svg>
               <span className="text-sm font-medium text-gray-100">
-                {PostService.formatEngagementCount(post.likeCount)}
+                {PostService.formatEngagementCount(localPost.likeCount)}
               </span>
             </button>
 

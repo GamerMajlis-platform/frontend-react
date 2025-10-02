@@ -281,8 +281,8 @@ class ChatService extends BaseService {
   }
 
   /**
-   * API: Get Suggested Rooms
-   * Retrieves rooms suggested by other players (feed)
+   * Get Public/Joinable Rooms (feed alternative)
+   * Uses the regular rooms endpoint with filtering
    */
   async getSuggestedRooms(
     params: ChatRoomsParams = {}
@@ -293,7 +293,7 @@ class ChatService extends BaseService {
     if (params.size !== undefined)
       searchParams.append("size", params.size.toString());
 
-    const url = `/chat/suggested${
+    const url = `/chat/rooms${
       searchParams.toString() ? `?${searchParams.toString()}` : ""
     }`;
     return await ChatService.authenticatedRequest<ChatRoomsResponse>(url, {

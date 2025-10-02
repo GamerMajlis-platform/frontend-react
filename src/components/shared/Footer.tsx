@@ -1,9 +1,21 @@
 import { useTranslation } from "react-i18next";
 import { memo } from "react";
 import { Link } from "react-router-dom";
+import useIsMobile from "../../hooks/useIsMobile";
 
 function Footer() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(["translation", "nav"]);
+  const isMobile = useIsMobile();
+
+  const scrollToTop = () => {
+    if (isMobile) {
+      // For mobile, use instant scroll to avoid potential issues
+      window.scrollTo({ top: 0, behavior: "auto" });
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   return (
     <footer className="relative w-full bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 border-t border-slate-700/50 backdrop-blur-xl">
       {/* Background decorative elements */}
@@ -46,6 +58,7 @@ function Footer() {
               <li>
                 <Link
                   to="/"
+                  onClick={scrollToTop}
                   className="group flex items-center gap-2 text-slate-400 no-underline text-sm hover:text-primary transition-all duration-300 transform hover:translate-x-1"
                 >
                   <div className="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover:bg-primary transition-colors duration-300" />
@@ -55,6 +68,7 @@ function Footer() {
               <li>
                 <Link
                   to="/tournaments"
+                  onClick={scrollToTop}
                   className="group flex items-center gap-2 text-slate-400 no-underline text-sm hover:text-primary transition-all duration-300 transform hover:translate-x-1"
                 >
                   <div className="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover:bg-primary transition-colors duration-300" />
@@ -64,6 +78,7 @@ function Footer() {
               <li>
                 <Link
                   to="/marketplace"
+                  onClick={scrollToTop}
                   className="group flex items-center gap-2 text-slate-400 no-underline text-sm hover:text-primary transition-all duration-300 transform hover:translate-x-1"
                 >
                   <div className="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover:bg-primary transition-colors duration-300" />
@@ -73,6 +88,7 @@ function Footer() {
               <li>
                 <Link
                   to="/events"
+                  onClick={scrollToTop}
                   className="group flex items-center gap-2 text-slate-400 no-underline text-sm hover:text-primary transition-all duration-300 transform hover:translate-x-1"
                 >
                   <div className="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover:bg-primary transition-colors duration-300" />
@@ -91,7 +107,10 @@ function Footer() {
               <li>
                 <button
                   type="button"
-                  className="group flex items-center gap-2 text-slate-400 no-underline text-sm hover:text-cyan-300 transition-all duration-300 transform hover:translate-x-1"
+                  onClick={() =>
+                    alert(t("pages.comingSoon", { page: t("footer.forums") }))
+                  }
+                  className="group flex items-center gap-2 text-slate-400 no-underline text-sm hover:text-cyan-300 transition-all duration-300 transform hover:translate-x-1 cursor-pointer bg-transparent border-0"
                 >
                   <div className="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover:bg-cyan-300 transition-colors duration-300" />
                   {t("footer.forums")}
@@ -100,7 +119,10 @@ function Footer() {
               <li>
                 <button
                   type="button"
-                  className="group flex items-center gap-2 text-slate-400 no-underline text-sm hover:text-cyan-300 transition-all duration-300 transform hover:translate-x-1"
+                  onClick={() =>
+                    alert(t("pages.comingSoon", { page: t("footer.support") }))
+                  }
+                  className="group flex items-center gap-2 text-slate-400 no-underline text-sm hover:text-cyan-300 transition-all duration-300 transform hover:translate-x-1 cursor-pointer bg-transparent border-0"
                 >
                   <div className="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover:bg-cyan-300 transition-colors duration-300" />
                   {t("footer.support")}
@@ -109,7 +131,10 @@ function Footer() {
               <li>
                 <button
                   type="button"
-                  className="group flex items-center gap-2 text-slate-400 no-underline text-sm hover:text-cyan-300 transition-all duration-300 transform hover:translate-x-1"
+                  onClick={() =>
+                    alert(t("pages.comingSoon", { page: t("footer.contact") }))
+                  }
+                  className="group flex items-center gap-2 text-slate-400 no-underline text-sm hover:text-cyan-300 transition-all duration-300 transform hover:translate-x-1 cursor-pointer bg-transparent border-0"
                 >
                   <div className="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover:bg-cyan-300 transition-colors duration-300" />
                   {t("footer.contact")}

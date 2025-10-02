@@ -1,10 +1,15 @@
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dropdown, SettingRow, ToggleButton } from "../components/settings";
 import { DiscordLinkButton } from "../components/discord";
 import { useAppContext } from "../context/useAppContext";
 import { usePreferences } from "../hooks/usePreferences";
 import { useClickOutside } from "../hooks/useClickOutside";
+import Toast from "../components/shared/Toast";
+import type { ToastType } from "../components/shared/Toast";
+import { PostService } from "../services/PostService";
+import { PostCard } from "../components/posts/PostCard";
+import type { PostListItem } from "../types";
 
 interface UserSettings {
   privacy: {
@@ -18,9 +23,41 @@ interface UserSettings {
 
 export default function Settings() {
   const { t } = useTranslation();
-  const { settings, updateSetting } = useAppContext();
+  const { settings, updateSetting, user } = useAppContext();
   const { setLanguage } = usePreferences();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    type: ToastType;
+  } | null>(null);
+  const [myPosts, setMyPosts] = useState<PostListItem[]>([]);
+  const [loadingPosts, setLoadingPosts] = useState(false);
+  const [showMyPosts, setShowMyPosts] = useState(false);
+
+  const showToast = (message: string, type: ToastType = "info") => {
+    setToast({ message, type });
+  };
+
+  // Load user's posts
+  useEffect(() => {
+    if (showMyPosts && user) {
+      setLoadingPosts(true);
+      PostService.getPostsFeed({ myPosts: true, page: 0, size: 20 })
+        .then((response) => {
+          setMyPosts(response.posts || []);
+        })
+        .catch((error) => {
+          console.error("Failed to load posts:", error);
+          showToast(
+            t("settings.errors.loadPostsFailed", "Failed to load posts"),
+            "error"
+          );
+        })
+        .finally(() => {
+          setLoadingPosts(false);
+        });
+    }
+  }, [showMyPosts, user, t]);
 
   // Close dropdowns when clicking outside
   const settingsRef = useClickOutside<HTMLDivElement>(() =>
@@ -57,12 +94,9 @@ export default function Settings() {
       },
       {
         key: "showGamingStats",
-        label: t(
-          "settings.sections.privacy.showGamingStats",
-          "Show Gaming Statistics"
-        ),
+        label: t("profile:privacy.showGamingStats", "Show Gaming Statistics"),
         description: t(
-          "settings.sections.privacy.showGamingStats_desc",
+          "profile:privacy.showGamingStats.description",
           "Display your gaming statistics on your profile"
         ),
       },
@@ -229,8 +263,18 @@ export default function Settings() {
                     <div className="grid gap-3">
                       <div className="flex items-center justify-between">
                         <div>
-                          <h3 className="font-semibold text-text">{t("settings.sections.account.changeEmail", "Change Email")}</h3>
-                          <p className="text-sm text-text-secondary">{t("settings.sections.account.changeEmail_desc", "Update your account email address")}</p>
+                          <h3 className="font-semibold text-text">
+                            {t(
+                              "settings.sections.account.changeEmail",
+                              "Change Email"
+                            )}
+                          </h3>
+                          <p className="text-sm text-text-secondary">
+                            {t(
+                              "settings.sections.account.changeEmail_desc",
+                              "Update your account email address"
+                            )}
+                          </p>
                         </div>
                       </div>
 
@@ -238,21 +282,62 @@ export default function Settings() {
                         onSubmit={async (e) => {
                           e.preventDefault();
                           const form = e.target as HTMLFormElement;
-                          const input = form.elements.namedItem("newEmail") as HTMLInputElement;
+                          const input = form.elements.namedItem(
+                            "newEmail"
+                          ) as HTMLInputElement;
                           const email = input?.value?.trim();
-                          if (!email) return;
-                          try {
-                            // ProfileService.UpdateProfileData doesn't include email in typings,
-                            // but backend accepts email update. Cast to any to call API.
-                            await (await import("../services/ProfileService")).ProfileService.updateProfile(
-                              ( { email } as unknown as import("../types/auth").UpdateProfileData )
+                          if (!email) {
+                            showToast(
+                              t(
+                                "settings.messages.emailRequired",
+                                "Please enter a valid email address"
+                              ),
+                              "error"
                             );
-                            // refresh settings from context if needed
-                            window.dispatchEvent(new CustomEvent("profile:updated"));
-                            alert(t("settings.messages.emailUpdateSuccess", "Email updated successfully"));
+                            return;
+                          }
+
+                          // Simple email validation
+                          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                          if (!emailRegex.test(email)) {
+                            showToast(
+                              t(
+                                "settings.messages.emailInvalid",
+                                "Please enter a valid email address"
+                              ),
+                              "error"
+                            );
+                            return;
+                          }
+
+                          try {
+                            const { ProfileService } = await import(
+                              "../services/ProfileService"
+                            );
+                            await ProfileService.updateProfile({ email });
+                            window.dispatchEvent(
+                              new CustomEvent("profile:updated")
+                            );
+                            showToast(
+                              t(
+                                "settings.messages.emailUpdateSuccess",
+                                "Email updated successfully"
+                              ),
+                              "success"
+                            );
+                            form.reset();
                           } catch (err) {
                             console.error("Failed to update email:", err);
-                            alert(t("settings.messages.emailUpdateFailed", "Failed to update email. Please try again later."));
+                            const errorMsg =
+                              err instanceof Error ? err.message : String(err);
+                            showToast(
+                              t(
+                                "settings.messages.emailUpdateFailed",
+                                "Failed to update email: {{error}}",
+                                { error: errorMsg }
+                              ),
+                              "error"
+                            );
                           }
                         }}
                       >
@@ -260,34 +345,24 @@ export default function Settings() {
                           <input
                             name="newEmail"
                             type="email"
-                            placeholder={t("settings.placeholders.newEmail", "you@example.com")}
+                            placeholder={t(
+                              "settings.placeholders.newEmail",
+                              "you@example.com"
+                            )}
                             className="w-full rounded-xl border border-slate-600 bg-[#0F172A] px-4 py-3 text-white placeholder-slate-400"
                           />
-                          <button type="submit" className="px-4 py-3 bg-cyan-500 text-white rounded-xl">{t("settings.actions.update", "Update")}</button>
+                          <button
+                            type="submit"
+                            className="px-4 py-3 bg-cyan-500 text-white rounded-xl"
+                          >
+                            {t("settings.actions.update", "Update")}
+                          </button>
                         </div>
                       </form>
                     </div>
                   </div>
 
-                  {/* Change Password - backend endpoint not found in API guide; show UI but disable submission */}
-                  <div className="border border-gray-700 rounded-lg p-4">
-                    <div className="grid gap-3">
-                      <div>
-                        <h3 className="font-semibold text-text">{t("settings.sections.account.changePassword", "Change Password")}</h3>
-                        <p className="text-sm text-text-secondary">{t("settings.sections.account.changePassword_desc", "Change your account password. If this option is not available, please use password recovery.")}</p>
-                      </div>
-
-                      <form onSubmit={(e) => { e.preventDefault(); alert(t("settings.messages.passwordNotSupported", "Password change via frontend is not available. Use password recovery or contact support.")); }}>
-                        <div className="grid gap-2 md:grid-cols-3">
-                          <input name="currentPassword" type="password" placeholder={t("settings.placeholders.currentPassword", "Current password")} className="w-full rounded-xl border border-slate-600 bg-[#0F172A] px-4 py-3 text-white" disabled />
-                          <input name="newPassword" type="password" placeholder={t("settings.placeholders.newPassword", "New password")} className="w-full rounded-xl border border-slate-600 bg-[#0F172A] px-4 py-3 text-white" disabled />
-                          <button type="submit" className="px-4 py-3 bg-gray-600 text-white rounded-xl" disabled>{t("settings.actions.change", "Change")}</button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-
-                  {/* Discord linking moved here */}
+                  {/* Discord linking */}
                   <div className="border border-gray-700 rounded-lg p-4">
                     <div className="grid gap-3">
                       <div className="flex items-center gap-3">
@@ -328,9 +403,107 @@ export default function Settings() {
                 </div>
               </div>
             </section>
+
+            {/* Activity Section */}
+            <section className="rounded-xl p-4 sm:p-6 bg-dark-secondary">
+              <div className="grid gap-4">
+                <div className="grid gap-2">
+                  <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold font-alice text-text">
+                    {t("settings.sections.activity.title", "Activity")}
+                  </h2>
+                  <p className="text-xs sm:text-sm lg:text-base text-text-secondary">
+                    {t(
+                      "settings.sections.activity.description",
+                      "View your posts and interactions"
+                    )}
+                  </p>
+                </div>
+
+                <div className="grid gap-4">
+                  {/* My Posts */}
+                  <div className="border border-gray-700 rounded-lg p-4">
+                    <div className="grid gap-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="font-semibold text-text">
+                            {t(
+                              "settings.sections.activity.myPosts",
+                              "My Posts"
+                            )}
+                          </h3>
+                          <p className="text-sm text-text-secondary">
+                            {t(
+                              "settings.sections.activity.myPosts_desc",
+                              "View and manage all your posts"
+                            )}
+                          </p>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setShowMyPosts(!showMyPosts)}
+                        className="px-4 py-3 bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl transition-colors"
+                      >
+                        {showMyPosts
+                          ? t("settings.actions.hidePosts", "Hide My Posts")
+                          : t("settings.actions.viewMyPosts", "View My Posts")}
+                      </button>
+
+                      {/* Posts List */}
+                      {showMyPosts && (
+                        <div className="grid gap-4 mt-4">
+                          {loadingPosts ? (
+                            <div className="flex justify-center py-8">
+                              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"></div>
+                            </div>
+                          ) : myPosts.length === 0 ? (
+                            <div className="text-center py-8 text-text-secondary">
+                              {t(
+                                "settings.sections.activity.noPosts",
+                                "You haven't created any posts yet"
+                              )}
+                            </div>
+                          ) : (
+                            myPosts.map((post) => (
+                              <PostCard
+                                key={post.id}
+                                post={post}
+                                currentUserId={user?.id}
+                                onDelete={(postId) => {
+                                  setMyPosts((prev) =>
+                                    prev.filter((p) => p.id !== postId)
+                                  );
+                                  showToast(
+                                    t(
+                                      "settings.messages.postDeleted",
+                                      "Post deleted"
+                                    ),
+                                    "success"
+                                  );
+                                }}
+                              />
+                            ))
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
           </div>
         </div>
       </div>
+
+      {/* Toast Notifications */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </main>
   );
 }

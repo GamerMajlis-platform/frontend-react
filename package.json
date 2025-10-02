@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "sort-locales": "node ./scripts/sort-locales.cjs"
+    "sort-locales": "node ./scripts/sort-locales.cjs",
+    "seed-products": "node ./scripts/seed-marketplace.js"
   },
   "dependencies": {
     "date-fns": "^4.1.0",

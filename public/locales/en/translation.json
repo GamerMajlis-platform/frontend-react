@@ -79,16 +79,18 @@
   },
   "chatbot": {
     "close": "Close chat",
+    "error": "Oops, something went wrong. Please try again later.",
     "open": "Open bot",
     "placeholder": "Type your message...",
     "quickHelp": "Help",
     "quickMarketplace": "Marketplace",
     "quickTournaments": "Tournaments",
-    "response": "Thanks for your message! I’m here to help with any gaming questions.",
+    "response": "Thanks for your message! I'm here to help with any gaming questions.",
     "send": "Send message",
     "status": "Online",
     "toggle": "Show/Hide bot",
-    "welcome": "Hi! I’m the Gamer Majlis bot. How can I help you today? 🎮"
+    "title": "Gamer Majlis Assistant",
+    "welcome": "Hi! I'm the Gamer Majlis bot. How can I help you today? 🎮"
   },
   "common": {
     "and": "and",
@@ -269,10 +271,14 @@
     "category": "Category",
     "condition": "Condition",
     "conditions": {
-      "fair": "Fair",
-      "good": "Good",
+      "new": "New",
       "likeNew": "Like New",
-      "new": "New"
+      "excellent": "Excellent",
+      "good": "Good",
+      "fair": "Fair",
+      "poor": "Poor",
+      "refurbished": "Refurbished",
+      "forParts": "For Parts"
     },
     "confirmDelete": "Are you sure you want to delete this product? This action cannot be undone.",
     "create": "Create Product",
@@ -363,7 +369,42 @@
           "private": "Private",
           "public": "Public"
         }
+      },
+      "account": {
+        "title": "Account",
+        "description": "Manage your account details and connected services",
+        "changeEmail": "Change Email",
+        "changeEmail_desc": "Update your account email address",
+        "changePassword": "Change Password",
+        "changePassword_desc": "Change your account password. If this option is not available, please use password recovery."
+      },
+      "activity": {
+        "title": "Activity",
+        "description": "View your posts and interactions",
+        "myPosts": "My Posts",
+        "myPosts_desc": "View and manage all your posts",
+        "yourPosts": "Your Posts",
+        "noPosts": "You haven't created any posts yet",
+        "viewMore": "Visit Home page to view all your posts"
       }
+    },
+    "messages": {
+      "emailUpdateSuccess": "Email updated successfully",
+      "emailUpdateFailed": "Failed to update email: {{error}}",
+      "emailRequired": "Please enter a valid email address",
+      "emailInvalid": "Please enter a valid email address",
+      "passwordNotSupported": "Password change via frontend is not available. Use password recovery or contact support.",
+      "activityFetchFailed": "Failed to load activity. Please try again later."
+    },
+    "actions": {
+      "update": "Update",
+      "change": "Change",
+      "viewMyPosts": "View My Posts"
+    },
+    "placeholders": {
+      "newEmail": "you@example.com",
+      "currentPassword": "Current password",
+      "newPassword": "New password"
     },
     "subtitle": "Customize your gaming experience.",
     "title": "Settings"

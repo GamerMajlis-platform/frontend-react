@@ -15,7 +15,17 @@ export function ProgressBar(props: ProgressBarProps) {
     <div className={`relative overflow-hidden ${className}`}>
       <div
         className={`h-full bg-gradient-to-r ${gradientFrom} ${gradientTo} transition-all duration-700 ease-out rounded-full progress-width`}
-        data-width={safePercentage}
+        // set only a CSS custom property; the heavy lifting stays in CSS
+        style={
+          {
+            ["--progress" as unknown as keyof React.CSSProperties]: `${safePercentage}%`,
+          } as React.CSSProperties
+        }
+        role="progressbar"
+        aria-label={`Progress: ${safePercentage}%`}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={safePercentage}
       />
     </div>
   );
